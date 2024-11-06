@@ -1,0 +1,29 @@
+.button {
+	font-size: 1em;
+	padding: 0.5em 1em;
+	cursor: pointer;
+	display: block;
+
+	--color: var(--theme-primary-0);
+	&.primary { --color: var(--theme-primary-0); }
+	&.secondary { --color: var(--theme-secondary-0); }
+	&.confirm { --color: var(--theme-yes); }
+	&.deny { --color: var(--theme-no); }
+	&:disabled {
+		--color: var(--theme-disabled);
+		cursor: not-allowed;
+	}
+	&:empty::before {
+		content: "\200c";
+	}
+	
+	background-color: var(--color);
+	color: var(--theme-foreground);
+
+	border: 1px solid oklch(from var(--color) calc(l * 1.1) c h);
+	border-radius: var(--theme-border-radius);
+
+	&:not(:disabled):hover {
+		background-color: oklch(from var(--color) calc(l * 1.025) c h);
+	}
+}

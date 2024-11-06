@@ -1,0 +1,17 @@
+// Must be able to:
+// 1. Use WebGL canvas
+// 2. Share WebGL canvas & context
+
+export interface ViewportLayer<T = unknown, L = unknown> {
+	element: HTMLElement;
+	zIndex: number;
+	ready: boolean;
+
+	canInitWith(layer: unknown): layer is L;
+	/**
+	 * @param layer If needed, copy data from this
+	 */
+	init(layer?: L): void;
+	canRender(thing: unknown): thing is T;
+	render(things: T[]): void;
+}

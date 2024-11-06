@@ -1,0 +1,31 @@
+@import url("./theme/theme.css");
+@layer reset {
+	*, *::before, *::after {
+		box-sizing: border-box;
+		padding: 0;
+		margin: 0;
+	}
+	body {
+		min-height: 100dvh;
+	}
+	button, input {
+		font: inherit;
+		color: inherit;
+	}
+}
+@layer default {
+	body {
+		background-color: var(--theme-background-0);
+		color: var(--theme-foreground-0);
+		font-family: var(--theme-font);
+	}
+}
+@layer misc {
+	#app_root {
+		height: 100dvh;
+	}
+	.test {
+		padding: 25px;
+		height: 100%;
+	}
+}
