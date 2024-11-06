@@ -1,4 +1,4 @@
-import { ViewportLayer } from "../layer.ts";
+import { ViewportBounds, ViewportLayer } from "../layer.ts";
 
 type WebGLLayerData = {
 	canvas: HTMLCanvasElement;
@@ -20,6 +20,13 @@ function createWebGLLayerData(first: WebGLLayer): WebGLLayerData {
 		first,
 	};
 }
+type WebGLValueType = {
+	size: GLint;
+	type: GLenum;
+};
+const GL_FLOAT: WebGL2RenderingContext["FLOAT"] = 5126;
+const GL_INT: WebGL2RenderingContext["INT"] = 5124;
+
 export abstract class WebGLLayer<T = unknown> implements ViewportLayer<T, WebGLLayer<unknown>> {
 	ready: boolean;
 	data!: WebGLLayerData;
@@ -27,11 +34,17 @@ export abstract class WebGLLayer<T = unknown> implements ViewportLayer<T, WebGLL
 	element!: HTMLCanvasElement;
 	program!: WebGLProgram;
 
+	uniformLocationCache: Map<string, WebGLUniformLocation>;
+	attribLocationCache: Map<string, number>;
+
 	constructor(public zIndex: number, public shaderSource: {
 		vert: string;
 		frag: string;
 	}) {
 		this.ready = false;
+
+		this.uniformLocationCache = new Map<string, WebGLUniformLocation>();
+		this.attribLocationCache = new Map<string, GLint>();
 	}
 
 	canInitWith(layer: unknown): layer is WebGLLayer<unknown> {
@@ -53,6 +66,9 @@ export abstract class WebGLLayer<T = unknown> implements ViewportLayer<T, WebGLL
 		const program = this.createProgram(gl, vertShader, fragShader);
 
 		this.program = program;
+
+		this.uniformLocationCache.clear();
+		this.attribLocationCache.clear();
 
 		this.ready = true;
 	}
@@ -104,16 +120,87 @@ export abstract class WebGLLayer<T = unknown> implements ViewportLayer<T, WebGLL
 		return buffer;
 	}
 
-	draw() {
+	static readonly TYPES = {
+		float: { size: 1, type: GL_FLOAT },
+		vec2: { size: 2, type: GL_FLOAT },
+		vec3: { size: 3, type: GL_FLOAT },
+		vec4: { size: 4, type: GL_FLOAT },
+	} satisfies Record<string, WebGLValueType>;
+	protected setUniform(gl: WebGL2RenderingContext, type: WebGLValueType, name: string, ...values: number[]) {
+		const location = this.getUniformLocation(name);
+		
+		switch (type.type) {
+			case GL_FLOAT: {
+				switch (type.size) {
+					case 1: {
+						gl.uniform1f(location, values[0]);
+						break;
+					}
+					case 2: {
+						gl.uniform2f(location, values[0], values[1]);
+						break;
+					}
+					case 3: {
+						gl.uniform3f(location, values[0], values[1], values[2]);
+						break;
+					}
+					case 4: {
+						gl.uniform4f(location, values[0], values[1], values[2], values[3]);
+						break;
+					}
+				}
+				break;
+			}
+		}
+	}
+	protected setAttribute(gl: WebGL2RenderingContext, target: GLenum, name: string, type: WebGLValueType, buffer: WebGLBuffer) {
+		const location = this.getAttribLocation(name);
+
+		gl.bindBuffer(target, buffer);
+
+		gl.vertexAttribPointer(location, type.size, type.type, false, 0, 0);
+		gl.enableVertexAttribArray(location);
+	}
+	protected getUniformLocation(name: string): WebGLUniformLocation {
+		const cached = this.uniformLocationCache.get(name);
+		if (cached) return cached;
+
+		const location = this.gl.getUniformLocation(this.program, name);
+		if (!location) throw new Error(`Could not get uniform location for ${name}.`);
+		this.uniformLocationCache.set(name, location);
+
+		return location;
+	}
+	protected getAttribLocation(name: string): GLint {
+		const cached = this.attribLocationCache.get(name);
+		if (cached) return cached;
+
+		const location = this.gl.getAttribLocation(this.program, name);
+		this.attribLocationCache.set(name, location);
+
+		return location;
+	}
+
+	setup(viewport: ViewportBounds) {
 		const gl = this.gl;
 
 		if (this.data.first === this) {
+			const w = viewport.width;
+			const h = viewport.height;
+
+			const updateWidth = this.canvas.width !== w;
+			const updateHeight = this.canvas.height !== h;
+			if (updateWidth) this.canvas.width = w;
+			if (updateHeight) this.canvas.height = h;
+
+			if (updateWidth || updateHeight) gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+
 			gl.clearColor(0, 0, 0, 0);
 			gl.clear(gl.COLOR_BUFFER_BIT);
-		}		
+		}
 	}
 
-	abstract render(things: T[]): void;
+	abstract render(viewport: ViewportBounds, things: T[]): void;
 
 	abstract canRender(thing: unknown): thing is T;
 

@@ -1,9 +1,5 @@
-import { AreaSplit } from "./components/AreaSplit.tsx";
-import { Button } from "./components/Button.tsx";
 import { Viewport } from "./components/renderer/viewport.tsx";
 import { TestWebGLRenderer } from "./components/renderer/webgl/test.ts";
-import { dark } from "./theme/dark.ts";
-import { setTheme } from "./theme/theme.ts";
 
 // setTheme(dark);
 export function Test() {

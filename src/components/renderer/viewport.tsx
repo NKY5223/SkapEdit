@@ -19,7 +19,23 @@ export function Viewport({ renderers }: { renderers: ViewportLayer[] }) {
 			}
 		}, null);
 		viewport.append(...renderers.map(renderer => renderer.element));
-		renderers.forEach(renderer => renderer.render([]));
+
+		const cameraX = 0;
+		const cameraY = 0;
+		const cameraW = viewport.clientWidth;
+		const cameraH = viewport.clientHeight;
+		const scale = 10;
+
+		renderers.forEach(renderer => renderer.render(
+			{
+				x: cameraX,
+				y: cameraY, 
+				width: cameraW, 
+				height: cameraH, 
+				scale,
+			},
+			[]
+		));
 	}, []);
 	return (
 		<div className="viewport" ref={viewportRef}>

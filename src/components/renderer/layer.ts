@@ -2,6 +2,13 @@
 // 1. Use WebGL canvas
 // 2. Share WebGL canvas & context
 
+export type ViewportBounds = {
+	x: number;
+	y: number;
+	width: number;
+	height: number;
+	scale: number;
+}
 export interface ViewportLayer<T = unknown, L = unknown> {
 	element: HTMLElement;
 	zIndex: number;
@@ -13,5 +20,5 @@ export interface ViewportLayer<T = unknown, L = unknown> {
 	 */
 	init(layer?: L): void;
 	canRender(thing: unknown): thing is T;
-	render(things: T[]): void;
+	render(viewport: ViewportBounds, things: T[]): void;
 }
