@@ -21,11 +21,11 @@ function createWebGLLayerData(first: WebGLLayer): WebGLLayerData {
 	};
 }
 type WebGLValueType = {
-	size: GLint;
-	type: GLenum;
+	size: number;
+	type: WebGL2RenderingContext["BYTE" | "SHORT" | "UNSIGNED_BYTE" | "UNSIGNED_SHORT" | "FLOAT" | "INT"];
 };
-const GL_FLOAT: WebGL2RenderingContext["FLOAT"] = 5126;
-const GL_INT: WebGL2RenderingContext["INT"] = 5124;
+const GL_FLOAT = 5126;
+const GL_INT = 5124;
 
 export abstract class WebGLLayer<T = unknown> implements ViewportLayer<T, WebGLLayer<unknown>> {
 	ready: boolean;
@@ -33,7 +33,8 @@ export abstract class WebGLLayer<T = unknown> implements ViewportLayer<T, WebGLL
 
 	element!: HTMLCanvasElement;
 	program!: WebGLProgram;
-
+	
+	buffers: Map<string, WebGLBuffer>;
 	uniformLocationCache: Map<string, WebGLUniformLocation>;
 	attribLocationCache: Map<string, number>;
 
@@ -45,6 +46,8 @@ export abstract class WebGLLayer<T = unknown> implements ViewportLayer<T, WebGLL
 
 		this.uniformLocationCache = new Map<string, WebGLUniformLocation>();
 		this.attribLocationCache = new Map<string, GLint>();
+
+		this.buffers = new Map<string, WebGLBuffer>();
 	}
 
 	canInitWith(layer: unknown): layer is WebGLLayer<unknown> {
@@ -67,6 +70,7 @@ export abstract class WebGLLayer<T = unknown> implements ViewportLayer<T, WebGLL
 
 		this.program = program;
 
+		this.buffers.clear();
 		this.uniformLocationCache.clear();
 		this.attribLocationCache.clear();
 
@@ -110,16 +114,14 @@ export abstract class WebGLLayer<T = unknown> implements ViewportLayer<T, WebGLL
 		return program;
 	}
 
-	protected createBuffer(gl: WebGL2RenderingContext, target: GLenum, data: ArrayBuffer, usage: GLenum): WebGLBuffer {
-		const buffer = gl.createBuffer();
-		if (!buffer) throw new Error("Could not create buffer.");
+	protected setBuffer(gl: WebGL2RenderingContext, name: string, target: GLenum, data: ArrayBuffer, usage: GLenum): WebGLBuffer {
+		const buffer = this.getBuffer(gl, name);
 
 		gl.bindBuffer(target, buffer);
 		gl.bufferData(target, data, usage);
 
 		return buffer;
 	}
-
 	static readonly TYPES = {
 		float: { size: 1, type: GL_FLOAT },
 		vec2: { size: 2, type: GL_FLOAT },
@@ -151,6 +153,27 @@ export abstract class WebGLLayer<T = unknown> implements ViewportLayer<T, WebGLL
 				}
 				break;
 			}
+			case GL_INT: {
+				switch (type.size) {
+					case 1: {
+						gl.uniform1i(location, values[0]);
+						break;
+					}
+					case 2: {
+						gl.uniform2i(location, values[0], values[1]);
+						break;
+					}
+					case 3: {
+						gl.uniform3i(location, values[0], values[1], values[2]);
+						break;
+					}
+					case 4: {
+						gl.uniform4i(location, values[0], values[1], values[2], values[3]);
+						break;
+					}
+				}
+				break;
+			}
 		}
 	}
 	protected setAttribute(gl: WebGL2RenderingContext, target: GLenum, name: string, type: WebGLValueType, buffer: WebGLBuffer) {
@@ -160,6 +183,18 @@ export abstract class WebGLLayer<T = unknown> implements ViewportLayer<T, WebGLL
 
 		gl.vertexAttribPointer(location, type.size, type.type, false, 0, 0);
 		gl.enableVertexAttribArray(location);
+	}
+
+	protected getBuffer(gl: WebGL2RenderingContext, name: string): WebGLBuffer {
+		const existing = this.buffers.get(name);
+		if (existing) return existing;
+
+		const buffer = gl.createBuffer();
+		if (!buffer) throw new Error("Could not create buffer.");
+
+		this.buffers.set(name, buffer);
+
+		return buffer;
 	}
 	protected getUniformLocation(name: string): WebGLUniformLocation {
 		const cached = this.uniformLocationCache.get(name);

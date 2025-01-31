@@ -1,4 +1,4 @@
-import { Viewport } from "./components/renderer/viewport.tsx";
+import { Viewport } from "./components/renderer/Viewport.tsx";
 import { TestWebGLRenderer } from "./components/renderer/webgl/test.ts";
 
 // setTheme(dark);
@@ -19,7 +19,6 @@ export function Test() {
 				<Button disabled type="deny">deny</Button></div>
 		</AreaSplit> */}
 		<Viewport renderers={[
-			new TestWebGLRenderer(10), 
 			new TestWebGLRenderer(10)
 		]} />
 	</div>;
