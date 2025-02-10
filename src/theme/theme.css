@@ -1,34 +1,32 @@
 :root {
 	/* default theme */
 	--theme-background-0: #202224;
-	--theme-background-1: oklch(from var(--theme-background-0) calc(l * 1.25) c h);
-	--theme-background-2: oklch(from var(--theme-background-0) calc(l * 1.5) c h);
-	--theme-background-3: oklch(from var(--theme-background-0) calc(l * 2) c h);
+	--theme-background-1: oklch(from var(--theme-background-0) calc(l * 0.75) calc(c * 2) h);
 
 	--theme-foreground-0: #ffffff;
+	--theme-foreground-1: #ffffff;
 	
-	--theme-primary-0: #2080ff;
-	--theme-primary-1: oklch(from var(--theme-primary-0) calc(l * 1.1) c h);
-	--theme-primary-2: oklch(from var(--theme-primary-0) calc(l * 1.15) c h);
-	--theme-primary-3: oklch(from var(--theme-primary-0) calc(l * 1.2) c h);
+	--theme-primary-bg-0: #2080ff;
+	--theme-primary-bg-1: oklch(from var(--theme-primary-bg-0) calc(l * 0.5) c h);
+	--theme-primary-fg-0: oklch(from var(--theme-primary-bg-0) calc(1 - (1 - l) * 0.05) calc(c * 0.25) h);
+	--theme-primary-fg-1: oklch(from var(--theme-primary-bg-0) calc(1 - (1 - l) * 0.05) calc(c * 0.5) h);
 
-	--theme-secondary-0: #8020e0;
-	--theme-secondary-1: oklch(from var(--theme-secondary-0) calc(l * 1.1) c h);
-	--theme-secondary-2: oklch(from var(--theme-secondary-0) calc(l * 1.15) c h);
-	--theme-secondary-3: oklch(from var(--theme-secondary-0) calc(l * 1.2) c h);
+	--theme-secondary-bg-0: #8020e0;
+	--theme-secondary-bg-1: oklch(from var(--theme-secondary-bg-0) calc(l * 1.25) c h);
+	--theme-secondary-fg-0: oklch(from var(--theme-secondary-bg-0) calc(1 - (1 - l) * 0.01) calc(c * 0.05) h);
+	--theme-secondary-fg-1: oklch(from var(--theme-secondary-fg-0) calc(l * 1.25) c h);
 	
-	--theme-disabled: #606060;
+	--theme-disabled-bg: #404040;
+	--theme-disabled-fg: #ffffff;
 
 	--theme-yes: #2ab52a;
 	--theme-no: #d21616;
 
-	--theme-seperator-0: #404040;
-	--theme-seperator-1: oklch(from var(--theme-seperator-0) calc(l * 1.25) c h);
-	--theme-seperator-2: oklch(from var(--theme-seperator-0) calc(l * 1.5) c h);
-	--theme-seperator-3: oklch(from var(--theme-seperator-0) calc(l * 2) c h);
+	--theme-border-0: #404040;
+	--theme-border-1: oklch(from var(--theme-seperator-0) calc(l * 1.5) c h);
 
 	--theme-font: system-ui, sans-serif;
 
-	--theme-border-width: 2px;
+	--theme-border-width: 1px;
 	--theme-border-radius: .25rem;
 }

@@ -1,7 +1,4 @@
-// Must be able to:
-// 1. Use WebGL canvas
-// 2. Share WebGL canvas & context
-
+/** Should really be all info about the viewport */
 export type ViewportBounds = {
 	x: number;
 	y: number;

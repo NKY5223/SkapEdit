@@ -4,9 +4,9 @@
 	cursor: pointer;
 	display: block;
 
-	--color: var(--theme-primary-0);
-	&.primary { --color: var(--theme-primary-0); }
-	&.secondary { --color: var(--theme-secondary-0); }
+	--color: var(--theme-primary-bg-0);
+	&.primary { --color: var(--theme-primary-bg-0); }
+	&.secondary { --color: var(--theme-secondary-bg-0); }
 	&.confirm { --color: var(--theme-yes); }
 	&.deny { --color: var(--theme-no); }
 	&:disabled {

@@ -1,0 +1,18 @@
+.input {
+	display: block;
+	padding: 0.5em 1em;
+
+	font-size: 1em;
+	background: none;
+	border: var(--theme-border-0) solid var(--theme-border-width);
+	border-radius: var(--theme-border-radius);
+
+	&::-webkit-inner-spin-button {
+		appearance: none;
+	}
+
+	&:focus {
+		outline: none;
+		border-color: var(--theme-primary-bg-0);
+	}
+}

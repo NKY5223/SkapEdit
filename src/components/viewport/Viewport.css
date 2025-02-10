@@ -5,10 +5,11 @@
 	& > .renderers {
 		position: absolute;
 		inset: 0;
+		z-index: -1;
 	}
 	& > .buttons {
 		position: absolute;
-		inset: 0;
+		inset: 1em;
 		top: auto;
 		
 		display: flex;

@@ -63,7 +63,7 @@ export class TestWebGLRenderer extends WebGLLayer<TestRenderable> {
 
 		const pos = things.flatMap(bounds => quad(bounds));
 
-		const posBuffer = this.setBuffer(gl, "aPosition", gl.ARRAY_BUFFER, new Float32Array(pos), gl.DYNAMIC_DRAW);
+		const posBuffer = this.setBuffer(gl, "aPosition", gl.ARRAY_BUFFER, new Float32Array(pos).buffer, gl.DYNAMIC_DRAW);
 		this.setAttribute(gl, gl.ARRAY_BUFFER, "aPosition", WebGLLayer.TYPES.vec2, posBuffer);
 
 		gl.drawArrays(gl.TRIANGLES, 0, things.length * 6);
