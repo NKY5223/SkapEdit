@@ -2,13 +2,15 @@ import { FC } from "react";
 import { Button } from "./components/form/Button.tsx";
 import { Icon, IconProvider } from "./components/icon/Icon.tsx";
 
-import templateSVG from "./components/icon/icon/template.svg?raw";
 import { Inspector } from "./components/inspector/Inspector.tsx";
 import { Layout } from "./components/layout/Layout.tsx";
 import { ThemeProvider } from "./theme/theme.tsx";
 
+import templateSVG from "./components/icon/icon/template.svg?raw";
+import testSVG from "./components/icon/icon/test.svg?raw";
 const icons = {
 	template: templateSVG,
+	test: testSVG,
 };
 export function Test() {
 	return (
@@ -21,7 +23,7 @@ export function Test() {
 						gap: "20px",
 						padding: "20px",
 					}}>
-						<IconTest icon="template" />
+						<IconTest icon="test" />
 						<div><Button icon="template">test</Button></div>
 					</div>
 					<div style={{
@@ -50,7 +52,7 @@ const IconTest: FC<IconTestProps> = ({ icon }) => {
 			flexDirection: "column",
 			gap: "20px",
 		}}>
-			{[24, 48, 60, 240].map((size, i) => (
+			{[24, 48, 60, 240].map(size => (
 				<Icon
 					key={size}
 					icon={icon}
@@ -58,7 +60,7 @@ const IconTest: FC<IconTestProps> = ({ icon }) => {
 					height={size}
 					style={{
 						"--color": "#fff",
-						"--width": (24 / size) + "px",
+						"--stroke-width": (24 / size) + "px",
 					}} />
 			))}
 		</div>

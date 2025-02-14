@@ -1,5 +1,5 @@
 import { Key, ReactNode } from "react";
-import { PathData, parsePath, pathToString } from "./PathData.ts";
+import { PathData, parsePath, pathToString } from "./pathParser.ts";
 
 export const parser = new DOMParser();
 
@@ -9,35 +9,32 @@ export function parseSVG(str: string) {
 	return parser.parseFromString(str, "application/xml").documentElement;
 }
 
-type CommonAttrs = {
-	transform?: string;
-	fill?: string;
-	stroke?: string;
-	strokeWidth?: number;
-	strokeOpacity?: number;
-};
+type CommonAttrName = (typeof commonAttrNames)[number];
+type CommonAttrs = Partial<Record<CommonAttrName, string>>;
 
+type C = { common?: CommonAttrs; };
 type ParsedSVG = {
 	type: "svg";
-	width: number;
-	height: number;
+	width: string;
+	height: string;
+	viewBox: string;
 	children: ParsedSVGEl[];
-} & CommonAttrs;
+} & C;
 
 type ParsedGroup = {
 	type: "g";
 	children: ParsedSVGEl[];
-} & CommonAttrs;
+} & C;
 
 type ParsedPath = {
 	type: "path";
 	d: PathData[];
-} & CommonAttrs;
+} & C;
 
 type ParsedError = {
 	type: "error";
 	message: string;
-} & CommonAttrs;
+} & C;
 
 type ParsedSVGEl = (
 	| ParsedSVG
@@ -47,7 +44,8 @@ type ParsedSVGEl = (
 );
 
 const commonAttrNames = ["transform", "fill", "stroke", "strokeWidth", "strokeOpacity"] as const;
-const commonToSvg: Partial<Record<keyof CommonAttrs, string>> = {
+
+const commonToSvg: Partial<Record<CommonAttrName, string>> = {
 	strokeWidth: "stroke-width",
 	strokeOpacity: "stroke-opacity",
 };
@@ -60,7 +58,13 @@ function getCommonAttrs(el: Element): CommonAttrs {
 	);
 }
 function setCommonAttrs<T extends ParsedSVGEl>(el: Element, attrs: T): T {
-	return Object.assign(attrs, getCommonAttrs(el));
+	return Object.assign(attrs, { 
+		common: getCommonAttrs(el) 
+	});
+}
+function stripEnd(str: string, target: string) {
+	if (str.endsWith(target)) return str.slice(0, -target.length);
+	return str;
 }
 export function parseSVGElement(el: Element): ParsedSVGEl {
 	if (el.querySelector("parsererror")) {
@@ -71,13 +75,15 @@ export function parseSVGElement(el: Element): ParsedSVGEl {
 	}
 	switch (el.tagName.toLowerCase()) {
 		case "svg": {
-			const width = ifNaN(Number(el.getAttribute("width")), 24);
-			const height = ifNaN(Number(el.getAttribute("height")), 24);
+			const width = stripEnd(el.getAttribute("width") ?? "24", "px");
+			const height = stripEnd(el.getAttribute("height") ?? "24", "px");
+			const viewBox = el.getAttribute("viewBox") ?? `0 0 ${width} ${height}`;
 
 			const children = [...el.children].map(el => parseSVGElement(el));
 			return setCommonAttrs(el, {
 				type: "svg",
 				width, height,
+				viewBox,
 				children,
 			});
 		}
@@ -103,32 +109,26 @@ export function parseSVGElement(el: Element): ParsedSVGEl {
 		}
 	}
 }
+// i couldn't think of a better name
 export function reactize(el: ParsedSVGEl, attrs: Record<string, string> = {}, key?: Key): ReactNode {
-	const commonAttrs: CommonAttrs = Object.fromEntries(
-		Object.entries(el)
-			.filter(([attr]) =>
-				// stupid filter typecast because you have to for some stupid reason
-				(commonAttrNames as unknown as readonly string[]).includes(attr)
-			)
-	);
 	switch (el.type) {
 		case "svg": {
 			return (
-				<svg key={key} {...commonAttrs} viewBox={`0 0 ${el.width} ${el.height}`} {...attrs}>
+				<svg key={key} {...el.common} width={el.width} height={el.height} viewBox={el.viewBox} {...attrs}>
 					{el.children.map((child, i) => reactize(child, {}, i))}
 				</svg>
 			);
 		}
 		case "g": {
 			return (
-				<g key={key} {...commonAttrs} {...attrs}>
+				<g key={key} {...el.common} {...attrs}>
 					{el.children.map((child, i) => reactize(child, {}, i))}
 				</g>
 			);
 		}
 		case "path": {
 			return (
-				<path key={key} {...commonAttrs} d={pathToString(el.d)}{...attrs} />
+				<path key={key} {...el.common} d={pathToString(el.d)}{...attrs} />
 			);
 		}
 		default: {

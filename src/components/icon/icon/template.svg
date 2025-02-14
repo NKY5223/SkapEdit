@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-	<g fill="none" stroke="var(--color)" stroke-width="var(--width)">
+	<g fill="none" stroke="var(--color)" stroke-width="var(--stroke-width)">
 		<!-- even horizontal -->
 		<path stroke-opacity=".25" d="
 			M 2  2 h 20

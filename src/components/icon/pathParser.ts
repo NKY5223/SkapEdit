@@ -17,11 +17,7 @@ type PathDataFor<T extends NormalizedCommand> = T extends T ? {
 export type PathData = PathDataFor<NormalizedCommand>;
 
 // magic regex
-// \, comma
-// \s+ any amount of whitespace
-// (?<=[a-zA-Z])(?=[\d\-\.]) command followed by number
-// (?<=\d\.)(?=[a-zA-Z\-]) number followed by command
-const pathSplitter = /\,|\s+|(?<=[a-zA-Z])(?=[\d\-\.])|(?<=\d\.?)(?=[a-zA-Z\-])|(?<=\.\d*)(?=\.)/g;
+const pathSplitter = /\,|\s+|(?<=[a-zA-Z])(?=[\d+\-\.a-zA-Z])|(?<=\d\.?)(?=[a-zA-Z+\-])|(?<=\.\d*)(?=\.)/g;
 const svgCommands = [..."MLHVCSQTAZ"];
 const isCommand = (s: string): s is Command => svgCommands.includes(s);
 function arrayInterval<T>(arr: T[], interval: number, initial: number = interval): { initial: T[]; rest: T[][]; } {
@@ -90,25 +86,22 @@ const normalisers: Record<Command, (state: State, chunk: Chunk) => State> = {
 	},
 	H: (state, chunk) => {
 		const { initial: [x], rest } = arrayInterval(chunk.args, 1);
-		addLine(state, chunk, x, 0);
+		addHorizontalLine(state, chunk, x);
 		state = rest.reduce<State>((state, [x]) => (
-			addLine(state, chunk, x, 0)
+			addHorizontalLine(state, chunk, x)
 		), state);
-		state.control = null;
 		return state;
 	},
 	V: (state, chunk) => {
 		const { initial: [y], rest } = arrayInterval(chunk.args, 1);
-		addLine(state, chunk, 0, y);
+		addVerticalLine(state, chunk, y);
 		state = rest.reduce<State>((state, [y]) => (
-			addLine(state, chunk, 0, y)
+			addVerticalLine(state, chunk, y)
 		), state);
-		state.control = null;
 		return state;
 	},
 	C: (state, chunk) => {
 		const { initial: [c0x, c0y, c1x, c1y, x, y], rest } = arrayInterval(chunk.args, 6);
-		console.log(chunk);
 		addCubic(state, chunk, c0x, c0y, c1x, c1y, x, y);
 		state = rest.reduce<State>((state, [c0x, c0y, c1x, c1y, x, y]) => (
 			addCubic(state, chunk, c0x, c0y, c1x, c1y, x, y)
@@ -156,6 +149,28 @@ const normalisers: Record<Command, (state: State, chunk: Chunk) => State> = {
 		return state;
 	},
 };
+function addHorizontalLine(state: State, chunk: Chunk, x: number) {
+	const pos = offset(state.position, [x, chunk.relative ? 0 : state.position[1]], chunk.relative);
+	state.pathData.push({
+		command: "L",
+		args: pos,
+	});
+	state.control = null;
+	state.position = pos;
+
+	return state;
+}
+function addVerticalLine(state: State, chunk: Chunk, y: number) {
+	const pos = offset(state.position, [chunk.relative ? 0 : state.position[0], y], chunk.relative);
+	state.pathData.push({
+		command: "L",
+		args: pos,
+	});
+	state.control = null;
+	state.position = pos;
+
+	return state;
+}
 function addLine(state: State, chunk: Chunk, x: number, y: number) {
 	const pos = offset(state.position, [x, y], chunk.relative);
 	state.pathData.push({
@@ -206,7 +221,7 @@ function addArc(state: State, chunk: Chunk, rx: number, ry: number, rotation: nu
 const boolNum = (x: number): 0 | 1 => x ? 1 : 0;
 
 export function parsePath(d: string) {
-	const data = d
+	const chunks = d
 		.split(pathSplitter)
 		.filter(s => s.trim())
 		.reduce<Chunk[]>((chunks, str) => {
@@ -222,13 +237,13 @@ export function parsePath(d: string) {
 				chunks.at(-1)?.args?.push?.(Number(str));
 			}
 			return chunks;
-		}, [])
+		}, []);
+	const data = chunks
 		.reduce<State>((state, chunk) => normalisers[chunk.command](state, chunk), {
 			position: [0, 0],
 			control: null,
 			pathData: [],
 		}).pathData;
-
 	return data;
 }
 
