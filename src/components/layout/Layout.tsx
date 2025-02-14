@@ -1,7 +1,6 @@
-import { ReactNode, useState } from "react";
+import { FC, ReactNode, useState } from "react";
 import css from "./Layout.module.css";
-import { Button } from "../form/Button.tsx";
-import { Inspector } from "../inspector/Inspector.tsx";
+
 
 /* 
 Goal:
@@ -23,13 +22,18 @@ data
 |-----------> ??? (some other field in data)
 */
 
+type LayoutProps = {
+	children: [ReactNode, ReactNode]
+};
+
 // almost top-level component
-export function Layout() {
+export const Layout: FC<LayoutProps> = ({
+	children
+}) => {
 	return (
 		<div className={css.layout}>
 			<ViewSplit axis="y" ratio={.6}>
-				<div><Button>test</Button></div>
-				<Inspector></Inspector>
+				{children}
 			</ViewSplit>
 		</div>
 	);
@@ -59,14 +63,14 @@ export function ViewSplit({
 			style={{ "--ratio": `${ratio * 100}%` }}
 			onPointerMove={handleMove}
 		>
-			{child0}
+			<div className={css.view}>{child0}</div>
 			<div className={`${css.handle} ${resizing ? css.resizing : ""}`} 
 				onPointerDown={e => (e.preventDefault(), setResizing(true))} 
 				onPointerUp={() => setResizing(false)}>
 				<div className={css.interaction}></div>
 				<div className={css.visual}></div>
 			</div>
-			{child1}
+			<div className={css.view}>{child1}</div>
 		</div>
 	);
 }

@@ -1,51 +1,67 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-	<path fill="none" stroke-width="var(--test)" d="
-		M	0 0
-		L	24 0
-		M	0 4
-		L	24 4
-		M	0 8
-		L	24 8
-		M	0 12
-		L	24 12
-		M	0 16
-		L	24 16
-		M	0 20
-		L	24 20
-		M	0 24
-		L	24 24
+	<g fill="none" stroke="var(--color)" stroke-width="var(--width)">
+		<!-- even horizontal -->
+		<path stroke-opacity=".25" d="
+			M 2  2 h 20
+			M 2  4 h 20
+			M 2  6 h 20
+			M 2  8 h 20
+			M 2 10 h 20
+			M 2 12 h 20
+			M 2 14 h 20
+			M 2 16 h 20
+			M 2 18 h 20
+			M 2 20 h 20
+			M 2 22 h 20
+		"></path>
+		<!-- odd horizontal -->
+		<path stroke-opacity=".125" d="
+			M 2  3 h 20
+			M 2  5 h 20
+			M 2  7 h 20
+			M 2  9 h 20
+			M 2 11 h 20
+			M 2 13 h 20
+			M 2 15 h 20
+			M 2 17 h 20
+			M 2 19 h 20
+			M 2 21 h 20
+		"></path>
+		<!-- even vertical -->
+		<path stroke-opacity=".25" d="
+			M  2 2 v 20
+			M  4 2 v 20
+			M  6 2 v 20
+			M  8 2 v 20
+			M 10 2 v 20
+			M 12 2 v 20
+			M 14 2 v 20
+			M 16 2 v 20
+			M 18 2 v 20
+			M 20 2 v 20
+			M 22 2 v 20
+		"></path>
+		<!-- odd vertical -->
+		<path stroke-opacity=".125" d="
+			M  3 2 v 20
+			M  5 2 v 20
+			M  7 2 v 20
+			M  9 2 v 20
+			M 11 2 v 20
+			M 13 2 v 20
+			M 15 2 v 20
+			M 17 2 v 20
+			M 19 2 v 20
+			M 21 2 v 20
+		"></path>
 
-		M	0 0
-		L	0 24
-		M	4 0
-		L	4 24
-		M	8 0
-		L	8 24
-		M	12 0
-		L	12 24
-		M	16 0
-		L	16 24
-		M	20 0
-		L	20 24
-		M	24 0
-		L	24 24
-		
-		M	0 2
-		L	24 2
-		M	0 22
-		L	24 22
-		M	2 0
-		L	2 24
-		M	22 0
-		L	22 24
-
-		M	0 0
-		L	24 24
-		M	24 0
-		L	0 24
-
-		M	12 2
-		A	10 10 0 0 0 12 22
-			10 10 0 0 0 12 2
-	"></path>
+		<!-- bounds -->
+		<path stroke-opacity=".5" d="
+			M 0 0
+			24 0
+			24 24
+			0 24
+			0 0
+		"></path>
+	</g>
 </svg>

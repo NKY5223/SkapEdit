@@ -1,13 +1,15 @@
-import { useState } from "react"
+import { FC, useState } from "react"
 import { NumberInput } from "../form/Input.tsx";
 
-export function Inspector() {
+type InspectorArgs = {};
+
+export const Inspector: FC<InspectorArgs> = () => {
 	const [test, setTest] = useState(0);
 	return <div>
-		<NumberInput value={test} onInput={n => {
+		<NumberInput value={test} onChange={n => {
 			setTest(n);
 		}} />
-		<NumberInput value={test * 2} onInput={n => {
+		<NumberInput value={test * 2} onChange={n => {
 			setTest(n / 2);
 		}} />
 	</div>
