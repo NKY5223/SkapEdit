@@ -61,6 +61,7 @@ const IconTest: FC<IconTestProps> = ({ icon }) => {
 					style={{
 						"--color": "#fff",
 						"--stroke-width": (24 / size) + "px",
+						"--template-opacity": size >= 180 ? "1" : "0"
 					}} />
 			))}
 		</div>

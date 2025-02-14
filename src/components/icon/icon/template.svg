@@ -56,7 +56,7 @@
 		"></path>
 
 		<!-- bounds -->
-		<path stroke-opacity=".5" d="
+		<path id="bounds" stroke-opacity=".5" d="
 			M 0 0
 			24 0
 			24 24

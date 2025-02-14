@@ -1,9 +1,9 @@
 import { createContext, useContext, useId } from "react";
 import "./icon.css";
-import { parser, parseSVG, parseSVGElement, reactize } from "./svgParser.tsx";
+import { parseSVG, parseSVGElement, reactize } from "./svgParser.tsx";
 
 
-type IconsContextType = {
+export type IconsContextType = {
 	id: string;
 	viewBox: string;
 };
@@ -14,12 +14,13 @@ export const useIcons = () => useContext(IconsContext);
 type IconTemplateProps = {
 	id: string;
 	tree: ReturnType<typeof parseSVGElement>;
+	ids: Map<string, IconsContextType>
 };
 
 export function IconTemplate({
-	id, tree,
+	id, tree, ids
 }: IconTemplateProps) {
-	const node = reactize(tree, { id }, id);
+	const node = reactize(tree, id, ids, { id }, id);
 	return node;
 }
 
@@ -34,14 +35,14 @@ export function IconProvider({
 }: React.PropsWithChildren<IconProviderProps>) {
 	const id = useId();
 	const prevContext = useIcons();
-	const data = Object.entries(icons).map(([name, svg]) =>{
+	const data = Object.entries(icons).map(([name, svg]) => {
 		const svgDoc = parseSVG(svg);
 		const tree = parseSVGElement(svgDoc);
-		const width = "width" in tree ? tree.width : "24"; 
-		const height = "height" in tree ? tree.height : "24"; 
+		const width = "width" in tree ? tree.width : "24";
+		const height = "height" in tree ? tree.height : "24";
 		const nodeId = `${id}-${name}`;
-		return { 
-			node: (<IconTemplate key={name} id={nodeId} tree={tree} />),
+		return {
+			tree,
 			width, height,
 			name, id: nodeId,
 		};
@@ -49,15 +50,20 @@ export function IconProvider({
 	const ids: Map<string, IconsContextType> = new Map([...data.map<[string, IconsContextType]>
 		(({ width, height, name, id }) => [
 			name,
-			{ 
-				id, 
-				viewBox: `0 0 ${width} ${height}` 
+			{
+				id,
+				viewBox: `0 0 ${width} ${height}`
 			}
-		]), ...(extend ? prevContext.entries() : [])]);
+		]), ...(extend ? prevContext.entries() : [])
+	]);
+	const nodes = data.map(({ name, id, tree }) =>
+		(<IconTemplate key={name} id={id} ids={ids} tree={tree} />)
+	);
+
 	return (
 		<IconsContext.Provider value={ids}>
 			<div className="iconDefs">
-				{data.map(({ node }) => node)}
+				{nodes}
 			</div>
 			{children}
 		</IconsContext.Provider>
