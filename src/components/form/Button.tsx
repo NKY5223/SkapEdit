@@ -1,20 +1,30 @@
+import { Icon, IconName } from "../icon/Icon.tsx";
 import css from "./Button.module.css";
 
 export type ButtonType = "primary" | "secondary" | "confirm" | "deny";
 
 type ButtonProps = {
 	type?: ButtonType;
-	icon?: string;
+	icon?: IconName;
 	disabled?: boolean;
 	onClick?: React.MouseEventHandler<HTMLButtonElement>;
 };
 
-export function Button({ 
-	type, icon, disabled, children, 
-	onClick 
+export function Button({
+	type, icon, disabled, children,
+	onClick
 }: React.PropsWithChildren<ButtonProps>) {
 	const className = [css.button, type && css[type], icon && css.icon].filter(x => !!x).join(" ");
 	return <button className={className} disabled={disabled} onClick={onClick}>
-		{children}
+		{icon && (<div className={css.icon}>
+			<Icon
+				icon={icon}
+				width="1.5em"
+				height="1.5em"
+			/>
+		</div>)}
+		<div className={css.content}>
+			{children}
+		</div>
 	</button>;
 }

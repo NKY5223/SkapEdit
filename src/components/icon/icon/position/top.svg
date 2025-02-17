@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24">
+	<use href="@template" opacity="var(--icon-template-opacity, 1)" />
+	<g fill="var(--icon-color)">
+		<path d="
+			M 6 13
+			h 12
+			a 2 2 0 0 1 2 2
+			v 5
+			a 2 2 0 0 1 -2 2
+			h -12
+			a 2 2 0 0 1 -2 -2
+			v -5
+			a 2 2 0 0 1 2 -2
+			z
+			m 0 2
+			v 5
+			h 12
+			v -5
+			h -12
+		" />
+		<path d="
+			M 11 5
+			h 2
+			v 6
+			h -2
+			v -6
+			z
+
+			M 4 2
+			h 16
+			v 2
+			h -16
+			v -2
+			z
+		"/>
+		<path transform="translate(12 13) rotate(-45)" d="
+			M 0 0
+			h 6
+			v -2
+			h -4
+			v -4
+			h -2
+			v 6
+			z
+		"/>
+	</g>
+</svg>

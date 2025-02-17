@@ -13,3 +13,21 @@ function indices(lengths: number[], startLSD: boolean = false): number[][] {
 export function range(end: number, start: number = 0, step: number = 1): number[] {
 	return Array.from({ length: Math.floor((end - start) / step) }, (_, i) => i * step + start);
 }
+
+export function unique<T>(arr: T[], equal: (a: T, b: T) => boolean) {
+	const res: T[] = [];
+	for (let a of arr) {
+		if (!res.some(b => equal(a, b))) {
+			res.push(a);
+		}
+	}
+	return res;
+}
+export function reverseMap<K, V>(map: Iterable<[K, V]>): Map<V, K[]> {
+	const res = new Map<V, K[]>();
+	for (const [key, value] of map) {
+		if (!res.get(value)?.push?.(key))
+			res.set(value, [key]);
+	}
+	return res;
+}

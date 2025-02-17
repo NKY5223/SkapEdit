@@ -1,9 +1,10 @@
-import { PropsWithChildren, useState } from "react";
+import React, { useId, useState } from "react";
 import css from "./Input.module.css";
 
 
 type NumberInputProps = {
-	icon?: string;
+	name?: string;
+	label?: React.JSX.Element;
 	disabled?: boolean;
 	value: number;
 	/** Fires whenever the value is edited (Any key) */
@@ -13,34 +14,42 @@ type NumberInputProps = {
 };
 
 export function NumberInput({
-	icon, disabled, value,
+	name, label, disabled, 
+	value,
 	onInput, onChange,
 }: NumberInputProps) {
+	const id = useId();
+
 	const [internal, setInternal] = useState(String(value));
 	const [editing, setEditing] = useState(false);
 
-	const className = [css.input, css.number, icon && css.icon].filter(x => !!x).join(" ");
+
+	const className = [css.input, css.number].filter(x => !!x).join(" ");
 	return (
-		<input type="number" className={className}
-			value={editing ? internal : value} disabled={disabled}
-			onChange={e => {
-				const newValue = e.currentTarget.value;
-				setInternal(newValue);
-				if (onInput) onInput(+newValue);
-			}}
-			onFocus={e => {
-				setEditing(true);
-				setInternal(String(value));
-			}}
-			onBlur={e => {
-				setEditing(false);
-				setInternal(String(value));
-				if (onChange) onChange(+internal);
-			}}
-			onKeyDown={e => {
-				if (e.code !== "Enter") return;
-				if (onChange) onChange(+internal);
-			}}
-		/>
+		<label className={css.label} htmlFor={id}>
+			{label && (<div className={css["label-content"]}>{label}</div>)}
+			<input id={id} type="number" className={className}
+				value={editing ? internal : value} disabled={disabled}
+				name={name}
+				onChange={e => {
+					const newValue = e.currentTarget.value;
+					setInternal(newValue);
+					if (onInput) onInput(+newValue);
+				}}
+				onFocus={e => {
+					setEditing(true);
+					setInternal(String(value));
+				}}
+				onBlur={e => {
+					setEditing(false);
+					setInternal(String(value));
+					if (onChange) onChange(+internal);
+				}}
+				onKeyDown={e => {
+					if (e.code !== "Enter") return;
+					if (onChange) onChange(+internal);
+				}}
+			/>
+		</label>
 	);
 }

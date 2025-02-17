@@ -1,29 +1,60 @@
 .button {
-	font-size: 1em;
 	padding: 0.5em 1em;
-	cursor: pointer;
-	display: block;
 
-	--color: var(--theme-primary-bg-0);
-	&.primary { --color: var(--theme-primary-bg-0); }
-	&.secondary { --color: var(--theme-secondary-bg-0); }
-	&.confirm { --color: var(--theme-yes); }
-	&.deny { --color: var(--theme-no); }
+	min-height: 1.5em;
+	width: fit-content;
+	cursor: pointer;
+
+	display: grid;
+	grid-template-areas: "content";
+	gap: .5em;
+	place-items: center;
+
+	--button-bg: var(--theme-primary-bg-0);
+	--button-fg: var(--theme-primary-fg-0);
+	&.primary {
+		--button-bg: var(--theme-primary-bg-0);
+		--button-fg: var(--theme-primary-fg-0);
+	}
+	&.secondary {
+		--button-bg: var(--theme-secondary-bg-0);
+		--button-fg: var(--theme-secondary-fg-0);
+	}
+	&.confirm {
+		--button-bg: var(--theme-positive-bg);
+		--button-fg: var(--theme-positive-fg);
+	}
+	&.deny {
+		--button-bg: var(--theme-negative-bg);
+		--button-fg: var(--theme-negative-fg);
+	}
 	&:disabled {
-		--color: var(--theme-disabled);
+		--button-bg: var(--theme-disabled);
 		cursor: not-allowed;
 	}
 	&:empty::before {
 		content: "\200c";
 	}
 	
-	background-color: var(--color);
-	color: var(--theme-foreground);
+	background-color: var(--button-bg);
+	color: var(--button-fg);
 
-	border: 1px solid oklch(from var(--color) calc(l * 1.1) c h);
+	border: 1px solid oklch(from var(--button-bg) calc(l * 1.1) c h);
 	border-radius: var(--theme-border-radius);
 
 	&:not(:disabled):hover {
-		background-color: oklch(from var(--color) calc(l * 1.025) c h);
+		background-color: oklch(from var(--button-bg) calc(l * 1.025) c h);
+	}
+
+	&:has(> .icon) {
+		padding-left: .5em;
+		grid-template-areas: "icon content";
+	}
+	& > .icon {
+		grid-area: icon;
+		display: grid;
+	}
+	& > .content {
+		grid-area: content;
 	}
 }

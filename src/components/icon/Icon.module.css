@@ -1,0 +1,7 @@
+.defs {
+	display: none;
+}
+.title {
+	/* I *don't know* why setting display:grid on the wrapper element fixes it going to 24x28 */
+	display: grid;
+}

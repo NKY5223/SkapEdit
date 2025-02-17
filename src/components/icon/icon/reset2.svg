@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24">
+	<use href="@template" opacity="var(--icon-template-opacity)" />
+	<defs>
+		<path id="arrow" d="
+			M 0 0
+			h 6
+			v -2
+			h -4
+			v -4
+			h -2
+			v 6
+			z
+		" />
+	</defs>
+	<g fill="var(--icon-color)">
+		<path d="
+			M 22 12
+			A 10 10 0 1 1 21.210609940028853 8.105816576913494
+			L 19.36848795202308 8.884653261530795
+			A 8 8 0 1 0 20 12
+			z
+		" />
+		<use href="#arrow" transform="translate(22 9.5) rotate(270)" />
+	</g>
+</svg>

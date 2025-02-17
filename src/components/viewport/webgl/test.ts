@@ -2,13 +2,7 @@ import { WebGLLayer } from "./webgl.ts";
 import vert from "./shader/obstacle.vert?raw";
 import frag from "./shader/obstacle.frag?raw";
 import { ViewportBounds } from "../layer.ts";
-
-export type Bounds = {
-	left: number;
-	top: number;
-	right: number;
-	bottom: number;
-};
+import { Bounds } from "../../editor/editor.ts";
 
 type TestRenderable = Bounds;
 

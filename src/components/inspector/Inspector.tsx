@@ -1,16 +1,51 @@
-import { FC, useState } from "react"
+import { FC } from "react"
 import { NumberInput } from "../form/Input.tsx";
+import { Button } from "../form/Button.tsx";
+import { useBounds } from "../editor/editor.ts";
+import { Icon } from "../icon/Icon.tsx";
 
 type InspectorArgs = {};
 
 export const Inspector: FC<InspectorArgs> = () => {
-	const [test, setTest] = useState(0);
-	return <div>
-		<NumberInput value={test} onChange={n => {
-			setTest(n);
-		}} />
-		<NumberInput value={test * 2} onChange={n => {
-			setTest(n / 2);
-		}} />
-	</div>
+	const [bounds, {
+		setLeft, setTop, setRight, setBottom,
+		setWidth, setHeight,
+		setBounds,
+	}] = useBounds({ left: 0, right: 0, top: 10, bottom: 10 });
+
+	const {
+		left, top, right, bottom,
+		width, height
+	} = bounds;
+
+	return (
+		<div style={{
+			display: "flex",
+			flexDirection: "column",
+			width: "fit-content",
+			rowGap: "1em",
+		}}>
+			<div style={{
+				display: "grid",
+				columnGap: "1em",
+				gridTemplateAreas: `"left top" "right bottom" "width height"`
+			}}
+			>
+				<NumberInput name="left" label={<Icon icon="position_left" title="Left" />} value={left} onInput={setLeft} />
+				<NumberInput name="top" label={<Icon icon="position_top" title="Top" />} value={top} onInput={setTop} />
+				<NumberInput name="right" label={<Icon icon="position_right" title="Right" />} value={right} onInput={setRight} />
+				<NumberInput name="bottom" label={<Icon icon="position_bottom" title="Bottom" />} value={bottom} onInput={setBottom} />
+				<NumberInput name="width" label={<Icon icon="size_width" title="Width" />} value={width} onInput={setWidth} />
+				<NumberInput name="height" label={<Icon icon="size_height" title="Height" />} value={height} onInput={setHeight} />
+			</div>
+			<Button icon="reset" onClick={() => {
+				setBounds({
+					left: 0,
+					top: 0,
+					right: 10,
+					bottom: 10,
+				});
+			}}>Reset</Button>
+		</div>
+	);
 }

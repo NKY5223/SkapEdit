@@ -17,6 +17,11 @@ type C = {
 	common?: CommonAttrs;
 	id?: string;
 };
+type Href = {
+	refExt?: string;
+	refInt?: string;
+};
+
 type ParsedSVG = {
 	type: "svg";
 	width: string;
@@ -24,16 +29,17 @@ type ParsedSVG = {
 	viewBox: string;
 	children: ParsedSVGEl[];
 } & C;
-
 type ParsedGroup = {
 	type: "g";
 	children: ParsedSVGEl[];
 } & C;
-type ParsedUse = {
-	type: "use";
-	refExt?: string;
-	refInt?: string;
+type ParsedDefs = {
+	type: "defs";
+	children: ParsedSVGEl[];
 } & C;
+type ParsedUse = {
+	type: "use"
+} & Href & C;
 type ParsedPath = {
 	type: "path";
 	d: PathData[];
@@ -46,6 +52,7 @@ type ParsedError = {
 type ParsedSVGEl = (
 	| ParsedSVG
 	| ParsedGroup
+	| ParsedDefs
 	| ParsedUse
 	| ParsedPath
 	| ParsedError
@@ -80,6 +87,27 @@ function stripEnd(str: string, target: string) {
 	if (str.endsWith(target)) return str.slice(0, -target.length);
 	return str;
 }
+function resolveHref(href: string | null): Href {
+	if (!href) throw ({
+		type: "error",
+		message: `Could not parse null href`
+	})
+	if (!(href.includes("#") || href.includes("@"))) throw ({
+		type: "error",
+		message: `Could not parse href becasue it is missing a # or @: \n\t${href}`
+	})
+
+	const [icon, id] = href.split("#");
+	if (href.startsWith("@")) {
+		return {
+			refExt: icon.slice(1),
+			refInt: id ?? undefined,
+		};
+	}
+	return {
+		refInt: id,
+	};
+}
 export function parseSVGElement(el: Element): ParsedSVGEl {
 	if (el.querySelector("parsererror")) {
 		return {
@@ -101,6 +129,13 @@ export function parseSVGElement(el: Element): ParsedSVGEl {
 				children,
 			});
 		}
+		case "defs": {
+			const children = [...el.children].map(el => parseSVGElement(el));
+			return setCommonAttrs(el, {
+				type: "defs",
+				children,
+			});
+		}
 		case "g": {
 			const children = [...el.children].map(el => parseSVGElement(el));
 			return setCommonAttrs(el, {
@@ -109,30 +144,10 @@ export function parseSVGElement(el: Element): ParsedSVGEl {
 			});
 		}
 		case "use": {
-			const href = el.getAttribute("href");
-			if (!href) return {
-				type: "error",
-				message: `Could not parse <use> element because it is missing a href attribute: \n\t${el.outerHTML}`
-			}
-			if (!href.includes("#")) return {
-				type: "error",
-				message: `Could not parse <use> element because it's href is missing a #: \n\t${el.outerHTML}`
-			}
-
-			const parts = href.split("#");
-			if (href.startsWith("@")) {
-				return setCommonAttrs(el, {
-					type: "use",
-					refExt: parts[0].slice(1),
-					// parts[1] may or may not exist
-					// this really does nothing but it's a reminder ig??
-					refInt: parts[1] ?? undefined,
-				});
-			}
+			const href = resolveHref(el.getAttribute("href"));
 			return setCommonAttrs(el, {
 				type: "use",
-				// if parts
-				refInt: parts[1] ?? undefined,
+				...href,
 			});
 		}
 		case "path": {
@@ -167,6 +182,15 @@ export function reactize(el: ParsedSVGEl, id: string, ids: Map<string, IconsCont
 				</svg>
 			);
 		}
+		case "defs": {
+			return (
+				<defs key={key} {...cAttrs}
+					{...attrs}
+				>
+					{el.children.map((child, i) => reactize(child, id, ids, {}, i))}
+				</defs>
+			);
+		}
 		case "g": {
 			return (
 				<g key={key} {...cAttrs}
@@ -198,8 +222,13 @@ export function reactize(el: ParsedSVGEl, id: string, ids: Map<string, IconsCont
 				/>
 			);
 		}
+		case "error": {
+			return (
+				<text key={key}>Error: {el.message}</text>
+			)
+		}
 		default: {
-			return <text>:( cannot make</text>;
+			return <text key={key}>:( cannot make: {JSON.stringify(el)}</text>;
 		}
 	}
 }
