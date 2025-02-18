@@ -23,11 +23,11 @@ export const icons = {
 	reset2,
 
 	position_left,
-	position_top: position_top2,
+	position_top: position_top,
 	position_right,
 	position_bottom,
 
-	size_width: size_width2,
+	size_width: size_width,
 	size_height,
 	
 	position_top2,

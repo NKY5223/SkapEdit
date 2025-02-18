@@ -1,0 +1,1 @@
+export const def = <T>(x: T | undefined): x is T => x !== undefined;

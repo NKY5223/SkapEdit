@@ -29,7 +29,8 @@
 		--button-fg: var(--theme-negative-fg);
 	}
 	&:disabled {
-		--button-bg: var(--theme-disabled);
+		--button-bg: var(--theme-disabled-bg);
+		--button-fg: var(--theme-disabled-fg);
 		cursor: not-allowed;
 	}
 	&:empty::before {
@@ -45,6 +46,9 @@
 	&:not(:disabled):hover {
 		background-color: oklch(from var(--button-bg) calc(l * 1.025) c h);
 	}
+	&:focus-within {
+		
+	}
 
 	&:has(> .icon) {
 		padding-left: .5em;
@@ -57,4 +61,5 @@
 	& > .content {
 		grid-area: content;
 	}
+
 }

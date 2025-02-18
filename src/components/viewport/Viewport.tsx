@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { ViewportLayer } from "./layer.ts";
 import "./viewport.css";
 import { Button } from "../form/Button.tsx";
-import { type Bounds } from "../editor/editor.ts";
+import { type Bounds } from "../editor/Bounds.ts";
 import { cross, range } from "../../test-utils.ts";
 import { Icon } from "../icon/Icon.tsx";
 
