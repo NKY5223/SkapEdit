@@ -39,10 +39,10 @@ type ParsedDefs = {
 	type: "defs";
 	children: ParsedSVGEl[];
 } & C;
-type ParsedMask = {
-	type: "mask";
-	children: ParsedSVGEl[];
-} & C;
+// type ParsedMask = {
+// 	type: "mask";
+// 	children: ParsedSVGEl[];
+// } & C;
 type ParsedUse = {
 	type: "use";
 	href: Href;
@@ -66,7 +66,7 @@ type ParsedSVGEl = (
 	| ParsedSVG
 	| ParsedGroup
 	| ParsedDefs
-	| ParsedMask
+	// | ParsedMask
 	| ParsedUse
 	| ParsedPath
 	| ParsedCircle
@@ -176,13 +176,13 @@ export function parseSVGElement(el: Element): ParsedSVGEl {
 				children,
 			});
 		}
-		case "mask": {
-			const children = [...el.children].map(el => parseSVGElement(el));
-			return setCommonAttrs(el, {
-				type: "mask",
-				children,
-			});
-		}
+		// case "mask": {
+		// 	const children = [...el.children].map(el => parseSVGElement(el));
+		// 	return setCommonAttrs(el, {
+		// 		type: "mask",
+		// 		children,
+		// 	});
+		// }
 		case "g": {
 			const children = [...el.children].map(el => parseSVGElement(el));
 			return setCommonAttrs(el, {
@@ -225,11 +225,11 @@ export function reactize(el: ParsedSVGEl, id: string, ids: Map<string, IconsCont
 	const cAttrs = {
 		...(el.common ?? {}),
 		id: el.id ? `${id}-${el.id}` : undefined,
-		mask: el.mask === undefined ? undefined :
-			`url(${typeof el.mask === "object"
-				? `"#${hrefToId(el.mask, ids, id)}"`
-				: el.mask
-			})`,
+		// mask: el.mask === undefined ? undefined :
+		// 	`url(${typeof el.mask === "object"
+		// 		? `"#${hrefToId(el.mask, ids, id)}"`
+		// 		: el.mask
+		// 	})`,
 		style: el.style,
 	};
 	switch (el.type) {
@@ -252,15 +252,15 @@ export function reactize(el: ParsedSVGEl, id: string, ids: Map<string, IconsCont
 				</defs>
 			);
 		}
-		case "mask": {
-			return (
-				<mask key={key} {...cAttrs}
-					{...attrs}
-				>
-					{el.children.map((child, i) => reactize(child, id, ids, {}, i))}
-				</mask>
-			);
-		}
+		// case "mask": {
+		// 	return (
+		// 		<mask key={key} {...cAttrs}
+		// 			{...attrs}
+		// 		>
+		// 			{el.children.map((child, i) => reactize(child, id, ids, {}, i))}
+		// 		</mask>
+		// 	);
+		// }
 		case "g": {
 			return (
 				<g key={key} {...cAttrs}

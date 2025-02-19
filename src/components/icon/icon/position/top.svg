@@ -47,14 +47,4 @@
 			z
 		" />
 	</g>
-	<g fill="var(--icon-color)" mask="#mask">
-		<!-- rect -->
-		<path d="
-			M 6 15
-			h 12
-			v 5
-			h -12
-			v -5
-		" />
-	</g>
 </svg>
