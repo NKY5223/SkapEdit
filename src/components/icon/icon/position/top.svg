@@ -1,6 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24">
-	<use href="@template" opacity="var(--icon-template-opacity, 1)" />
+	<use href="@_guide" />
 	<g fill="var(--icon-color)">
+		<!-- rect -->
 		<path d="
 			M 6 13
 			h 12
@@ -18,6 +19,7 @@
 			v -5
 			h -12
 		" />
+		<!-- line and arrowline -->
 		<path d="
 			M 11 5
 			h 2
@@ -32,7 +34,8 @@
 			h -16
 			v -2
 			z
-		"/>
+		" />
+		<!-- arrowhead -->
 		<path transform="translate(12 13) rotate(-45)" d="
 			M 0 0
 			h 6
@@ -42,6 +45,16 @@
 			h -2
 			v 6
 			z
-		"/>
+		" />
+	</g>
+	<g fill="var(--icon-color)" mask="#mask">
+		<!-- rect -->
+		<path d="
+			M 6 15
+			h 12
+			v 5
+			h -12
+			v -5
+		" />
 	</g>
 </svg>

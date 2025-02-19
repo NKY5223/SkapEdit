@@ -1,5 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-	<g fill="none" stroke="var(--icon-template-color, #fff)" stroke-width="var(--icon-template-stroke, 1)">
+	<g fill="none"
+	   opacity="var(--icon-guide-opacity)"
+	   stroke="var(--icon-guide-color, #fff)"
+	   stroke-width="var(--icon-guide-stroke, 1)">
 		<!-- even horizontal -->
 		<path stroke-opacity=".25" d="
 			M 2  2 h 20

@@ -93,7 +93,7 @@ type IconProps = {
 	attrs?: Record<string, string | number>;
 	vars?: Partial<{
 		color: string;
-		"template-opacity": number;
+		"guide-opacity": number;
 	}> & Record<string, string | number>
 };
 export function Icon({
@@ -110,7 +110,7 @@ export function Icon({
 
 	const combined = {
 		"--icon-color": "currentColor",
-		"--icon-template-opacity": 0,
+		"--icon-guide-opacity": 0,
 		...style,
 		...(vars && Object.fromEntries(
 			Object.entries(vars)

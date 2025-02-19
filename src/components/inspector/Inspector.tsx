@@ -34,12 +34,24 @@ export const Inspector: FC<InspectorArgs> = () => {
 				`,
 				gap: `.5em`,
 			}}>
-				<NumberInput name="left" label={<Icon icon="position_left" title="Left" />} value={left} onInput={setLeft} />
-				<NumberInput name="top" label={<Icon icon="position_top" title="Top" />} value={top} onInput={setTop} />
-				<NumberInput name="right" label={<Icon icon="position_right" title="Right" />} value={right} onInput={setRight} />
-				<NumberInput name="bottom" label={<Icon icon="position_bottom" title="Bottom" />} value={bottom} onInput={setBottom} />
-				<NumberInput name="width" label={<Icon icon="size_width" title="Width" />} value={width} onInput={setWidth} min={0} />
-				<NumberInput name="height" label={<Icon icon="size_height" title="Height" />} value={height} onInput={setHeight} min={0} />
+				<NumberInput name="left" value={left} onInput={setLeft} label={
+					<Icon icon="position_left" title="Left" />
+				} />
+				<NumberInput name="top" value={top} onInput={setTop} label={
+					<Icon icon="position_top" title="Top" />
+				} />
+				<NumberInput name="right" value={right} onInput={setRight} label={
+					<Icon icon="position_right" title="Right" />
+				} />
+				<NumberInput name="bottom" value={bottom} onInput={setBottom} label={
+					<Icon icon="position_bottom" title="Bottom" />
+				} />
+				<NumberInput name="width" value={width} onInput={setWidth} min={0} label={
+					<Icon icon="size_width" title="Width" />
+				} />
+				<NumberInput name="height" value={height} onInput={setHeight} min={0} label={
+					<Icon icon="size_height" title="Height" />
+				} />
 			</div>
 			<Button icon="reset" onClick={() => {
 				setBounds({

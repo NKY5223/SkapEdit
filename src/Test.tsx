@@ -86,7 +86,7 @@ const IconTest: FC<IconTestProps> = ({ icons }) => {
 						height="1.5em"
 						vars={{
 							...iconAttrs,
-							"template-opacity": 0,
+							"guide-opacity": 0,
 						}}
 					/>
 				))}
@@ -113,9 +113,9 @@ const IconTest: FC<IconTestProps> = ({ icons }) => {
 									height={size + "em"}
 									vars={{
 										...iconAttrs,
-										"template-color": "#fff",
-										"template-stroke": (1.5 / size) + "px",
-										"template-opacity": size >= 10 ? 1 : 0,
+										"guide-color": "#fff",
+										"guide-stroke": (1.5 / size) + "px",
+										"guide-opacity": size >= 10 ? 1 : 0,
 									}}
 								/>
 							))

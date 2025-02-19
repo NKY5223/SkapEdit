@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24">
+	<mask id="mask">
+		<circle cx="50%" cy="50%" fill="white" style="
+			r: calc(var(--icon-fill, 0) * 70.70%);
+		" />
+	</mask>
+	<mask id="invert">
+		<path d="M 0 0 h 100 v 100 h -100 v -100" fill="white" />
+		<circle cx="50%" cy="50%" fill="black" style="
+			r: calc(var(--icon-fill, 0) * 70.70%);
+		" />
+	</mask>
+</svg>

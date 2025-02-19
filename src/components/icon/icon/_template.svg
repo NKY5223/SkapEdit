@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24">
+	<use href="@_guide" />
+	<g fill="var(--icon-color)">
+		
+	</g>
+	<g fill="var(--icon-color)" mask="@_fill_mask#mask">
+		
+	</g>
+	<g fill="var(--icon-color)" mask="@_fill_mask#invert">
+		
+	</g>
+</svg>

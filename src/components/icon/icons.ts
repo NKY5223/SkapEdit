@@ -1,6 +1,6 @@
 
-import template from "./icon/template.svg?raw";
-import test from "./icon/test.svg?raw";
+import _guide from "./icon/_guide.svg?raw";
+import _fill_mask from "./icon/_fill_mask.svg?raw";
 
 import reset from "./icon/reset.svg?raw";
 import reset2 from "./icon/reset2.svg?raw";
@@ -17,7 +17,8 @@ import position_top2 from "./icon/position/top2.svg?raw";
 import size_width2 from "./icon/size/width2.svg?raw";
 
 export const icons = {
-	template,
+	_guide,
+	_fill_mask,
 
 	reset,
 	reset2,
