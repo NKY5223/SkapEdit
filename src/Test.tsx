@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 
 import { Icon, IconName, IconProvider, useIcons } from "./components/icon/Icon.tsx";
 import { aliases, icons } from "./components/icon/icons.ts";
@@ -9,13 +9,16 @@ import { Layout } from "./components/layout/Layout.tsx";
 
 import { Inspector } from "./components/inspector/Inspector.tsx";
 import { reverseMap, unique } from "./test-utils.ts";
-import { Slider } from "./components/form/Slider.tsx";
+import { NewIconTest } from "./components/icon/custom.tsx";
 
 export function Test() {
 	return (
 		<ThemeProvider>
 			<IconProvider icons={icons} aliases={aliases}>
 				<Layout>
+					<>
+						<NewIconTest />
+					</>
 					<div style={{
 						display: "flex",
 						flexDirection: "column",
@@ -34,18 +37,12 @@ export function Test() {
 					}}>
 						<Inspector />
 					</div>
-					<div>
+					<>
 						Lorem ipsum dolor sit amet consectetur adipisicing elit.
 						Voluptatem praesentium, ut, officiis tenetur molestiae,
 						debitis nobis voluptas quibusdam quo eius corrupti facere.
 						Labore beatae officiis, qui modi consequatur dolor quibusdam?
-					</div>
-					<div>
-						Lorem ipsum dolor sit amet consectetur adipisicing elit.
-						Voluptatem praesentium, ut, officiis tenetur molestiae,
-						debitis nobis voluptas quibusdam quo eius corrupti facere.
-						Labore beatae officiis, qui modi consequatur dolor quibusdam?
-					</div>
+					</>
 				</Layout>
 			</IconProvider>
 		</ThemeProvider>
