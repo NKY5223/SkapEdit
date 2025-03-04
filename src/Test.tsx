@@ -8,8 +8,8 @@ import { ThemeProvider } from "./theme/theme.tsx";
 import { Layout } from "./components/layout/Layout.tsx";
 
 import { Inspector } from "./components/inspector/Inspector.tsx";
-import { reverseMap, unique } from "./test-utils.ts";
-import { NewIconTest } from "./components/icon/custom.tsx";
+import { reverseMap, unique } from "./utils.ts";
+import { DebugNewIcon } from "./components/icon/stringify.tsx";
 
 export function Test() {
 	return (
@@ -17,7 +17,7 @@ export function Test() {
 			<IconProvider icons={icons} aliases={aliases}>
 				<Layout>
 					<>
-						<NewIconTest />
+						<DebugNewIcon />
 					</>
 					<div style={{
 						display: "flex",

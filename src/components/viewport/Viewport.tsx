@@ -3,7 +3,7 @@ import { ViewportLayer } from "./layer.ts";
 import "./viewport.css";
 import { Button } from "../form/Button.tsx";
 import { type Bounds } from "../editor/Bounds.ts";
-import { cross, range } from "../../test-utils.ts";
+import { cross, range } from "../../utils.ts";
 import { Icon } from "../icon/Icon.tsx";
 
 type ViewportProps = {
