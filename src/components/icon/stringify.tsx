@@ -1,7 +1,7 @@
 import { FC } from "react";
-import { M, fill, circle, A, a, h, V, v, l, L } from "./constructors.tsx";
-import { Command, arcInfo, joinStrokes, capStroke, stroke, joinStrokesLooped } from "./math.ts";
-import { add, equal, leftMat, lerp, mag, matMul, mul, norm, polar, rotMat, sub, vec, Vector } from "./vector.ts";
+import { M, v, l, L } from "./constructors.tsx";
+import { Command, arcInfo, joinStrokes, capStroke, stroke } from "./math.ts";
+import { add, lerp, mag, matMul, mul, norm, orthMat, polar, rotMat, sub, vec, Vector } from "./vector.ts";
 
 const drawDot = (pos: Vector, r: number = 0.3) => `
 	M ${pos}
@@ -10,16 +10,16 @@ const drawDot = (pos: Vector, r: number = 0.3) => `
 	a ${r} ${r} 0 0 0 ${2 * r} 0
 `.replaceAll(/\s+/g, " ").trim();
 const drawArrow = (pos: Vector, direction: Vector, size: number = 0.3) => {
-	const fw = mul(norm(direction), vec(size));
-	const lt = matMul(leftMat, fw);
+	const fw = norm(direction, size);
+	const coord = orthMat(fw);
 
-	const h = [.5, 0];
-	const l = [-.5, 1];
-	const r = [-.5, -1];
+	const h = vec(.5, 0);
+	const l = vec(-.5, 1);
+	const r = vec(-.5, -1);
 
-	const head = add(pos, mul(fw, vec(h[0])), mul(lt, vec(h[1])));
-	const left = add(pos, mul(fw, vec(l[0])), mul(lt, vec(l[1])));
-	const right = add(pos, mul(fw, vec(r[0])), mul(lt, vec(r[1])));
+	const head = add(pos, matMul(coord, h));
+	const left = add(pos, matMul(coord, l));
+	const right = add(pos, matMul(coord, r));
 
 	return `
 		M ${left}
@@ -100,15 +100,17 @@ const debugStringifyCommand = (command: Command): { type: string; d: string; }[]
 	}
 };
 const stringify = (commands: Command[]) => {
-	const debug = commands.map(debugStringifyCommand).flat();
 	const stringified: string[] = commands.reduce<{ pos: Vector, strs: string[] }>(({ pos, strs }, command) => {
 		const { start } = command;
-		const move = mag(sub(start, pos)) <= 0.00001 ? [] : [`M ${start}`];
+		// Assume Command[] should be connected
+		const move = mag(sub(start, pos)) <= 0.00001 ? [] : [`L ${start}`];
 		return {
 			pos,
 			strs: [...strs, ...move, stringifyCommand(command)]
 		};
 	}, { pos: vec(NaN), strs: [] }).strs;
+	const debug = commands.map(debugStringifyCommand).flat();
+
 	return [
 		stringified.join(" "),
 		Object.fromEntries(Object.entries(
@@ -122,7 +124,10 @@ export const DebugNewIcon: FC = () => {
 	const shape = (
 		capStroke(
 			{ start: "join", end: "join" },
-			joinStrokes("join", [
+			joinStrokes({
+				join: "join",
+				width: 1, 
+			}, [
 				stroke({
 					join: "join",
 					widthLeft: 1,

@@ -47,7 +47,7 @@ type State = {
 	control: Point | null;
 	pathData: PathData[];
 };
-const normalisers: Record<Command, (state: State, chunk: Chunk) => State> = {
+const normalizers: Record<Command, (state: State, chunk: Chunk) => State> = {
 	Z: state => {
 		state.pathData.push({
 			command: "Z",
@@ -239,7 +239,7 @@ export function parsePath(d: string) {
 			return chunks;
 		}, []);
 	const data = chunks
-		.reduce<State>((state, chunk) => normalisers[chunk.command](state, chunk), {
+		.reduce<State>((state, chunk) => normalizers[chunk.command](state, chunk), {
 			position: [0, 0],
 			control: null,
 			pathData: [],

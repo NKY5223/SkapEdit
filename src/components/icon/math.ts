@@ -1,5 +1,5 @@
 import { interleave, tuples, tuplesCyclical } from "../../utils.ts";
-import { Vector, map, lerp, div, sub, vec, rotMat, matMul, matTranspose, dot, swap, mul, add, angle, neg, zeroVec, leftMat, norm, polar } from "./vector.ts";
+import { Vector, map, lerp, div, sub, vec, rotMat, matMul, matTranspose, dot, swap, mul, add, angle, neg, leftMat, norm, polar, safeNorm } from "./vector.ts";
 
 // #region Command types
 type CommandBase<T extends string> = {
@@ -22,6 +22,7 @@ export type Command = (
 );
 // #endregion
 
+// #region Command info
 type ArcInfo = {
 	center: Vector;
 	startAngle: number;
@@ -62,6 +63,74 @@ export const arcInfo = (arc: CommandArc): ArcInfo => {
 		startAngle, deltaAngle, endAngle
 	};
 };
+
+/**
+ * Returns an `f: [0, 1] → Vector` that 
+ * maps `t` to a point on the command.
+ * 
+ * Note: `t` is not arc length.
+ */
+export const parametrizeCommand = (command: Command): ((t: number) => Vector) => {
+	const { start, end } = command;
+	switch (command.type) {
+		case "line": {
+			return t => lerp(start, end, t);
+		}
+		case "arc": {
+			const { radius, rotation } = command;
+			const { center, startAngle, deltaAngle } = arcInfo(command);
+			const rot = rotMat(rotation);
+			return t => 
+				add(center, matMul(rot, mul(radius, polar((startAngle + deltaAngle * t)))));
+		}
+	}
+}
+/**
+ * Returns an `f': [0, 1] → Vector` that
+ * represents the derivative of `parametrizeCommand(command)` at `t`.
+ * 
+ * Note: `t` is not arc length.
+ */
+export const commandDerivative = (command: Command): ((t: number) => Vector) => {
+	const { start, end } = command;
+	switch (command.type) {
+		case "line": {
+			const d = sub(end, start);
+			return () => d;
+		}
+		case "arc": {
+			const { radius, rotation, clockwise } = command;
+			const { startAngle, deltaAngle } = arcInfo(command);
+			const rot = rotMat(rotation);
+			const sign = clockwise ? -1 : 1;
+			return t => 
+				mul(vec(sign), matMul(rot, mul(radius, vec(deltaAngle), polar(startAngle + deltaAngle * t - Math.PI / 2))));
+		}
+		default: {
+			// Approximate derivative
+			const ε = 0.00001;
+			const f = parametrizeCommand(command);
+			return t => div(sub(f(t + ε), f(t)), vec(ε));
+		}
+	}
+}
+/**
+ * Returns an `f'/|f'|: [0, 1] → Vector` that
+ * represents the tangent of `parametrizeCommand(command)` at `t`.  
+ * Contains additional features to resolve `f' = 0`.
+ * 
+ * Note: `t` is not arc length.
+ */
+export const commandTangent = (command: Command): ((t: number) => Vector) => {
+	switch (command.type) {		
+		default: {
+			const f = commandDerivative(command);
+			return t => safeNorm(f(t));
+		}
+	}
+}
+// #endregion
+
 export const reverseCommands = (commands: Command[]): Command[] => {
 	const last = commands.at(-1);
 	if (!last) throw new Error("Expected segment to be non-empty");
@@ -123,8 +192,13 @@ export const offsetCommand = (command: Command, /** offset, to the left */ offse
 	}
 };
 
-export type StrokeCap = "join";
-export type StrokeJoin = "join";
+export type StrokeCap = (
+	| "join"
+);
+export type StrokeJoin = (
+	| "join"
+	| "round"
+);
 export type StrokeOptions = {
 	widthLeft: number;
 	widthRight: number;
@@ -136,8 +210,8 @@ export const stroke = (options: StrokeOptions, commands: Command[]): Stroke => {
 	const forwardParts = commands.map(command => offsetCommand(command, options.widthLeft));
 	const reverseParts = reverseCommands(commands).map(command => offsetCommand(command, options.widthRight));
 
-	const forward = joinCommands(options.join, forwardParts);
-	const reverse = joinCommands(options.join, reverseParts);
+	const forward = joinCommands({ join: options.join, width: options.widthLeft }, forwardParts);
+	const reverse = joinCommands({ join: options.join, width: options.widthRight }, reverseParts);
 
 	return [
 		forward, reverse
@@ -147,10 +221,13 @@ export type CapOptions = {
 	start: StrokeCap;
 	end: StrokeCap;
 };
-export type JoinOptions = StrokeJoin;
+export type JoinOptions = {
+	join: StrokeJoin;
+	width: number;
+};
 
-export const joinCommandPair = (options: JoinOptions, a: Command, b: Command): Command[] => {
-	switch (options) {
+export const joinPair = (options: JoinOptions, a: Command, b: Command): Command[] => {
+	switch (options.join) {
 		case "join": {
 			return [
 				{
@@ -160,11 +237,19 @@ export const joinCommandPair = (options: JoinOptions, a: Command, b: Command): C
 				} satisfies CommandLine,
 			];
 		}
+		case "round": {
+			const fa = parametrizeCommand(a);
+			const dfa = commandTangent(a);
+			const fb = parametrizeCommand(a);
+			const dfb = commandTangent(b);
+			return [
+			];
+		}
 	}
 };
 const joinCommands = (options: JoinOptions, commands: Command[][]): Command[] => {
 	if (commands.length === 1) return commands.flat();
-	const joins = tuples(commands, 2).map(([a, b]) => joinCommandPair(options, a[a.length - 1], b[0]));
+	const joins = tuples(commands, 2).map(([a, b]) => joinPair(options, a[a.length - 1], b[0]));
 	return interleave(commands, joins).flat();
 }
 export const joinStrokes = (options: JoinOptions, strokes: Stroke[]): Stroke => {
@@ -178,12 +263,12 @@ export const joinStrokes = (options: JoinOptions, strokes: Stroke[]): Stroke => 
 	// = [[[f0, r0], [f1, r1]], [[f1, r1], [f2, r2]]]
 	const forwardJoins = pairs.map(([[a, _], [b, __]]) =>
 		// i = 0: a = f0, b = f1
-		joinCommandPair(options, a[a.length - 1], b[0])
+		joinPair(options, a[a.length - 1], b[0])
 	);
 	// = [join(f0, f1), join(f1, f2)]
 	const reverseJoins = pairs.map(([[_, b], [__, a]]) =>
 		// i = 0: a = r1, b = r0
-		joinCommandPair(options, a[a.length - 1], b[0])
+		joinPair(options, a[a.length - 1], b[0])
 	);
 	// = [join(r1, r0), join(r2, r1)]
 
@@ -205,12 +290,12 @@ export const joinStrokesLooped = (options: JoinOptions, strokes: Stroke[]): Comm
 	// = [[[f0, r0], [f1, r1]], [[f1, r1], [f2, r2]], [[f2, r2], [f0, r0]]]
 	const forwardJoins = pairs.map(([[a, _], [b, __]]) =>
 		// i = 0: a = f0, b = f1
-		joinCommandPair(options, a[a.length - 1], b[0])
+		joinPair(options, a[a.length - 1], b[0])
 	);
 	// = [join(f0, f1), join(f1, f2), join(f2, f0)]
 	const reverseJoins = pairs.map(([[_, a], [__, b]]) =>
 		// i = 0: a = r1, b = r0
-		joinCommandPair(options, b[b.length - 1], a[0])
+		joinPair(options, b[b.length - 1], a[0])
 	);
 	// = [join(r1, r0), join(r2, r1), join(r0, r2)]
 
@@ -225,6 +310,7 @@ export const joinStrokesLooped = (options: JoinOptions, strokes: Stroke[]): Comm
 	];
 };
 const capCommands = (type: StrokeCap, isStart: boolean, a: Command, b: Command): Command[] => {
+	isStart;
 	switch (type) {
 		case "join": {
 			return [
@@ -233,7 +319,7 @@ const capCommands = (type: StrokeCap, isStart: boolean, a: Command, b: Command):
 					start: a.end,
 					end: b.start,
 				} satisfies CommandLine,
-			]
+			];
 		}
 	}
 };
