@@ -1,26 +1,27 @@
-import React, { useId, useState } from "react";
-import css from "./NumberInput.module.css";
+import { ReactNode, useId, useState } from "react";
+import css from "./form.module.css";
 
 
 type NumberInputProps = {
 	name?: string;
 	/** *Content* of the label associated with this input */
-	label?: React.JSX.Element;
+	label?: ReactNode;
 	disabled?: boolean;
 
 	value: number;
 	min?: number;
 	max?: number;
+	step?: number;
 
-	/** Fires whenever the value is edited (Any key) */
+	/** Fires whenever the value is edited */
 	onInput?: (value: number) => void;
 	/** Fires when the value is committed (Enter, blur) */
 	onChange?: (value: number) => void;
 };
 
 export function NumberInput({
-	name, label, disabled, 
-	value, min, max,
+	name, label, disabled,
+	value, min, max, step,
 	onInput, onChange,
 }: NumberInputProps) {
 	const id = useId();
@@ -34,7 +35,7 @@ export function NumberInput({
 			{label && (<div className={css["label-content"]}>{label}</div>)}
 			<input id={id} type="number" className={className}
 				value={editing ? internal : value} 
-				min={min} max={max}
+				min={min} max={max} step={step}
 				disabled={disabled}
 
 				name={name}
@@ -60,4 +61,16 @@ export function NumberInput({
 			/>
 		</label>
 	);
+}
+
+export function useNumberInput(initialValue: number, props: Omit<NumberInputProps, "value"> = {}) {
+	const [value, setValue] = useState(initialValue);
+	const actualProps: NumberInputProps = {
+		...props,
+		value,
+		onInput: setValue,
+	};
+	const input = <NumberInput {...actualProps} />;
+
+	return [value, input, setValue] as const;
 }

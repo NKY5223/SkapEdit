@@ -1,0 +1,64 @@
+.form-section {
+	display: grid;
+	width: fit-content;
+	/* Inverted brackets??? how queer!!! */
+	grid-template-columns: [
+		all-start
+			label-start 
+				label-content-start ]auto[ label-content-end 
+				input-start ]auto[ input-end 
+			label-end
+		all-end
+	];
+	& > .form-section {
+		grid-template-columns: subgrid;
+		grid-column: all;
+	}
+}
+.label {
+	display: grid;
+	gap: .5em;
+	width: fit-content;
+
+	&:not(:has(> .label-content)) {
+		grid-template-areas: "input";
+		grid-template-columns: auto;
+	}
+
+	&:has(> .label-content) {
+		grid-template-areas: "content input";
+		grid-template-columns: max-content auto;
+	}
+
+}
+.form-section > .label {
+	grid-template-areas: "content input";
+	grid-template-columns: subgrid;
+	grid-column: label;
+}
+.label-content {
+	display: grid;
+	grid-area: content;
+	place-self: center end;
+}
+.input {
+	display: block;
+	padding: 0.5em 1em;
+	width: fit-content;
+	height: 2.5em;
+	grid-area: input;
+
+	font-size: 1em;
+	background: none;
+	border: var(--theme-border-0) solid var(--theme-border-width);
+	border-radius: var(--theme-border-radius);
+
+	&::-webkit-inner-spin-button {
+		appearance: none;
+	}
+
+	&:focus {
+		outline: none;
+		border-color: var(--theme-primary-bg-0);
+	}
+}

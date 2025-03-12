@@ -1,7 +1,9 @@
 import {
 	CommandLine, CommandArc,
-	Stroke, StrokeOptions, stroke as stroked,
+	StrokeOptions, stroke as importmath_stroke,
 	Command,
+	OffsetCommand,
+	fromSVGArc,
 } from "./math.ts";
 import { add, lerp, mag, sub, vec, Vector, zeroVec } from "./vector.ts";
 
@@ -9,14 +11,19 @@ const line = (start: Vector, end: Vector): CommandLine => ({
 	type: "line",
 	start, end,
 });
-const arc = (radius: Vector, rotation: number, largeArc: boolean, clockwise: boolean, start: Vector, end: Vector): CommandArc => ({
-	type: "arc",
-	radius,
-	rotation,
-	largeArc,
-	clockwise,
-	start, end,
-});
+const arc = (radius: Vector, rotation: number, largeArc: boolean, clockwise: boolean, start: Vector, end: Vector): CommandArc => {
+	const { center, startAngle, deltaAngle, endAngle } = fromSVGArc({
+		start, end, radius, rotation, largeArc, clockwise,
+	});
+	return {
+		type: "arc",
+		radius,
+		rotation,
+		start, end,
+		center, 
+		startAngle, deltaAngle, endAngle,
+	};
+}
 
 let constructorStart: Vector = zeroVec;
 export const M = (x: number, y: number): Command[] => {
@@ -93,7 +100,6 @@ export const circle = (dcx: number, dcy: number): Command[] => {
 	return Circle(center[0], center[1]);
 }
 
-export const stroke = (options: StrokeOptions, commands: Command[]): Stroke => {
-	return stroked(options, commands);
+export const stroke = (options: StrokeOptions, commands: Command[]): Command[] => {
+	return importmath_stroke(options, commands);
 };
-export const fill = (forward: Command[], reverse: Command[]): Stroke => [forward, reverse];

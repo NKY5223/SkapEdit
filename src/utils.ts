@@ -1,3 +1,6 @@
+export type Tuple<T, N extends number> = TupleInternal<T, N, []>;
+type TupleInternal<T, N extends number, A extends T[]> = A["length"] extends N ? A : TupleInternal<T, N, [...A, T]>;
+
 export function cross<T extends unknown[], U extends unknown>(
 	f: (...args: T) => U,
 	...arrays: { [i in keyof T]: T[i][] }
@@ -31,9 +34,21 @@ export function reverseMap<K, V>(map: Iterable<[K, V]>): Map<V, K[]> {
 	}
 	return res;
 }
-export function transpose<T, U>(array: T[][], empty: U): (T | U)[][] {
+export function transposeEmpty<T, U>(array: T[][], empty: U): (T | U)[][] {
 	return range(Math.max(...array.map(a => a.length))).map(i => (
 		range(array.length).map(j => i < array[j].length ? array[j][i] : empty)
+	));
+}
+type MapArray<T extends unknown[]> = {
+	[i in keyof T]: T[i][];
+};
+/** `transpose`, but typed for use with tuples of arrays */
+export function transposeTuples<T extends unknown[]>(array: MapArray<T>): T[] {
+	return transpose(array) as T[];
+}
+export function transpose<T>(array: T[][]): T[][] {
+	return range(Math.max(...array.map(a => a.length))).map(i => (
+		range(array.length).map(j => array[j][i])
 	));
 }
 const interleaveEmpty = Symbol("interleave-empty");
@@ -42,7 +57,7 @@ const interleaveEmpty = Symbol("interleave-empty");
  * `interleave(["a", "b", "c", "d"], [0, 1]) ↦ ["a", 0, "b", 1, "c", "d"]`
  */
 export function interleave<T>(...arrays: T[][]): T[] {
-	return transpose(arrays, interleaveEmpty)
+	return transposeEmpty(arrays, interleaveEmpty)
 		.flat()
 		.filter((x): x is T => x !== interleaveEmpty);
 }
@@ -62,7 +77,7 @@ export function tuplesCyclical<T>(array: T[], length: number): T[][] {
  * breaks array into tuples, e.g:
  * `tuples([0, 1, 2, 3, 4], 2) ↦ [[0, 1], [1, 2], [2, 3], [3, 4]]`
  */
-export function tuples<T>(array: T[], length: number): T[][] {
+export function tuples<T, N extends number>(array: T[], length: N): Tuple<T, N>[] {
 	if (array.length < length) throw new Error(`cannot convert ${array} into ${length}-tuples because it's too short`);
-	return range(array.length - length + 1).map((_, i) => array.slice(i, i + length));
+	return range(array.length - length + 1).map((_, i) => array.slice(i, i + length) as Tuple<T,N>);
 }

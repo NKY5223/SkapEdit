@@ -21,9 +21,17 @@ const MatrixPrototype = {
 	__brand: "matrix",
 } as const;
 export const vec = (x: number, y?: number): Vector => Object.setPrototypeOf([x, y ?? x] as const, VectorPrototype);
-export const mat = (xx: number, xy: number, yx: number, yy: number): Matrix => (
-	Object.setPrototypeOf([vec(xx, xy), vec(yx, yy)] as const, MatrixPrototype)
-);
+export function mat(x: Vector, y: Vector): Matrix;
+export function mat(xx: number, xy: number, yx: number, yy: number): Matrix;
+export function mat(xx: number | Vector, xy: number | Vector, yx?: number, yy?: number) {
+	if (isVec(xx) && isVec(xy)) {
+		return Object.setPrototypeOf([xx, xy] as const, MatrixPrototype);
+	}
+	if (typeof xx === "number" && typeof xy === "number" && typeof yx === "number" && typeof yy === "number") {
+		return mat(vec(xx, xy), vec(yx, yy));
+	}
+	throw new TypeError(`mat() takes 2 Vectors or 4 numbers.`);
+}
 export const isVec = (v: unknown): v is Vector => typeof v === "object" && !!v && ({}).isPrototypeOf.call(VectorPrototype, v);
 export const isMat = (m: unknown): m is Vector => typeof m === "object" && !!m && ({}).isPrototypeOf.call(MatrixPrototype, m);
 const typeOf = (x: unknown): string => (
@@ -66,9 +74,11 @@ export const mul = reduce(functions.mul, vec(1, 1));
 export const div = reduce(functions.div, vec(1, 1), true);
 
 export const equal: (a: Vector, b: Vector) => boolean = ([ax, ay], [bx, by]) => ax === bx && ay === by;
-export const neg: (v: Vector) => Vector = ([x, y]) => vec(-x, -y);
 export const dot: (a: Vector, b: Vector) => number = ([ax, ay], [bx, by]) => ax * bx + ay * by;
-export const mag: (v: Vector) => number = v => Math.hypot(...v);
+
+export const neg: (v: Vector) => Vector = ([x, y]) => vec(-x, -y);
+export const mag = (v: Vector) => Math.hypot(...v);
+export const arg = (v: Vector) => Math.atan2(v[1], v[0]);
 export const swap: (v: Vector) => Vector = ([x, y]) => vec(y, x);
 export const norm: (v: Vector, size?: number) => Vector = (v, size = 1) => mul(v, vec(size / mag(v)));
 export const safeNorm = (v: Vector, d: Vector = î): Vector => (
@@ -111,6 +121,7 @@ export const matTranspose: (m: Matrix) => Matrix = ([[xx, xy], [yx, yy]]) => mat
  */
 export const matMul: (m: Matrix, v: Vector) => Vector = ([[mxx, mxy], [myx, myy]], [vx, vy]) =>
 	vec(vx * mxx + vy * myx, vx * mxy + vy * myy);
+export const det: (m: Matrix) => number = ([[xx, xy], [yx, yy]]) => xx * yy - xy * yx;
 
 /**
  * clockwise rotation
@@ -127,7 +138,8 @@ export const rotMat: (angle: number) => Matrix = angle => {
 	return mat(cos, sin, -sin, cos);
 }
 
+
 // actual sign, including ±0
 const sign = (x: number) => Math.sign(x === 0 ? 1 / x : x);
-export const angle: (a: Vector, b: Vector) => number = (a, b) =>
-	sign(a[0] * b[1] - a[1] * b[0]) * Math.acos(dot(a, b) / (mag(a) * mag(b)));
+export const angleBetween: (a: Vector, b: Vector) => number = (a, b) =>
+	sign(det(mat(a, b))) * Math.acos(dot(a, b) / (mag(a) * mag(b)));

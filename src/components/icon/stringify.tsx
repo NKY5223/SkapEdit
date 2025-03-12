@@ -1,9 +1,11 @@
 import { FC } from "react";
-import { M, v, l, L } from "./constructors.tsx";
-import { Command, arcInfo, joinStrokes, capStroke, stroke } from "./math.ts";
+import { M, l, a, L } from "./constructors.tsx";
+import { Command, fromSVGArc, stroke, toSVGArc } from "./math.ts";
 import { add, lerp, mag, matMul, mul, norm, orthMat, polar, rotMat, sub, vec, Vector } from "./vector.ts";
+import { useNumberInput } from "../form/NumberInput.tsx";
+import { FormSection } from "../form/FormSection.tsx";
 
-const drawDot = (pos: Vector, r: number = 0.3) => `
+const drawDot = (pos: Vector, r: number = 0.2) => `
 	M ${pos}
 	m ${r} 0
 	a ${r} ${r} 0 0 0 ${-2 * r} 0
@@ -28,12 +30,13 @@ const drawArrow = (pos: Vector, direction: Vector, size: number = 0.3) => {
 	`.replaceAll(/\s+/g, " ").trim();
 };
 const stringifyCommand = (command: Command): string => {
-	const { start, end } = command;
+	const { end } = command;
 	switch (command.type) {
 		case "line":
 			return `L ${end}`;
 		case "arc":
-			const { radius, rotation, largeArc, clockwise } = command;
+			const { radius, rotation } = command;
+			const { largeArc, clockwise } = toSVGArc(command);
 			return `A ${radius} ${rotation} ${+largeArc} ${+clockwise} ${end}`;
 	}
 };
@@ -69,8 +72,8 @@ const debugStringifyCommand = (command: Command): { type: string; d: string; }[]
 			];
 		}
 		case "arc": {
-			const { radius, rotation, largeArc, clockwise } = command;
-			const { center, startAngle, deltaAngle } = arcInfo(command);
+			const { radius, rotation, center, startAngle, deltaAngle } = command;
+			const { largeArc, clockwise } = toSVGArc(command);
 			const arrowAngle = startAngle + deltaAngle / 2;
 
 			const rot = rotMat(rotation);
@@ -99,71 +102,83 @@ const debugStringifyCommand = (command: Command): { type: string; d: string; }[]
 		}
 	}
 };
+const ALL = Symbol("*");
 const stringify = (commands: Command[]) => {
 	const stringified: string[] = commands.reduce<{ pos: Vector, strs: string[] }>(({ pos, strs }, command) => {
 		const { start } = command;
-		// Assume Command[] should be connected
-		const move = mag(sub(start, pos)) <= 0.00001 ? [] : [`L ${start}`];
 		return {
 			pos,
-			strs: [...strs, ...move, stringifyCommand(command)]
+			strs: [...strs, 
+				// Connect disconnected commands
+				`L ${start}`, 
+				stringifyCommand(command)
+			]
 		};
 	}, { pos: vec(NaN), strs: [] }).strs;
 	const debug = commands.map(debugStringifyCommand).flat();
 
 	return [
 		stringified.join(" "),
-		Object.fromEntries(Object.entries(
+		Object.assign(Object.fromEntries(Object.entries(
 			Object.groupBy(debug, ({ type }) => type))
 			.map(([k, v]) => [k, v?.map(c => c.d).join(" ")])
-		)
+		), { [ALL]: debug.map(({ d }) => d).join(" ") })
 	] as const;
 };
 
 export const DebugNewIcon: FC = () => {
-	const shape = (
-		capStroke(
-			{ start: "join", end: "join" },
-			joinStrokes({
-				join: "join",
-				width: 1, 
-			}, [
-				stroke({
-					join: "join",
-					widthLeft: 1,
-					widthRight: 1,
-				}, [
-					M(6, 18),
-					// a(12, 12, 0, false, true, 12, 12),
-					// h(-12),
-					v(-12),
-				].flat()),
-				stroke({
-					join: "join",
-					widthLeft: 1,
-					widthRight: 1,
-				}, [
-					l(15, 0),
-					L(6, 18),
-				].flat())
-			])
-		)
-	);
-	const [d, debug] = stringify(shape);
+	const [widthLeft, widthLeftInput] = useNumberInput(1, { label: "Width Left", min: 0, step: 0.25, });
+	const [widthRight, widthRightInput] = useNumberInput(1, { label: "Width Right", min: 0, step: 0.25, });
+	const [radius, radiusInput] = useNumberInput(2, { label: "Radius", min: 2, step: 0.25, });
+	const [startY, startYInput] = useNumberInput(1, { label: "Start Y", step: 0.25, });
+
+	M(6, startY);
+	const first = L(12, 6)[0];
+	const second = a(radius, radius, 0, false, true, 0, radius * 2)[0];
+	const original = [first, second];
+	const stroked = stroke({
+		join: "round",
+		capStart: "butt",
+		capEnd: "butt",
+		widthLeft,
+		widthRight,
+	}, original);
+
+	Object.assign(window, { stroked });
+
+	const [, debugStroked] = stringify(stroked);
+	const [, debugOriginal] = stringify(original);
+	const props = {
+		strokeWidth: 2 * 24 / 480,
+		fill: "none",
+	};
 	return (
-		<svg viewBox="0 0 24 24" width="480" height="480" style={{ border: "1px solid lime" }}>
-			<path d={d} fill="#0004" />
-			<path d={debug.move} stroke="#f00" strokeWidth={.1} fill="none" />
+		<div style={{
+			display: "grid",
+			gap: ".5em",
+			padding: ".5em",
+		}}>
+			<FormSection>
+				{widthLeftInput}
+				{widthRightInput}
+				{radiusInput}
+				{startYInput}
+			</FormSection>
 
-			<path d={debug.line_start} stroke="oklch(.4 .7 70)" strokeWidth={.1} fill="none" />
-			<path d={debug.line_path} stroke="oklch(.4 .7 80)" strokeWidth={.1} fill="none" />
-			<path d={debug.line_arrow} stroke="oklch(.4 .7 80)" strokeWidth={.1} fill="none" />
-			<path d={debug.line_end} stroke="oklch(.4 .7 90)" strokeWidth={.1} fill="none" />
+			<svg viewBox="0 0 24 24" width="480" height="480" style={{ border: "1px solid lime" }}>
+				{/* <path d={d} fill="#0004" /> */}
+				<path d={debugOriginal[ALL]} stroke="oklch(1 0 0)" {...props} />
 
-			<path d={debug.arc_start} stroke="oklch(.8 .3 170)" strokeWidth={.1} fill="none" />
-			<path d={debug.arc_path} stroke="oklch(.8 .3 180)" strokeWidth={.1} fill="none" />
-			<path d={debug.arc_arrow} stroke="oklch(.8 .3 180)" strokeWidth={.1} fill="none" />
-			<path d={debug.arc_end} stroke="oklch(.8 .3 190)" strokeWidth={.1} fill="none" />
-		</svg>
+				<path d={debugStroked.line_start} stroke="oklch(.4 .7 70)" {...props} />
+				<path d={debugStroked.line_path} stroke="oklch(.4 .7 80)" {...props} />
+				<path d={debugStroked.line_arrow} stroke="oklch(.4 .7 80)" {...props} />
+				<path d={debugStroked.line_end} stroke="oklch(.4 .7 90)" {...props} />
+				
+				<path d={debugStroked.arc_start} stroke="oklch(.8 .3 240)" {...props} />
+				<path d={debugStroked.arc_path} stroke="oklch(.8 .3 250)" {...props} />
+				<path d={debugStroked.arc_arrow} stroke="oklch(.8 .3 250)" {...props} />
+				<path d={debugStroked.arc_end} stroke="oklch(.8 .3 260)" {...props} />
+			</svg>
+		</div>
 	);
 };
