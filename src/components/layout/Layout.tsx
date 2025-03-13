@@ -33,7 +33,7 @@ export const Layout: FC<LayoutProps> = ({
 }) => {
 	return (
 		<div className={css.layout}>
-			<ViewSplit axis="y" ratio={.6}>
+			<ViewSplit axis="y" ratio={.8}>
 				{child0}
 				<ViewSplit axis="x" ratio={.4}>
 					{child1}

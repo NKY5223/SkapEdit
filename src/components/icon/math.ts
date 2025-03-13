@@ -1,6 +1,8 @@
 import { interleave, transposeTuples, tuples } from "../../utils.ts";
-import { Vector, map, lerp, div, sub, vec, rotMat, matMul, matTranspose, dot, swap, mul, add, angleBetween, neg, leftMat, norm, polar, safeNorm, equal, det, mat, arg } from "./vector.ts";
+import { Vector, map, lerp, div, sub, vec, rotMat, matMul, matTranspose, dot, swap, mul, add, angleBetween, neg, leftMat, norm, polar, safeNorm, equal, det, mat, arg, mag, parallel, isVec } from "./vector.ts";
 
+const TAU = 2 * Math.PI;
+const HALF_PI = Math.PI / 2;
 // #region Command types
 type CommandBase<T extends string> = {
 	type: T;
@@ -33,7 +35,6 @@ type SVGArc = {
 	largeArc: boolean;
 	clockwise: boolean;
 };
-const TAU = 2 * Math.PI;
 const square = map(x => x * x);
 export const fromSVGArc = (arc: SVGArc): CommandArc => {
 	const { start, end, radius, rotation, clockwise, largeArc } = arc;
@@ -118,11 +119,10 @@ export const commandDerivative = (command: Command): ((t: number) => Vector) => 
 		}
 		case "arc": {
 			const { radius, rotation, startAngle, deltaAngle } = command;
-			const { clockwise } = toSVGArc(command);
 			const rot = rotMat(rotation);
-			const sign = clockwise ? -1 : 1;
-			return t =>
-				mul(vec(sign), matMul(rot, mul(radius, vec(deltaAngle), polar(startAngle + deltaAngle * t - Math.PI / 2))));
+			// f = t ↦ center + rot × (radius \× polar(a0 + da * t)))
+			// f' = rot × da × r \× polar(a0 + da * t + π/2)
+			return t => mul(deltaAngle, matMul(rot, mul(radius, polar((startAngle + deltaAngle * t + HALF_PI)))));
 		}
 		default: {
 			// Approximate derivative
@@ -169,6 +169,7 @@ export const sliceCommand = (command: Command, tStart: number, tEnd: number): Co
 			const props = {
 				startAngle: startAngle + tStart * deltaAngle,
 				endAngle: startAngle + tEnd * deltaAngle,
+				deltaAngle: (tEnd - tStart) * deltaAngle,
 			}
 			return [
 				{
@@ -187,10 +188,11 @@ type IntersectionData = {
 	b: number;
 	pos: Vector;
 };
-export const intersectCommands = (a: Command, b: Command): IntersectionData[] => {
+export const intersectCommands = (a: Command, b: Command, debugPhase?: string): IntersectionData[] => {
 	// Require a.type <= b.type alphabetically
 	if (a.type > b.type) {
-		return intersectCommands(b, a).map(({ a, b, pos }) => ({ a: b, b: a, pos }));
+		const reorder = intersectCommands(b, a);
+		return reorder.map(({ a, b, pos }) => ({ a: b, b: a, pos }));
 	}
 	if (a.type === "line" && b.type === "line") {
 		// https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection#Given_two_points_on_each_line_segment
@@ -207,11 +209,7 @@ export const intersectCommands = (a: Command, b: Command): IntersectionData[] =>
 			return [];
 		}
 
-		const d12 = sub(a0, a1);
-		const d13 = sub(a0, b0);
-		const d34 = sub(b0, b1);
-		const ta = +det(mat(d13, d34)) / det(mat(d12, d34));
-		const tb = -det(mat(d12, d13)) / det(mat(d12, d34));
+		const { ta, tb } = intersectLines(a0, a1, b0, b1);
 
 		if (0 <= ta && ta <= 1 && 0 <= tb && tb <= 1) return [{
 			a: ta,
@@ -222,7 +220,7 @@ export const intersectCommands = (a: Command, b: Command): IntersectionData[] =>
 		return [];
 	}
 	if (a.type === "arc" && b.type === "line") {
-		const { radius, rotation, center, startAngle, deltaAngle } = a;
+		const { radius, rotation, center, startAngle, deltaAngle, endAngle } = a;
 		const { start: b0, end: b1 } = b;
 		const fb = parametrizeCommand(b);
 
@@ -245,17 +243,49 @@ export const intersectCommands = (a: Command, b: Command): IntersectionData[] =>
 			.filter(t => 0 <= t && t <= 1);
 		const results = t
 			.map(t => ({
-				a: (arg(lerp(l0, l1, t)) - startAngle) / deltaAngle,
+				a: inverseAngleMap(startAngle, deltaAngle, (arg(lerp(l0, l1, t)))),
 				b: t,
 				pos: fb(t),
 			}))
-			.filter(({ a }) => 0 <= a && a <= 1);
-		if (Δ === 0) {
+			.filter((x): x is { a: number; b: number; pos: Vector; } => !!x.a);
+
+		if (Δ === 0 && results.length) {
 			return [results[0]];
 		}
 		return results;
 	}
 	throw new Error(`???`);
+}
+const inverseAngleMap = (x0: number, dx: number, x: number): number | null => {
+	// xx = (x0 - x)/τ
+	// x0 + t * dx ≡ x (mod τ), t ∈ [0, 1]
+	// t = (x - x0 + kτ) / dx
+
+	// dx > 0:
+	// xx ≤ k ≤ dx/τ + xx
+
+	// dx < 0:
+	// xx ≥ k ≥ dx/τ + xx
+
+	const leftBound = (x0 - x) / TAU;
+	const rightBound = leftBound + dx / TAU;
+
+	const lowerBound = Math.min(leftBound, rightBound);
+	const upperBound = Math.max(leftBound, rightBound);
+
+	const k = Math.ceil(lowerBound);
+	if (k > upperBound) return null;
+
+	return (x - x0 + k * TAU) / dx;
+}
+const intersectLines = (a0: Vector, a1: Vector, b0: Vector, b1: Vector) => {
+	const d12 = sub(a0, a1);
+	const d13 = sub(a0, b0);
+	const d34 = sub(b0, b1);
+	const ta = +det(mat(d13, d34)) / det(mat(d12, d34));
+	const tb = -det(mat(d12, d13)) / det(mat(d12, d34));
+
+	return { ta, tb };
 }
 const plusminus = (x: number) => [x, -x];
 // #endregion
@@ -340,9 +370,14 @@ const sliceCommands = (commands: Command[], start: number, end: number): Command
 
 export type StrokeCap = (
 	| "butt"
+	| "round"
 );
 export type StrokeJoin = (
 	| "round"
+	| {
+		/** miter limit */
+		miter: number
+	}
 );
 export type StrokeOptions = {
 	join: StrokeJoin;
@@ -367,28 +402,29 @@ export type JoinOptions = {
 export type OffsetCommand = [forward: Command[], reverse: Command[]];
 
 export const stroke = (options: StrokeOptions, commands: Command[]): Command[] => {
-	const [first, last] = ends(commands);
+	const reversedCommands = commands.map(reverseCommand);
+	const [first,] = ends(commands);
+	const [, last] = ends(reversedCommands);
 
 	const offsetLeft = commands.map(c => offsetCommand(c, options.widthLeft));
-	const offsetRight = commands.map(c => offsetCommand(reverseCommand(c), options.widthRight));
+	const offsetRight = reversedCommands.map(c => offsetCommand(c, options.widthRight));
 
 	const [offsetLeftFirst, offsetLeftLast] = ends(offsetLeft);
 	const [offsetRightFirst, offsetRightLast] = ends(offsetRight);
 
-	const capOptionsStart = { cap: options.capStart, widthLeft: options.widthLeft, widthRight: options.widthRight, };
-	const capEnd = capOffsetCommand(capOptionsStart, first, offsetRightFirst, offsetLeftFirst);
-
-	const capOptionsEnd = { cap: options.capEnd, widthLeft: options.widthRight, widthRight: options.widthLeft, };
+	const capOptionsEnd = { cap: options.capEnd, widthLeft: options.widthLeft, widthRight: options.widthRight, };
 	const capStart = capOffsetCommand(capOptionsEnd, last, offsetLeftLast, offsetRightLast);
+	const capOptionsStart = { cap: options.capStart, widthLeft: options.widthRight, widthRight: options.widthLeft, };
+	const capEnd = capOffsetCommand(capOptionsStart, first, offsetRightFirst, offsetLeftFirst);
 
 	const joinOptionsLeft = { join: options.join, width: options.widthLeft, };
 	const joinOptionsRight = { join: options.join, width: options.widthRight, };
 
-	const joinsLeft = tuples(transposeTuples([commands, offsetLeft]), 2).map(([[from, fromLeft], [to, toLeft]]) =>
-		joinOffsetCommandPair(joinOptionsLeft, from, fromLeft, to, toLeft),
+	const joinsLeft = tuples(transposeTuples([commands, offsetLeft]), 2).map(([[from, fromLeft], [to, toLeft]], i) =>
+		joinOffsetCommandPair(joinOptionsLeft, from, fromLeft, to, toLeft, `left_${i}`),
 	);
-	const joinsRight = tuples(transposeTuples([commands, offsetRight]), 2).map(([[to, toRight], [from, fromRight]]) =>
-		joinOffsetCommandPair(joinOptionsRight, from, fromRight, to, toRight),
+	const joinsRight = tuples(transposeTuples([reversedCommands, offsetRight]), 2).map(([[to, toRight], [from, fromRight]], i) =>
+		joinOffsetCommandPair(joinOptionsRight, from, fromRight, to, toRight, `right_${i}`),
 	);
 
 	const offsetLeftSliced = offsetLeft.map((commands, i) =>
@@ -430,20 +466,24 @@ type JoinOffsetCommandPairData = {
 	slicePrev: number;
 	sliceNext: number;
 };
+/** do not feed this intersecting commands, it WILL cry */
 export const joinOffsetCommandPair = (
 	options: JoinOptions,
-	a: Command,
-	aOffset: Command[],
-	b: Command,
-	bOffset: Command[],
+	prev: Command,
+	prevOffset: Command[],
+	next: Command,
+	nextOffset: Command[],
+	debugPhase?: string,
 ): JoinOffsetCommandPairData => {
-	if ([aOffset, bOffset].some(a => a.length === 0))
+	if ([prevOffset, nextOffset].some(a => a.length === 0))
 		throw new RangeError(`Cannot join offset command pair because at least one of the inputs is [].`);
 
-	const prevCommand = aOffset.at(-1)!;
-	const nextCommand = bOffset[0];
+	const [, prevCommand] = ends(prevOffset);
+	const [nextCommand,] = ends(nextOffset);
 	const { end: start } = prevCommand;
 	const { start: end } = nextCommand;
+	const vertex = prev.end;
+
 	if (equal(start, end)) return {
 		join: [],
 		slicePrev: 1,
@@ -453,43 +493,153 @@ export const joinOffsetCommandPair = (
 	const prevTangent = commandTangent(prevCommand)(1);
 	const nextTangent = commandTangent(nextCommand)(0);
 
-	const intersections = intersectCommands(prevCommand, nextCommand);
+	const tangentsParallel = parallel(prevTangent, nextTangent);
+
+	const intersections = intersectCommands(prevCommand, nextCommand, debugPhase);
 	const intersection: IntersectionData | undefined = intersections.toSorted((a, b) => a.b - a.a)[0];
 
-	const sliceA = intersection?.a ?? 1;
-	const sliceB = intersection?.b ?? 0;
+	const slicePrev = intersection?.a ?? 1;
+	const sliceNext = intersection?.b ?? 0;
+
+	const common = {
+		slicePrev,
+		sliceNext,
+	};
+	if (intersection) return { join: [], slicePrev, sliceNext, };
 
 	switch (options.join) {
 		case "round": {
-			const join = intersection ? [] : [
-				fromSVGArc({
-					start,
-					end,
-					radius: vec(options.width),
-					rotation: 0,
-					clockwise: true,
-					largeArc: false,
-				}) satisfies CommandArc
-			];
 			return {
-				join,
-				slicePrev: sliceA,
-				sliceNext: sliceB,
+				join: [
+					fromSVGArc({
+						start,
+						end,
+						radius: vec(options.width),
+						rotation: 0,
+						clockwise: true,
+						largeArc: false,
+					})
+				],
+				slicePrev,
+				sliceNext,
 			};
 		}
+		default: {
+			if ("miter" in options.join) {
+				const miterLimit = options.join.miter;
+
+				if (tangentsParallel) {
+					const a = add(start, mul(prevTangent, miterLimit));
+					const b = add(end, mul(prevTangent, miterLimit));
+					return {
+						join: [
+							{
+								type: "line",
+								start,
+								end: a,
+							},
+							{
+								type: "line",
+								start: a,
+								end: b,
+							},
+							{
+								type: "line",
+								start: b,
+								end,
+							},
+						],
+						...common,
+					};
+				}
+
+				const { ta: tPrev, tb: tNext } = intersectLines(start, add(start, prevTangent), end, add(end, nextTangent));
+
+				if (tPrev < 0 || tNext > 0) {
+					// requires going backwards onto the offsets
+					return {
+						join: [
+							{
+								type: "line",
+								start,
+								end: vertex,
+							},
+							{
+								type: "line",
+								start: vertex,
+								end,
+							},
+						],
+						...common,
+					}
+				}
+
+				const angle = angleBetween(prevTangent, nextTangent);
+				const miterRatio = Math.abs(1 / Math.sin((Math.PI - angle) / 2));
+
+				const point = add(start, mul(prevTangent, tPrev));
+
+				if (miterRatio > miterLimit) {
+					const ratio = miterLimit / miterRatio;
+					const a = add(start, mul(prevTangent, tPrev * ratio));
+					const b = add(end, mul(nextTangent, tNext * ratio));
+					return {
+						join: [
+							{
+								type: "line",
+								start,
+								end: a,
+							},
+							{
+								type: "line",
+								start: a,
+								end: b,
+							},
+							{
+								type: "line",
+								start: b,
+								end,
+							},
+						],
+						...common,
+					};
+				}
+				return {
+					join: [
+						{
+							type: "line",
+							start,
+							end: point,
+						},
+						{
+							type: "line",
+							start: point,
+							end,
+						},
+					],
+					...common,
+				};
+			}
+		}
 	}
+	throw new Error("missing handling");
 }
 
 const capOffsetCommand = (
 	options: CapOptions,
 	command: Command,
-	from: Command[],
-	to: Command[],
+	prev: Command[],
+	next: Command[],
 ): Command[] => {
-	const [, leftLast] = ends(from);
-	const [rightFirst] = ends(to);
-	const start = leftLast.end;
-	const end = rightFirst.start;
+	const [, prevCommand] = ends(prev);
+	const [nextCommand] = ends(next);
+	const start = prevCommand.end;
+	const end = nextCommand.start;
+	const vertex = command.start;
+
+	const direction = commandTangent(prevCommand)(1);
+	const dirAngle = arg(direction);
+
 	switch (options.cap) {
 		case "butt": {
 			return [
@@ -497,8 +647,56 @@ const capOffsetCommand = (
 					type: "line",
 					start,
 					end,
-				} satisfies CommandLine,
+				},
+			];
+		}
+		case "round": {
+			const leftCollapsed = options.widthLeft === 0;
+			const rightCollapsed = options.widthRight === 0;
+			const lineCollapsed = options.widthLeft === options.widthRight;
+
+			const left = add(vertex, mul(direction, options.widthLeft));
+			const right = add(vertex, mul(direction, options.widthRight));
+
+			return [
+				...leftCollapsed ? [] : [{
+					type: "arc",
+					start,
+					end: left,
+					center: vertex,
+					radius: vec(options.widthLeft),
+					rotation: 0,
+					startAngle: dirAngle - HALF_PI,
+					deltaAngle: HALF_PI,
+					endAngle: dirAngle,
+				}] satisfies Command[],
+				...lineCollapsed ? [] : [{
+					type: "line",
+					start: left,
+					end: right,
+				}] satisfies Command[],
+				...rightCollapsed ? [] : [{
+					type: "arc",
+					start: right,
+					end,
+					center: vertex,
+					radius: vec(options.widthRight),
+					rotation: 0,
+					startAngle: dirAngle,
+					deltaAngle: HALF_PI,
+					endAngle: dirAngle + HALF_PI,
+				}] satisfies Command[],
 			];
 		}
 	}
+}
+
+const logs: (Command | Vector)[] = [];
+export const log = (...commands: (Command | Vector)[]) => {
+	logs.push(...commands)
+}
+export const clearLogs = () => {
+	const copy = [...logs];
+	logs.length = 0;
+	return copy;
 }

@@ -73,8 +73,10 @@ export const sub = reduce(functions.sub, vec(0, 0), true);
 export const mul = reduce(functions.mul, vec(1, 1));
 export const div = reduce(functions.div, vec(1, 1), true);
 
-export const equal: (a: Vector, b: Vector) => boolean = ([ax, ay], [bx, by]) => ax === bx && ay === by;
 export const dot: (a: Vector, b: Vector) => number = ([ax, ay], [bx, by]) => ax * bx + ay * by;
+export const dotNorm = (a: Vector, b: Vector) => dot(a, b) / (mag(a) * mag(b));
+export const equal: (a: Vector, b: Vector) => boolean = ([ax, ay], [bx, by]) => ax === bx && ay === by;
+export const parallel = (a: Vector, b: Vector, ε: number = 0.001) => Math.abs(dotNorm(a, b)) > 1 - ε;
 
 export const neg: (v: Vector) => Vector = ([x, y]) => vec(-x, -y);
 export const mag = (v: Vector) => Math.hypot(...v);
@@ -141,5 +143,5 @@ export const rotMat: (angle: number) => Matrix = angle => {
 
 // actual sign, including ±0
 const sign = (x: number) => Math.sign(x === 0 ? 1 / x : x);
-export const angleBetween: (a: Vector, b: Vector) => number = (a, b) =>
-	sign(det(mat(a, b))) * Math.acos(dot(a, b) / (mag(a) * mag(b)));
+/** @returns value in [-π, π] */
+export const angleBetween = (a: Vector, b: Vector) => sign(det(mat(a, b))) * Math.acos(dotNorm(a, b));

@@ -10,6 +10,7 @@
 			label-end
 		all-end
 	];
+	row-gap: .25em;
 	& > .form-section {
 		grid-template-columns: subgrid;
 		grid-column: all;
