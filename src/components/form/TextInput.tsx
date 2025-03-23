@@ -3,40 +3,38 @@ import css from "./form.module.css";
 import { Label } from "./Label.tsx";
 
 
-type NumberInputProps = {
+type TextInputProps = {
 	name?: string;
 	/** *Content* of the label associated with this input */
 	label?: ReactNode;
 	disabled?: boolean;
 
-	value: number;
-	min?: number;
-	max?: number;
-	step?: number;
+	value: string;
+	maxLength?: number;
 
 	/** Fires whenever the value is edited */
-	onInput?: (value: number) => void;
+	onInput?: (value: string) => void;
 	/** Fires when the value is committed (Enter, blur) */
-	onChange?: (value: number) => void;
+	onChange?: (value: string) => void;
 };
 
-export function NumberInput({
+export function TextInput({
 	name, label, disabled,
-	value, min, max, step,
+	value, maxLength,
 	onInput, onChange,
-}: NumberInputProps) {
+}: TextInputProps) {
 	const id = useId();
 
-	const [internal, setInternal] = useState(String(value));
+	const [internal, setInternal] = useState(value);
 	const [editing, setEditing] = useState(false);
 
-	const className = [css.input, css.number].filter(x => !!x).join(" ");
+	const className = [css.input, css.text].filter(x => !!x).join(" ");
 	return (
 		<Label for={id}>
 			{label}
-			<input id={id} type="number" className={className}
+			<input id={id} type="text" className={className}
 				value={editing ? internal : value}
-				min={min} max={max} step={step}
+				maxLength={maxLength}
 				disabled={disabled}
 
 				name={name}
@@ -44,34 +42,34 @@ export function NumberInput({
 				onChange={e => {
 					const newValue = e.currentTarget.value;
 					setInternal(newValue);
-					if (onInput) onInput(+newValue);
+					if (onInput) onInput(newValue);
 				}}
 				onFocus={e => {
 					setEditing(true);
-					setInternal(String(value));
+					setInternal(value);
 				}}
 				onBlur={e => {
 					setEditing(false);
-					setInternal(String(value));
-					if (onChange) onChange(+internal);
+					setInternal(value);
+					if (onChange) onChange(internal);
 				}}
 				onKeyDown={e => {
 					if (e.code !== "Enter") return;
-					if (onChange) onChange(+internal);
+					if (onChange) onChange(internal);
 				}}
 			/>
 		</Label>
 	);
 }
 
-export function useNumberInput(initialValue: number, props: Omit<NumberInputProps, "value"> = {}) {
+export function useTextInput(initialValue: string, props: Omit<TextInputProps, "value"> = {}) {
 	const [value, setValue] = useState(initialValue);
-	const actualProps: NumberInputProps = {
+	const actualProps: TextInputProps = {
 		...props,
 		value,
 		onInput: setValue,
 	};
-	const input = <NumberInput {...actualProps} />;
+	const input = <TextInput {...actualProps} />;
 
 	return [value, input, setValue] as const;
 }

@@ -21,12 +21,12 @@
 		--button-fg: var(--theme-secondary-fg-0);
 	}
 	&.confirm {
-		--button-bg: var(--theme-positive-bg);
-		--button-fg: var(--theme-positive-fg);
+		--button-bg: var(--theme-positive-bg-0);
+		--button-fg: var(--theme-positive-fg-0);
 	}
 	&.deny {
-		--button-bg: var(--theme-negative-bg);
-		--button-fg: var(--theme-negative-fg);
+		--button-bg: var(--theme-negative-bg-0);
+		--button-fg: var(--theme-negative-fg-0);
 	}
 	&:disabled {
 		--button-bg: var(--theme-disabled-bg);

@@ -1,16 +1,16 @@
 .layout {
 	position: absolute;
 	inset: 0;
-
-	--handle-width: var(--theme-border-width);
-	--handle-interaction: calc(5 * var(--handle-width));
-	
 }
 .view {
-	overflow: hidden;
+	/* overflow: hidden; */
 	position: relative;
+	height: 100%;
 }
 .split {
+	--handle-width: var(--theme-border-width);
+	--handle-interaction: calc(5 * var(--handle-width));
+
 	position: absolute;
 	inset: 0;
 
@@ -90,5 +90,9 @@
 					height .1s .5s;
 			}
 		}
+	}
+	& > .split-child {
+		overflow: hidden;
+		position: relative;
 	}
 }

@@ -1,9 +1,6 @@
-import { FC, SVGAttributes } from "react";
-import { M, a, L, l } from "./constructors.tsx";
-import { clearLogs, Command, log, stroke, toSVGArc } from "./math.ts";
+import { Fragment, ReactNode, SVGAttributes } from "react";
+import { Command, Log, toSVGArc } from "./math.ts";
 import { add, equal, isVec, lerp, matMul, mul, norm, orthMat, polar, rotMat, sub, vec, Vector, zeroVec } from "./vector.ts";
-import { useNumberInput } from "../form/NumberInput.tsx";
-import { FormSection } from "../form/FormSection.tsx";
 
 const drawDot = (pos: Vector, r: number = 0.2) => `
 	M ${pos}
@@ -111,8 +108,8 @@ const debugStringifyCommand = (command: Command): { type: string; d: string; }[]
 		}
 	}
 };
-const ALL = Symbol("*");
-const stringify = (commands: Command[]) => {
+export const ALL_COMMANDS = Symbol("*");
+export const stringify = (commands: Command[]) => {
 	const stringified: string[] = commands.reduce<{ pos: Vector, strs: string[] }>(({ pos, strs }, command) => {
 		const { start } = command;
 		return {
@@ -131,77 +128,50 @@ const stringify = (commands: Command[]) => {
 		Object.assign(Object.fromEntries(Object.entries(
 			Object.groupBy(debug, ({ type }) => type))
 			.map(([k, v]) => [k, v?.map(c => c.d).join(" ")])
-		), { [ALL]: debug.map(({ d }) => d).join(" ") })
+		), { [ALL_COMMANDS]: debug.map(({ d }) => d).join(" ") })
 	] as const;
 };
-const debug = (logs: ReturnType<typeof clearLogs>): string => {
-	return logs.map<string[]>(v => {
-		if (isVec(v)) return [drawDot(v)];
-		return debugStringifyCommand(v).map(v => v.d);
-	}).flat().join(" ");
-}
-
-export const DebugNewIcon: FC = () => {
-	const [widthLeft, widthLeftInput] = useNumberInput(1, { label: "Width Left", min: 0, step: 0.25, });
-	const [widthRight, widthRightInput] = useNumberInput(1, { label: "Width Right", min: 0, step: 0.25, });
-	const [radius, radiusInput] = useNumberInput(2, { label: "Radius", min: 2, step: 0.25, });
-	const [startX, startXInput] = useNumberInput(7, { label: "Start X", step: 0.5, });
-	const [startY, startYInput] = useNumberInput(3, { label: "Start Y", step: 0.5, });
-
-	M(startX, startY);
-	const first = L(12, 6)[0];
-	const second = a(radius, radius, 0, false, true, 0, radius * 2)[0];
-	const original = [first, second];
-	const stroked = stroke({
-		join: "round",
-		capStart: "round",
-		capEnd: "round",
-		widthLeft,
-		widthRight,
-	}, original);
-
-	const logs = clearLogs();
-
-	const [, debugStroked] = stringify(stroked);
-	const [, debugOriginal] = stringify(original);
-	const strLogs = debug(logs);
-	const props: SVGAttributes<{}> = {
-		strokeWidth: 1.5 * 24 / 480,
-		strokeOpacity: 1,
+export const debug = (logs: Map<string, Log>): ReactNode[] => {
+	const strokeProps: SVGAttributes<{}> = {
 		fill: "none",
+		stroke: "#0f0",
+		strokeWidth: 0.2,
 	};
-	return (
-		<div style={{
-			display: "grid",
-			gap: ".5em",
-			padding: ".5em",
-		}}>
-			<FormSection>
-				{widthLeftInput}
-				{widthRightInput}
-				{radiusInput}
-				{startXInput}
-				{startYInput}
-			</FormSection>
-
-			<svg viewBox="0 0 24 24" width="480" height="480" style={{ border: "1px solid lime" }}>
-				{/* <path d={d} fill="#0004" /> */}
-				<path {...props} d="M0 12 h24 M12 0 v24 M13 12 a1 1 0 0 0 -2 0 1 1 0 0 0 2 0"
-					stroke="#fff" strokeWidth={1 * 24 / 480} strokeOpacity={0.25} />
-				<path {...props} d={debugOriginal[ALL]} stroke="oklch(1 0 0)" />
-
-				<path {...props} d={debugStroked.line_start} stroke="oklch(.6 .3 40)" />
-				<path {...props} d={debugStroked.line_path} stroke="oklch(.6 .3 40)" />
-				<path {...props} d={debugStroked.line_arrow} stroke="oklch(.6 .3 40)" />
-				<path {...props} d={debugStroked.line_end} stroke="oklch(.6 .3 40)" />
-
-				<path {...props} d={debugStroked.arc_start} stroke="oklch(.6 .3 250)" />
-				<path {...props} d={debugStroked.arc_path} stroke="oklch(.6 .3 250)" />
-				<path {...props} d={debugStroked.arc_arrow} stroke="oklch(.6 .3 250)" />
-				<path {...props} d={debugStroked.arc_end} stroke="oklch(.6 .3 250)" />
-
-				<path {...props} d={strLogs} stroke="oklch(.6 .7 150)" strokeWidth={3 * 24 / 480} strokeOpacity={1} />
-			</svg>
-		</div>
-	);
-};
+	const textbgProps: SVGAttributes<{}> = {
+		stroke: "#0004",
+		strokeWidth: 0.3,
+		fontSize: 0.75,
+	};
+	const textfgProps: SVGAttributes<{}> = {
+		fill: "#ff0",
+		fontSize: 0.75,
+	};
+	return [...logs].map<ReactNode>(([k, v]) => {
+		if (isVec(v)) {
+			const pos = add(v, 0.5);
+			return <Fragment key={k}>
+				<path {...strokeProps} d={drawDot(v)}></path>,
+				<text {...textbgProps} x={pos[0]} y={pos[1]}>{k}</text>
+				<text {...textfgProps} x={pos[0]} y={pos[1]}>{k}</text>
+			</Fragment>;
+		}
+		if ("at" in v) {
+			const pos = add(v.at, 0.5);
+			return <Fragment key={k}>
+				<path {...strokeProps} d={drawDot(v.at, 0.1)}></path>,
+				<text {...textbgProps} x={pos[0]} y={pos[1]}>{k}</text>
+				<text {...textfgProps} x={pos[0]} y={pos[1]}>{k}</text>
+			</Fragment>;
+		}
+		if ("type" in v) {
+			const d = debugStringifyCommand(v).map(({d}) => d).join(" ");
+			const pos = add(v.start, 0.5);
+			return <Fragment key={k}>
+				<path {...strokeProps} d={d}></path>,
+				<text {...textbgProps} x={pos[0]} y={pos[1]}>{k}</text>
+				<text {...textfgProps} x={pos[0]} y={pos[1]}>{k}</text>
+			</Fragment>;
+		}
+		return [];
+	}).flat();
+}

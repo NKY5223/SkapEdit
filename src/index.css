@@ -15,8 +15,8 @@
 }
 @layer default {
 	body {
-		background-color: var(--theme-background-0);
-		color: var(--theme-foreground-0);
+		background-color: var(--theme-bg-0);
+		color: var(--theme-fg-0);
 		font-family: var(--theme-font);
 	}
 }

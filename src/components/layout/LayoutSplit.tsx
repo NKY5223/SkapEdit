@@ -1,17 +1,21 @@
 import { ReactNode, useState, useRef, useEffect } from "react";
 import css from "./Layout.module.css";
+import { LayoutDescSplit, LayoutFC } from "./Layout.tsx";
 
-type ViewSplitProps = {
-	ratio: number;
-	axis: "x" | "y"
+type LayoutSplitProps = {
 	children: [ReactNode, ReactNode];
 };
-export function ViewSplit({
-	ratio: initialRatio,
-	axis,
-	children: [child0, child1],
-}: ViewSplitProps) {
-	const [ratio, setRatio] = useState(initialRatio);
+export const LayoutSplit: LayoutFC<LayoutDescSplit, LayoutSplitProps> = ({
+	dispatch,
+	desc,
+	children: [first, second],
+}) => {
+	const { ratio, axis } = desc;
+	const setRatio = (ratio: number) => dispatch({
+		type: "set_ratio",
+		ratio,
+		target: desc
+	});
 	const [resizing, setResizing] = useState(false);
 
 	const wrapperRef = useRef<HTMLDivElement>(null);
@@ -48,8 +52,8 @@ export function ViewSplit({
 		<div ref={wrapperRef} className={`${css.split} ${css[`split-${axis}`]}`}
 			style={{ "--ratio": `${ratio * 100}%` }}
 		>
-			<div className={css.view}>{child0}</div>
-			<div className={css.view}>{child1}</div>
+			<div className={css["split-child"]}>{first}</div>
+			<div className={css["split-child"]}>{second}</div>
 			<div className={`${css.handle} ${resizing ? css.resizing : ""}`} 
 				onPointerDown={e => (e.preventDefault(), setResizing(true))} 
 				onPointerUp={() => setResizing(false)}>

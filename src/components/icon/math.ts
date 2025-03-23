@@ -1,4 +1,5 @@
 import { interleave, transposeTuples, tuples } from "../../utils.ts";
+import { debug } from "./stringify.tsx";
 import { Vector, map, lerp, div, sub, vec, rotMat, matMul, matTranspose, dot, swap, mul, add, angleBetween, neg, leftMat, norm, polar, safeNorm, equal, det, mat, arg, mag, parallel, isVec } from "./vector.ts";
 
 const TAU = 2 * Math.PI;
@@ -466,7 +467,6 @@ type JoinOffsetCommandPairData = {
 	slicePrev: number;
 	sliceNext: number;
 };
-/** do not feed this intersecting commands, it WILL cry */
 export const joinOffsetCommandPair = (
 	options: JoinOptions,
 	prev: Command,
@@ -691,12 +691,29 @@ const capOffsetCommand = (
 	}
 }
 
-const logs: (Command | Vector)[] = [];
-export const log = (...commands: (Command | Vector)[]) => {
-	logs.push(...commands)
+export type Log = (
+	| Command
+	| Vector
+	| {
+		at: Vector;
+		content:
+		| number
+		| string;
+	}
+);
+
+// debug logging
+const logs: Map<string, Log> = new Map();
+export function log(things: Record<string, Log>) {
+	for (const i in things) {
+		const key = logs.has(i)
+			? `${i}_${crypto.randomUUID().slice(0, 4)}`
+			: i;
+		logs.set(key, things[i]);
+	}
 }
 export const clearLogs = () => {
-	const copy = [...logs];
-	logs.length = 0;
+	const copy = new Map([...logs]);
+	logs.clear();
 	return copy;
 }
