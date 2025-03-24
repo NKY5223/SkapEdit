@@ -1,6 +1,7 @@
 import { ReactNode, useId, useState } from "react";
 import css from "./form.module.css";
 import { Label } from "./Label.tsx";
+import { classList } from "../utils.tsx";
 
 
 type NumberInputProps = {
@@ -18,19 +19,22 @@ type NumberInputProps = {
 	onInput?: (value: number) => void;
 	/** Fires when the value is committed (Enter, blur) */
 	onChange?: (value: number) => void;
+
+	inputClass?: string;
 };
 
 export function NumberInput({
 	name, label, disabled,
 	value, min, max, step,
 	onInput, onChange,
+	inputClass,
 }: NumberInputProps) {
 	const id = useId();
 
 	const [internal, setInternal] = useState(String(value));
 	const [editing, setEditing] = useState(false);
 
-	const className = [css.input, css.number].filter(x => !!x).join(" ");
+	const className = classList(css["input"], css["number"], inputClass);
 	return (
 		<Label for={id}>
 			{label}

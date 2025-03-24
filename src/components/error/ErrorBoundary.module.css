@@ -1,0 +1,16 @@
+.error {
+	padding: 1em;
+	background-color: var(--theme-negative-bg-1);
+	color: var(--theme-negative-fg-1);
+	position: absolute;
+	inset: 0;
+
+	& > h1 {
+		font-size: 3em;
+		margin-bottom: 1rem;
+		font-family: monospace;
+	}
+	& > pre {
+		tab-size: 4;
+	}
+}

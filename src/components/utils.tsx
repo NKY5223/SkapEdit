@@ -1,0 +1,1 @@
+export const classList = (...list: (string | undefined | null)[]) => list.filter(s => !!s).join(" ");

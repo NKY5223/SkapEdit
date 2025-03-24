@@ -1,5 +1,5 @@
 import { ReactNode, useState, useRef, useEffect } from "react";
-import css from "./Layout.module.css";
+import css from "./LayoutSplit.module.css";
 import { LayoutDescSplit, LayoutFC } from "./Layout.tsx";
 
 type LayoutSplitProps = {

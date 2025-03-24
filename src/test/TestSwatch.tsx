@@ -51,7 +51,7 @@ export const TestSwatch: ViewFC = ({
 						<div key={bg} style={{
 							width: "10em",
 							height: "5em",
-							border: "1px solid white",
+							border: "1px solid #fff4",
 							borderRadius: "1em",
 
 							display: "grid",

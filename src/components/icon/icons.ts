@@ -18,7 +18,6 @@ import size_width2 from "./icon/size/width2.svg?raw";
 
 export const icons = {
 	_guide,
-	// _fill_mask,
 
 	reset,
 	reset2,

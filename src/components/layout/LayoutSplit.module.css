@@ -1,0 +1,89 @@
+.split {
+	--handle-width: var(--theme-border-width);
+	--handle-interaction: calc(5 * var(--handle-width));
+
+	position: absolute;
+	inset: 0;
+
+	--ratio: 50%;
+	--cursor: move;
+	--hover-color: var(--theme-primary-bg-0);
+
+	display: grid;
+	&.split-x {
+		grid-template-areas: "a h b";
+		grid-template-columns: var(--ratio) var(--handle-width) auto;
+		--cursor: e-resize;
+		
+		--handle-interaction-width: var(--handle-interaction);
+		--handle-interaction-height: 100%;
+		--handle-collapsed-width: 0;
+		--handle-collapsed-height: 100%;
+	}
+	&.split-y {
+		grid-template-areas: "a" "h" "b";
+		grid-template-rows: var(--ratio) var(--handle-width) auto;
+		--cursor: n-resize;
+
+		
+		--handle-interaction-width: 100%;
+		--handle-interaction-height: var(--handle-interaction);
+		--handle-collapsed-width: 100%;
+		--handle-collapsed-height: 0;
+	}
+
+	& > .handle {
+		position: relative;
+
+		grid-area: h;
+		z-index: 1;
+
+		background-color: var(--theme-border-0);
+		
+		& > .interaction {
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			translate: -50% -50%;
+
+			width: var(--handle-interaction-width);
+			height: var(--handle-interaction-height);
+			
+			cursor: var(--cursor);
+			
+		}
+		&.resizing > .interaction {
+			width: 200vw;
+			height: 200vw;
+		}
+
+		& > .visual {
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			translate: -50% -50%;
+
+			width: var(--handle-collapsed-width);
+			height: var(--handle-collapsed-height);
+			
+			background-color: var(--hover-color);
+			transition: 
+				width .2s 0, 
+				height .2s 0;
+			pointer-events: none;
+		}
+		&:is(:hover, .resizing) {
+			& > .visual {
+				width: var(--handle-interaction-width);
+				height: var(--handle-interaction-height);
+				transition: 
+					width .1s .5s, 
+					height .1s .5s;
+			}
+		}
+	}
+	& > .split-child {
+		overflow: hidden;
+		position: relative;
+	}
+}

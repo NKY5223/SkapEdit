@@ -1,4 +1,3 @@
-import { FC } from "react"
 import { NumberInput } from "../form/NumberInput.tsx";
 import { Button } from "../form/Button.tsx";
 import { useBounds } from "../editor/Bounds.ts";

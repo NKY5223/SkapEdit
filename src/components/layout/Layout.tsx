@@ -1,13 +1,16 @@
-import { Dispatch, FC, Reducer, useReducer } from "react";
+import { createContext, Dispatch, FC, Reducer, useContext, useReducer } from "react";
 import { LayoutSplit } from "./LayoutSplit.tsx";
-import { LayoutView } from "./LayoutView.tsx";
-
-
+import { LayoutViewMemo, ViewFC, ViewSelector } from "./LayoutView.tsx";
 
 /* 
+2025-02-xx
 Goal:
 Be able to edit some arbitrary data with multiple views
 tagged data?
+
+2025-03-24
+what the fuck does "tagged data" mean wtf nky
+i don't know if we need floating views
 
 data
 | Layout
@@ -29,19 +32,19 @@ type BaseDesc<T extends string> = {
 	type: T;
 	id: string;
 }
+export type LayoutDescView = BaseDesc<"view"> & {
+	view: string;
+};
 export type LayoutDescSplit = BaseDesc<"split"> & {
 	axis: "x" | "y";
 	ratio: number;
 	first: LayoutDesc;
 	second: LayoutDesc;
 };
-export type LayoutDescView = BaseDesc<"view"> & {
-	view: string;
-};
 
 export type LayoutDesc = (
-	| LayoutDescSplit
 	| LayoutDescView
+	| LayoutDescSplit
 );
 
 type BaseAction<T extends string> = {
@@ -49,11 +52,11 @@ type BaseAction<T extends string> = {
 	target: LayoutDesc;
 };
 export type LayoutAction = (
-	| BaseAction<"set_ratio"> & {
-		ratio: number;
-	}
 	| BaseAction<"set_view"> & {
 		view: string;
+	}
+	| BaseAction<"set_ratio"> & {
+		ratio: number;
 	}
 );
 export type LayoutFC<T extends LayoutDesc, Props> = FC<{
@@ -63,7 +66,7 @@ export type LayoutFC<T extends LayoutDesc, Props> = FC<{
 // #endregion
 
 const setInLayout = <T extends LayoutDesc>(
-	layout: LayoutDesc, 
+	layout: LayoutDesc,
 	target: LayoutDesc,
 	set: T,
 ): [boolean, LayoutDesc] => {
@@ -89,16 +92,6 @@ const setInLayout = <T extends LayoutDesc>(
 
 const layoutReducer: Reducer<LayoutDesc, LayoutAction> = (layout, action) => {
 	switch (action.type) {
-		case "set_ratio": {
-			const { target, ratio } = action;
-			const [found, newLayout] = setInLayout(layout, target, {
-				...target, 
-				ratio,
-			});
-
-			if (!found) console.warn("Could not find", target, "in layout:", layout);
-			return newLayout;
-		}
 		case "set_view": {
 			const { target, view } = action;
 			const [found, newLayout] = setInLayout(layout, target, {
@@ -109,18 +102,36 @@ const layoutReducer: Reducer<LayoutDesc, LayoutAction> = (layout, action) => {
 			if (!found) console.warn("Could not find", target, "in layout:", layout);
 			return newLayout;
 		}
+		case "set_ratio": {
+			const { target, ratio } = action;
+			const [found, newLayout] = setInLayout(layout, target, {
+				...target,
+				ratio,
+			});
+
+			if (!found) console.warn("Could not find", target, "in layout:", layout);
+			return newLayout;
+		}
 	}
 }
 
+
+const viewsContext = createContext<Map<string, ViewFC>>(new Map());
+export const useViews = () => useContext(viewsContext);
+
 type LayoutProps = {
 	layout: LayoutDesc;
+	views: Map<string, ViewFC>;
 };
 export const Layout: FC<LayoutProps> = ({
-	layout: initialLayout
+	layout: initialLayout,
+	views,
 }) => {
 	const [layout, dispatchLayout] = useReducer(layoutReducer, initialLayout);
 	return (
-		<LayoutTree layout={layout} dispatch={dispatchLayout} />
+		<viewsContext.Provider value={views}>
+			<LayoutTree layout={layout} dispatch={dispatchLayout} />
+		</viewsContext.Provider>
 	);
 }
 
@@ -134,7 +145,7 @@ const LayoutTree: FC<LayoutTreeProps> = ({
 }) => {
 	switch (layout.type) {
 		case "split": {
-			const { axis, ratio, first, second } = layout;
+			const { first, second } = layout;
 			return (
 				<LayoutSplit desc={layout} dispatch={dispatch}>
 					<LayoutTree layout={first} dispatch={dispatch} />
@@ -143,13 +154,12 @@ const LayoutTree: FC<LayoutTreeProps> = ({
 			);
 		}
 		case "view": {
-			const { view } = layout;
+			const { } = layout;
 			return (
-				<LayoutView desc={layout} dispatch={dispatch} />
+				<LayoutViewMemo desc={layout} dispatch={dispatch} />
 			);
 		}
 	}
-	return (
-		<div>Layout error</div>
-	)
+	const errorMessage = `Layout error: could not make \n${JSON.stringify(layout, null, "\t")}`;
+	throw new Error(errorMessage, { cause: layout });
 }

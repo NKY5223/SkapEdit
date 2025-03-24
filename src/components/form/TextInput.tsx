@@ -1,6 +1,7 @@
 import { ReactNode, useId, useState } from "react";
 import css from "./form.module.css";
 import { Label } from "./Label.tsx";
+import { classList } from "../utils.tsx";
 
 
 type TextInputProps = {
@@ -16,19 +17,25 @@ type TextInputProps = {
 	onInput?: (value: string) => void;
 	/** Fires when the value is committed (Enter, blur) */
 	onChange?: (value: string) => void;
+
+	inputClass?: string;
 };
 
 export function TextInput({
 	name, label, disabled,
 	value, maxLength,
 	onInput, onChange,
+	inputClass,
 }: TextInputProps) {
 	const id = useId();
 
 	const [internal, setInternal] = useState(value);
 	const [editing, setEditing] = useState(false);
 
-	const className = [css.input, css.text].filter(x => !!x).join(" ");
+	const className = classList(
+		css["input"], css["text"], 
+		inputClass
+	);
 	return (
 		<Label for={id}>
 			{label}

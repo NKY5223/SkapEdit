@@ -1,4 +1,5 @@
 import { Icon, IconName } from "../icon/Icon.tsx";
+import { classList } from "../utils.tsx";
 import css from "./Button.module.css";
 
 export type ButtonType = "primary" | "secondary" | "confirm" | "deny";
@@ -14,7 +15,7 @@ export function Button({
 	type, icon, disabled, children,
 	onClick
 }: React.PropsWithChildren<ButtonProps>) {
-	const className = [css.button, type && css[type], icon && css.icon].filter(x => !!x).join(" ");
+	const className = classList(css.button, type && css[type], icon && css.icon);
 	return <button className={className} disabled={disabled} onClick={onClick}>
 		{icon && (<div className={css.icon}>
 			<Icon
