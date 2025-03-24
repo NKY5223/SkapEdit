@@ -1,9 +1,9 @@
-import { KeyboardEventHandler, ReactNode, useState } from "react";
+import { Dispatch, KeyboardEventHandler, ReactNode, SetStateAction, useState } from "react";
 import css from "./DropdownSelectSectioned.module.css";
 import { classList } from "../utils.tsx";
-import { Option } from "./DropdownSelectList.tsx";
+import { type Option } from "./DropdownSelectList.tsx";
 
-type Options<T> = {
+export type Options<T> = {
 	name: string;
 	label: ReactNode;
 	options: Option<T>[];
@@ -30,7 +30,6 @@ export function DropdownSelectSectioned<T>({
 		const optionComps = options.map((option) => (
 			<Option key={option.name} {...{
 				option,
-				optionBaseClass: css["option"],
 				optionClass,
 				selection,
 				setSelection,
@@ -66,6 +65,39 @@ export function DropdownSelectSectioned<T>({
 			<div className={css["options"]}>
 				{sectionComps}
 			</div>
+		</div>
+	);
+}
+
+type OptionProps<T> = {
+	option: Option<T>;
+	optionClass: string | undefined;
+	selection: T;
+	setSelection: Dispatch<SetStateAction<T>>;
+
+	onSelect: ((value: T) => void) | undefined;
+};
+export function Option<T>({
+	option: {
+		value, display,
+	},
+	optionClass,
+	selection, setSelection,
+	onSelect,
+}: OptionProps<T>) {
+	const onTrigger = () => {
+		setSelection(value);
+		if (onSelect) onSelect(value);
+	};
+	const className = classList(
+		css["option"],
+		Object.is(selection, value) ? css["selected"] : null,
+		optionClass,
+	);
+	return (
+		<div className={className} tabIndex={0}
+			onClick={onTrigger} onKeyDown={filterKeys(onTrigger)}>
+			{display(false)}
 		</div>
 	);
 }

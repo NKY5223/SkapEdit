@@ -10,7 +10,8 @@ import { Inspector } from "../components/inspector/Inspector.tsx";
 import { TestSwatch } from "./TestSwatch.tsx";
 import { TestIcons } from "./TestIcons.tsx";
 import { ErrorBoundary } from "../components/error/ErrorBoundary.tsx";
-import { toMap, Translation, TranslationProvider } from "../components/translate/Translate.tsx";
+import { delegate, toMap, Translate, Translation, TranslationProvider } from "../components/translate/Translate.tsx";
+import { ViewFC } from "../components/layout/LayoutView.tsx";
 
 
 const uuid = () => crypto.randomUUID();
@@ -30,7 +31,7 @@ const splitY = (ratio: number, a: LayoutDesc, b: LayoutDesc) => ({
 	first: a,
 	second: b,
 } satisfies LayoutDescSplit);
-const view = (view: string) => ({
+const view = (view: ViewAutocomplete) => ({
 	type: "view",
 	id: uuid(),
 	view,
@@ -42,7 +43,7 @@ const defaultLayout: LayoutDesc = (
 		splitX(0.4,
 			view("test.swatch"),
 			splitY(0.6,
-				view("inspector"),
+				view("map.inspector"),
 				view("test.lorem")
 			)
 		)
@@ -50,29 +51,40 @@ const defaultLayout: LayoutDesc = (
 );
 
 const translations = {
-	"error.layout.view.unknown": ["Unknown view: ", { value: "view" }]
+	"error.layout.view.unknown": ["Unknown view: ", { value: "view" }],
+
+	"layout.view.name": delegate("layout.view.name", "view"),
+	"layout.view.category.name": delegate("layout.view.category.name", "category"),
+	"layout.view.category.name.test": "Testing",
+	"layout.view.name.test.icon": "Icon Test",
+	"layout.view.name.test.icons": "Icons Test",
+	"layout.view.name.test.swatch": "Theme Test",
+	"layout.view.name.test.lorem": "Lorem ipsum...",
+	"layout.view.category.name.map": "Map",
+	"layout.view.name.map.inspector": "Inspector",
+
+
+	"lorem": "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Esse, culpa possimus fuga, veritatis harum autem dolore ipsam provident, id praesentium distinctio ullam similique! Earum praesentium repudiandae magnam ipsum et nihil!",
 } as const satisfies Record<string, Translation>;
+export type TranslationAutocomplete = keyof typeof translations;
+const views = {
+	"test.icon": TestIcon,
+	"test.icons": TestIcons,
+	"test.swatch": TestSwatch,
+	"map.inspector": Inspector,
+	"test.lorem": ({ viewSelector }) => (<div>
+		{viewSelector}
+		<Translate>lorem</Translate>
+	</div>),
+} as const satisfies Record<string, ViewFC>;
+type ViewAutocomplete = keyof typeof views;
 export function Test() {
 	return (
 		<ErrorBoundary location="Test">
 			<TranslationProvider translations={toMap<Translation>(translations)}>
 				<ThemeProvider>
 					<IconProvider icons={icons} aliases={aliases}>
-						<Layout layout={defaultLayout} views={new Map([
-							["test.icon", TestIcon],
-							["test.icons", TestIcons],
-							["test.swatch", TestSwatch],
-							["inspector", Inspector],
-							["test.lorem", ({ viewSelector }) => (<div>
-								{viewSelector}
-								<p>
-									Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-									Esse, culpa possimus fuga, veritatis harum autem dolore ipsam provident,
-									id praesentium distinctio ullam similique!
-									Earum praesentium repudiandae magnam ipsum et nihil!
-								</p>
-							</div>)],
-						])} />
+						<Layout layout={defaultLayout} views={toMap(views)} />
 					</IconProvider>
 				</ThemeProvider>
 			</TranslationProvider>

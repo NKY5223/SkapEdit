@@ -29,7 +29,6 @@ export function DropdownSelectList<T>({
 	const optionComps = options.map((option) => (
 		<Option key={option.name} {...{
 			option,
-			optionBaseClass: css["option"],
 			optionClass,
 			selection, setSelection,
 			onSelect,
@@ -60,18 +59,16 @@ export function DropdownSelectList<T>({
 
 type OptionProps<T> = {
 	option: Option<T>;
-	optionBaseClass: string | undefined;
 	optionClass: string | undefined;
 	selection: T;
 	setSelection: Dispatch<SetStateAction<T>>;
 
 	onSelect: ((value: T) => void) | undefined;
 };
-export function Option<T>({
+function Option<T>({
 	option: {
 		value, display,
 	},
-	optionBaseClass,
 	optionClass,
 	selection, setSelection,
 	onSelect,
@@ -81,7 +78,7 @@ export function Option<T>({
 		if (onSelect) onSelect(value);
 	};
 	const className = classList(
-		optionBaseClass,
+		css["option"],
 		Object.is(selection, value) ? css["selected"] : null,
 		optionClass,
 	);

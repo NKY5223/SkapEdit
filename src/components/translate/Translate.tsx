@@ -1,4 +1,5 @@
 import { createContext, FC, PropsWithChildren, ReactNode, useContext } from "react";
+import { TranslationAutocomplete } from "../../test/Test.tsx";
 
 // #region Types
 export type Value = (
@@ -11,6 +12,7 @@ export type Value = (
 		value: string;
 	}
 );
+type Values = ReadonlyMap<string, Value>;
 export type Translation = (
 	| string
 	| Translation[]
@@ -21,6 +23,7 @@ export type Translation = (
 		value: string;
 		fallback?: ReactNode;
 	}
+	| ((values: Values) => ReactNode)
 );
 // #endregion
 
@@ -32,7 +35,7 @@ function useTranslation(key: string) {
 	return translation;
 }
 
-type TranslationKey = "test" | string & {};
+type TranslationKey = TranslationAutocomplete | string & {};
 type TranslateProps = {
 	children: TranslationKey;
 	values?: Record<string, unknown>;
@@ -46,7 +49,7 @@ export const Translate: FC<TranslateProps> = ({
 	if (!translation) {
 		return (<TranslateFallback>{key}</TranslateFallback>);
 	}
-	const convertedValues: ReadonlyMap<string, Value> =
+	const convertedValues: Values =
 		new Map(Object.entries(values ?? {}).map<[string, Value]>(([key, value]) => {
 			switch (typeof value) {
 				case "string":
@@ -73,13 +76,13 @@ const TranslateFallback: FC<TranslationFallbackProps> = ({
 	children: key
 }) => {
 	return (
-		<pre>Translate{"{"} {key} {"}"}</pre>
+		`Translate{ ${key} }`
 	);
 }
 
 type TranslateTranslationProps = {
 	translation: Translation;
-	values: ReadonlyMap<string, Value>;
+	values: Values;
 };
 const TranslateTranslation: FC<TranslateTranslationProps> = ({
 	translation,
@@ -116,6 +119,9 @@ const TranslateTranslation: FC<TranslateTranslationProps> = ({
 		}
 		return stringifyValue(value);
 	}
+	if (typeof translation === "function") {
+		return translation(values);
+	}
 }
 
 type TranslationProviderProps = PropsWithChildren<{
@@ -143,7 +149,6 @@ export const TranslationProvider: FC<TranslationProviderProps> = ({
 	);
 }
 
-
 function stringifyValue(value: Value): ReactNode {
 	switch (value.type) {
 		case "string": {
@@ -157,4 +162,33 @@ function stringifyValue(value: Value): ReactNode {
 
 export function toMap<T>(obj: Record<string, T>): ReadonlyMap<string, T> {
 	return new Map(Object.entries(obj));
+}
+/**
+ * @example 
+ * ... 
+ * "example.key": delegate("example.key", "value"), 
+ * ...
+ * 
+ * <Translate values={{ value: "value" }}>example.key</Translate> 
+ *     ↓    ↓    ↓
+ * <Translate values={{ value: "value" }}>example.key.value</Translate>
+ */
+export function delegate(
+	key: string, valueName: string,
+	seperator: string = ".",
+	fallback: ReactNode = <TranslateFallback>{`${key}(delegate)`}</TranslateFallback>,
+): Translation {
+	return (values) => {
+		const value = values.get(valueName);
+		if (!value) return fallback;
+		if (value.type === "string") {
+			const newKey = `${key}${seperator}${value.value}`;
+			const t = useTranslation(newKey);
+			if (!t) {
+				return (<TranslateFallback>{newKey}</TranslateFallback>);
+			}
+			return (<TranslateTranslation values={values} translation={t} />);
+		}
+		return fallback;
+	}
 }

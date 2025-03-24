@@ -1,12 +1,11 @@
-import { Dispatch, FC, memo, ReactNode, useEffect, useMemo } from "react";
+import { Dispatch, FC, memo, ReactNode } from "react";
 import css from "./LayoutView.module.css";
 import { LayoutAction, LayoutDescView, LayoutFC, useViews } from "./Layout.tsx";
-import { Button } from "../form/Button.tsx";
 import { ErrorBoundary } from "../error/ErrorBoundary.tsx";
-import { DropdownSelectList } from "../form/DropdownSelectList.tsx";
-import { DropdownSelectSectioned } from "../form/DropdownSelectSectioned.tsx";
+import { DropdownSelectSectioned, Options } from "../form/DropdownSelectSectioned.tsx";
 import { classList } from "../utils.tsx";
-import { toMap, Translate } from "../translate/Translate.tsx";
+import { Translate } from "../translate/Translate.tsx";
+import { Option } from "../form/DropdownSelectList.tsx";
 
 type ViewProps = {
 	viewSelector: ReactNode;
@@ -60,17 +59,19 @@ export const ViewSelector: FC<ViewSelectorProps> = ({
 			flexDirection: "row",
 		}}>
 			<DropdownSelectSectioned initial={view.view} options={
-				Object.entries(Object.groupBy([...views.keys(), "aaaaa.aaaaa", "aaaaa.8291edajdbkajsdbajdabjdkjk"].map(name => (
-					{
-						value: name,
-						display: () => name,
-						name,
-					}
-				)), ({ name }) => name.split(".")[0])).map(([name, options]) => ({
+				Object.entries(Object.groupBy<string, Option<string>>(
+					[...views.keys(), "aaaaa.aaaaa", "aaaaa.8291edajdbkajsdbajdabjdkjk"].map(name => (
+						{
+							value: name,
+							display: () => <Translate values={{ view: name }}>layout.view.name</Translate>,
+							name,
+						}
+					)), ({ name }) => name.split(".")[0]
+				)).map<Options<string>[number]>(([name, options]) => ({
 					name,
-					label: name,
+					label: <Translate values={{ category: name }}>layout.view.category.name</Translate>,
 					options: options ?? [],
-				}))
+				})) satisfies Options<string>
 			} onSelect={value => dispatch({
 				type: "set_view",
 				target: view,
