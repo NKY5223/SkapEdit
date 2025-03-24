@@ -10,6 +10,7 @@ import { Inspector } from "../components/inspector/Inspector.tsx";
 import { TestSwatch } from "./TestSwatch.tsx";
 import { TestIcons } from "./TestIcons.tsx";
 import { ErrorBoundary } from "../components/error/ErrorBoundary.tsx";
+import { toMap, Translation, TranslationProvider } from "../components/translate/Translate.tsx";
 
 
 const uuid = () => crypto.randomUUID();
@@ -48,28 +49,33 @@ const defaultLayout: LayoutDesc = (
 	)
 );
 
+const translations = {
+	"error.layout.view.unknown": ["Unknown view: ", { value: "view" }]
+} as const satisfies Record<string, Translation>;
 export function Test() {
 	return (
 		<ErrorBoundary location="Test">
-			<ThemeProvider>
-				<IconProvider icons={icons} aliases={aliases}>
-					<Layout layout={defaultLayout} views={new Map([
-						["test.icon", TestIcon],
-						["test.icons", TestIcons],
-						["test.swatch", TestSwatch],
-						["inspector", Inspector],
-						["test.lorem", ({ viewSelector }) => (<div>
-							{viewSelector}
-							<p>
-								Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-								Esse, culpa possimus fuga, veritatis harum autem dolore ipsam provident,
-								id praesentium distinctio ullam similique!
-								Earum praesentium repudiandae magnam ipsum et nihil!
-							</p>
-						</div>)],
-					])} />
-				</IconProvider>
-			</ThemeProvider>
+			<TranslationProvider translations={toMap<Translation>(translations)}>
+				<ThemeProvider>
+					<IconProvider icons={icons} aliases={aliases}>
+						<Layout layout={defaultLayout} views={new Map([
+							["test.icon", TestIcon],
+							["test.icons", TestIcons],
+							["test.swatch", TestSwatch],
+							["inspector", Inspector],
+							["test.lorem", ({ viewSelector }) => (<div>
+								{viewSelector}
+								<p>
+									Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+									Esse, culpa possimus fuga, veritatis harum autem dolore ipsam provident,
+									id praesentium distinctio ullam similique!
+									Earum praesentium repudiandae magnam ipsum et nihil!
+								</p>
+							</div>)],
+						])} />
+					</IconProvider>
+				</ThemeProvider>
+			</TranslationProvider>
 		</ErrorBoundary>
 	);
 }

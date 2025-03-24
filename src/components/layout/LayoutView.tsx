@@ -6,6 +6,7 @@ import { ErrorBoundary } from "../error/ErrorBoundary.tsx";
 import { DropdownSelectList } from "../form/DropdownSelectList.tsx";
 import { DropdownSelectSectioned } from "../form/DropdownSelectSectioned.tsx";
 import { classList } from "../utils.tsx";
+import { toMap, Translate } from "../translate/Translate.tsx";
 
 type ViewProps = {
 	viewSelector: ReactNode;
@@ -29,7 +30,7 @@ export const LayoutView: LayoutFC<LayoutDescView, LayoutViewProps> = ({
 		return (
 			<div className={className}>
 				{viewSelector}
-				<h1>Unknown view: {view}</h1>
+				<h1><Translate values={{ view }}>error.layout.view.unknown</Translate></h1>
 			</div>
 		);
 	}
