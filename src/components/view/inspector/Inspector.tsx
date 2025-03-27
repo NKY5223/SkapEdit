@@ -1,13 +1,13 @@
-import { NumberInput } from "../form/NumberInput.tsx";
-import { Button } from "../form/Button.tsx";
-import { useBounds } from "../editor/Bounds.ts";
-import { Icon } from "../icon/Icon.tsx";
-import { FormSection } from "../form/FormSection.tsx";
-import { ViewFC } from "../layout/LayoutView.tsx";
+import { NumberInput } from "../../form/NumberInput.tsx";
+import { Button } from "../../form/Button.tsx";
+import { useBounds } from "../../editor/Bounds.ts";
+import { Icon } from "../../icon/Icon.tsx";
+import { FormSection } from "../../form/FormSection.tsx";
+import { ViewFC } from "../../layout/LayoutView.tsx";
 import css from "./Inspector.module.css";
 
 export const Inspector: ViewFC = ({
-	viewSelector,
+	children,
 }) => {
 	const [bounds, {
 		setLeft, setTop, setRight, setBottom,
@@ -22,7 +22,7 @@ export const Inspector: ViewFC = ({
 
 	return (
 		<div className={css["inspector"]}>
-			{viewSelector}
+			{children}
 			<FormSection>
 				<FormSection row>
 					<NumberInput name="left" value={left} onInput={setLeft} label={

@@ -1,6 +1,7 @@
 precision mediump float;
 
-varying vec4 vObstacleColor;
+uniform vec4 uObstacleColor;
+
 varying vec2 vPosition;
 
 const vec2 patternDirection = vec2(1, 1) / 20.;
@@ -15,5 +16,5 @@ void main() {
 					  0.9375
 	);
 
-	gl_FragColor = vec4(mix(vec3(brightness), vObstacleColor.rgb, vObstacleColor.a), 1);
+	gl_FragColor = vec4(mix(vec3(brightness), uObstacleColor.rgb, uObstacleColor.a), 1);
 }

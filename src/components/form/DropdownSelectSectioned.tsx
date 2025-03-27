@@ -14,13 +14,14 @@ type DropdownSelectSectionedProps<T> = {
 
 	onSelect?: (value: T) => void;
 
-	selectedClass?: string;
+	selectClass?: string;
+	optionsClass?: string;
 	optionClass?: string;
 };
 export function DropdownSelectSectioned<T>({
 	options: sections, initial,
 	onSelect,
-	selectedClass, optionClass,
+	selectClass, optionsClass, optionClass,
 }: DropdownSelectSectionedProps<T>): ReactNode {
 	const [open, setOpen] = useState(false);
 	const [selection, setSelection] = useState<T>(initial);
@@ -47,7 +48,11 @@ export function DropdownSelectSectioned<T>({
 	const className = classList(
 		css["select"],
 		open ? css["open"] : null,
-		selectedClass,
+		selectClass,
+	);
+	const optionsClassName = classList(
+		css["options"],
+		optionsClass,
 	);
 	const fallbackSelection = "<Select something>";
 	const selectedOption = sections
@@ -62,7 +67,7 @@ export function DropdownSelectSectioned<T>({
 			>
 				{selectedOption?.display(true) ?? fallbackSelection}
 			</div>
-			<div className={css["options"]}>
+			<div className={optionsClassName}>
 				{sectionComps}
 			</div>
 		</div>

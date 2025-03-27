@@ -1,36 +1,15 @@
 import { ViewFC } from "../components/layout/LayoutView.tsx";
 
 export const TestSwatch: ViewFC = ({
-	viewSelector,
+	children,
 }) => {
-	const colors: [string, string][][] = [
-		[
-			["theme-bg-0", "theme-fg-0"],
-			["theme-bg-1", "theme-fg-1"],
-		],
-		[
-			["theme-primary-bg-0", "theme-primary-fg-0"],
-			["theme-primary-bg-1", "theme-primary-fg-1"],
-		],
-		[
-			["theme-secondary-bg-0", "theme-secondary-fg-0"],
-			["theme-secondary-bg-1", "theme-secondary-fg-1"],
-		],
-		[
-			["theme-disabled-bg", "theme-disabled-fg"],
-		],
-		[
-			["theme-positive-bg-0", "theme-positive-fg-0"],
-			["theme-positive-bg-1", "theme-positive-fg-1"],
-		],
-		[
-			["theme-warn-bg-0", "theme-warn-fg-0"],
-			["theme-warn-bg-1", "theme-warn-fg-1"],
-		],
-		[
-			["theme-negative-bg-0", "theme-negative-fg-0"],
-			["theme-negative-bg-1", "theme-negative-fg-1"],
-		],
+	const colors: string[][] = [
+		["theme-bg-0", "theme-bg-1",],
+		["theme-primary-bg-0", "theme-primary-bg-1",],
+		["theme-secondary-bg-0", "theme-secondary-bg-1",],
+		["theme-disabled-bg",], ["theme-positive-bg-0", "theme-positive-bg-1",],
+		["theme-warn-bg-0", "theme-warn-bg-1",],
+		["theme-negative-bg-0", "theme-negative-bg-1",],
 	];
 	return (
 		<div style={{
@@ -41,28 +20,32 @@ export const TestSwatch: ViewFC = ({
 			overflow: "auto",
 			padding: ".5em",
 		}}>
-			{viewSelector}
+			{children}
 			{colors.map((row, i) => (
 				<div key={i} style={{
 					display: "flex",
 					gap: ".5em",
 				}}>
-					{row.map(([bg, fg]) => (
-						<div key={bg} style={{
-							width: "10em",
-							height: "5em",
-							border: "1px solid #fff4",
-							borderRadius: "1em",
+					{row.map(bg => {
+						const fg = bg.replaceAll("bg", "fg");
+						const bd = bg.replaceAll("bg", "bd");
+						return (
+							<div key={bg} style={{
+								width: "10em",
+								height: "5em",
+								borderRadius: "1em",
 
-							display: "grid",
-							placeItems: "center",
-							textAlign: "center",
-							fontFamily: "'Consolas', monospace",
+								display: "grid",
+								placeItems: "center",
+								textAlign: "center",
+								fontFamily: "'Consolas', monospace",
 
-							backgroundColor: `var(--${bg})`,
-							color: `var(--${fg})`,
-						}}>{getName(fg, bg)}</div>
-					))}
+								backgroundColor: `var(--${bg})`,
+								color: `var(--${fg})`,
+								border: `1px solid var(--${bd})`,
+							}}>{getName(bg)}</div>
+						);
+					})}
 				</div>
 			))}
 		</div>
@@ -74,8 +57,7 @@ const normalize = (str: string) => str
 	.replace(/^theme-/, "")
 	.replaceAll(/^-+/g, "")
 	.replaceAll(/-+$/g, "");
-const getName = (fg: string, bg: string) => {
-	const fgW = normalize(fg.replaceAll("fg", ""));
+const getName = (bg: string) => {
 	const bgW = normalize(bg.replaceAll("bg", ""));
-	if (fgW === bgW) return fgW;
+	return bgW
 }

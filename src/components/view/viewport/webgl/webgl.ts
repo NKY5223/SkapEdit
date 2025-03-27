@@ -1,25 +1,6 @@
-import { ViewportBounds, ViewportLayer } from "../layer.ts";
+import { Vec2 } from "../../../../common/vector.ts";
+import { Bounds } from "../../../editor/Bounds.ts";
 
-type WebGLLayerData = {
-	canvas: HTMLCanvasElement;
-	gl: WebGL2RenderingContext;
-	/**
-	 * First WebGLLayer to use this canvas, 
-	 * responsible for initialising the frame
-	 */
-	first: WebGLLayer;
-};
-
-function createWebGLLayerData(first: WebGLLayer): WebGLLayerData {
-	const canvas = document.createElement("canvas");
-	const gl = canvas.getContext("webgl2");
-	if (!gl) throw new Error("Could not create WebGL2 context.");
-	return {
-		canvas,
-		gl,
-		first,
-	};
-}
 type WebGLValueType = {
 	size: number;
 	type: WebGL2RenderingContext["BYTE" | "SHORT" | "UNSIGNED_BYTE" | "UNSIGNED_SHORT" | "FLOAT" | "INT"];
@@ -27,18 +8,18 @@ type WebGLValueType = {
 const GL_FLOAT = 5126;
 const GL_INT = 5124;
 
-export abstract class WebGLLayer<T = unknown> implements ViewportLayer<T, WebGLLayer<unknown>> {
+export abstract class WebGLRenderer<T extends unknown[]> {
 	ready: boolean;
-	data!: WebGLLayerData;
 
-	element!: HTMLCanvasElement;
+	gl!: WebGL2RenderingContext;
+
 	program!: WebGLProgram;
 	
 	buffers: Map<string, WebGLBuffer>;
 	uniformLocationCache: Map<string, WebGLUniformLocation>;
 	attribLocationCache: Map<string, number>;
 
-	constructor(public zIndex: number, public shaderSource: {
+	constructor(public shaderSource: {
 		vert: string;
 		frag: string;
 	}) {
@@ -50,18 +31,10 @@ export abstract class WebGLLayer<T = unknown> implements ViewportLayer<T, WebGLL
 		this.buffers = new Map<string, WebGLBuffer>();
 	}
 
-	canInitWith(layer: unknown): layer is WebGLLayer<unknown> {
-		return layer instanceof WebGLLayer;
-	}
-	init(layer?: WebGLLayer<unknown>) {
-		const data = layer?.data ?? createWebGLLayerData(this);
+	init(gl: WebGL2RenderingContext) {
+		if (gl.isContextLost()) throw new Error("WebGL2 context is lost.");
 
-		this.data = data;
-		this.element = data.canvas;
-
-		const gl = data.gl;
-		if (!gl) throw new Error("Could not find WebGL2 context.");
-		if (gl.isContextLost()) throw new Error("WebGL2 context lost context.");
+		this.gl = gl;
 
 		const vertShader = this.createShader(gl, gl.VERTEX_SHADER, this.shaderSource.vert);
 		const fragShader = this.createShader(gl, gl.FRAGMENT_SHADER, this.shaderSource.frag);
@@ -176,6 +149,19 @@ export abstract class WebGLLayer<T = unknown> implements ViewportLayer<T, WebGLL
 			}
 		}
 	}
+	// #region setUniformX
+	protected setUniformFloat(gl: WebGL2RenderingContext, name: string, value: number) {
+		const location = this.getUniformLocation(name);
+
+		gl.uniform1f(location, value);
+	}
+	protected setUniformFloat2(gl: WebGL2RenderingContext, name: string, value: Vec2) {
+		const location = this.getUniformLocation(name);
+
+		gl.uniform2f(location, value[0], value[1]);
+	}
+	// #endregion
+
 	protected setAttribute(gl: WebGL2RenderingContext, target: GLenum, name: string, type: WebGLValueType, buffer: WebGLBuffer) {
 		const location = this.getAttribLocation(name);
 
@@ -216,30 +202,19 @@ export abstract class WebGLLayer<T = unknown> implements ViewportLayer<T, WebGLL
 		return location;
 	}
 
-	setup(viewport: ViewportBounds) {
-		const gl = this.gl;
+	abstract render(...data: T): void;
 
-		if (this.data.first === this) {
-			const w = viewport.width;
-			const h = viewport.height;
+	get canvas() { return this.gl.canvas; }
+}
 
-			const updateWidth = this.canvas.width !== w;
-			const updateHeight = this.canvas.height !== h;
-			if (updateWidth) this.canvas.width = w;
-			if (updateHeight) this.canvas.height = h;
-
-			if (updateWidth || updateHeight) gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-
-			gl.clearColor(0, 0, 0, 0);
-			gl.clear(gl.COLOR_BUFFER_BIT);
-		}
-	}
-
-	abstract render(viewport: ViewportBounds, things: T[]): void;
-
-	abstract canRender(thing: unknown): thing is T;
-
-	get canvas() { return this.data.canvas; }
-	get gl() { return this.data.gl; }
-	set gl(gl) { this.data.gl = gl; }
+export function quad(bounds: Bounds): number[] {
+	const { left: l, top: t, right: r, bottom: b } = bounds;
+	return [
+		[0, 0],
+		[1, 0],
+		[1, 1],
+		[0, 0],
+		[1, 1],
+		[0, 1],
+	].flatMap(([x, y]) => [x ? r : l, y ? b : t]);
 }

@@ -1,0 +1,35 @@
+.viewport {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	padding: .5em;
+
+	& > :first-child {
+		grid-area: 1 / 1 / 1 / -1;
+	}
+}
+.viewport-topbar {
+	display: flex;
+	gap: .5em;
+}
+.viewport-canvas {
+	position: absolute;
+	inset: 0;
+	grid-area: 1 / 1 / -1 / -1;
+
+	z-index: -1;
+
+	& > * {
+		width: 100%;
+		height: 100%;
+	}
+}
+.buttons {
+	position: absolute;
+	inset: 1em;
+	top: auto;
+	font-family: "NKYJuliaMonoExtension", "JuliaMono", monospace;
+	
+	display: flex;
+	gap: .25em;
+}

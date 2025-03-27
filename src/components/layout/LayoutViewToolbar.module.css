@@ -1,0 +1,11 @@
+.button.button {
+	padding: .25em .75em .25em .75em;
+	user-select: none;
+	--button-fg: var(--theme-fg-0);
+	--button-bg: var(--theme-bg-0);
+	--button-bd: var(--theme-bd-0);
+}
+.toolbar {
+	display: flex;
+	gap: .5em;
+}

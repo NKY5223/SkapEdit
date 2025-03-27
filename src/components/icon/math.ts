@@ -1,20 +1,20 @@
-import { interleave, transposeTuples, tuples } from "../../utils.ts";
+import { interleave, transposeTuples, tuples } from "../../common/array.ts";
 import { debug } from "./stringify.tsx";
-import { Vector, map, lerp, div, sub, vec, rotMat, matMul, matTranspose, dot, swap, mul, add, angleBetween, neg, leftMat, norm, polar, safeNorm, equal, det, mat, arg, mag, parallel, isVec } from "./vector.ts";
+import { Vec2, map, lerp, div, sub, vec2, rotMat, matMul, matTranspose, dot, swap, mul, add, angleBetween, neg, leftMat, norm, polar, safeNorm, equal, det, mat2, arg, mag, parallel, isVec } from "../../common/vector.ts";
 
 const TAU = 2 * Math.PI;
 const HALF_PI = Math.PI / 2;
 // #region Command types
 type CommandBase<T extends string> = {
 	type: T;
-	start: Vector;
-	end: Vector;
+	start: Vec2;
+	end: Vec2;
 };
 
 export type CommandLine = CommandBase<"line">;
 export type CommandArc = CommandBase<"arc"> & {
-	radius: Vector;
-	center: Vector;
+	radius: Vec2;
+	center: Vec2;
 
 	rotation: number;
 	startAngle: number;
@@ -29,9 +29,9 @@ export type Command = (
 
 // #region Command info
 type SVGArc = {
-	start: Vector;
-	end: Vector;
-	radius: Vector;
+	start: Vec2;
+	end: Vec2;
+	radius: Vec2;
 	rotation: number;
 	largeArc: boolean;
 	clockwise: boolean;
@@ -41,7 +41,7 @@ export const fromSVGArc = (arc: SVGArc): CommandArc => {
 	const { start, end, radius, rotation, clockwise, largeArc } = arc;
 
 	const mid = lerp(start, end, .5);
-	const diff = div(sub(start, end), vec(2));
+	const diff = div(sub(start, end), vec2(2));
 	const cwRotation = rotMat(rotation);
 
 	const startPrime = matMul(matTranspose(cwRotation), diff);
@@ -49,15 +49,15 @@ export const fromSVGArc = (arc: SVGArc): CommandArc => {
 	const startPrimeSquare = square(startPrime);
 
 	const alpha = dot(rSquare, swap(startPrimeSquare));
-	const centerPrime = mul(vec(
+	const centerPrime = mul(vec2(
 		(largeArc !== clockwise ? +1 : -1) * Math.sqrt(
 			(rSquare[0] * rSquare[1] - alpha) / alpha
 		)
-	), vec(1, -1), div(radius, swap(radius)), swap(startPrime));
+	), vec2(1, -1), div(radius, swap(radius)), swap(startPrime));
 
 	const center = add(matMul(cwRotation, centerPrime), mid);
-	const startAngle = angleBetween(vec(1, 0), div(sub(startPrime, centerPrime), radius));
-	const endAngle = angleBetween(vec(1, 0), div(sub(neg(startPrime), centerPrime), radius));
+	const startAngle = angleBetween(vec2(1, 0), div(sub(startPrime, centerPrime), radius));
+	const endAngle = angleBetween(vec2(1, 0), div(sub(neg(startPrime), centerPrime), radius));
 	const angleDiff = endAngle - startAngle;
 	const deltaAngle = (clockwise
 		? angleDiff < 0 ? angleDiff + TAU : angleDiff
@@ -91,7 +91,7 @@ export const toSVGArc = (arc: CommandArc): SVGArc => {
  * 
  * Note: `t` is not arc length.
  */
-export const parametrizeCommand = (command: Command): ((t: number) => Vector) => {
+export const parametrizeCommand = (command: Command): ((t: number) => Vec2) => {
 	const { start, end } = command;
 	switch (command.type) {
 		case "line": {
@@ -111,7 +111,7 @@ export const parametrizeCommand = (command: Command): ((t: number) => Vector) =>
  * 
  * Note: `t` is not arc length.
  */
-export const commandDerivative = (command: Command): ((t: number) => Vector) => {
+export const commandDerivative = (command: Command): ((t: number) => Vec2) => {
 	const { start, end } = command;
 	switch (command.type) {
 		case "line": {
@@ -129,7 +129,7 @@ export const commandDerivative = (command: Command): ((t: number) => Vector) => 
 			// Approximate derivative
 			const ε = 0.00001;
 			const f = parametrizeCommand(command);
-			return t => div(sub(f(t + ε), f(t)), vec(ε));
+			return t => div(sub(f(t + ε), f(t)), vec2(ε));
 		}
 	}
 }
@@ -140,7 +140,7 @@ export const commandDerivative = (command: Command): ((t: number) => Vector) => 
  * 
  * Note: `t` is not arc length.
  */
-export const commandTangent = (command: Command): ((t: number) => Vector) => {
+export const commandTangent = (command: Command): ((t: number) => Vec2) => {
 	switch (command.type) {
 		default: {
 			const f = commandDerivative(command);
@@ -187,7 +187,7 @@ export const sliceCommand = (command: Command, tStart: number, tEnd: number): Co
 type IntersectionData = {
 	a: number;
 	b: number;
-	pos: Vector;
+	pos: Vec2;
 };
 export const intersectCommands = (a: Command, b: Command, debugPhase?: string): IntersectionData[] => {
 	// Require a.type <= b.type alphabetically
@@ -248,7 +248,7 @@ export const intersectCommands = (a: Command, b: Command, debugPhase?: string): 
 				b: t,
 				pos: fb(t),
 			}))
-			.filter((x): x is { a: number; b: number; pos: Vector; } => !!x.a);
+			.filter((x): x is { a: number; b: number; pos: Vec2; } => !!x.a);
 
 		if (Δ === 0 && results.length) {
 			return [results[0]];
@@ -279,12 +279,12 @@ const inverseAngleMap = (x0: number, dx: number, x: number): number | null => {
 
 	return (x - x0 + k * TAU) / dx;
 }
-const intersectLines = (a0: Vector, a1: Vector, b0: Vector, b1: Vector) => {
+const intersectLines = (a0: Vec2, a1: Vec2, b0: Vec2, b1: Vec2) => {
 	const d12 = sub(a0, a1);
 	const d13 = sub(a0, b0);
 	const d34 = sub(b0, b1);
-	const ta = +det(mat(d13, d34)) / det(mat(d12, d34));
-	const tb = -det(mat(d12, d13)) / det(mat(d12, d34));
+	const ta = +det(mat2(d13, d34)) / det(mat2(d12, d34));
+	const tb = -det(mat2(d12, d13)) / det(mat2(d12, d34));
 
 	return { ta, tb };
 }
@@ -327,7 +327,7 @@ const offsetCommand = (
 	const diff = sub(end, start);
 	switch (command.type) {
 		case "line":
-			const normal = mul(matMul(leftMat, norm(diff)), vec(offset));
+			const normal = mul(matMul(leftMat, norm(diff)), vec2(offset));
 
 			return [{
 				type: "line",
@@ -347,7 +347,7 @@ const offsetCommand = (
 				return [{
 					type: "arc",
 					start, end,
-					radius: vec(Math.abs(r)),
+					radius: vec2(Math.abs(r)),
 					center,
 					rotation,
 					startAngle, deltaAngle, endAngle,
@@ -514,7 +514,7 @@ export const joinOffsetCommandPair = (
 					fromSVGArc({
 						start,
 						end,
-						radius: vec(options.width),
+						radius: vec2(options.width),
 						rotation: 0,
 						clockwise: true,
 						largeArc: false,
@@ -664,7 +664,7 @@ const capOffsetCommand = (
 					start,
 					end: left,
 					center: vertex,
-					radius: vec(options.widthLeft),
+					radius: vec2(options.widthLeft),
 					rotation: 0,
 					startAngle: dirAngle - HALF_PI,
 					deltaAngle: HALF_PI,
@@ -680,7 +680,7 @@ const capOffsetCommand = (
 					start: right,
 					end,
 					center: vertex,
-					radius: vec(options.widthRight),
+					radius: vec2(options.widthRight),
 					rotation: 0,
 					startAngle: dirAngle,
 					deltaAngle: HALF_PI,
@@ -693,9 +693,9 @@ const capOffsetCommand = (
 
 export type Log = (
 	| Command
-	| Vector
+	| Vec2
 	| {
-		at: Vector;
+		at: Vec2;
 		content:
 		| number
 		| string;

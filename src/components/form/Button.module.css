@@ -12,25 +12,31 @@
 
 	--button-bg: var(--theme-primary-bg-0);
 	--button-fg: var(--theme-primary-fg-0);
+	--button-bd: var(--theme-primary-bd-0);
 	&.primary {
 		--button-bg: var(--theme-primary-bg-0);
 		--button-fg: var(--theme-primary-fg-0);
+		--button-bd: var(--theme-primary-bd-0);
 	}
 	&.secondary {
 		--button-bg: var(--theme-secondary-bg-0);
 		--button-fg: var(--theme-secondary-fg-0);
+		--button-bd: var(--theme-secondary-bd-0);
 	}
 	&.confirm {
 		--button-bg: var(--theme-positive-bg-0);
 		--button-fg: var(--theme-positive-fg-0);
+		--button-bd: var(--theme-positive-bd-0);
 	}
 	&.deny {
 		--button-bg: var(--theme-negative-bg-0);
 		--button-fg: var(--theme-negative-fg-0);
+		--button-bd: var(--theme-negative-bd-0);
 	}
 	&:disabled {
 		--button-bg: var(--theme-disabled-bg);
 		--button-fg: var(--theme-disabled-fg);
+		--button-bd: var(--theme-disabled-bd);
 		cursor: not-allowed;
 	}
 	&:empty::before {
@@ -40,17 +46,17 @@
 	background-color: var(--button-bg);
 	color: var(--button-fg);
 
-	border: 1px solid oklch(from var(--button-bg) calc(l * 1.1) c h);
+	border: 1px solid var(--button-bd);
 	border-radius: var(--theme-border-radius);
 
 	&:not(:disabled):hover {
-		background-color: oklch(from var(--button-bg) calc(l * 1.025) c h);
+		/* background-color: oklch(from var(--button-bg) calc(l * 1.025) c h); */
 	}
 	&:focus-within {
 		
 	}
 
-	&:has(> .icon) {
+	&.has-icon {
 		padding-left: .5em;
 		grid-template-areas: "icon content";
 	}

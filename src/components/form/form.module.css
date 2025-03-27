@@ -43,7 +43,7 @@
 
 	font-size: 1em;
 	background: none;
-	border: var(--theme-border-0) solid var(--theme-border-width);
+	border: var(--theme-bd-0) solid var(--theme-border-width);
 	border-radius: var(--theme-border-radius);
 
 	&::-webkit-inner-spin-button {

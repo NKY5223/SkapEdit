@@ -1,8 +1,8 @@
 import { useIcons, Icon } from "../components/icon/Icon.tsx";
 import { ViewFC } from "../components/layout/LayoutView.tsx";
-import { unique, reverseMap } from "../utils.ts";
+import { unique, reverseMap } from "../common/array.ts";
 
-export const TestIcons: ViewFC = ({ viewSelector }) => {
+export const TestIcons: ViewFC = ({ children }) => {
 	const entries = [...useIcons()];
 	const allIcons = unique(entries, ([, { id: a }], [, { id: b }]) => a === b);
 	const reverse = reverseMap(entries.map(([k, { canonicalName }]) => [k, canonicalName]));
@@ -18,7 +18,7 @@ export const TestIcons: ViewFC = ({ viewSelector }) => {
 				gap: ".5em",
 			}}
 		>
-			{viewSelector}
+			{children}
 			{allIcons.map(([icon]) => (<Icon
 				key={icon}
 				title={(reverse.get(icon) ?? ["err"]).join(" | ")}

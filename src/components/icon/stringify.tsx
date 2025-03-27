@@ -1,22 +1,22 @@
 import { Fragment, ReactNode, SVGAttributes } from "react";
 import { Command, Log, toSVGArc } from "./math.ts";
-import { add, equal, isVec, lerp, matMul, mul, norm, orthMat, polar, rotMat, sub, vec, Vector, zeroVec } from "./vector.ts";
+import { add, equal, isVec, lerp, matMul, mul, norm, orthMat, polar, rotMat, sub, vec2, Vec2, zeroVec } from "../../common/vector.ts";
 
-const drawDot = (pos: Vector, r: number = 0.2) => `
+const drawDot = (pos: Vec2, r: number = 0.2) => `
 	M ${pos}
 	m ${r} 0
 	a ${r} ${r} 0 0 0 ${-2 * r} 0
 	a ${r} ${r} 0 0 0 ${2 * r} 0
 `.replaceAll(/\s+/g, " ").trim();
-const drawArrow = (pos: Vector, direction: Vector, size: number = 0.3) => {
+const drawArrow = (pos: Vec2, direction: Vec2, size: number = 0.3) => {
 	if (equal(direction, zeroVec)) return ``;
 
 	const fw = norm(direction, size);
 	const coord = orthMat(fw);
 
-	const h = vec(.5, 0);
-	const l = vec(-.5, 1);
-	const r = vec(-.5, -1);
+	const h = vec2(.5, 0);
+	const l = vec2(-.5, 1);
+	const r = vec2(-.5, -1);
 
 	const head = add(pos, matMul(coord, h));
 	const left = add(pos, matMul(coord, l));
@@ -87,7 +87,7 @@ const debugStringifyCommand = (command: Command): { type: string; d: string; }[]
 
 			const sign = clockwise ? -1 : 1;
 			/** darrowPos/darrowAngle */
-			const direction = mul(vec(sign), matMul(rot, mul(radius, polar(arrowAngle - Math.PI / 2))));
+			const direction = mul(vec2(sign), matMul(rot, mul(radius, polar(arrowAngle - Math.PI / 2))));
 
 			return [
 				dotStart,
@@ -110,7 +110,7 @@ const debugStringifyCommand = (command: Command): { type: string; d: string; }[]
 };
 export const ALL_COMMANDS = Symbol("*");
 export const stringify = (commands: Command[]) => {
-	const stringified: string[] = commands.reduce<{ pos: Vector, strs: string[] }>(({ pos, strs }, command) => {
+	const stringified: string[] = commands.reduce<{ pos: Vec2, strs: string[] }>(({ pos, strs }, command) => {
 		const { start } = command;
 		return {
 			pos,
@@ -120,7 +120,7 @@ export const stringify = (commands: Command[]) => {
 			stringifyCommand(command)
 			]
 		};
-	}, { pos: vec(NaN), strs: [] }).strs;
+	}, { pos: vec2(NaN), strs: [] }).strs;
 	const debug = commands.map(debugStringifyCommand).flat();
 
 	return [

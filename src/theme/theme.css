@@ -1,42 +1,51 @@
 :root {
 	/* default theme */
 	--theme-bg-0: #202224;
-	--theme-bg-1: oklch(from var(--theme-bg-0) calc(l * 0.75) calc(c * 2) h);
-
 	--theme-fg-0: #ffffff;
+	--theme-bd-0: #404040;
+	--theme-bg-1: oklch(from var(--theme-bg-0) calc(l * 0.75) calc(c * 2) h);
 	--theme-fg-1: #ffffff;
+	--theme-bd-1: oklch(from var(--theme-bd-0) calc(l * 1.5) c h);
 	
 	/* oklch(0.62 0.21 257.83) */
 	--theme-primary-bg-0: #2080ff;
-	--theme-primary-bg-1: oklch(from var(--theme-primary-bg-0) calc(l * 0.5) c h);
 	--theme-primary-fg-0: oklch(from var(--theme-primary-bg-0) calc(1 - (1 - l) * 0.05) calc(c * 0.25) h);
+	--theme-primary-bd-0: oklch(from var(--theme-primary-bg-0) calc(1 - (1 - l) * 0.75) calc(c) h);
+	--theme-primary-bg-1: oklch(from var(--theme-primary-bg-0) calc(l * 0.5) c h);
 	--theme-primary-fg-1: oklch(from var(--theme-primary-bg-0) calc(1 - (1 - l) * 0.05) calc(c * 0.5) h);
+	--theme-primary-bd-1: oklch(from var(--theme-primary-bg-0) calc(1 - (1 - l) * 0.75) calc(c) h);
 	
 	--theme-secondary-bg-0: oklch(0.6 0.25 298.86);
-	--theme-secondary-bg-1: oklch(from var(--theme-secondary-bg-0) calc(l * 0.7) c h);
 	--theme-secondary-fg-0: oklch(from var(--theme-secondary-bg-0) calc(1 - (1 - l) * 0.01) calc(c * 0.05) h);
+	--theme-secondary-bd-0: oklch(from var(--theme-secondary-bg-0) calc(1 - (1 - l) * 0.01) calc(c * 0.05) h);
+	--theme-secondary-bg-1: oklch(from var(--theme-secondary-bg-0) calc(l * 0.7) c h);
 	--theme-secondary-fg-1: oklch(from var(--theme-secondary-fg-0) calc(l * 1.25) c h);
+	--theme-secondary-bd-1: oklch(from var(--theme-secondary-fg-0) calc(l * 1.25) c h);
 	
 	--theme-disabled-bg: #404040;
 	--theme-disabled-fg: #ffffff;
+	--theme-disabled-bd: #505050;
 
 	--theme-positive-bg-0: oklch(0.6 0.35 150);
-	--theme-positive-bg-1: oklch(from var(--theme-positive-bg-0) calc(l * 0.75) calc(c * 0.65) h);
 	--theme-positive-fg-0: oklch(from var(--theme-positive-bg-0) calc(1 - (1 - l) * 0.05) calc(c * 0.1) h);
+	--theme-positive-bd-0: oklch(from var(--theme-positive-bg-0) calc(1 - (1 - l) * 0.05) calc(c * 0.1) h);
+	--theme-positive-bg-1: oklch(from var(--theme-positive-bg-0) calc(l * 0.75) calc(c * 0.65) h);
 	--theme-positive-fg-1: oklch(from var(--theme-positive-fg-0) calc(l * 1.25) c h);
+	--theme-positive-bd-1: oklch(from var(--theme-positive-fg-0) calc(l * 1.25) c h);
 	
 	--theme-warn-bg-0: oklch(0.70 0.35 100);
-	--theme-warn-bg-1: oklch(from var(--theme-warn-bg-0) calc(l * 0.75) calc(c * 0.65) h);
 	--theme-warn-fg-0: oklch(from var(--theme-warn-bg-0) calc(1 - (1 - l) * 0.05) calc(c * 0.1) h);
+	--theme-warn-bd-0: oklch(from var(--theme-warn-bg-0) calc(1 - (1 - l) * 0.05) calc(c * 0.1) h);
+	--theme-warn-bg-1: oklch(from var(--theme-warn-bg-0) calc(l * 0.75) calc(c * 0.65) h);
 	--theme-warn-fg-1: oklch(from var(--theme-warn-fg-0) calc(l * 1.25) c h);
+	--theme-warn-bd-1: oklch(from var(--theme-warn-fg-0) calc(l * 1.25) c h);
 
 	--theme-negative-bg-0: oklch(0.65 0.35 20);
-	--theme-negative-bg-1: oklch(from var(--theme-negative-bg-0) calc(l * 0.7) calc(c * 0.65) h);
 	--theme-negative-fg-0: oklch(from var(--theme-negative-bg-0) calc(1 - (1 - l) * 0.05) calc(c * 0.1) h);
+	--theme-negative-bd-0: oklch(from var(--theme-negative-bg-0) calc(1 - (1 - l) * 0.05) calc(c * 0.1) h);
+	--theme-negative-bg-1: oklch(from var(--theme-negative-bg-0) calc(l * 0.7) calc(c * 0.65) h);
 	--theme-negative-fg-1: oklch(from var(--theme-negative-fg-0) calc(l * 1.25) c h);
-
-	--theme-border-0: #404040;
-	--theme-border-1: oklch(from var(--theme-seperator-0) calc(l * 1.5) c h);
+	--theme-negative-bd-1: oklch(from var(--theme-negative-fg-0) calc(l * 1.25) c h);
 
 	--theme-font: system-ui, sans-serif;
 

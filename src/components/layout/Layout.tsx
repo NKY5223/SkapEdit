@@ -1,6 +1,7 @@
 import { createContext, Dispatch, FC, Reducer, useContext, useReducer } from "react";
 import { LayoutSplit } from "./LayoutSplit.tsx";
 import { LayoutViewMemo, ViewFC } from "./LayoutView.tsx";
+import { createMapContext } from "../../hooks/mapContext.tsx";
 
 /* 
 2025-02-xx
@@ -115,9 +116,7 @@ const layoutReducer: Reducer<LayoutDesc, LayoutAction> = (layout, action) => {
 	}
 }
 
-
-const viewsContext = createContext<ReadonlyMap<string, ViewFC>>(new Map());
-export const useViews = () => useContext(viewsContext);
+export const [useViews, useView, ViewsProvider, viewsContext] = createMapContext<ViewFC>();
 
 type LayoutProps = {
 	layout: LayoutDesc;
@@ -129,9 +128,9 @@ export const Layout: FC<LayoutProps> = ({
 }) => {
 	const [layout, dispatchLayout] = useReducer(layoutReducer, initialLayout);
 	return (
-		<viewsContext.Provider value={views}>
+		<ViewsProvider value={views}>
 			<LayoutTree layout={layout} dispatch={dispatchLayout} />
-		</viewsContext.Provider>
+		</ViewsProvider>
 	);
 }
 

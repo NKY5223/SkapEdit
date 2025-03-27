@@ -8,7 +8,7 @@ import { stringify, debug, ALL_COMMANDS } from "../components/icon/stringify.tsx
 import { ViewFC } from "../components/layout/LayoutView.tsx";
 
 export const TestIcon: ViewFC = ({
-	viewSelector,
+	children,
 }) => {
 	const [widthLeft, widthLeftInput] = useNumberInput(1, { label: "Width Left", min: 0, step: 0.25, });
 	const [widthRight, widthRightInput] = useNumberInput(1, { label: "Width Right", min: 0, step: 0.25, });
@@ -44,7 +44,7 @@ export const TestIcon: ViewFC = ({
 			gap: ".5em",
 			padding: ".5em",
 		}}>
-			{viewSelector}
+			{children}
 			<FormSection>
 				<FormSection row>
 					{widthLeftInput}

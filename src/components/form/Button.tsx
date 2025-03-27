@@ -1,23 +1,30 @@
+import { PropsWithChildren } from "react";
 import { Icon, IconName } from "../icon/Icon.tsx";
-import { classList } from "../utils.tsx";
+import { classList, ExtensibleFC } from "../utils.tsx";
 import css from "./Button.module.css";
 
 export type ButtonType = "primary" | "secondary" | "confirm" | "deny";
 
-type ButtonProps = {
+type ButtonProps = PropsWithChildren<{
 	type?: ButtonType;
 	icon?: IconName;
 	disabled?: boolean;
 	onClick?: React.MouseEventHandler<HTMLButtonElement>;
-};
-
-export function Button({
+}>;
+export const Button: ExtensibleFC<ButtonProps> = ({
 	type, icon, disabled, children,
-	onClick
-}: React.PropsWithChildren<ButtonProps>) {
-	const className = classList(css.button, type && css[type], icon && css.icon);
+	onClick,
+
+	classes = [],
+}) => {
+	const className = classList(
+		css["button"], 
+		type && css[type], 
+		icon && css["has-icon"], 
+		...classes,
+	);
 	return <button className={className} disabled={disabled} onClick={onClick}>
-		{icon && (<div className={css.icon}>
+		{icon && (<div className={css["icon"]}>
 			<Icon
 				icon={icon}
 				width="1.5em"
