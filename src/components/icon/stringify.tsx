@@ -2,12 +2,18 @@ import { Fragment, ReactNode, SVGAttributes } from "react";
 import { Command, Log, toSVGArc } from "./math.ts";
 import { add, equal, isVec, lerp, matMul, mul, norm, orthMat, polar, rotMat, sub, vec2, Vec2, zeroVec } from "../../common/vector.ts";
 
-const drawDot = (pos: Vec2, r: number = 0.2) => `
+const d = (template: readonly string[], ...subst: (Vec2 | number)[]) => (
+	String.raw({ raw: template }, ...subst.map(v => 
+		typeof v === "number" ? v.toString() :
+		isVec(v) ? `${v[0]} ${v[1]}` : ""
+	)).replaceAll(/\s+/g, " ").trim()
+);
+const drawDot = (pos: Vec2, r: number = 0.2) => d`
 	M ${pos}
 	m ${r} 0
 	a ${r} ${r} 0 0 0 ${-2 * r} 0
 	a ${r} ${r} 0 0 0 ${2 * r} 0
-`.replaceAll(/\s+/g, " ").trim();
+`;
 const drawArrow = (pos: Vec2, direction: Vec2, size: number = 0.3) => {
 	if (equal(direction, zeroVec)) return ``;
 
@@ -22,21 +28,21 @@ const drawArrow = (pos: Vec2, direction: Vec2, size: number = 0.3) => {
 	const left = add(pos, matMul(coord, l));
 	const right = add(pos, matMul(coord, r));
 
-	return `
+	return d`
 		M ${left}
 		L ${head}
 		L ${right}
-	`.replaceAll(/\s+/g, " ").trim();
+	`;
 };
 const stringifyCommand = (command: Command): string => {
 	const { end } = command;
 	switch (command.type) {
 		case "line":
-			return `L ${end}`;
+			return d`L ${end}`;
 		case "arc":
 			const { radius, rotation } = command;
 			const { largeArc, clockwise } = toSVGArc(command);
-			return `A ${radius} ${rotation} ${+largeArc} ${+clockwise} ${end}`;
+			return d`A ${radius} ${rotation} ${+largeArc} ${+clockwise} ${end}`;
 	}
 };
 const debugStringifyCommand = (command: Command): { type: string; d: string; }[] => {

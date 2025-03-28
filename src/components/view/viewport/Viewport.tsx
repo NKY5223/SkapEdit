@@ -1,13 +1,13 @@
-import { FC, useState } from "react";
+import { FC, useMemo, useState } from "react";
 import { Camera, useCamera } from "./Camera.ts";
 import { ViewFC } from "../../layout/LayoutView.tsx";
 import { SkapMap, useMap } from "../../editor/map.ts";
 import { zeroVec } from "../../../common/vector.ts";
 import { WebGLLayer } from "./webgl/WebGLLayer.tsx";
 import { ObstacleWebGLRenderer } from "./renderer/obstacle.ts";
-import { Button } from "../../form/Button.tsx";
 import css from "./Viewport.module.css";
 import { ViewToolbar, ViewToolbarButton } from "../../layout/LayoutViewToolbar.tsx";
+import "../../../common/vectorN.ts";
 
 
 export type ViewportInfo = {
@@ -26,7 +26,7 @@ export const ViewportCanvas: FC<ViewportCanvasProps> = ({
 }) => {
 	const map = useMap();
 
-	const [camera, setCamera] = useCamera({ pos: zeroVec, scale: 5 });
+	const [camera] = useCamera({ pos: zeroVec, scale: 5 });
 
 	const viewportInfo: ViewportInfo = {
 		camera,
@@ -49,7 +49,7 @@ export const ViewportCanvas: FC<ViewportCanvasProps> = ({
 		renderer { ... }
 	}
 	</viewport>
-	when <webgl /> remounts, recreate renderers
+	gl and renderers **MUST** persist across renders
 	*/
 	return (
 		<div className={css["viewport-canvas"]}>
@@ -66,11 +66,11 @@ export const Viewport: ViewFC = ({
 	children,
 }) => {
 	const [key, setKey] = useState(Math.random());
-	const [layers, setLayers] = useState([
+	const layers = useMemo(() => [
 		WebGLLayer(
 			new ObstacleWebGLRenderer()
 		)
-	]);
+	], []);
 	return (
 		<div className={css["viewport"]}>
 			<ViewportCanvas key={key} layers={layers} />
@@ -79,5 +79,5 @@ export const Viewport: ViewFC = ({
 				<ViewToolbarButton onClick={() => setKey(Math.random())}>Reload</ViewToolbarButton>
 			</ViewToolbar>
 		</div>
-	)
+	);
 }

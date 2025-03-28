@@ -11,7 +11,7 @@ const GL_INT = 5124;
 export abstract class WebGLRenderer<T extends unknown[]> {
 	ready: boolean;
 
-	gl!: WebGL2RenderingContext;
+	gl: WebGL2RenderingContext | undefined;
 
 	program!: WebGLProgram;
 	
@@ -48,6 +48,12 @@ export abstract class WebGLRenderer<T extends unknown[]> {
 		this.attribLocationCache.clear();
 
 		this.ready = true;
+	}
+	cleanup() {
+		if (!this.ready) return;
+		this.ready = false;
+
+		this.gl = undefined;
 	}
 	protected createShader(gl: WebGL2RenderingContext, type: GLenum, source: string): WebGLShader {
 		const name = type === gl.VERTEX_SHADER ? "vertex" : type === gl.FRAGMENT_SHADER ? "fragment" : "???";
@@ -102,7 +108,7 @@ export abstract class WebGLRenderer<T extends unknown[]> {
 		vec4: { size: 4, type: GL_FLOAT },
 	} satisfies Record<string, WebGLValueType>;
 	protected setUniform(gl: WebGL2RenderingContext, type: WebGLValueType, name: string, ...values: number[]) {
-		const location = this.getUniformLocation(name);
+		const location = this.getUniformLocation(gl, name);
 		
 		switch (type.type) {
 			case GL_FLOAT: {
@@ -151,19 +157,19 @@ export abstract class WebGLRenderer<T extends unknown[]> {
 	}
 	// #region setUniformX
 	protected setUniformFloat(gl: WebGL2RenderingContext, name: string, value: number) {
-		const location = this.getUniformLocation(name);
+		const location = this.getUniformLocation(gl, name);
 
 		gl.uniform1f(location, value);
 	}
 	protected setUniformFloat2(gl: WebGL2RenderingContext, name: string, value: Vec2) {
-		const location = this.getUniformLocation(name);
+		const location = this.getUniformLocation(gl, name);
 
 		gl.uniform2f(location, value[0], value[1]);
 	}
 	// #endregion
 
 	protected setAttribute(gl: WebGL2RenderingContext, target: GLenum, name: string, type: WebGLValueType, buffer: WebGLBuffer) {
-		const location = this.getAttribLocation(name);
+		const location = this.getAttribLocation(gl, name);
 
 		gl.bindBuffer(target, buffer);
 
@@ -182,21 +188,21 @@ export abstract class WebGLRenderer<T extends unknown[]> {
 
 		return buffer;
 	}
-	protected getUniformLocation(name: string): WebGLUniformLocation {
+	protected getUniformLocation(gl: WebGL2RenderingContext, name: string): WebGLUniformLocation {
 		const cached = this.uniformLocationCache.get(name);
 		if (cached) return cached;
 
-		const location = this.gl.getUniformLocation(this.program, name);
+		const location = gl.getUniformLocation(this.program, name);
 		if (!location) throw new Error(`Could not get uniform location for ${name}.`);
 		this.uniformLocationCache.set(name, location);
 
 		return location;
 	}
-	protected getAttribLocation(name: string): GLint {
+	protected getAttribLocation(gl: WebGL2RenderingContext, name: string): GLint {
 		const cached = this.attribLocationCache.get(name);
 		if (cached) return cached;
 
-		const location = this.gl.getAttribLocation(this.program, name);
+		const location = gl.getAttribLocation(this.program, name);
 		this.attribLocationCache.set(name, location);
 
 		return location;
@@ -204,7 +210,7 @@ export abstract class WebGLRenderer<T extends unknown[]> {
 
 	abstract render(...data: T): void;
 
-	get canvas() { return this.gl.canvas; }
+	get canvas() { return this.gl?.canvas; }
 }
 
 export function quad(bounds: Bounds): number[] {

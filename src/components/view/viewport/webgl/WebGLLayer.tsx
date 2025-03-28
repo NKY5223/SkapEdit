@@ -30,6 +30,7 @@ export const WebGLLayer = (...renderers: WebGLLayerRenderer[]): ViewportLayerFC 
 			throw new Error("Attempted to stop rendering, but could not find render abort controller");
 		}
 		abortRender.abort();
+		renderers.forEach(renderer => renderer.cleanup())
 		abortRenderRef.current = undefined;
 		return;
 	}

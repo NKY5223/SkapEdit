@@ -1,5 +1,4 @@
-export type Tuple<T, N extends number> = TupleInternal<T, N, []>;
-type TupleInternal<T, N extends number, A extends T[]> = A["length"] extends N ? A : TupleInternal<T, N, [...A, T]>;
+import { Tuple } from "./types.ts";
 
 export function cross<T extends unknown[], U extends unknown>(
 	f: (...args: T) => U,

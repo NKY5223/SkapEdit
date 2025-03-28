@@ -1,5 +1,5 @@
 .split {
-	--handle-width: var(--theme-border-width);
+	--handle-width: var(--theme-border-width, 1px);
 	--handle-interaction: calc(5 * var(--handle-width));
 
 	position: absolute;

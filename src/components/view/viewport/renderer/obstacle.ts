@@ -16,6 +16,7 @@ export class ObstacleWebGLRenderer extends WebGLLayerRenderer {
 		cameraSize,
 	}: WebGLViewportInfo): void {
 		const gl = this.gl;
+		if (!gl) return;
 
 		gl.useProgram(this.program);
 

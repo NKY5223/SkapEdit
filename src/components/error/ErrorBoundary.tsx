@@ -1,5 +1,6 @@
 import { Component, ErrorInfo, PropsWithChildren, ReactNode } from "react";
 import css from "./ErrorBoundary.module.css";
+import { indent } from "../../common/string.ts";
 
 type ErrorBoundaryProps = PropsWithChildren<{
 	fallback?: (error: Error) => ReactNode;
@@ -79,4 +80,3 @@ const stringify = (obj: unknown): string => {
 	}
 	return JSON.stringify(obj, null, "\t");
 }
-const indent = (str: string, char = "\t") => str.split("\n").map(s => char + s).join("\n");
