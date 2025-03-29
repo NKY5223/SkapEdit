@@ -369,20 +369,23 @@ const matOpNonComm = (
 // #region Matrix multiplying
 type Index<A, I> = I extends keyof A ? A[I] : never;
 
-type MulableMatrices<N0 extends number, NTail extends [number, ...number[]]> = {
-	[Ni in keyof NTail]: Matrix<
-		NTail[Ni],
-		Ni extends 0 ? N0 : Index<[N0, ...NTail], Ni>
-	>
-};
+type MulableMatrices<N0 extends number, N1 extends number, NTail extends number[]> = [
+	Matrix<N1, N0>,
+	...{
+		[Ni in keyof NTail]: Matrix<
+			NTail[Ni],
+			Index<[N1, ...NTail], Ni>
+		>
+	}];
 // 1,[3,4,5] => 3x1 4x3 5x4 => 5x1 => 5, 1
-type MulResult<N0 extends number, NTail extends [number, ...number[]]> =
+type MulResult<N0 extends number, N1 extends number, NTail extends number[]> =
 	NTail extends [...number[], infer N extends number] ?
-	Matrix<N0, N> : never;
+	Matrix<N, N0> : 
+	Matrix<N1, N0>;
 
 type test = [
-	MulableMatrices<1, [3, 4]>,
-	MulResult<1, [3, 4]>
+	MulableMatrices<1, 3, [4]>,
+	MulResult<1, 3, [4]>
 ];
 // #endregion
 
@@ -643,21 +646,21 @@ export class Matrix<M extends number, N extends number> {
 	/** @see {@linkcode Matrix.sub} */
 	sub(...values: (number | Matrix<M, N>)[]) { return Matrix.sub(this, ...values); }
 
-	static mulMats<N0 extends number, NTail extends [number, ...number[]]>(
-		...values: MulableMatrices<N0, NTail>
-	): MulResult<N0, NTail> {
+	static mulMats<N0 extends number, N1 extends number, NTail extends number[]>(
+		...values: MulableMatrices<N0, N1, NTail>
+	): MulResult<N0, N1, NTail> {
 		if (values.length === 0)
 			throw new Error("Cannot multiply 0 matrices; cannot infer the expected dimensions.");
 		if (values.length === 1)
 			// fml
-			return values[0] as unknown as MulResult<N0, NTail>;
+			return values[0] as never;
 		const [first, second, ...rest] = values;
 
 		// casting hell
-		return Matrix.mulMats<number, [number, ...number[]]>(Matrix.matMul<number, number, number>(
-			first as unknown as Matrix<number, number>, 
-			second as unknown as Matrix<number, number>
-		), ...rest as Matrix<number, number>[])
+		return Matrix.mulMats(Matrix.matMul(
+			first as never,
+			second as never
+		), ...rest as never);
 	}
 	// #endregion
 
@@ -674,16 +677,17 @@ const B = new Matrix(3, 3, [
 	[3, 4, 5],
 	[3, 4, 5],
 ] as const).transpose();
-const C = new Matrix(2, 1, [
+const C = new Matrix(3, 1, [
 	[0],
 	[1],
+	[2],
 ] as const).transpose();
 
 console.log({
 	"this is a": "debug message, check my insides",
 	get clicky_for_log() {
 		console.log(typeset({})
-			`A = ${A}; B = ${B}; AB = ${Matrix.mulMats<2, [3, 3, 1]>(A, B, C)}`
+			`A = ${A}; B = ${B}; C = ${C}; ABC = ${Matrix.mulMats(A, B, C)}`
 		);
 		return "done";
 	}
