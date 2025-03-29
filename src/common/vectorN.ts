@@ -369,24 +369,40 @@ const matOpNonComm = (
 // #region Matrix multiplying
 type Index<A, I> = I extends keyof A ? A[I] : never;
 
+type Mulable<M extends number, N extends number> =
+	M extends N ? Matrix<M, N> | number : Matrix<M, N>;
 type MulableMatrices<N0 extends number, N1 extends number, NTail extends number[]> = [
-	Matrix<N1, N0>,
+	Mulable<N1, N0>,
 	...{
-		[Ni in keyof NTail]: Matrix<
+		[Ni in keyof NTail]: Mulable<
 			NTail[Ni],
 			Index<[N1, ...NTail], Ni>
 		>
-	}];
-// 1,[3,4,5] => 3x1 4x3 5x4 => 5x1 => 5, 1
-type MulResult<N0 extends number, N1 extends number, NTail extends number[]> =
-	NTail extends [...number[], infer N extends number] ?
-	Matrix<N, N0> : 
-	Matrix<N1, N0>;
+	}
+];
+type MatMulResultDim<N1 extends number, NTail extends number[]> = NTail extends [...number[], infer N extends number] ? N : N1;
+
+type MulMatResult<N0 extends number, N1 extends number, NTail extends number[]> =
+	Matrix<MatMulResultDim<N1, NTail>, N0>;
 
 type test = [
 	MulableMatrices<1, 3, [4]>,
-	MulResult<1, 3, [4]>
+	MulMatResult<1, 3, [4]>
 ];
+
+const endsWithVector = <N0 extends number, N1 extends number, NTail extends number[]>(
+	values: MulableMatrices<N0, N1, NTail> 
+	| [...MulableMatrices<N0, N1, NTail>, Vector<MatMulResultDim<N1, NTail>>]
+): values is [...MulableMatrices<N0, N1, NTail>, Vector<MatMulResultDim<N1, NTail>>] => (
+	isVector(values.at(-1))
+);
+const end = <Rest extends unknown[], Tail>(values: [...Rest, Tail]): [Rest, Tail] => {
+	if (values.length < 1) throw new Error("cannot get head and tail of array because it is too small");
+	return [
+		values.slice(1, -1) as Rest,
+		values.at(-1) as Tail,
+	];
+}
 // #endregion
 
 /**
@@ -453,7 +469,7 @@ export class Matrix<M extends number, N extends number> {
 
 		Object.defineProperty(this, "v", {
 			enumerable: false,
-			value: vectors,
+			value: `[${vectors.map(v => Vector.rowStr(v.components)).join(", ")}]`,
 		});
 
 		vectors.forEach((vec, i) => {
@@ -477,7 +493,7 @@ export class Matrix<M extends number, N extends number> {
 		}
 		if (typeof values === "number") {
 			return new Matrix<M, N>(width, height,
-				tuple(width, () => Vector.from(height, 0))
+				tuple(width, () => Vector.from(height, values))
 			)
 		}
 		if (typeof values === "function") {
@@ -523,9 +539,10 @@ export class Matrix<M extends number, N extends number> {
 
 		return padded[0].map((_, i) => {
 			const s = padded.map(col => col[i]).join(" ");
-			return i === 0 ? `⎡${s}⎤` :
-				i !== N - 1 ? `⎢${s}⎥` :
-					`⎣${s}⎦`;
+			return N === 1 ? `[${s}]` :
+				i === 0 ? `⎡${s}⎤` :
+					i !== N - 1 ? `⎢${s}⎥` :
+						`⎣${s}⎦`;
 		}).join("\n");
 	}
 
@@ -574,6 +591,12 @@ export class Matrix<M extends number, N extends number> {
 		return Matrix.from(b.width, a.height, (i, j) =>
 			Vector.dot(aT[j], b[i])
 		);
+	}
+	// #endregion
+
+	// #region Mat, Vec → Mat
+	static matVecMul<M extends number, N extends number>(mat: Matrix<M, N>, vec: Vector<N>): Vector<M> {
+		return new Vector(tuple(mat.width, i => mat[i].dot(vec)));
 	}
 	// #endregion
 
@@ -646,22 +669,32 @@ export class Matrix<M extends number, N extends number> {
 	/** @see {@linkcode Matrix.sub} */
 	sub(...values: (number | Matrix<M, N>)[]) { return Matrix.sub(this, ...values); }
 
-	static mulMats<N0 extends number, N1 extends number, NTail extends number[]>(
-		...values: MulableMatrices<N0, N1, NTail>
-	): MulResult<N0, N1, NTail> {
-		if (values.length === 0)
-			throw new Error("Cannot multiply 0 matrices; cannot infer the expected dimensions.");
-		if (values.length === 1)
-			// fml
-			return values[0] as never;
-		const [first, second, ...rest] = values;
+	static mul<N0 extends number, N1 extends number, NTail extends number[]>(...values: MulableMatrices<N0, N1, NTail>): MulMatResult<N0, N1, NTail>;
+	static mul<N0 extends number, N1 extends number, NTail extends number[]>(...values: [...MulableMatrices<N0, N1, NTail>, Vector<MatMulResultDim<N1, NTail>>]): Vector<N1>;
+	static mul<N0 extends number, N1 extends number, NTail extends number[]>(
+		...values: MulableMatrices<N0, N1, NTail> | [...MulableMatrices<N0, N1, NTail>, Vector<MatMulResultDim<N1, NTail>>]
+	): MulMatResult<N0, N1, NTail> | Vector<N1> {
+		if (values.length === 0) throw new Error("Cannot multiply nothing");
 
-		// casting hell
-		return Matrix.mulMats(Matrix.matMul(
-			first as never,
-			second as never
-		), ...rest as never);
+		if (endsWithVector(values)) {
+			const [rest, final] = end(values);
+			if (values.length <= 1) return final as never;
+			return Matrix.matVecMul(Matrix.mul(...rest), final as never) as never;
+		}
+
+		const numbers = (values as unknown[]).filter(isNumber);
+		const matrices = (values as unknown[]).filter(isMatrix);
+		if (matrices.length === 0)
+			throw new TypeError("Cannot multiply only numbers; cannot infer expected matrix dimensions");
+		const mat = matrices.slice(1).reduce((acc, curr) => (
+			console.log({ acc, curr }),
+			Matrix.matMul(acc, curr)
+		), matrices[0]);
+		const scalar = numbers.reduce((a, b) => a * b, 1);
+		console.log({ mat, scalar });
+		return Matrix.compMul(mat, scalar) as never;
 	}
+
 	// #endregion
 
 	// #endregion
@@ -687,8 +720,10 @@ console.log({
 	"this is a": "debug message, check my insides",
 	get clicky_for_log() {
 		console.log(typeset({})
-			`A = ${A}; B = ${B}; C = ${C}; ABC = ${Matrix.mulMats(A, B, C)}`
+			`A = ${A}; B = ${B}; C = ${C}; ABC = ${Matrix.mul(A, B, C)};`
 		);
 		return "done";
 	}
 });
+
+Object.assign(window, { Matrix });
