@@ -17,27 +17,29 @@ export const typeset = (options: Partial<TypesetOptions>) => (template: readonly
 			} else {
 				// End
 				parts.push(str);
-				result.push(align(options, parts));
-
-				parts.length = 0;
 			}
-			continue;
+		} else {
+			// \n Found
+			const last = lines.pop();
+			if (last === undefined) {
+				throw new Error("?????? lines is somehow empty despite it being a result of String.split");
+			}
+
+			// Push the simple (maybe empty) strings in
+			parts.push(...lines);
+
+			// New line
+			result.push(align(options, [...parts]));
+			parts.length = 0;
+
+			if (i in subst) {
+				// Next line
+				parts.push(last, subst[i]);
+			} else {
+				// End
+				parts.push(last);
+			}
 		}
-		// \n Found
-		const last = lines.pop();
-		if (last === undefined) {
-			throw new Error("?????? lines is somehow empty despite it being a result of String.split");
-		}
-
-		// Push the simple (maybe empty) strings in
-		parts.push(...lines);
-
-		// New line
-		result.push(align(options, [...parts]));
-		parts.length = 0;
-
-		// Start next line
-		parts.push(last, subst[i]);
 	}
 	if (parts.length) {
 		result.push(align(options, [...parts]));

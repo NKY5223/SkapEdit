@@ -1,4 +1,4 @@
-import { Tuple } from "./types.ts";
+import { Tuple } from "./tuple.ts";
 
 export function cross<T extends unknown[], U extends unknown>(
 	f: (...args: T) => U,
