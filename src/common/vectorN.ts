@@ -1,8 +1,19 @@
-import { typeset } from "./string.ts";
+import { interleave } from "./array.ts";
+import { alignH, bracketPresets, concat, normalize, NormTextBlock, TextBlock, typeset } from "./string.ts";
 import { map, ReadonlyTuple, tuple } from "./tuple.ts";
 
 // #region Helpers
-const str: (n: number) => string = n => n.toString();
+const str = (places = 5) => (n: number) => {
+	if (Object.is(n, Infinity)) return `∞`;
+	if (Object.is(n, -Infinity)) return `-∞`;
+	if (Object.is(n, NaN)) return `NaN`;
+
+	let str = n.toString();
+	if (str.includes("e")) return str;
+	const [a, b] = str.split(".");
+	if (!b) return str;
+	return `${a}.${b.slice(0, places)}`;
+}
 
 const isNumber = (x: unknown): x is number => typeof x === "number";
 const isVector = <N extends number>(v: unknown): v is Vector<N> => v instanceof Vector;
@@ -161,27 +172,21 @@ export class Vector<N extends number> {
 	}
 
 	// #region String
-	static rowStr(values: readonly number[]): string {
-		return `[${values.join(", ")}]`;
+	static rowStr(values: readonly number[], stringifier = str()): string {
+		return `[${values.map(stringifier).join(", ")}]`;
 	}
-	static colStr(values: readonly number[]): string {
-		const N = values.length;
-		if (N <= 1) {
-			return `[${values.join(" ")}]`;
-		}
+	toText(numStr = str(), brackets = bracketPresets.square): NormTextBlock {
+		const strs = this.components.map(numStr);
 
-		const strs = values.map(str);
-		const width = Math.max(...strs.map(s => s.length));
-		const padded = strs.map(s => s.padEnd(width, " "));
+		const aligned = alignH({
+			align: "left",
+			alignAt: ".",
+		}, strs);
 
-		return padded.map((s, i) =>
-			i === 0 ? `⎡${s}⎤` :
-				i !== N - 1 ? `⎢${s}⎥` :
-					`⎣${s}⎦`
-		).join("\n");
+		return brackets(aligned);
 	}
-	toString() {
-		return Vector.colStr(this.components);
+	toString(numStr = str()) {
+		return this.toText(numStr).lines.join("\n");
 	}
 	// #endregion
 
@@ -224,7 +229,7 @@ export class Vector<N extends number> {
 	 * ⎣v₀ₙ * v₁ₙ * ⋯ vₖₙ⎦
 	 * ```
 	 */
-	static mul = vecOpWithIdentity(compWiseVecOp((a, b) => a + b), n => Vector.from(n, 1));
+	static mul = vecOpWithIdentity(compWiseVecOp((a, b) => a * b), n => Vector.from(n, 1));
 	/** @see {@linkcode Vector.mul} */
 	mul(...values: (Vector<N> | number)[]) { return Vector.mul(this, ...values); }
 	/**
@@ -237,7 +242,7 @@ export class Vector<N extends number> {
 	 * ⎣v₀ₙ / v₁ₙ / ⋯ vₖₙ⎦
 	 * ```
 	 */
-	static div = vecOpNonComm(compWiseVecOp((a, b) => a - b));
+	static div = vecOpNonComm(compWiseVecOp((a, b) => a / b));
 	/** @see {@linkcode Vector.div} */
 	div(...values: (Vector<N> | number)[]) { return Vector.div(this, ...values); }
 	// #endregion
@@ -370,7 +375,7 @@ const matOpNonComm = (
 type Index<A, I> = I extends keyof A ? A[I] : never;
 
 type Mulable<M extends number, N extends number> =
-	M extends N ? Matrix<M, N> | number : Matrix<M, N>;
+	Matrix<M, N> | (M extends N ? Matrix<M, N> | number : Matrix<M, N>);
 type MulableMatrices<N0 extends number, N1 extends number, NTail extends number[]> = [
 	Mulable<N1, N0>,
 	...{
@@ -380,6 +385,12 @@ type MulableMatrices<N0 extends number, N1 extends number, NTail extends number[
 		>
 	}
 ];
+type MulableMatricesNoFirst<N1 extends number, NTail extends number[]> = {
+	[Ni in keyof NTail]: Mulable<
+		NTail[Ni],
+		Index<[N1, ...NTail], Ni>
+	>
+};
 type MatMulResultDim<N1 extends number, NTail extends number[]> = NTail extends [...number[], infer N extends number] ? N : N1;
 
 type MulMatResult<N0 extends number, N1 extends number, NTail extends number[]> =
@@ -391,8 +402,8 @@ type test = [
 ];
 
 const endsWithVector = <N0 extends number, N1 extends number, NTail extends number[]>(
-	values: MulableMatrices<N0, N1, NTail> 
-	| [...MulableMatrices<N0, N1, NTail>, Vector<MatMulResultDim<N1, NTail>>]
+	values: MulableMatrices<N0, N1, NTail>
+		| [...MulableMatrices<N0, N1, NTail>, Vector<MatMulResultDim<N1, NTail>>]
 ): values is [...MulableMatrices<N0, N1, NTail>, Vector<MatMulResultDim<N1, NTail>>] => (
 	isVector(values.at(-1))
 );
@@ -529,25 +540,55 @@ export class Matrix<M extends number, N extends number> {
 		);
 	}
 
-	toString(): string {
-		const N = this.height;
+	detText(numStr = str()) { return this.toText(numStr, bracketPresets.straight); }
+	toText(numStr = str(), brackets = bracketPresets.square): NormTextBlock {
 		const strs = this.vectors.map(vec =>
-			vec.components.map(str)
+			vec.components.map(numStr)
 		);
-		const widths = strs.map(col => Math.max(...col.map(s => s.length)));
-		const padded = strs.map((col, i) => col.map(s => s.padEnd(widths[i], " ")));
+		const columns = strs.map(col => normalize(alignH({ 
+			align: "left", alignAt: "."
+		}, col)));
 
-		return padded[0].map((_, i) => {
-			const s = padded.map(col => col[i]).join(" ");
-			return N === 1 ? `[${s}]` :
-				i === 0 ? `⎡${s}⎤` :
-					i !== N - 1 ? `⎢${s}⎥` :
-						`⎣${s}⎦`;
-		}).join("\n");
+		return brackets(concat(...interleave(
+			columns, 
+			columns.map(() => normalize(" ")).slice(1)
+		)));
+	}
+	toString(numStr = str()): string {
+		return this.toText(numStr).lines.join("\n");
 	}
 
 
 	// #region Math
+
+	// #region number → Mat
+	/**
+	 * The identity matrix
+	 * ```txt
+	 * Iₙ = 𝟙ₙ = 
+	 * ⎡1 0 ⋯ 0⎤
+	 * ⎢0 1 ⋯ 0⎥
+	 * ⎢⋮ ⋮ ⋱ ⋮⎥
+	 * ⎣0 0 ⋯ 1⎦
+	 * ```
+	 */
+	static identity<N extends number>(size: N): Matrix<N, N> {
+		return Matrix.from(size, size, (i, j) => i === j ? 1 : 0);
+	}
+	/**
+	 * A matrix of all zeros
+	 * ```txt
+	 * 𝟘ₘₙ = 
+	 * ⎡0 0 ⋯ 0⎤
+	 * ⎢0 0 ⋯ 0⎥
+	 * ⎢⋮ ⋮ ⋱ ⋮⎥
+	 * ⎣0 0 ⋯ 0⎦
+	 * ```
+	 */
+	static zero<M extends number, N extends number>(m: M, n: N): Matrix<M, N> {
+		return Matrix.from(m, n, 0);
+	}
+	// #endregion
 
 	// #region Mat → Mat
 	/**
@@ -569,6 +610,62 @@ export class Matrix<M extends number, N extends number> {
 	}
 	/** @see {@linkcode Matrix.transpose} */
 	transpose(): Matrix<N, M> { return Matrix.transpose(this); }
+	// #endregion
+
+	// #region Mat → Vec
+	static diagonal<N extends number>(mat: Matrix<N, N>): Vector<N> {
+		return new Vector(map(mat.vectors, (v, i) => v[i]));
+	}
+	// #endregion
+
+	// #region Mat → number
+	static det<N extends number>(mat: Matrix<N, N>): number {
+		if (mat.width !== mat.height) throw new TypeError(`Cannot find the determinant of non-square (${mat.width}×${mat.height}) matrices.`);
+		const n = mat.width;
+
+		if (n === 2) return mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0];
+
+		const { lower, upper } = this.decomposeLU(mat);
+		const prodLower = this.diagonal(lower).components.reduce((a, b) => a * b, 1);
+		const prodUpper = this.diagonal(upper).components.reduce((a, b) => a * b, 1);
+
+		return prodLower * prodUpper;
+	}
+	det(this: Matrix<N, N>): number {
+		return Matrix.det(this);
+	}
+	static decomposeLU<N extends number>(mat: Matrix<N, N>) {
+		if (mat.width !== mat.height) throw new TypeError(`Cannot LU-decompose non-square (${mat.width}×${mat.height}) matrices.`);
+		const n = mat.width;
+
+		let lower = mat;
+		let upper = this.identity(n);
+		// M = LU
+		for (let i = 0; i < n; i++) {
+			/* = L ∙ [
+				0
+				0
+				...
+				coeffs
+				...
+				0
+				0
+			] */
+			const change = new Matrix(tuple<Vector<N>, N>(n, j => {
+				if (j <= i) return Vector.from(n, 0);
+				const coeff = lower[j][i] / lower[i][i];
+				// = coeff col
+				// col = L[i] = L ∙ [0 0 ... 1 ... 0 0]
+				// = L ∙ [0 0 ... coeff ... 0 0]
+				const change = Vector.from<N>(n, k => k === i ? coeff : 0);
+				return change;
+			}));
+			lower = lower.sub(Matrix.matMul(lower, change));
+			upper = upper.add(change);
+		}
+
+		return { upper, lower, mul: Matrix.matMul(lower, upper) };
+	}
 	// #endregion
 
 	// #region Mat, Mat → Mat
@@ -669,7 +766,19 @@ export class Matrix<M extends number, N extends number> {
 	/** @see {@linkcode Matrix.sub} */
 	sub(...values: (number | Matrix<M, N>)[]) { return Matrix.sub(this, ...values); }
 
+	/**
+	 * Multiplication of matrices and numbers
+	 * ```txt
+	 * ABn...C : Matrix
+	 * ```
+	 */
 	static mul<N0 extends number, N1 extends number, NTail extends number[]>(...values: MulableMatrices<N0, N1, NTail>): MulMatResult<N0, N1, NTail>;
+	/**
+	 * Multiplication of matrices and vector
+	 * ```txt
+	 * ABn...Cv⃗ : Vector
+	 * ```
+	 */
 	static mul<N0 extends number, N1 extends number, NTail extends number[]>(...values: [...MulableMatrices<N0, N1, NTail>, Vector<MatMulResultDim<N1, NTail>>]): Vector<N1>;
 	static mul<N0 extends number, N1 extends number, NTail extends number[]>(
 		...values: MulableMatrices<N0, N1, NTail> | [...MulableMatrices<N0, N1, NTail>, Vector<MatMulResultDim<N1, NTail>>]
@@ -687,43 +796,81 @@ export class Matrix<M extends number, N extends number> {
 		if (matrices.length === 0)
 			throw new TypeError("Cannot multiply only numbers; cannot infer expected matrix dimensions");
 		const mat = matrices.slice(1).reduce((acc, curr) => (
-			console.log({ acc, curr }),
 			Matrix.matMul(acc, curr)
 		), matrices[0]);
 		const scalar = numbers.reduce((a, b) => a * b, 1);
-		console.log({ mat, scalar });
 		return Matrix.compMul(mat, scalar) as never;
 	}
-
+	/**
+	 * Multiplication of matrices and numbers
+	 * ```txt
+	 * ABn...C : Matrix
+	 * ```
+	 * @see {@linkcode Matrix.mul}
+	 */
+	mul<NTail extends number[]>(...values: MulableMatricesNoFirst<M, NTail>): MulMatResult<N, M, NTail>;
+	/**
+	 * Multiplication of matrices and vector
+	 * ```txt
+	 * ABn...Cv⃗ : Vector
+	 * ```
+	 * @see {@linkcode Matrix.mul}
+	 */
+	mul<NTail extends number[]>(...values: [...MulableMatricesNoFirst<M, NTail>, Vector<MatMulResultDim<M, NTail>>]): Vector<M>;
+	mul<NTail extends number[]>(
+		...values: MulableMatricesNoFirst<M, NTail> | [...MulableMatricesNoFirst<M, NTail>, Vector<MatMulResultDim<M, NTail>>]
+	): MulMatResult<N, M, NTail> | Vector<M> {
+		// trust me bro
+		return Matrix.mul(this, ...values as never[]) as never;
+	}
 	// #endregion
 
 	// #endregion
 }
-
-// `as const` required to infer tuple type
-const A = new Matrix(2, 3, [
-	[0, 1, 2],
-	[3, 4, 5],
-] as const).transpose();
-const B = new Matrix(3, 3, [
-	[0, 1, 2],
-	[3, 4, 5],
-	[3, 4, 5],
-] as const).transpose();
-const C = new Matrix(3, 1, [
-	[0],
-	[1],
-	[2],
-] as const).transpose();
-
-console.log({
-	"this is a": "debug message, check my insides",
-	get clicky_for_log() {
-		console.log(typeset({})
-			`A = ${A}; B = ${B}; C = ${C}; ABC = ${Matrix.mul(A, B, C)};`
-		);
-		return "done";
-	}
+const type = typeset({
+	stringifiers: [
+		x => isNumber(x) && str(5)(x),
+		x => isVector(x) && x.toText(),
+		(x, s) => {
+			if (typeof x !== "object") return;
+			if (x === null) return;
+			if (![null, Object.prototype].includes(Object.getPrototypeOf(x))) return;
+			const [first, ...rest] = Object.entries(x).flatMap(([k, v], i, a) => [
+				JSON.stringify(k),
+				": ",
+				s(v),
+				...(i === a.length - 1 ? [] : [", "])
+			]);
+			if (!first) return bracketPresets.curly("empty");
+			return bracketPresets.curly(concat(...[first, ...rest]));
+		},
+	]
 });
+const log = (template: readonly string[], ...substs: (unknown | NormTextBlock)[]) => console.log(type(template, ...substs));
+{
+	// `as const` required to infer tuple type
+	const A = new Matrix(2, 3, [
+		[0, 1, 2],
+		[3, 4, 5],
+	] as const).transpose();
+	const B = new Matrix(3, 3, [
+		[3, 4, 5],
+		[1, 1, 2],
+		[6, 9, 8],
+	] as const).transpose();
+	const C = new Matrix(3, 1, [
+		[0],
+		[1],
+		[2],
+	] as const).transpose();
 
-Object.assign(window, { Matrix });
+	console.log({
+		"this is a": "debug message, check my insides",
+		get clicky_for_log() {
+			log`${B.detText()} = ${B.det()}`;
+			return "done";
+		}
+	});
+
+	Object.assign(window, { Matrix, Vector });
+}

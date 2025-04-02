@@ -24,17 +24,18 @@ export const WebGLLayer = (...renderers: WebGLLayerRenderer[]): ViewportLayerFC 
 		viewportInfoRef.current = viewportInfo;
 	}, [viewportInfo]);
 
-	const cleanup = () => {
-		const abortRender = abortRenderRef.current;
-		if (!abortRender) {
-			throw new Error("Attempted to stop rendering, but could not find render abort controller");
-		}
-		abortRender.abort();
-		renderers.forEach(renderer => renderer.cleanup())
-		abortRenderRef.current = undefined;
-		return;
-	}
 	const initRenderers = () => {
+		const cleanup = () => {
+			const abortRender = abortRenderRef.current;
+			if (!abortRender) {
+				throw new Error("Attempted to stop rendering, but could not find render abort controller");
+			}
+			abortRender.abort();
+			renderers.forEach(renderer => renderer.cleanup())
+			abortRenderRef.current = undefined;
+			return;
+		}
+		
 		const canvas = canvasRef.current;
 		if (!canvas) {
 			cleanup();
@@ -93,7 +94,7 @@ export const WebGLLayer = (...renderers: WebGLLayerRenderer[]): ViewportLayerFC 
 			window.requestAnimationFrame(render);
 		};
 		window.requestAnimationFrame(render);
-		
+
 		return cleanup;
 	};
 	useEffect(initRenderers, []);

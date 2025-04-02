@@ -9,51 +9,41 @@ const GL_FLOAT = 5126;
 const GL_INT = 5124;
 
 export abstract class WebGLRenderer<T extends unknown[]> {
-	ready: boolean;
+	info?: {
+		gl: WebGL2RenderingContext;
+		program: WebGLProgram;
+		
+		buffers: Map<string, WebGLBuffer>;
+		uniformLocationCache: Map<string, WebGLUniformLocation>;
+		attribLocationCache: Map<string, number>;
+	};
 
-	gl: WebGL2RenderingContext | undefined;
-
-	program!: WebGLProgram;
-	
-	buffers: Map<string, WebGLBuffer>;
-	uniformLocationCache: Map<string, WebGLUniformLocation>;
-	attribLocationCache: Map<string, number>;
 
 	constructor(public shaderSource: {
 		vert: string;
 		frag: string;
 	}) {
-		this.ready = false;
-
-		this.uniformLocationCache = new Map<string, WebGLUniformLocation>();
-		this.attribLocationCache = new Map<string, GLint>();
-
-		this.buffers = new Map<string, WebGLBuffer>();
 	}
 
 	init(gl: WebGL2RenderingContext) {
 		if (gl.isContextLost()) throw new Error("WebGL2 context is lost.");
-
-		this.gl = gl;
 
 		const vertShader = this.createShader(gl, gl.VERTEX_SHADER, this.shaderSource.vert);
 		const fragShader = this.createShader(gl, gl.FRAGMENT_SHADER, this.shaderSource.frag);
 
 		const program = this.createProgram(gl, vertShader, fragShader);
 
-		this.program = program;
-
-		this.buffers.clear();
-		this.uniformLocationCache.clear();
-		this.attribLocationCache.clear();
-
-		this.ready = true;
+		this.info = {
+			gl,
+			program,
+			buffers: new Map(),
+			attribLocationCache: new Map(),
+			uniformLocationCache: new Map(),
+		};
 	}
 	cleanup() {
-		if (!this.ready) return;
-		this.ready = false;
-
-		this.gl = undefined;
+		if (!this.info) return;
+		this.info = undefined;
 	}
 	protected createShader(gl: WebGL2RenderingContext, type: GLenum, source: string): WebGLShader {
 		const name = type === gl.VERTEX_SHADER ? "vertex" : type === gl.FRAGMENT_SHADER ? "fragment" : "???";
@@ -178,39 +168,42 @@ export abstract class WebGLRenderer<T extends unknown[]> {
 	}
 
 	protected getBuffer(gl: WebGL2RenderingContext, name: string): WebGLBuffer {
-		const existing = this.buffers.get(name);
+		if (!this.info) throw new Error(`WebGLRenderer is not initialised.`);
+		const existing = this.info.buffers.get(name);
 		if (existing) return existing;
 
 		const buffer = gl.createBuffer();
 		if (!buffer) throw new Error("Could not create buffer.");
 
-		this.buffers.set(name, buffer);
+		this.info.buffers.set(name, buffer);
 
 		return buffer;
 	}
 	protected getUniformLocation(gl: WebGL2RenderingContext, name: string): WebGLUniformLocation {
-		const cached = this.uniformLocationCache.get(name);
+		if (!this.info) throw new Error(`WebGLRenderer is not initialised.`);
+		const cached = this.info.uniformLocationCache.get(name);
 		if (cached) return cached;
 
-		const location = gl.getUniformLocation(this.program, name);
+		const location = gl.getUniformLocation(this.info.program, name);
 		if (!location) throw new Error(`Could not get uniform location for ${name}.`);
-		this.uniformLocationCache.set(name, location);
+		this.info.uniformLocationCache.set(name, location);
 
 		return location;
 	}
 	protected getAttribLocation(gl: WebGL2RenderingContext, name: string): GLint {
-		const cached = this.attribLocationCache.get(name);
+		if (!this.info) throw new Error(`WebGLRenderer is not initialised.`);
+		const cached = this.info.attribLocationCache.get(name);
 		if (cached) return cached;
 
-		const location = gl.getAttribLocation(this.program, name);
-		this.attribLocationCache.set(name, location);
+		const location = gl.getAttribLocation(this.info.program, name);
+		this.info.attribLocationCache.set(name, location);
 
 		return location;
 	}
 
 	abstract render(...data: T): void;
 
-	get canvas() { return this.gl?.canvas; }
+	get canvas() { return this.info?.gl.canvas; }
 }
 
 export function quad(bounds: Bounds): number[] {
