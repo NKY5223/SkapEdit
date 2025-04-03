@@ -1,6 +1,6 @@
 import { createContext, useContext } from "react";
-import { Bounds } from "./Bounds.ts";
-import { Vec2 } from "../../common/vector.ts";
+import { Bounds } from "./bounds.ts";
+import { Vec2 } from "../../common/vec2.ts";
 
 
 export type SkapObstacle = {

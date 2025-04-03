@@ -1,5 +1,5 @@
 import { interleave } from "./array.ts";
-import { alignH, bracketPresets, concat, normalize, NormTextBlock, TextBlock, typeset } from "./string.ts";
+import { alignH, bracketPresets, concat, normalize, NormTextBlock, typeset } from "./string.ts";
 import { map, ReadonlyTuple, tuple } from "./tuple.ts";
 
 // #region Helpers
@@ -171,7 +171,7 @@ export class Vector<N extends number> {
 		return new Vector(map(this.components, f));
 	}
 
-	// #region String
+	// #region Text
 	static rowStr(values: readonly number[], stringifier = str()): string {
 		return `[${values.map(stringifier).join(", ")}]`;
 	}
@@ -247,7 +247,7 @@ export class Vector<N extends number> {
 	div(...values: (Vector<N> | number)[]) { return Vector.div(this, ...values); }
 	// #endregion
 
-	// #region (Vec, Vec) → number
+	// #region → number
 	/**
 	 * ```txt
 	 * a⃗ ∙ b⃗ = a₀ * b₀ + a₁ * b₁ + ⋯ aₙ * bₙ
@@ -258,9 +258,6 @@ export class Vector<N extends number> {
 	}
 	/** @see {@linkcode Vector.dot} */
 	dot(v: Vector<N>) { return Vector.dot(this, v); }
-	// #endregion
-
-	// #region Vec → number
 	/**
 	 * Magnitude of the vector
 	 * ```txt
@@ -272,6 +269,77 @@ export class Vector<N extends number> {
 	}
 	/** @see {@linkcode Vector.mag} */
 	mag() { return Vector.mag(this); }
+	/**
+	 * ```txt
+	 * (a⃗ ∙ b⃗)/(|a⃗||b⃗|)
+	 * ```
+	 */
+	static dotNorm<N extends number>(a: Vector<N>, b: Vector<N>): number {
+		return Vector.dot(a.norm(), b.norm());
+	}
+	/** @see {@linkcode Vector.dotNorm} */
+	dotNorm(v: Vector<N>) { return Vector.dotNorm(this, v); }
+	/**
+	 * Angle between `a` and `b`
+	 */
+	static angle<N extends number>(a: Vector<N>, b: Vector<N>): number {
+		return Math.acos(this.dotNorm(a, b));
+	}
+	/** @see {@linkcode Vector.angle} */
+	angle(v: Vector<N>) { return Vector.angle(this, v); }
+	
+	// #endregion
+
+	// #region → Vec
+	/**
+	 * Negation of the vector
+	 * ```txt
+	 * -v⃗ = 
+	 * ⎡v₀⎤
+	 * ⎢v₁⎥
+	 * ⎢⋮ ⎥
+	 * ⎣vₙ⎦
+	 * ```
+	 */
+	static neg<N extends number>(vec: Vector<N>): Vector<N> {
+		return new Vector(map(vec.components, v => -v));
+	}
+	/** @see {@linkcode Vector.neg} */
+	neg() { return Vector.neg(this); }
+	/**
+	 * Normalization of the vector
+	 * ```txt
+	 * norm(v⃗) = v⃗ / |v⃗|
+	 * norm(v⃗, s) = sv⃗ / |v⃗|
+	 * ```
+	 */
+	static norm<N extends number>(vec: Vector<N>, mag = 1): Vector<N> {
+		return vec.mul(mag / vec.mag());
+	}
+	/** @see {@linkcode Vector.norm} */
+	norm(mag = 1) { return Vector.norm(this, mag); }
+	// #endregion
+
+	// #region → boolean
+	/**
+	 * ```txt
+	 * a⃗ = b⃗
+	 * ```
+	 */
+	static equal<N extends number>(a: Vector<N>, b: Vector<N>): boolean {
+		return a.length === b.length && a.components.every((v, i) => v === b[i]);
+	}
+	/** @see {@linkcode Vector.equal} */
+	equal(vec: Vector<N>): boolean {
+		return Vector.equal(this, vec);
+	}
+	// #endregion
+
+	// #region Other
+	static lerp<N extends number>(v0: Vector<N>, v1: Vector<N>): (t: number) => Vector<N> {
+		const d = v1.sub(v0);
+		return t => v0.add(d.mul(t));
+	}
 	// #endregion
 
 	// #endregion
@@ -396,11 +464,6 @@ type MatMulResultDim<N1 extends number, NTail extends number[]> = NTail extends 
 type MulMatResult<N0 extends number, N1 extends number, NTail extends number[]> =
 	Matrix<MatMulResultDim<N1, NTail>, N0>;
 
-type test = [
-	MulableMatrices<1, 3, [4]>,
-	MulMatResult<1, 3, [4]>
-];
-
 const endsWithVector = <N0 extends number, N1 extends number, NTail extends number[]>(
 	values: MulableMatrices<N0, N1, NTail>
 		| [...MulableMatrices<N0, N1, NTail>, Vector<MatMulResultDim<N1, NTail>>]
@@ -442,10 +505,10 @@ export class Matrix<M extends number, N extends number> {
 	 * 	...,
 	 * 	[Mₘ₀, Mₘ₁, ..., Mₘₙ],
 	 * ] as const);
-	 * // => ⎡M₀₀ M₀₁ ⋯ M₀ₘ⎤
-	 * //    ⎢M₁₀ M₁₁ ⋯ M₁ₘ⎥
+	 * // => ⎡M₀₀ M₁₀ ⋯ Mₘ₀⎤
+	 * //    ⎢M₀₁ M₁₁ ⋯ Mₘ₁⎥
 	 * //    ⎢ ⋮   ⋮  ⋱  ⋮ ⎥
-	 * //    ⎣Mₙ₀ Mₙ₁ ⋯ Mₙₘ⎦
+	 * //    ⎣Mₙ₀ Mₙ₁ ⋯ Mₘₙ⎦
 	 * new Matrix(0, n, []);
 	 * ```
 	 */
@@ -540,6 +603,7 @@ export class Matrix<M extends number, N extends number> {
 		);
 	}
 
+	// #region Text
 	detText(numStr = str()) { return this.toText(numStr, bracketPresets.straight); }
 	toText(numStr = str(), brackets = bracketPresets.square): NormTextBlock {
 		const strs = this.vectors.map(vec =>
@@ -557,7 +621,7 @@ export class Matrix<M extends number, N extends number> {
 	toString(numStr = str()): string {
 		return this.toText(numStr).lines.join("\n");
 	}
-
+	// #endregion
 
 	// #region Math
 
@@ -771,6 +835,12 @@ export class Matrix<M extends number, N extends number> {
 	 * ```txt
 	 * ABn...C : Matrix
 	 * ```
+	 * 
+	 * Usage Note:  
+	 * > Because this method uses complex type shenanigans to infer  
+	 *   the resulting vector/matrix's dimension,  
+	 *   It can sometimes run into "type instantiation is too deep" errors.  
+	 *   You can try specifying the type arguments directly, or adding a `satisfies` clause.
 	 */
 	static mul<N0 extends number, N1 extends number, NTail extends number[]>(...values: MulableMatrices<N0, N1, NTail>): MulMatResult<N0, N1, NTail>;
 	/**
@@ -778,6 +848,12 @@ export class Matrix<M extends number, N extends number> {
 	 * ```txt
 	 * ABn...Cv⃗ : Vector
 	 * ```
+	 * 
+	 * Usage Note:  
+	 * > Because this method uses complex type shenanigans to infer  
+	 *   the resulting vector/matrix's dimension,  
+	 *   It can sometimes run into "type instantiation is too deep" errors.  
+	 *   You can try specifying the type arguments directly, or adding a `satisfies` clause.
 	 */
 	static mul<N0 extends number, N1 extends number, NTail extends number[]>(...values: [...MulableMatrices<N0, N1, NTail>, Vector<MatMulResultDim<N1, NTail>>]): Vector<N1>;
 	static mul<N0 extends number, N1 extends number, NTail extends number[]>(
@@ -806,18 +882,30 @@ export class Matrix<M extends number, N extends number> {
 	 * ```txt
 	 * ABn...C : Matrix
 	 * ```
+	 * 
+	 * Usage Note:  
+	 * > Because this method uses complex type shenanigans to infer  
+	 *   the resulting vector/matrix's dimension,  
+	 *   It can sometimes run into "type instantiation is too deep" errors.  
+	 *   You can try specifying the type arguments directly, or adding a `satisfies` clause.
 	 * @see {@linkcode Matrix.mul}
 	 */
-	mul<NTail extends number[]>(...values: MulableMatricesNoFirst<M, NTail>): MulMatResult<N, M, NTail>;
+	mul<NTail extends number[] = []>(...values: MulableMatricesNoFirst<M, NTail>): MulMatResult<N, M, NTail>;
 	/**
 	 * Multiplication of matrices and vector
 	 * ```txt
 	 * ABn...Cv⃗ : Vector
 	 * ```
+	 * 
+	 * Usage Note:  
+	 * > Because this method uses complex type shenanigans to infer  
+	 *   the resulting vector/matrix's dimension,  
+	 *   It can sometimes run into "type instantiation is too deep" errors.  
+	 *   You can try specifying the type arguments directly, or adding a `satisfies` clause.
 	 * @see {@linkcode Matrix.mul}
 	 */
-	mul<NTail extends number[]>(...values: [...MulableMatricesNoFirst<M, NTail>, Vector<MatMulResultDim<M, NTail>>]): Vector<M>;
-	mul<NTail extends number[]>(
+	mul<NTail extends number[] = []>(...values: [...MulableMatricesNoFirst<M, NTail>, Vector<MatMulResultDim<M, NTail>>]): Vector<M>;
+	mul<NTail extends number[] = []>(
 		...values: MulableMatricesNoFirst<M, NTail> | [...MulableMatricesNoFirst<M, NTail>, Vector<MatMulResultDim<M, NTail>>]
 	): MulMatResult<N, M, NTail> | Vector<M> {
 		// trust me bro
@@ -827,6 +915,8 @@ export class Matrix<M extends number, N extends number> {
 
 	// #endregion
 }
+
+
 const type = typeset({
 	stringifiers: [
 		x => isNumber(x) && str(5)(x),
@@ -864,13 +954,13 @@ const log = (template: readonly string[], ...substs: (unknown | NormTextBlock)[]
 		[2],
 	] as const).transpose();
 
-	console.log({
-		"this is a": "debug message, check my insides",
-		get clicky_for_log() {
-			log`${B.detText()} = ${B.det()}`;
-			return "done";
-		}
-	});
+	// console.log({
+	// 	"this is a": "debug message, check my insides",
+	// 	get clicky_for_log() {
+	// 		log`${B.detText()} = ${B.det()}`;
+	// 		return "done";
+	// 	}
+	// });
 
 	Object.assign(window, { Matrix, Vector });
 }

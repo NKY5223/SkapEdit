@@ -1,5 +1,5 @@
 import { Vec2 } from "../../../../common/vector.ts";
-import { Bounds } from "../../../editor/Bounds.ts";
+import { Bounds } from "../../../editor/bounds.ts";
 
 type WebGLValueType = {
 	size: number;

@@ -1,6 +1,6 @@
 import { NumberInput } from "../../form/NumberInput.tsx";
 import { Button } from "../../form/Button.tsx";
-import { useBounds } from "../../editor/Bounds.ts";
+import { useBounds } from "../../editor/bounds.ts";
 import { Icon } from "../../icon/Icon.tsx";
 import { FormSection } from "../../form/FormSection.tsx";
 import { ViewFC } from "../../layout/LayoutView.tsx";

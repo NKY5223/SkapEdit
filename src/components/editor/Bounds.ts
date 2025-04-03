@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { add, vec2, Vec2 } from "../../common/vector.ts";
 import { Realize, Values } from "../../common/types.ts";
+import { Vec2, vec2 } from "../../common/vec2.ts";
 
 // #region lrtbwh
 type BoundsLRTBWHKeys = "left" | "right" | "top" | "bottom" | "width" | "height";
@@ -73,7 +73,7 @@ export class Bounds {
 	constructor(bounds: BoundsInit) {
 		if ("pos" in bounds) {
 			const [left, top] = bounds.pos;
-			const [right, bottom] = add(bounds.pos, bounds.size);
+			const [right, bottom] = bounds.pos.add(bounds.size);
 
 			this.left = left;
 			this.right = right;

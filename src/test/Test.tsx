@@ -14,7 +14,7 @@ import { delegate, toMap, Translate, Translation, TranslationProvider } from "..
 import { ViewFC } from "../components/layout/LayoutView.tsx";
 import { Viewport } from "../components/view/viewport/Viewport.tsx";
 import { mapContext } from "../components/editor/map.ts";
-import { Bounds } from "../components/editor/Bounds.ts";
+import { Bounds } from "../components/editor/bounds.ts";
 import { vec2 } from "../common/vector.ts";
 
 const uuid = () => crypto.randomUUID();

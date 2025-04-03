@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Realize } from "../../../common/types.ts";
 import { add, div, sub, Vec2, vec2 } from "../../../common/vector.ts";
-import { Bounds } from "../../editor/Bounds.ts";
+import { Bounds } from "../../editor/bounds.ts";
 
 type InitCamera = ({
 	x: number;

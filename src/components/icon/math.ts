@@ -1,6 +1,6 @@
 import { interleave, transposeTuples, tuples } from "../../common/array.ts";
-import { debug } from "./stringify.tsx";
-import { Vec2, map, lerp, div, sub, vec2, rotMat, matMul, matTranspose, dot, swap, mul, add, angleBetween, neg, leftMat, norm, polar, safeNorm, equal, det, mat2, arg, mag, parallel, isVec } from "../../common/vector.ts";
+import { signedAngle, arg, ccw90, parallel, polar, rotationMat, safeNorm, swap, Vec2, vec2 } from "../../common/vec2.ts";
+import { Matrix, Vector } from "../../common/vectorN.ts";
 
 const TAU = 2 * Math.PI;
 const HALF_PI = Math.PI / 2;
@@ -36,28 +36,27 @@ type SVGArc = {
 	largeArc: boolean;
 	clockwise: boolean;
 };
-const square = map(x => x * x);
 export const fromSVGArc = (arc: SVGArc): CommandArc => {
 	const { start, end, radius, rotation, clockwise, largeArc } = arc;
 
-	const mid = lerp(start, end, .5);
-	const diff = div(sub(start, end), vec2(2));
-	const cwRotation = rotMat(rotation);
+	const mid = Vector.lerp(start, end)(.5);
+	const diff = start.sub(end).div(2);
+	const cwRotation = rotationMat(rotation);
 
-	const startPrime = matMul(matTranspose(cwRotation), diff);
-	const rSquare = square(radius);
-	const startPrimeSquare = square(startPrime);
+	const startPrime = cwRotation.transpose().mul(diff);
+	const rSquare = radius.map(x => x * x);
+	const startPrimeSquare = startPrime.map(x => x * x);
 
-	const alpha = dot(rSquare, swap(startPrimeSquare));
-	const centerPrime = mul(vec2(
+	const alpha = rSquare.dot(swap(startPrimeSquare));
+	const centerPrime = vec2(
 		(largeArc !== clockwise ? +1 : -1) * Math.sqrt(
 			(rSquare[0] * rSquare[1] - alpha) / alpha
 		)
-	), vec2(1, -1), div(radius, swap(radius)), swap(startPrime));
+	).mul(vec2(1, -1), radius.div(swap(radius)), swap(startPrime));
 
-	const center = add(matMul(cwRotation, centerPrime), mid);
-	const startAngle = angleBetween(vec2(1, 0), div(sub(startPrime, centerPrime), radius));
-	const endAngle = angleBetween(vec2(1, 0), div(sub(neg(startPrime), centerPrime), radius));
+	const center = cwRotation.mul(centerPrime).add(mid);
+	const startAngle = signedAngle(vec2(1, 0), startPrime.div(centerPrime).sub(radius));
+	const endAngle = signedAngle(vec2(1, 0), startPrime.neg().div(centerPrime).sub(radius));
 	const angleDiff = endAngle - startAngle;
 	const deltaAngle = (clockwise
 		? angleDiff < 0 ? angleDiff + TAU : angleDiff
@@ -95,13 +94,13 @@ export const parametrizeCommand = (command: Command): ((t: number) => Vec2) => {
 	const { start, end } = command;
 	switch (command.type) {
 		case "line": {
-			return t => lerp(start, end, t);
+			return Vector.lerp(start, end);
 		}
 		case "arc": {
 			const { radius, rotation, center, startAngle, deltaAngle } = command;
-			const rot = rotMat(rotation);
+			const rot = rotationMat(rotation);
 			return t =>
-				add(center, matMul(rot, mul(radius, polar((startAngle + deltaAngle * t)))));
+				center.add(rot.mul(radius.mul(polar(startAngle + deltaAngle * t))));
 		}
 	}
 }
@@ -115,21 +114,21 @@ export const commandDerivative = (command: Command): ((t: number) => Vec2) => {
 	const { start, end } = command;
 	switch (command.type) {
 		case "line": {
-			const d = sub(end, start);
+			const d = end.sub(start);
 			return () => d;
 		}
 		case "arc": {
 			const { radius, rotation, startAngle, deltaAngle } = command;
-			const rot = rotMat(rotation);
+			const rot = rotationMat(rotation);
 			// f = t ↦ center + rot × (radius \× polar(a0 + da * t)))
-			// f' = rot × da × r \× polar(a0 + da * t + π/2)
-			return t => mul(deltaAngle, matMul(rot, mul(radius, polar((startAngle + deltaAngle * t + HALF_PI)))));
+			// f' = rot × r \× polar(a0 + da * t + π/2) × da
+			return t => rot.mul(radius.mul(polar(startAngle + deltaAngle * t + HALF_PI), deltaAngle));
 		}
 		default: {
 			// Approximate derivative
 			const ε = 0.00001;
 			const f = parametrizeCommand(command);
-			return t => div(sub(f(t + ε), f(t)), vec2(ε));
+			return t => f(t + ε).sub(f(t)).div(ε);
 		}
 	}
 }
@@ -199,12 +198,12 @@ export const intersectCommands = (a: Command, b: Command, debugPhase?: string): 
 		// https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection#Given_two_points_on_each_line_segment
 		const { start: a0, end: a1 } = a;
 		const { start: b0, end: b1 } = b;
-		const da = sub(a1, a0);
-		const db = sub(b1, b0);
+		const da = a1.sub(a0);
+		const db = b1.sub(b0);
 		const fa = parametrizeCommand(a);
 		const fb = parametrizeCommand(b);
 
-		const quot = div(da, db);
+		const quot = da.div(db);
 		if (quot[0] === quot[1]) {
 			// parallel lines
 			return [];
@@ -225,15 +224,15 @@ export const intersectCommands = (a: Command, b: Command, debugPhase?: string): 
 		const { start: b0, end: b1 } = b;
 		const fb = parametrizeCommand(b);
 
-		const invRot = rotMat(-rotation);
+		const invRot = rotationMat(-rotation);
 
-		const l0 = div(matMul(invRot, sub(b0, center)), radius);
-		const l1 = div(matMul(invRot, sub(b1, center)), radius);
-		const ld = sub(l1, l0);
+		const l0 = invRot.mul(b0.sub(center)).mul(radius);
+		const l1 = invRot.mul(b1.sub(center)).mul(radius);
+		const ld = l1.sub(l0);
 
-		const qa = dot(ld, ld);
-		const qb = 2 * dot(l0, ld);
-		const qc = dot(l0, l0) - 1;
+		const qa = ld.dot(ld);
+		const qb = 2 * l0.dot(ld);
+		const qc = l0.dot(l0) - 1;
 
 		const Δ = qb * qb - 4 * qa * qc;
 		if (Δ < 0) {
@@ -244,7 +243,7 @@ export const intersectCommands = (a: Command, b: Command, debugPhase?: string): 
 			.filter(t => 0 <= t && t <= 1);
 		const results = t
 			.map(t => ({
-				a: inverseAngleMap(startAngle, deltaAngle, (arg(lerp(l0, l1, t)))),
+				a: inverseAngleMap(startAngle, deltaAngle, arg(Vector.lerp(l0, l1)(t))),
 				b: t,
 				pos: fb(t),
 			}))
@@ -280,11 +279,11 @@ const inverseAngleMap = (x0: number, dx: number, x: number): number | null => {
 	return (x - x0 + k * TAU) / dx;
 }
 const intersectLines = (a0: Vec2, a1: Vec2, b0: Vec2, b1: Vec2) => {
-	const d12 = sub(a0, a1);
-	const d13 = sub(a0, b0);
-	const d34 = sub(b0, b1);
-	const ta = +det(mat2(d13, d34)) / det(mat2(d12, d34));
-	const tb = -det(mat2(d12, d13)) / det(mat2(d12, d34));
+	const d12 = a0.sub(a1);
+	const d13 = a0.sub(b0);
+	const d34 = b0.sub(b1);
+	const ta = +(new Matrix(d13, d34).det() / new Matrix(d12, d34).det());
+	const tb = -(new Matrix(d12, d13).det() / new Matrix(d12, d34).det());
 
 	return { ta, tb };
 }
@@ -324,15 +323,15 @@ const offsetCommand = (
 	offset: number
 ): Command[] => {
 	const { start, end } = command;
-	const diff = sub(end, start);
+	const diff = end.sub(start);
 	switch (command.type) {
 		case "line":
-			const normal = mul(matMul(leftMat, norm(diff)), vec2(offset));
+			const normal = ccw90.mul(diff.norm()).mul(offset);
 
 			return [{
 				type: "line",
-				start: add(start, normal),
-				end: add(end, normal),
+				start: start.add(normal),
+				end: end.add(normal),
 			} satisfies CommandLine];
 		case "arc":
 			const { radius, rotation, center, startAngle, deltaAngle, endAngle } = command;
@@ -341,8 +340,8 @@ const offsetCommand = (
 				// circle
 				const r = radius[0] + (clockwise ? offset : -offset);
 
-				const start = add(center, polar(startAngle, r));
-				const end = add(center, polar(endAngle, r));
+				const start = center.add(polar(startAngle, r));
+				const end = center.add(polar(endAngle, r));
 
 				return [{
 					type: "arc",
@@ -484,7 +483,7 @@ export const joinOffsetCommandPair = (
 	const { start: end } = nextCommand;
 	const vertex = prev.end;
 
-	if (equal(start, end)) return {
+	if (start.equal(end)) return {
 		join: [],
 		slicePrev: 1,
 		sliceNext: 0,
@@ -529,8 +528,8 @@ export const joinOffsetCommandPair = (
 				const miterLimit = options.join.miter;
 
 				if (tangentsParallel) {
-					const a = add(start, mul(prevTangent, miterLimit));
-					const b = add(end, mul(prevTangent, miterLimit));
+					const a = start.add(prevTangent.mul(miterLimit));
+					const b = end.add(prevTangent.mul(miterLimit));
 					return {
 						join: [
 							{
@@ -553,7 +552,10 @@ export const joinOffsetCommandPair = (
 					};
 				}
 
-				const { ta: tPrev, tb: tNext } = intersectLines(start, add(start, prevTangent), end, add(end, nextTangent));
+				const { ta: tPrev, tb: tNext } = intersectLines(
+					start, start.add(prevTangent), 
+					end, end.add(nextTangent)
+				);
 
 				if (tPrev < 0 || tNext > 0) {
 					// requires going backwards onto the offsets
@@ -574,15 +576,15 @@ export const joinOffsetCommandPair = (
 					}
 				}
 
-				const angle = angleBetween(prevTangent, nextTangent);
-				const miterRatio = Math.abs(1 / Math.sin((Math.PI - angle) / 2));
+				const tAngle = signedAngle(prevTangent, nextTangent);
+				const miterRatio = Math.abs(1 / Math.sin((Math.PI - tAngle) / 2));
 
-				const point = add(start, mul(prevTangent, tPrev));
+				const point = start.add(prevTangent.mul(tPrev));
 
 				if (miterRatio > miterLimit) {
 					const ratio = miterLimit / miterRatio;
-					const a = add(start, mul(prevTangent, tPrev * ratio));
-					const b = add(end, mul(nextTangent, tNext * ratio));
+					const a = start.add(prevTangent.mul(tPrev * ratio));
+					const b = end.add(nextTangent.mul(tNext * ratio));
 					return {
 						join: [
 							{
@@ -655,8 +657,8 @@ const capOffsetCommand = (
 			const rightCollapsed = options.widthRight === 0;
 			const lineCollapsed = options.widthLeft === options.widthRight;
 
-			const left = add(vertex, mul(direction, options.widthLeft));
-			const right = add(vertex, mul(direction, options.widthRight));
+			const left = vertex.add(direction.mul(options.widthLeft));
+			const right = vertex.add(direction.mul(options.widthRight));
 
 			return [
 				...leftCollapsed ? [] : [{
