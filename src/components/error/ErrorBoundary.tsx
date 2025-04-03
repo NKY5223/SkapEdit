@@ -1,6 +1,6 @@
 import { Component, ErrorInfo, PropsWithChildren, ReactNode } from "react";
 import css from "./ErrorBoundary.module.css";
-import { indent } from "../../common/string.ts";
+import { indent, t } from "../../common/string.ts";
 
 type ErrorBoundaryProps = PropsWithChildren<{
 	fallback?: (error: Error) => ReactNode;
@@ -41,7 +41,7 @@ export class ErrorBoundary<T extends ErrorBoundaryProps> extends Component<T, Er
 			return (
 				<div className={css.error}>
 					<h1>:( {heading}</h1>
-					<pre>{stringify(this.state.error)}</pre>
+					<pre>{t`${this.state.error}`}</pre>
 				</div>
 			);
 		}

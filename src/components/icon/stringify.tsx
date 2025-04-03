@@ -1,7 +1,7 @@
 import { Fragment, ReactNode, SVGAttributes } from "react";
 import { Command, Log, toSVGArc } from "./math.ts";
 import { orth, polar, rotationMat, vec2, Vec2, zero } from "../../common/vec2.ts";
-import { Vector } from "../../common/vectorN.ts";
+import { Vector } from "../../common/vector.ts";
 
 const d = (template: readonly string[], ...subst: (Vec2 | number)[]) => (
 	String.raw({ raw: template }, ...subst.map(v => 

@@ -1,5 +1,5 @@
 import { sign } from "./number.ts";
-import { Matrix, Vector } from "./vectorN.ts";
+import { Matrix, Vector } from "./vector.ts";
 
 export type Vec2 = Vector<2>;
 export type Mat2 = Matrix<2, 2>;

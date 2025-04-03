@@ -1,6 +1,6 @@
 import { interleave, transposeTuples, tuples } from "../../common/array.ts";
 import { signedAngle, arg, ccw90, parallel, polar, rotationMat, safeNorm, swap, Vec2, vec2 } from "../../common/vec2.ts";
-import { Matrix, Vector } from "../../common/vectorN.ts";
+import { Matrix, Vector } from "../../common/vector.ts";
 
 const TAU = 2 * Math.PI;
 const HALF_PI = Math.PI / 2;

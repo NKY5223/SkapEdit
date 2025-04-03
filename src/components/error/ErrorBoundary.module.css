@@ -4,6 +4,7 @@
 	color: var(--theme-negative-fg-1);
 	position: absolute;
 	inset: 0;
+	overflow: auto;
 
 	& > h1 {
 		font-size: 3em;

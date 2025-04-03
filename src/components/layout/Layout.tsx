@@ -13,6 +13,10 @@ tagged data?
 what the fuck does "tagged data" mean wtf nky
 i don't know if we need floating views
 
+2025-04-03
+floating views would be nice :3
+spiky `:3` :(
+
 data
 | Layout
 |	> split

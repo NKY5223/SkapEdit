@@ -69,7 +69,7 @@ const vecOpNonComm = (
 		_ => `Cannot perform a vector operation on only numbers because the output dimension is unknown.`
 ) => (
 	<N extends number>(first: Vector<N> | number, ...values: (Vector<N> | number)[]): Vector<N> => {
-		const n: N | undefined = values.find<Vector<N>>(isVector)?.length;
+		const n: N | undefined = [first, ...values].find<Vector<N>>(isVector)?.length;
 		if (n === undefined) throw new Error(errorMessage(values));
 		return values.reduce<Vector<N>>(
 			(acc, value) => f(acc, Vector.from(n, value)),
@@ -287,7 +287,7 @@ export class Vector<N extends number> {
 	}
 	/** @see {@linkcode Vector.angle} */
 	angle(v: Vector<N>) { return Vector.angle(this, v); }
-	
+
 	// #endregion
 
 	// #region → Vec
@@ -609,12 +609,12 @@ export class Matrix<M extends number, N extends number> {
 		const strs = this.vectors.map(vec =>
 			vec.components.map(numStr)
 		);
-		const columns = strs.map(col => normalize(alignH({ 
+		const columns = strs.map(col => normalize(alignH({
 			align: "left", alignAt: "."
 		}, col)));
 
 		return brackets(concat(...interleave(
-			columns, 
+			columns,
 			columns.map(() => normalize(" ")).slice(1)
 		)));
 	}
@@ -798,7 +798,7 @@ export class Matrix<M extends number, N extends number> {
 	compDiv(...values: (Matrix<M, N> | number)[]) { return Matrix.compDiv(this, ...values); }
 	// #endregion
 
-	// #region (Mat | number)[] → Mat
+	// #region primary ops
 	/**
 	 * Componentwise addition
 	 * ```txt
@@ -863,7 +863,7 @@ export class Matrix<M extends number, N extends number> {
 
 		if (endsWithVector(values)) {
 			const [rest, final] = end(values);
-			if (values.length <= 1) return final as never;
+			if (rest.length < 1) return final as never;
 			return Matrix.matVecMul(Matrix.mul(...rest), final as never) as never;
 		}
 

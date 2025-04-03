@@ -1,5 +1,5 @@
 import { vec2, Vec2, zero } from "../../common/vec2.ts";
-import { Vector } from "../../common/vectorN.ts";
+import { Vector } from "../../common/vector.ts";
 import {
 	CommandLine, CommandArc,
 	StrokeOptions, stroke as importmath_stroke,

@@ -6,7 +6,7 @@ import { WebGLLayer } from "./webgl/WebGLLayer.tsx";
 import { ObstacleWebGLRenderer } from "./renderer/obstacle.ts";
 import css from "./Viewport.module.css";
 import { ViewToolbar, ViewToolbarButton } from "../../layout/LayoutViewToolbar.tsx";
-import "../../../common/vectorN.ts";
+import "../../../common/vector.ts";
 import { zero } from "../../../common/vec2.ts";
 
 

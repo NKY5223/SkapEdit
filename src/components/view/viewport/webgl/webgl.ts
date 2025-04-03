@@ -1,4 +1,4 @@
-import { Vector } from "../../../../common/vectorN.ts";
+import { Vector } from "../../../../common/vector.ts";
 import { Bounds } from "../../../editor/bounds.ts";
 
 type WebGLValueType = {

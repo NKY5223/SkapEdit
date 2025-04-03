@@ -16,6 +16,7 @@ import { Viewport } from "../components/view/viewport/Viewport.tsx";
 import { mapContext } from "../components/editor/map.ts";
 import { Bounds } from "../components/editor/bounds.ts";
 import { zero } from "../common/vec2.ts";
+import { TestError } from "./TestError.tsx";
 
 const uuid = () => crypto.randomUUID();
 const splitX = (ratio: number, a: LayoutDesc, b: LayoutDesc) => ({
@@ -49,6 +50,7 @@ const translations = {
 	"layout.view.name.test.icon": "Icon Test",
 	"layout.view.name.test.icons": "Icons Test",
 	"layout.view.name.test.swatch": "Theme Test",
+	"layout.view.name.test.error": "Error Test (will error this view)",
 	"layout.view.name.test.lorem": "Lorem ipsum...",
 	"layout.view.category.name.map": "Map",
 	"layout.view.name.map.inspector": "Inspector",
@@ -61,6 +63,7 @@ const views = {
 	"test.icon": TestIcon,
 	"test.icons": TestIcons,
 	"test.swatch": TestSwatch,
+	"test.error": TestError,
 	"map.inspector": Inspector,
 	"test.lorem": ({ children }) => (<div>
 		{children}
@@ -103,13 +106,4 @@ export function Test() {
 			</mapContext.Provider>
 		</ErrorBoundary >
 	);
-}
-const TestError = () => {
-	throw new Error("Test error", {
-		cause: [
-			new RangeError("rangeerror"),
-			new Error("caused error", { cause: [1] })
-		]
-	})
-	return <></>;
 }

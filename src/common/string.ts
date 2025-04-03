@@ -1,5 +1,6 @@
-import { transpose } from "./array.ts";
-import { Matrix, Vector } from "./vectorN.ts";
+import { analyseStack } from "./error.ts";
+import { interleave, transpose } from "./array.ts";
+import { Matrix, Vector } from "./vector.ts";
 
 export const indent = (str: string, char = "\t") => str.split("\n").map(s => char + s).join("\n");
 
@@ -395,6 +396,9 @@ const distribute = (align: Align, space: number, size: number): [start: number, 
 }
 // #endregion
 
+/**
+ * Concatenates TextBlocks horizontally.
+ */
 export const concat = (...blocks: TextBlock[]): NormTextBlock => {
 	if (blocks.length === 0) return {
 		lines: [""],
@@ -422,6 +426,21 @@ export const concat = (...blocks: TextBlock[]): NormTextBlock => {
 	};
 };
 
+/**
+ * Concatenates TextBlocks vertically.
+ */
+export const append = (...blocks: TextBlock[]): NormTextBlock => {
+	if (blocks.length === 0) return {
+		lines: [""],
+		anchor: 0,
+	};
+
+	const lines = blocks.flatMap(b => normalize(b).lines);
+	return {
+		lines,
+		anchor: 0,
+	};
+}
 
 export const normalize = (block: TextBlock): NormTextBlock => {
 	if (typeof block === "string") {
@@ -470,6 +489,7 @@ const measure = (block: TextBlock): TextMeasure => {
 
 export const t = typeset({
 	stringifiers: [
+		// number
 		x => {
 			if (1) return;
 			if (typeof x !== "number") return;
@@ -485,6 +505,7 @@ export const t = typeset({
 		},
 		x => x instanceof Vector && x.toText(),
 		x => x instanceof Matrix && x.toText(),
+		// record
 		(x, s) => {
 			if (typeof x !== "object") return;
 			if (x === null) return;
@@ -497,6 +518,36 @@ export const t = typeset({
 			]);
 			if (!first) return bracketPresets.curly("empty");
 			return bracketPresets.curly(concat(...[first, ...rest]));
+		},
+		// error
+		(x, s) => {
+			if (!(x instanceof Error)) return;
+			const { name, message, cause, stack } = x;
+			const msg = stack
+				? analyseStack(x)
+				: t`Uncaught ${name}: ${message}`;
+
+			if (cause === undefined) {
+				return msg;
+			}
+			if (cause === null) {
+				return t`${msg}\nCause: null`;
+			}
+			if (Array.isArray(cause)) {
+				return append(
+					t`${msg}\nCauses:`,
+					...cause.flatMap((v, i) =>
+						[
+							`╡${i}╞${"═".repeat(25 - i.toString().length)}`,
+							t`\t${s(v)}`,
+						]
+					)
+				);
+			}
+			return append(
+				t`${msg}\nCause:`,
+				t`\t${s(cause)}`,
+			);
 		},
 	]
 });
