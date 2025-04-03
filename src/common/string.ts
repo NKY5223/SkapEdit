@@ -1,4 +1,5 @@
 import { transpose } from "./array.ts";
+import { Matrix, Vector } from "./vectorN.ts";
 
 export const indent = (str: string, char = "\t") => str.split("\n").map(s => char + s).join("\n");
 
@@ -21,7 +22,7 @@ type TypesetOptions = {
 	stringifiers: Stringifier<[]>[];
 };
 
-export const isTextBlock = (x: unknown): x is NormTextBlock => 
+export const isTextBlock = (x: unknown): x is NormTextBlock =>
 	typeof x === "object" &&
 	x !== null &&
 	"anchor" in x &&
@@ -31,7 +32,7 @@ export const isTextBlock = (x: unknown): x is NormTextBlock =>
 	Array.isArray(x.lines) &&
 	x.lines.length >= 1 &&
 	x.lines.every(s => typeof s === "string")
-;
+	;
 export const stringifyWith = (stringifiers: Stringifier[]) => {
 	const str = (value: unknown): NormTextBlock => isTextBlock(value) ? value : normalize(
 		stringifiers
@@ -466,3 +467,36 @@ const measure = (block: TextBlock): TextMeasure => {
 		widthStr,
 	};
 }
+
+export const t = typeset({
+	stringifiers: [
+		x => {
+			if (1) return;
+			if (typeof x !== "number") return;
+			if (Object.is(x, Infinity)) return `∞`;
+			if (Object.is(x, -Infinity)) return `-∞`;
+			if (Object.is(x, NaN)) return `NaN`;
+
+			let str = x.toString();
+			if (str.includes("e")) return str;
+			const [a, b] = str.split(".");
+			if (!b) return str;
+			return `${a}.${b.slice(0, 5)}`;
+		},
+		x => x instanceof Vector && x.toText(),
+		x => x instanceof Matrix && x.toText(),
+		(x, s) => {
+			if (typeof x !== "object") return;
+			if (x === null) return;
+			if (![null, Object.prototype].includes(Object.getPrototypeOf(x))) return;
+			const [first, ...rest] = Object.entries(x).flatMap(([k, v], i, a) => [
+				JSON.stringify(k),
+				": ",
+				s(v),
+				...(i === a.length - 1 ? [] : [", "])
+			]);
+			if (!first) return bracketPresets.curly("empty");
+			return bracketPresets.curly(concat(...[first, ...rest]));
+		},
+	]
+});

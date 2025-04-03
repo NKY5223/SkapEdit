@@ -15,7 +15,7 @@ import { ViewFC } from "../components/layout/LayoutView.tsx";
 import { Viewport } from "../components/view/viewport/Viewport.tsx";
 import { mapContext } from "../components/editor/map.ts";
 import { Bounds } from "../components/editor/bounds.ts";
-import { vec2 } from "../common/vector.ts";
+import { zero } from "../common/vec2.ts";
 
 const uuid = () => crypto.randomUUID();
 const splitX = (ratio: number, a: LayoutDesc, b: LayoutDesc) => ({
@@ -90,7 +90,7 @@ export function Test() {
 				objects: [
 					{ type: "obstacle", bounds: new Bounds({ left: 0, top: 0, right: 10, bottom: 10 }) },
 					{ type: "obstacle", bounds: new Bounds({ left: -10, top: -10, right: 0, bottom: 5 }) },
-					{ type: "text", pos: vec2(0), text: "test    uwu" },
+					{ type: "text", pos: zero, text: "test    uwu" },
 				]
 			}}>
 				<TranslationProvider translations={toMap<Translation>(translations)}>

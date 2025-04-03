@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Realize } from "../../../common/types.ts";
-import { add, div, sub, Vec2, vec2 } from "../../../common/vector.ts";
 import { Bounds } from "../../editor/bounds.ts";
+import { Vec2, vec2 } from "../../../common/vec2.ts";
 
 type InitCamera = ({
 	x: number;
@@ -40,9 +40,9 @@ export class Camera {
 		});
 	}
 	getBounds(viewportSize: Vec2): Bounds {
-		const halfSize = div(viewportSize, this.scale, 2);
-		const topLeft = sub(this.pos, halfSize);
-		const bottomRight = add(this.pos, halfSize);
+		const halfSize = viewportSize.div(this.scale, 2);
+		const topLeft = this.pos.sub(halfSize);
+		const bottomRight = this.pos.add(halfSize);
 		return new Bounds({
 			topLeft,
 			bottomRight,

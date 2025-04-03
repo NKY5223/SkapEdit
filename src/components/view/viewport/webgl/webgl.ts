@@ -1,4 +1,4 @@
-import { Vec2 } from "../../../../common/vector.ts";
+import { Vector } from "../../../../common/vectorN.ts";
 import { Bounds } from "../../../editor/bounds.ts";
 
 type WebGLValueType = {
@@ -151,7 +151,7 @@ export abstract class WebGLRenderer<T extends unknown[]> {
 
 		gl.uniform1f(location, value);
 	}
-	protected setUniformFloat2(gl: WebGL2RenderingContext, name: string, value: Vec2) {
+	protected setUniformFloat2(gl: WebGL2RenderingContext, name: string, value: Vector<2>) {
 		const location = this.getUniformLocation(gl, name);
 
 		gl.uniform2f(location, value[0], value[1]);

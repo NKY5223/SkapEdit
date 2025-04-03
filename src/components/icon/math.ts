@@ -190,6 +190,7 @@ type IntersectionData = {
 };
 export const intersectCommands = (a: Command, b: Command, debugPhase?: string): IntersectionData[] => {
 	// Require a.type <= b.type alphabetically
+	// So i only need to implement this one way
 	if (a.type > b.type) {
 		const reorder = intersectCommands(b, a);
 		return reorder.map(({ a, b, pos }) => ({ a: b, b: a, pos }));
@@ -254,7 +255,7 @@ export const intersectCommands = (a: Command, b: Command, debugPhase?: string): 
 		}
 		return results;
 	}
-	throw new Error(`???`);
+	throw new Error(`Cannot intersect ${a.type} and ${b.type}`);
 }
 const inverseAngleMap = (x0: number, dx: number, x: number): number | null => {
 	// xx = (x0 - x)/τ

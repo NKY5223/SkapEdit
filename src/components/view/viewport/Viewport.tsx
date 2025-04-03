@@ -2,12 +2,12 @@ import { FC, useMemo, useState } from "react";
 import { Camera, useCamera } from "./Camera.ts";
 import { ViewFC } from "../../layout/LayoutView.tsx";
 import { SkapMap, useMap } from "../../editor/map.ts";
-import { zeroVec } from "../../../common/vector.ts";
 import { WebGLLayer } from "./webgl/WebGLLayer.tsx";
 import { ObstacleWebGLRenderer } from "./renderer/obstacle.ts";
 import css from "./Viewport.module.css";
 import { ViewToolbar, ViewToolbarButton } from "../../layout/LayoutViewToolbar.tsx";
 import "../../../common/vectorN.ts";
+import { zero } from "../../../common/vec2.ts";
 
 
 export type ViewportInfo = {
@@ -26,7 +26,7 @@ export const ViewportCanvas: FC<ViewportCanvasProps> = ({
 }) => {
 	const map = useMap();
 
-	const [camera] = useCamera({ pos: zeroVec, scale: 5 });
+	const [camera] = useCamera({ pos: zero, scale: 5 });
 
 	const viewportInfo: ViewportInfo = {
 		camera,

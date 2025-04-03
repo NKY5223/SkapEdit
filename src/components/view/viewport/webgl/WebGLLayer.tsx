@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { ViewportInfo, ViewportLayerFC } from "../Viewport.tsx";
 import { WebGLRenderer } from "./webgl.ts";
-import { div, mul, Vec2, vec2 } from "../../../../common/vector.ts";
+import { Vec2, vec2 } from "../../../../common/vec2.ts";
 
 
 export type WebGLViewportInfo = {
@@ -63,7 +63,7 @@ export const WebGLLayer = (...renderers: WebGLLayerRenderer[]): ViewportLayerFC 
 				throw new Error("Could not get bounding client rect of canvas parent");
 			}
 			const canvasCssSize = vec2(clientRect.width, clientRect.height);
-			const canvasSize = mul(canvasCssSize, window.devicePixelRatio);
+			const canvasSize = canvasCssSize.mul(window.devicePixelRatio);
 
 			const resizeWidth = canvas.width !== canvasSize[0];
 			const resizeHeight = canvas.height !== canvasSize[1];
@@ -71,7 +71,7 @@ export const WebGLLayer = (...renderers: WebGLLayerRenderer[]): ViewportLayerFC 
 			if (resizeHeight) canvas.height = canvasSize[1];
 			if (resizeWidth || resizeHeight) gl.viewport(0, 0, canvasSize[0], canvasSize[1]);
 
-			const cameraSize = div(mul(camera.getBounds(canvasSize).size, vec2(1, -1)), camera.scale);
+			const cameraSize = camera.getBounds(canvasSize).size.mul(vec2(1, -1), 1 / camera.scale);
 			const webGlViewportInfo: WebGLViewportInfo = {
 				canvasSize,
 				cameraSize,
