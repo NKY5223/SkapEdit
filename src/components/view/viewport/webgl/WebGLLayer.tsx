@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { ViewportInfo, ViewportLayerFC } from "../Viewport.tsx";
-import { WebGLRenderer } from "./webgl.ts";
+import { WebGlRenderer } from "./webgl.ts";
 import { Vec2, vec2 } from "../../../../common/vec2.ts";
 
 
@@ -12,7 +12,7 @@ export type WebGLLayerRendererParams = [
 	viewportInfo: ViewportInfo,
 	webGlInfo: WebGLViewportInfo,
 ];
-export abstract class WebGLLayerRenderer extends WebGLRenderer<WebGLLayerRendererParams> { };
+export abstract class WebGLLayerRenderer extends WebGlRenderer<WebGLLayerRendererParams> { };
 
 export const WebGLLayer = (...renderers: WebGLLayerRenderer[]): ViewportLayerFC => ({
 	viewportInfo,
@@ -25,6 +25,7 @@ export const WebGLLayer = (...renderers: WebGLLayerRenderer[]): ViewportLayerFC 
 	}, [viewportInfo]);
 
 	const initRenderers = () => {
+		console.log("WebGL Layer Init");
 		const cleanup = () => {
 			const abortRender = abortRenderRef.current;
 			if (!abortRender) {
@@ -33,6 +34,8 @@ export const WebGLLayer = (...renderers: WebGLLayerRenderer[]): ViewportLayerFC 
 			abortRender.abort();
 			renderers.forEach(renderer => renderer.cleanup())
 			abortRenderRef.current = undefined;
+
+			console.log("WebGL Layer Cleanup");
 			return;
 		}
 		
@@ -60,18 +63,20 @@ export const WebGLLayer = (...renderers: WebGLLayerRenderer[]): ViewportLayerFC 
 
 			const clientRect = canvas.getBoundingClientRect();
 			if (!clientRect) {
-				throw new Error("Could not get bounding client rect of canvas parent");
+				throw new Error("Could not get bounding client rect of canvas");
 			}
 			const canvasCssSize = vec2(clientRect.width, clientRect.height);
 			const canvasSize = canvasCssSize.mul(window.devicePixelRatio);
 
-			const resizeWidth = canvas.width !== canvasSize[0];
-			const resizeHeight = canvas.height !== canvasSize[1];
+			const resizeWidth = Math.abs(canvas.width - canvasSize[0]) >= 1;
+			const resizeHeight = Math.abs(canvas.height - canvasSize[1]) >= 1;
 			if (resizeWidth) canvas.width = canvasSize[0];
 			if (resizeHeight) canvas.height = canvasSize[1];
-			if (resizeWidth || resizeHeight) gl.viewport(0, 0, canvasSize[0], canvasSize[1]);
+			if (resizeWidth || resizeHeight) {
+				gl.viewport(0, 0, canvasSize[0], canvasSize[1]);
+			}
 
-			const cameraSize = camera.getBounds(canvasSize).size.mul(vec2(1, -1), 1 / camera.scale);
+			const cameraSize = camera.getBounds(canvasSize).size.mul(vec2(1, -1));
 			const webGlViewportInfo: WebGLViewportInfo = {
 				canvasSize,
 				cameraSize,

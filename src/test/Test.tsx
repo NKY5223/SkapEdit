@@ -92,7 +92,7 @@ export function Test() {
 			<mapContext.Provider value={{
 				objects: [
 					{ type: "obstacle", bounds: new Bounds({ left: 0, top: 0, right: 10, bottom: 10 }) },
-					{ type: "obstacle", bounds: new Bounds({ left: -10, top: -10, right: 0, bottom: 5 }) },
+					{ type: "obstacle", bounds: new Bounds({ left: 10, top: 10, right: 20, bottom: 20 }) },
 					{ type: "text", pos: zero, text: "test    uwu" },
 				]
 			}}>

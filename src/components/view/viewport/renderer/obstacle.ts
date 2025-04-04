@@ -1,5 +1,5 @@
-import { quad, WebGLRenderer } from "../webgl/webgl.ts";
-import vert from "./shader/obstacle.vert?raw";
+import { quad, WebGlRenderer } from "../webgl/webgl.ts";
+import vert from "./shader/default.vert?raw";
 import frag from "./shader/obstacle.frag?raw";
 import { ViewportInfo } from "../Viewport.tsx";
 import { WebGLLayerRenderer, WebGLViewportInfo } from "../webgl/WebGLLayer.tsx";
@@ -15,15 +15,17 @@ export class ObstacleWebGLRenderer extends WebGLLayerRenderer {
 	render(viewportInfo: ViewportInfo, {
 		cameraSize,
 	}: WebGLViewportInfo): void {
-		const gl = this.gl;
-		if (!gl) return;
+		const info = this.info;
+		if (!info) return;
+		const { gl, program } = info;
 
-		gl.useProgram(this.program);
+		gl.useProgram(program);
 
 		const camera = viewportInfo.camera;
 		this.setUniformFloat2(gl, "uCameraPosition", camera.pos);
 		this.setUniformFloat2(gl, "uCameraSize", cameraSize);
-		this.setUniform(gl, WebGLRenderer.TYPES.vec4, "uObstacleColor",
+		// console.log(cameraSize.toText().lines.join("\n"));
+		this.setUniform(gl, WebGlRenderer.TYPES.vec4, "uObstacleColor",
 			0x00 / 0xff,
 			0x0a / 0xff,
 			0x57 / 0xff,
@@ -34,7 +36,7 @@ export class ObstacleWebGLRenderer extends WebGLLayerRenderer {
 		const pos = obstacles.flatMap(obs => quad(obs.bounds));
 
 		const posBuffer = this.setBuffer(gl, "aPosition", gl.ARRAY_BUFFER, new Float32Array(pos).buffer, gl.DYNAMIC_DRAW);
-		this.setAttribute(gl, gl.ARRAY_BUFFER, "aPosition", WebGLRenderer.TYPES.vec2, posBuffer);
+		this.setAttribute(gl, gl.ARRAY_BUFFER, "aPosition", WebGlRenderer.TYPES.vec2, posBuffer);
 
 		gl.drawArrays(gl.TRIANGLES, 0, obstacles.length * 6);
 	}

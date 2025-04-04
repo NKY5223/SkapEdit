@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
 import { Realize } from "../../../common/types.ts";
 import { Bounds } from "../../editor/bounds.ts";
 import { Vec2, vec2 } from "../../../common/vec2.ts";
@@ -19,6 +19,8 @@ type UpdateCamera = Realize<({
 }) & ({} | {
 	scale: number;
 })>;
+
+type SetCamera = UpdateCamera | ((camera: Camera) => UpdateCamera);
 export class Camera {
 	readonly pos: Vec2;
 	readonly scale: number;
@@ -30,10 +32,13 @@ export class Camera {
 			this.pos = vec2(camera.x, camera.y);
 		}
 	}
-	set(camera: UpdateCamera) {
-		const scale = "scale" in camera ? camera.scale : this.scale;
-		const pos = "pos" in camera ? camera.pos :
-			"x" in camera ? vec2(camera.x, camera.y) :
+	set(update: SetCamera): Camera {
+		if (typeof update === "function") {
+			return this.set(update(this));
+		}
+		const scale = "scale" in update ? update.scale : this.scale;
+		const pos = "pos" in update ? update.pos :
+			"x" in update ? vec2(update.x, update.y) :
 				this.pos;
 		return new Camera({
 			pos, scale,
@@ -52,11 +57,11 @@ export class Camera {
 ;
 export const useCamera = (initial: InitCamera): [
 	camera: Camera,
-	setCamera: (camera: UpdateCamera) => void
+	setCamera: (camera: SetCamera) => void
 ] => {
 	const [camera, setCamera] = useState<Camera>(new Camera(initial));
 	return [
 		camera,
-		(camera) => setCamera(c => c.set(camera))
+		camera => setCamera(c => c.set(camera))
 	];
 };

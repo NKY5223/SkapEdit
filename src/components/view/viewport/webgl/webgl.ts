@@ -8,7 +8,7 @@ type WebGLValueType = {
 const GL_FLOAT = 5126;
 const GL_INT = 5124;
 
-export abstract class WebGLRenderer<T extends unknown[]> {
+export abstract class WebGlRenderer<T extends unknown[]> {
 	info?: {
 		gl: WebGL2RenderingContext;
 		program: WebGLProgram;

@@ -1,13 +1,15 @@
-import { FC, useMemo, useState } from "react";
-import { Camera, useCamera } from "./Camera.ts";
+import { FC, useDebugValue, useMemo, useRef } from "react";
+import { Camera, useCamera } from "./camera.ts";
 import { ViewFC } from "../../layout/LayoutView.tsx";
 import { SkapMap, useMap } from "../../editor/map.ts";
 import { WebGLLayer } from "./webgl/WebGLLayer.tsx";
 import { ObstacleWebGLRenderer } from "./renderer/obstacle.ts";
 import css from "./Viewport.module.css";
-import { ViewToolbar, ViewToolbarButton } from "../../layout/LayoutViewToolbar.tsx";
+import { ViewToolbar } from "../../layout/LayoutViewToolbar.tsx";
 import "../../../common/vector.ts";
 import { zero } from "../../../common/vec2.ts";
+import { useDrag } from "../../../hooks/drag.ts";
+import { tlogRec } from "../../../common/string.ts";
 
 
 export type ViewportInfo = {
@@ -20,36 +22,30 @@ export type ViewportLayerFC = FC<{
 
 type ViewportCanvasProps = {
 	layers: ViewportLayerFC[];
+	viewportInfo: ViewportInfo;
 };
 export const ViewportCanvas: FC<ViewportCanvasProps> = ({
-	layers
+	layers, viewportInfo
 }) => {
-	const map = useMap();
-
-	const [camera] = useCamera({ pos: zero, scale: 5 });
-
-	const viewportInfo: ViewportInfo = {
-		camera,
-		map,
-	};
-
 	/* 
 	Desired structure:
-	<viewport>
-	<webgl /> {
-		gl
-		renderer { shared gl, shaders, program, buffers etc... }
-		renderer { shared gl, shaders, program, buffers etc... }
-		renderer { shared gl, shaders, program, buffers etc... }
-		renderer { shared gl, shaders, program, buffers etc... }
-	}
-	<text />
-	<webgl /> {
-		gl
-		renderer { ... }
-	}
-	</viewport>
-	gl and renderers **MUST** persist across renders
+	layers:
+		webgl {
+			gl
+			renderer { shared gl, shaders, program, buffers etc... }
+			renderer { shared gl, shaders, program, buffers etc... }
+			renderer { shared gl, shaders, program, buffers etc... }
+			renderer { shared gl, shaders, program, buffers etc... }
+			gl and renderers **MUST** persist across renders
+			else contexts will probably be lost all the time idk
+		}
+		text {
+			probably just a regular React.FC
+		}
+		webgl {
+			gl
+			renderer { ... }
+		}
 	*/
 	return (
 		<div className={css["viewport-canvas"]}>
@@ -65,18 +61,32 @@ export const ViewportCanvas: FC<ViewportCanvasProps> = ({
 export const Viewport: ViewFC = ({
 	children,
 }) => {
-	const [key, setKey] = useState(Math.random());
+	const map = useMap();
+	const [camera, setCamera] = useCamera({ pos: zero, scale: 5 });
+	const { handlePointerDown } = useDrag(1, null, (curr, prev) => {
+		setCamera(camera => {
+			const diff = curr.sub(prev).div(camera.scale / window.devicePixelRatio);
+			return {
+				pos: camera.pos.sub(diff),
+			};
+		});
+	});
+
+	const viewportInfo: ViewportInfo = {
+		camera,
+		map,
+	};
+
 	const layers = useMemo(() => [
 		WebGLLayer(
 			new ObstacleWebGLRenderer()
 		)
 	], []);
 	return (
-		<div className={css["viewport"]}>
-			<ViewportCanvas key={key} layers={layers} />
+		<div className={css["viewport"]} onPointerDown={handlePointerDown}>
+			<ViewportCanvas viewportInfo={viewportInfo} layers={layers} />
 			<ViewToolbar classes={[css["viewport-topbar"]]}>
 				{children}
-				<ViewToolbarButton onClick={() => setKey(Math.random())}>Reload</ViewToolbarButton>
 			</ViewToolbar>
 		</div>
 	);
