@@ -10,13 +10,15 @@ import { Inspector } from "../components/view/inspector/Inspector.tsx";
 import { TestSwatch } from "./TestSwatch.tsx";
 import { TestIcons } from "./TestIcons.tsx";
 import { ErrorBoundary } from "../components/error/ErrorBoundary.tsx";
-import { delegate, toMap, Translate, Translation, TranslationProvider } from "../components/translate/Translate.tsx";
+import { toMap, Translate, Translation, TranslationProvider } from "../components/translate/Translate.tsx";
 import { ViewFC } from "../components/layout/LayoutView.tsx";
 import { Viewport } from "../components/view/viewport/Viewport.tsx";
 import { mapContext } from "../components/editor/map.ts";
 import { Bounds } from "../components/editor/bounds.ts";
 import { zero } from "../common/vec2.ts";
 import { TestError } from "./TestError.tsx";
+import { Translations, translations } from "./translations.tsx";
+import { ContextMenuProvider } from "../components/contextmenu/ContextMenu.tsx";
 
 const uuid = () => crypto.randomUUID();
 const splitX = (ratio: number, a: LayoutDesc, b: LayoutDesc) => ({
@@ -41,24 +43,6 @@ const view = (view: ViewAutocomplete) => ({
 	view,
 } satisfies LayoutDescView);
 
-const translations = {
-	"error.layout.view.unknown": ["Unknown view: ", { value: "view" }],
-
-	"layout.view.name": delegate("layout.view.name", "view"),
-	"layout.view.category.name": delegate("layout.view.category.name", "category"),
-	"layout.view.category.name.test": "Testing",
-	"layout.view.name.test.icon": "Icon Test",
-	"layout.view.name.test.icons": "Icons Test",
-	"layout.view.name.test.swatch": "Theme Test",
-	"layout.view.name.test.error": "Error Test (will error this view)",
-	"layout.view.name.test.lorem": "Lorem ipsum...",
-	"layout.view.category.name.map": "Map",
-	"layout.view.name.map.inspector": "Inspector",
-	"layout.view.name.map.viewport": "Viewport",
-
-	"lorem": "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Esse, culpa possimus fuga, veritatis harum autem dolore ipsam provident, id praesentium distinctio ullam similique! Earum praesentium repudiandae magnam ipsum et nihil!",
-} as const satisfies Record<string, Translation>;
-export type TranslationAutocomplete = keyof typeof translations;
 const views = {
 	"test.icon": TestIcon,
 	"test.icons": TestIcons,
@@ -87,23 +71,26 @@ const defaultLayout: LayoutDesc = (
 );
 
 export function Test() {
+	// wow that's a lot of providers!!!
 	return (
 		<ErrorBoundary location="Test">
-			<mapContext.Provider value={{
-				objects: [
-					{ type: "obstacle", bounds: new Bounds({ left: 0, top: 0, right: 10, bottom: 10 }) },
-					{ type: "obstacle", bounds: new Bounds({ left: 10, top: 10, right: 20, bottom: 20 }) },
-					{ type: "text", pos: zero, text: "test    uwu" },
-				]
-			}}>
-				<TranslationProvider translations={toMap<Translation>(translations)}>
-					<ThemeProvider>
-						<IconProvider icons={icons} aliases={aliases}>
-							<Layout layout={defaultLayout} views={toMap(views)} />
-						</IconProvider>
-					</ThemeProvider>
-				</TranslationProvider>
-			</mapContext.Provider>
+			<ContextMenuProvider>
+				<mapContext.Provider value={{
+					objects: [
+						{ type: "obstacle", bounds: new Bounds({ left: 0, top: 0, right: 10, bottom: 10 }) },
+						{ type: "obstacle", bounds: new Bounds({ left: 10, top: 10, right: 20, bottom: 20 }) },
+						{ type: "text", pos: zero, text: "test    uwu" },
+					]
+				}}>
+					<Translations>
+						<ThemeProvider>
+							<IconProvider icons={icons} aliases={aliases}>
+								<Layout layout={defaultLayout} views={toMap(views)} />
+							</IconProvider>
+						</ThemeProvider>
+					</Translations>
+				</mapContext.Provider>
+			</ContextMenuProvider>
 		</ErrorBoundary >
 	);
 }

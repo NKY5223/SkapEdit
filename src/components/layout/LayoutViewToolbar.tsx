@@ -1,6 +1,6 @@
 import { Dispatch, FC, PropsWithChildren } from "react";
-import { Option } from "../form/DropdownSelectList.tsx";
-import { Options, DropdownSelectSectioned } from "../form/DropdownSelectSectioned.tsx";
+import { Option } from "../form/DropdownSelect.tsx";
+import { SectionedOptions, DropdownSelectSectioned } from "../form/DropdownSelectSectioned.tsx";
 import { Translate } from "../translate/Translate.tsx";
 import { LayoutDescView, LayoutAction, useViews } from "./Layout.tsx";
 import css from "./LayoutViewToolbar.module.css";
@@ -25,17 +25,16 @@ export const ViewSelector: FC<ViewSelectorProps> = ({
 				name,
 			}
 		)), ({ name }) => name.split(".")[0]
-	)).map<Options<string>[number]>(([name, options]) => ({
+	)).map<SectionedOptions<string>[number]>(([name, options]) => ({
 		name,
 		label: <Translate values={{ category: name }}>layout.view.category.name</Translate>,
 		options: options ?? [],
-	})) satisfies Options<string>;
+	})) satisfies SectionedOptions<string>;
+
 	return (
-		<div style={{
-			display: "flex",
-			flexDirection: "row",
-		}}>
+		<div className={css["toolbar"]}>
 			<DropdownSelectSectioned initial={view.view} options={options}
+				fallback={<Translate>layout.view.fallback</Translate>}
 				optionsClass={css["selector-options"]}
 				onSelect={value => dispatch({
 					type: "set_view",

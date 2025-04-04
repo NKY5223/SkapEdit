@@ -23,7 +23,7 @@ export const Button: ExtensibleFC<ButtonProps> = ({
 		icon && css["has-icon"], 
 		...classes,
 	);
-	return <button className={className} disabled={disabled} onClick={onClick}>
+	return <button className={className} disabled={disabled} onClick={onClick} onContextMenu={e => e.stopPropagation()}>
 		{icon && (<div className={css["icon"]}>
 			<Icon
 				icon={icon}

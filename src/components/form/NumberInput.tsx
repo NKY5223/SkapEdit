@@ -62,7 +62,8 @@ export function NumberInput({
 				onKeyDown={e => {
 					if (e.code !== "Enter") return;
 					if (onChange) onChange(+internal);
-				}}
+				}} 
+				onContextMenu={e => e.stopPropagation()}
 			/>
 		</Label>
 	);

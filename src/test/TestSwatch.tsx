@@ -32,18 +32,26 @@ export const TestSwatch: ViewFC = ({
 						return (
 							<div key={bg} style={{
 								width: "10em",
-								height: "5em",
-								borderRadius: "1em",
+								padding: "0.5em",
+								borderRadius: "var(--theme-border-radius, .5em)",
 
 								display: "grid",
-								placeItems: "center",
+								gridTemplateAreas: "\"a b\"",
+								gridTemplateColumns: "auto min-content",
+								gap: ".5em",
 								textAlign: "center",
 								fontFamily: "'Consolas', monospace",
 
 								backgroundColor: `var(--${bg})`,
 								color: `var(--${fg})`,
 								border: `1px solid var(--${bd})`,
-							}}>{getName(bg)}</div>
+							}}>{getName(bg)}
+								<div style={{
+									height: "100%",
+									borderLeft: `1px solid var(--${bd})`,
+									aspectRatio: "1",
+								}}></div>
+							</div>
 						);
 					})}
 				</div>

@@ -1,5 +1,4 @@
 import { createContext, FC, PropsWithChildren, ReactNode, useContext } from "react";
-import { TranslationAutocomplete } from "../../test/Test.tsx";
 
 // #region Types
 export type Value = (
@@ -35,7 +34,7 @@ function useTranslation(key: string) {
 	return translation;
 }
 
-type TranslationKey = TranslationAutocomplete | string & {};
+type TranslationKey = GlobalAutocomplete.Translation | string & {};
 type TranslateProps = {
 	children: TranslationKey;
 	values?: Record<string, unknown>;

@@ -1,16 +1,13 @@
-import { Dispatch, KeyboardEventHandler, ReactNode, SetStateAction, useState } from "react";
+import { Dispatch, ReactNode, SetStateAction, useRef, useState } from "react";
 import css from "./DropdownSelectList.module.css";
 import { classList } from "../utils.tsx";
+import { filterKeys, Option } from "./DropdownSelect.tsx";
+import { useClickOutside } from "../../hooks/clickOutside.ts";
 
-export type Option<T> = {
-	name: string;
-	value: T;
-	display: (current: boolean) => ReactNode;
-};
-type Options<T> = Option<T>[];
 type DropdownSelectListProps<T> = {
-	options: Options<T>;
+	options: Option<T>[];
 	initial: T;
+	fallback?: ReactNode;
 
 	onSelect?: (value: T) => void;
 
@@ -19,15 +16,17 @@ type DropdownSelectListProps<T> = {
 };
 export function DropdownSelectList<T>({
 	options, initial,
+	fallback,
 	onSelect,
 	selectedClass, optionClass,
 }: DropdownSelectListProps<T>): ReactNode {
+	const selectRef = useRef<HTMLDivElement>(null);
 	const [open, setOpen] = useState(false);
 	const [selection, setSelection] = useState<T>(initial);
 	const toggleOpen = () => setOpen(v => !v);
 
 	const optionComps = options.map((option) => (
-		<Option key={option.name} {...{
+		<ListOption key={option.name} {...{
 			option,
 			optionClass,
 			selection, setSelection,
@@ -39,16 +38,19 @@ export function DropdownSelectList<T>({
 		open ? css["open"] : null,
 		selectedClass,
 	);
-	const fallbackSelection = "<Select something>";
+	
 	const selectedOption = options.find(option => option.value === selection);
+
+	useClickOutside(selectRef, () => setOpen(false));
 	return (
-		<div className={className} role="input"
+		<div ref={selectRef} className={className} role="input"
 			onKeyDown={filterKeys(() => setOpen(false), ["Escape"])}
+			onContextMenu={e => e.stopPropagation()}
 		>
 			<div className={css["current"]} tabIndex={0}
 				onClick={toggleOpen} onKeyDown={filterKeys(toggleOpen)}
 			>
-				{selectedOption?.display(true) ?? fallbackSelection}
+				{selectedOption?.display(true) ?? fallback}
 			</div>
 			<div className={css["options"]}>
 				{optionComps}
@@ -65,7 +67,7 @@ type OptionProps<T> = {
 
 	onSelect: ((value: T) => void) | undefined;
 };
-function Option<T>({
+function ListOption<T>({
 	option: {
 		value, display,
 	},
@@ -88,12 +90,4 @@ function Option<T>({
 			{display(false)}
 		</div>
 	);
-}
-
-function filterKeys(f: KeyboardEventHandler, keys = ["Enter", "Space"]): KeyboardEventHandler {
-	return e => {
-		if (keys.includes(e.code)) {
-			f(e);
-		}
-	};
 }

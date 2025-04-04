@@ -1,9 +1,10 @@
 import { ReactNode, useState, useRef, useEffect } from "react";
 import css from "./LayoutSplit.module.css";
-import { LayoutDescSplit, LayoutFC } from "./Layout.tsx";
+import { LayoutDesc, LayoutDescSplit, LayoutFC } from "./Layout.tsx";
 import { useDrag } from "../../hooks/drag.ts";
 import { classList } from "../utils.tsx";
 import { clamp } from "../../common/number.ts";
+import { createId } from "../../common/uuid.ts";
 
 type LayoutSplitProps = {
 	children: [ReactNode, ReactNode];
@@ -35,10 +36,18 @@ export const LayoutSplit: LayoutFC<LayoutDescSplit, LayoutSplitProps> = ({
 		>
 			<div className={css["split-child"]}>{first}</div>
 			<div className={css["split-child"]}>{second}</div>
-			<div className={handleClassName} onPointerDown={startDrag} >
+			<div className={handleClassName} onPointerDown={startDrag}>
 				<div className={css.interaction}></div>
 				<div className={css.visual}></div>
 			</div>
 		</div>
 	);
 }
+export const makeLayoutSplit = (axis: "x" | "y", first: LayoutDesc, second: LayoutDesc, ratio: number): LayoutDescSplit => ({
+	type: "split",
+	id: createId(),
+	axis,
+	first,
+	second,
+	ratio,
+});

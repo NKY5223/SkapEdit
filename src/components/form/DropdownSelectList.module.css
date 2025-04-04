@@ -5,6 +5,8 @@
 	height: fit-content;
 	grid-template-rows: auto 0;
 
+	--select-border: var(--theme-border-width) solid var(--theme-bd-0);
+
 	& > .current {
 		display: grid;
 		grid-template-columns: min-content auto min-content;
@@ -12,7 +14,7 @@
 		padding: .25em .5em .25em 1em;
 		user-select: none;
 		background-color: var(--theme-bg-0);
-		border: var(--theme-border-width) solid var(--theme-bd-0);
+		border: var(--select-border);
 		border-radius: var(--theme-border-radius);
 		z-index: 3;
 
@@ -37,7 +39,7 @@
 
 			background-color: var(--theme-bg-0);
 			color: var(--theme-fg-0);
-			border: var(--theme-border-width) solid var(--theme-bd-0);
+			border: var(--select-border);
 			border-top: none;
 
 

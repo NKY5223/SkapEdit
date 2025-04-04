@@ -1,4 +1,4 @@
-import { createContext, Dispatch, FC, Reducer, useContext, useReducer } from "react";
+import { Dispatch, FC, Reducer, useReducer } from "react";
 import { LayoutSplit } from "./LayoutSplit.tsx";
 import { LayoutViewMemo, ViewFC } from "./LayoutView.tsx";
 import { createMapContext } from "../../hooks/mapContext.tsx";
@@ -63,6 +63,9 @@ export type LayoutAction = (
 	| BaseAction<"set_ratio"> & {
 		ratio: number;
 	}
+	| BaseAction<"replace"> & {
+		desc: LayoutDesc;
+	}
 );
 export type LayoutFC<T extends LayoutDesc, Props> = FC<{
 	dispatch: Dispatch<LayoutAction>;
@@ -97,6 +100,13 @@ const setInLayout = <T extends LayoutDesc>(
 
 const layoutReducer: Reducer<LayoutDesc, LayoutAction> = (layout, action) => {
 	switch (action.type) {
+		case "replace": {
+			const { target, desc } = action;
+			const [found, newLayout] = setInLayout(layout, target, desc);
+
+			if (!found) console.warn("Could not find", target, "in layout:", layout);
+			return newLayout;
+		}
 		case "set_view": {
 			const { target, view } = action;
 			const [found, newLayout] = setInLayout(layout, target, {

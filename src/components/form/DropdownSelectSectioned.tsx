@@ -1,16 +1,18 @@
-import { Dispatch, KeyboardEventHandler, ReactNode, SetStateAction, useState } from "react";
+import { Dispatch, KeyboardEventHandler, ReactNode, SetStateAction, useRef, useState } from "react";
 import css from "./DropdownSelectSectioned.module.css";
 import { classList } from "../utils.tsx";
-import { type Option } from "./DropdownSelectList.tsx";
+import { Option } from "./DropdownSelect.tsx";
+import { useClickOutside } from "../../hooks/clickOutside.ts";
 
-export type Options<T> = {
+export type SectionedOptions<T> = {
 	name: string;
 	label: ReactNode;
 	options: Option<T>[];
 }[];
 type DropdownSelectSectionedProps<T> = {
-	options: Options<T>;
+	options: SectionedOptions<T>;
 	initial: T;
+	fallback?: ReactNode;
 
 	onSelect?: (value: T) => void;
 
@@ -19,17 +21,18 @@ type DropdownSelectSectionedProps<T> = {
 	optionClass?: string;
 };
 export function DropdownSelectSectioned<T>({
-	options: sections, initial,
+	options: sections, initial, fallback,
 	onSelect,
 	selectClass, optionsClass, optionClass,
 }: DropdownSelectSectionedProps<T>): ReactNode {
+	const selectRef = useRef<HTMLDivElement>(null);
 	const [open, setOpen] = useState(false);
 	const [selection, setSelection] = useState<T>(initial);
 	const toggleOpen = () => setOpen(v => !v);
 
 	const sectionComps = sections.map(({ name, label, options }) => {
 		const optionComps = options.map((option) => (
-			<Option key={option.name} {...{
+			<SectionedOption key={option.name} {...{
 				option,
 				optionClass,
 				selection,
@@ -54,18 +57,20 @@ export function DropdownSelectSectioned<T>({
 		css["options"],
 		optionsClass,
 	);
-	const fallbackSelection = "<Select something>";
 	const selectedOption = sections
 		.flatMap(section => section.options)
 		.find(option => option.value === selection);
+		
+	useClickOutside(selectRef, () => setOpen(false));
+	
 	return (
-		<div className={className} role="input"
+		<div ref={selectRef} className={className} role="input"
 			onKeyDown={filterKeys(() => setOpen(false), ["Escape"])}
 		>
 			<div className={css["current"]} tabIndex={0}
 				onClick={toggleOpen} onKeyDown={filterKeys(toggleOpen)}
 			>
-				{selectedOption?.display(true) ?? fallbackSelection}
+				{selectedOption?.display(true) ?? fallback}
 			</div>
 			<div className={optionsClassName}>
 				{sectionComps}
@@ -82,7 +87,7 @@ type OptionProps<T> = {
 
 	onSelect: ((value: T) => void) | undefined;
 };
-export function Option<T>({
+export function SectionedOption<T>({
 	option: {
 		value, display,
 	},

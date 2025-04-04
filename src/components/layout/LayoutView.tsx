@@ -5,6 +5,8 @@ import { ErrorBoundary } from "../error/ErrorBoundary.tsx";
 import { classList } from "../utils.tsx";
 import { Translate } from "../translate/Translate.tsx";
 import { ViewSelector } from "./LayoutViewToolbar.tsx";
+import { createId } from "../../common/uuid.ts";
+import { useContextMenu } from "../contextmenu/ContextMenu.tsx";
 
 type ViewProps = {
 	children: ReactNode;
@@ -16,6 +18,18 @@ type LayoutViewProps = {
 export const LayoutView: LayoutFC<LayoutDescView, LayoutViewProps> = ({
 	desc, dispatch,
 }) => {
+	const createContextMenu = useContextMenu(() => ({
+		items: [{
+			id: "test0",
+			node: "Test 0",
+			click: () => console.log("test 0"),
+		}, {
+			id: "test1",
+			node: "Test 1",
+			click: () => console.log("test 1"),
+		}],
+	}));
+
 	const { view } = desc;
 	const View = useView(view);
 	if (!View) {
@@ -32,7 +46,7 @@ export const LayoutView: LayoutFC<LayoutDescView, LayoutViewProps> = ({
 	}
 	return (
 		<ErrorBoundary location={`View "${desc.view}"`}>
-			<div className={css.view}>
+			<div className={css.view} onContextMenu={createContextMenu}>
 				<View>
 					<ViewSelector view={desc} dispatch={dispatch} />
 				</View>
@@ -41,3 +55,9 @@ export const LayoutView: LayoutFC<LayoutDescView, LayoutViewProps> = ({
 	);
 }
 export const LayoutViewMemo = memo(LayoutView, ({ desc: a }, { desc: b }) => (a === b));
+
+export const makeLayoutView = (view: string): LayoutDescView => ({
+	type: "view",
+	id: createId(),
+	view,
+});
