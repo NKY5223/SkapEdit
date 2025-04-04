@@ -1,5 +1,5 @@
 import { interleave } from "./array.ts";
-import { alignH, bracketPresets, concat, normalize, NormTextBlock, typeset } from "./string.ts";
+import { alignH, bracketPresets, concat, normalize, NormTextBlock, tlog, typeset } from "./string.ts";
 import { map, ReadonlyTuple, tuple } from "./tuple.ts";
 
 // #region Helpers
@@ -473,7 +473,7 @@ const endsWithVector = <N0 extends number, N1 extends number, NTail extends numb
 const end = <Rest extends unknown[], Tail>(values: [...Rest, Tail]): [Rest, Tail] => {
 	if (values.length < 1) throw new Error("cannot get head and tail of array because it is too small");
 	return [
-		values.slice(1, -1) as Rest,
+		values.slice(0, -1) as Rest,
 		values.at(-1) as Tail,
 	];
 }
@@ -756,8 +756,9 @@ export class Matrix<M extends number, N extends number> {
 	// #endregion
 
 	// #region Mat, Vec → Mat
-	static matVecMul<M extends number, N extends number>(mat: Matrix<M, N>, vec: Vector<N>): Vector<M> {
-		return new Vector(tuple(mat.width, i => mat[i].dot(vec)));
+	static mulMatVec<M extends number, N extends number>(mat: Matrix<M, N>, vec: Vector<M>): Vector<N> {
+		const t = mat.transpose();
+		return new Vector(tuple(mat.height, i => t[i].dot(vec)));
 	}
 	// #endregion
 
@@ -842,7 +843,8 @@ export class Matrix<M extends number, N extends number> {
 	 *   It can sometimes run into "type instantiation is too deep" errors.  
 	 *   You can try specifying the type arguments directly, or adding a `satisfies` clause.
 	 */
-	static mul<N0 extends number, N1 extends number, NTail extends number[]>(...values: MulableMatrices<N0, N1, NTail>): MulMatResult<N0, N1, NTail>;
+	static mul<N0 extends number, N1 extends number, NTail extends number[]>
+		(...values: MulableMatrices<N0, N1, NTail>): MulMatResult<N0, N1, NTail>;
 	/**
 	 * Multiplication of matrices and vector
 	 * ```txt
@@ -855,7 +857,8 @@ export class Matrix<M extends number, N extends number> {
 	 *   It can sometimes run into "type instantiation is too deep" errors.  
 	 *   You can try specifying the type arguments directly, or adding a `satisfies` clause.
 	 */
-	static mul<N0 extends number, N1 extends number, NTail extends number[]>(...values: [...MulableMatrices<N0, N1, NTail>, Vector<MatMulResultDim<N1, NTail>>]): Vector<N1>;
+	static mul<N0 extends number, N1 extends number, NTail extends number[]>
+		(...values: [...MulableMatrices<N0, N1, NTail>, Vector<MatMulResultDim<N1, NTail>>]): Vector<N1>;
 	static mul<N0 extends number, N1 extends number, NTail extends number[]>(
 		...values: MulableMatrices<N0, N1, NTail> | [...MulableMatrices<N0, N1, NTail>, Vector<MatMulResultDim<N1, NTail>>]
 	): MulMatResult<N0, N1, NTail> | Vector<N1> {
@@ -864,7 +867,7 @@ export class Matrix<M extends number, N extends number> {
 		if (endsWithVector(values)) {
 			const [rest, final] = end(values);
 			if (rest.length < 1) return final as never;
-			return Matrix.matVecMul(Matrix.mul(...rest), final as never) as never;
+			return Matrix.mulMatVec(Matrix.mul(...rest), final as never) as never;
 		}
 
 		const numbers = (values as unknown[]).filter(isNumber);
@@ -910,6 +913,9 @@ export class Matrix<M extends number, N extends number> {
 	): MulMatResult<N, M, NTail> | Vector<M> {
 		// trust me bro
 		return Matrix.mul(this, ...values as never[]) as never;
+	}
+	mulVec(vec: Vector<M>): Vector<N> {
+		return Matrix.mulMatVec(this, vec);
 	}
 	// #endregion
 

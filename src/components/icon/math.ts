@@ -1,4 +1,5 @@
 import { interleave, transposeTuples, tuples } from "../../common/array.ts";
+import { tlog, tlogRec } from "../../common/string.ts";
 import { signedAngle, arg, ccw90, parallel, polar, rotationMat, safeNorm, swap, Vec2, vec2 } from "../../common/vec2.ts";
 import { Matrix, Vector } from "../../common/vector.ts";
 
@@ -55,8 +56,8 @@ export const fromSVGArc = (arc: SVGArc): CommandArc => {
 	).mul(vec2(1, -1), radius.div(swap(radius)), swap(startPrime));
 
 	const center = cwRotation.mul(centerPrime).add(mid);
-	const startAngle = signedAngle(vec2(1, 0), startPrime.div(centerPrime).sub(radius));
-	const endAngle = signedAngle(vec2(1, 0), startPrime.neg().div(centerPrime).sub(radius));
+	const startAngle = signedAngle(vec2(1, 0), startPrime.sub(centerPrime).div(radius));
+	const endAngle = signedAngle(vec2(1, 0), startPrime.neg().sub(centerPrime).div(radius));
 	const angleDiff = endAngle - startAngle;
 	const deltaAngle = (clockwise
 		? angleDiff < 0 ? angleDiff + TAU : angleDiff
@@ -227,8 +228,8 @@ export const intersectCommands = (a: Command, b: Command, debugPhase?: string): 
 
 		const invRot = rotationMat(-rotation);
 
-		const l0 = invRot.mul(b0.sub(center)).mul(radius);
-		const l1 = invRot.mul(b1.sub(center)).mul(radius);
+		const l0 = invRot.mul(b0.sub(center)).div(radius);
+		const l1 = invRot.mul(b1.sub(center)).div(radius);
 		const ld = l1.sub(l0);
 
 		const qa = ld.dot(ld);
@@ -554,7 +555,7 @@ export const joinOffsetCommandPair = (
 				}
 
 				const { ta: tPrev, tb: tNext } = intersectLines(
-					start, start.add(prevTangent), 
+					start, start.add(prevTangent),
 					end, end.add(nextTangent)
 				);
 

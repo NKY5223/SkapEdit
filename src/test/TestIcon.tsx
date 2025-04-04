@@ -4,7 +4,7 @@ import { useNumberInput } from "../components/form/NumberInput.tsx";
 import { useTextInput } from "../components/form/TextInput.tsx";
 import { M, L, a } from "../components/icon/constructors.tsx";
 import { stroke, clearLogs } from "../components/icon/math.ts";
-import { stringify, debug, ALL_COMMANDS } from "../components/icon/stringify.tsx";
+import { stringifyPath, debug, ALL_COMMANDS } from "../components/icon/stringify.tsx";
 import { ViewFC } from "../components/layout/LayoutView.tsx";
 
 export const TestIcon: ViewFC = ({
@@ -20,6 +20,7 @@ export const TestIcon: ViewFC = ({
 	M(startX, startY);
 	const first = L(12, 6)[0];
 	const second = a(radius, radius, 0, false, true, 0, radius * 2)[0];
+
 	const original = [first, second];
 	const stroked = stroke({
 		join: "round",
@@ -30,8 +31,8 @@ export const TestIcon: ViewFC = ({
 	}, original);
 
 
-	const [, debugStroked] = stringify(stroked);
-	const [, debugOriginal] = stringify(original);
+	const [, debugStroked] = stringifyPath(stroked);
+	const [, debugOriginal] = stringifyPath(original);
 	const logs = debug(clearLogs());
 	const props: SVGAttributes<{}> = {
 		strokeWidth: 1.5 * 24 / 480,

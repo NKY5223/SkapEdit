@@ -516,7 +516,7 @@ export const t = typeset({
 				s(v),
 				...(i === a.length - 1 ? [] : [", "])
 			]);
-			if (!first) return bracketPresets.curly("empty");
+			if (!first) return bracketPresets.curly("");
 			return bracketPresets.curly(concat(...[first, ...rest]));
 		},
 		// error
@@ -538,7 +538,7 @@ export const t = typeset({
 					t`${msg}\nCauses:`,
 					...cause.flatMap((v, i) =>
 						[
-							`╡${i}╞${"═".repeat(25 - i.toString().length)}`,
+							`╡${i}╞${"═".repeat(24 - i.toString().length)}`,
 							t`\t${s(v)}`,
 						]
 					)
@@ -551,3 +551,15 @@ export const t = typeset({
 		},
 	]
 });
+
+export const tlog = (...params: Parameters<typeof t>) => console.log(t(...params));
+export const tlogRec = (values: Record<string, unknown>, breakEvery = 5) => {
+	const labels = [...Object.keys(values).map((k, i) =>
+		(i ? i % breakEvery === 0 ? `, \n` : `, ` : ``) + `${k}=`
+	), ""];
+	const vals = Object.values(values);
+	return console.log(t(
+		labels,
+		...vals
+	));
+};

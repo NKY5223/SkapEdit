@@ -1,4 +1,5 @@
 import { sign } from "./number.ts";
+import { tlogRec } from "./string.ts";
 import { Matrix, Vector } from "./vector.ts";
 
 export type Vec2 = Vector<2>;
@@ -15,7 +16,7 @@ export const ccw90 = new Matrix(ĵ.neg(), î);
 
 export const swap = (vec: Vec2) => new Vector(vec[1], vec[0]);
 export const safeNorm = (vec: Vec2, fallback = î) => vec.equal(zero) ? fallback : vec.norm();
-export const orth = (vec: Vec2) => new Matrix(vec, cw90.mul<[]>(vec));
+export const orth = (vec: Vec2): Mat2 => new Matrix(vec, new Vector(vec[1], -vec[0]));
 
 export const polar = (θ: number, r = 1) => vec2(r * Math.cos(θ), r * Math.sin(θ));
 export const arg = (vec: Vec2) => Math.atan2(vec[1], vec[0]);
@@ -36,5 +37,7 @@ export const rotationMat = (θ: number) => {
 };
 /** @returns ∈ [-π, π], clockwise > 0 */
 export const signedAngle = (a: Vec2, b: Vec2): number => {
-	return sign(new Matrix(a, b).det()) * a.angle(b);
+	const angle = a.angle(b);
+	const sgn = sign(new Matrix(a, b).det());
+	return sgn * angle;
 }

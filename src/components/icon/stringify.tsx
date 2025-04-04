@@ -1,15 +1,16 @@
 import { Fragment, ReactNode, SVGAttributes } from "react";
-import { Command, Log, toSVGArc } from "./math.ts";
+import { Command, log, Log, toSVGArc } from "./math.ts";
 import { orth, polar, rotationMat, vec2, Vec2, zero } from "../../common/vec2.ts";
 import { Vector } from "../../common/vector.ts";
+import { tlog } from "../../common/string.ts";
 
-const d = (template: readonly string[], ...subst: (Vec2 | number)[]) => (
-	String.raw({ raw: template }, ...subst.map(v => 
+const pathStr = (template: readonly string[], ...subst: (Vec2 | number)[]) => (
+	String.raw({ raw: template }, ...subst.map(v =>
 		typeof v === "number" ? v.toString() :
-		v instanceof Vector ? `${v[0]} ${v[1]}` : ""
+			v instanceof Vector ? `${v[0]} ${v[1]}` : ""
 	)).replaceAll(/\s+/g, " ").trim()
 );
-const drawDot = (pos: Vec2, r: number = 0.2) => d`
+const drawDot = (pos: Vec2, r: number = 0.2) => pathStr`
 	M ${pos}
 	m ${r} 0
 	a ${r} ${r} 0 0 0 ${-2 * r} 0
@@ -17,19 +18,19 @@ const drawDot = (pos: Vec2, r: number = 0.2) => d`
 `;
 const drawArrow = (pos: Vec2, direction: Vec2, size: number = 0.3) => {
 	if (direction.equal(zero)) return ``;
-
+	
 	const fw = direction.norm(size);
 	const coord = orth(fw);
-
+	
 	const h = vec2(.5, 0);
 	const l = vec2(-.5, 1);
 	const r = vec2(-.5, -1);
-
+	
 	const head = pos.add(coord.mul(h));
 	const left = pos.add(coord.mul(l));
 	const right = pos.add(coord.mul(r));
 
-	return d`
+	return pathStr`
 		M ${left}
 		L ${head}
 		L ${right}
@@ -39,11 +40,11 @@ const stringifyCommand = (command: Command): string => {
 	const { end } = command;
 	switch (command.type) {
 		case "line":
-			return d`L ${end}`;
+			return pathStr`L ${end}`;
 		case "arc":
 			const { radius, rotation } = command;
 			const { largeArc, clockwise } = toSVGArc(command);
-			return d`A ${radius} ${rotation} ${+largeArc} ${+clockwise} ${end}`;
+			return pathStr`A ${radius} ${rotation} ${+largeArc} ${+clockwise} ${end}`;
 	}
 };
 const debugStringifyCommand = (command: Command): { type: string; d: string; }[] => {
@@ -56,15 +57,15 @@ const debugStringifyCommand = (command: Command): { type: string; d: string; }[]
 		type: `${type}_end`,
 		d: drawDot(end)
 	};
-	const d = end.sub(start);
+	const diff = end.sub(start);
 
 	switch (type) {
 		case "line": {
-			if(d.equal(zero)) return [
+			if (diff.equal(zero)) return [
 				dotStart,
 				{
 					type: `${type}_path`,
-					d: `M ${start} L ${end}`,
+					d: pathStr`M ${start} L ${end}`,
 				},
 				dotEnd,
 			];
@@ -72,13 +73,13 @@ const debugStringifyCommand = (command: Command): { type: string; d: string; }[]
 				dotStart,
 				{
 					type: `${type}_path`,
-					d: `M ${start} L ${end}`,
+					d: pathStr`M ${start} L ${end}`,
 				},
 				{
 					type: `${type}_arrow`,
 					d: drawArrow(
 						Vector.lerp(start, end)(0.5),
-						d
+						diff
 					)
 				},
 				dotEnd
@@ -100,7 +101,7 @@ const debugStringifyCommand = (command: Command): { type: string; d: string; }[]
 				dotStart,
 				{
 					type: `${type}_path`,
-					d: `M ${start} A ${radius} ${rotation} ${+largeArc} ${+clockwise} ${end}`,
+					d: pathStr`M ${start} A ${radius} ${rotation} ${+largeArc} ${+clockwise} ${end}`,
 				},
 				{
 					type: `${type}_arrow`,
@@ -116,15 +117,16 @@ const debugStringifyCommand = (command: Command): { type: string; d: string; }[]
 	}
 };
 export const ALL_COMMANDS = Symbol("*");
-export const stringify = (commands: Command[]) => {
+export const stringifyPath = (commands: Command[]) => {
 	const stringified: string[] = commands.reduce<{ pos: Vec2, strs: string[] }>(({ pos, strs }, command) => {
 		const { start } = command;
 		return {
 			pos,
-			strs: [...strs,
-			// Connect disconnected commands
-			`L ${start}`,
-			stringifyCommand(command)
+			strs: [
+				...strs,
+				// Connect disconnected commands
+				pathStr`L ${start}`,
+				stringifyCommand(command)
 			]
 		};
 	}, { pos: vec2(NaN), strs: [] }).strs;
@@ -171,7 +173,7 @@ export const debug = (logs: Map<string, Log>): ReactNode[] => {
 			</Fragment>;
 		}
 		if ("type" in v) {
-			const d = debugStringifyCommand(v).map(({d}) => d).join(" ");
+			const d = debugStringifyCommand(v).map(({ d }) => d).join(" ");
 			const pos = v.start.add(0.5);
 			return <Fragment key={k}>
 				<path {...strokeProps} d={d}></path>,
