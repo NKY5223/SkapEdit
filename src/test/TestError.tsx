@@ -1,4 +1,4 @@
-import { ViewFC } from "../components/layout/LayoutView.tsx";
+import { ViewFC } from "@components/layout/LayoutView.tsx";
 
 export const TestError: ViewFC = () => {
 	throw new Error("Test error", {

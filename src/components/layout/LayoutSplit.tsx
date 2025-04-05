@@ -1,10 +1,12 @@
-import { ReactNode, useState, useRef, useEffect } from "react";
+import { ReactNode, useRef } from "react";
 import css from "./LayoutSplit.module.css";
 import { LayoutDesc, LayoutDescSplit, LayoutFC } from "./Layout.tsx";
 import { useDrag } from "../../hooks/drag.ts";
 import { classList } from "../utils.tsx";
 import { clamp } from "../../common/number.ts";
 import { createId } from "../../common/uuid.ts";
+import { single } from "@components/contextmenu/ContextMenu.tsx";
+import { useContextMenu } from "@components/contextmenu/hook.tsx";
 
 type LayoutSplitProps = {
 	children: [ReactNode, ReactNode];
@@ -30,13 +32,18 @@ export const LayoutSplit: LayoutFC<LayoutDescSplit, LayoutSplitProps> = ({
 		css["handle"],
 		resizing && css["resizing"],
 	);
+
+	const handleContextMenu = useContextMenu({ items: [
+		single("test", "Test"),
+	]});
+
 	return (
 		<div ref={wrapperRef} className={`${css.split} ${css[`split-${axis}`]}`}
 			style={{ "--ratio": `${ratio * 100}%` }}
 		>
 			<div className={css["split-child"]}>{first}</div>
 			<div className={css["split-child"]}>{second}</div>
-			<div className={handleClassName} onPointerDown={startDrag}>
+			<div className={handleClassName} onPointerDown={startDrag} onContextMenu={handleContextMenu}>
 				<div className={css.interaction}></div>
 				<div className={css.visual}></div>
 			</div>

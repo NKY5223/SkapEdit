@@ -1,15 +1,15 @@
 import { Component, ErrorInfo, PropsWithChildren, ReactNode } from "react";
 import css from "./ErrorBoundary.module.css";
-import { indent, t } from "../../common/string.ts";
+import { t } from "../../common/string.ts";
 
 type ErrorBoundaryProps = PropsWithChildren<{
 	fallback?: (error: Error) => ReactNode;
-	location?: string;
+	location?: ReactNode;
 }>;
 type ErrorBoundaryState = {
 	error: Error | null;
 };
-// have to use class component
+// have to use class component because fcs dont support it?? why??
 export class ErrorBoundary<T extends ErrorBoundaryProps> extends Component<T, ErrorBoundaryState> {
 	constructor(props: T) {
 		super(props);
@@ -35,7 +35,7 @@ export class ErrorBoundary<T extends ErrorBoundaryProps> extends Component<T, Er
 				return this.props.fallback(this.state.error);
 			}
 			const heading = (this.props.location
-				? `error in ${this.props.location}:`
+				? <>error in {this.props.location}:</>
 				: `uh oh`
 			);
 			return (
@@ -48,35 +48,4 @@ export class ErrorBoundary<T extends ErrorBoundaryProps> extends Component<T, Er
 
 		return this.props.children;
 	}
-}
-const stringify = (obj: unknown): string => {
-	const seperator = `\n ${"-".repeat(46)} \n`;
-	const causeSeperator = `\n${"-".repeat(20)} Cause: ${"-".repeat(20)}\n`;
-	const causesSeperator = `\n${"-".repeat(20)} Causes: ${"-".repeat(19)}\n`;
-	if (obj instanceof Error) {
-		const { cause } = obj;
-		const msg = `Uncaught ${obj.name}: \n${indent(obj.message)}`;
-		if (!cause) {
-			return msg;
-		}
-		const stackMsg = obj.stack ? `\n${indent(obj.stack)}` : "";
-		const causeMsg = (
-			Array.isArray(cause)
-				? causesSeperator +
-				cause.map(c => indent(stringify(c))).join(seperator)
-				: causeSeperator +
-				stringify(cause)
-		);
-
-		return [
-			msg,
-			stackMsg,
-			causeMsg,
-		].join("");
-	}
-	if (Array.isArray(obj)) {
-		const msgs = obj.map(stringify);
-		return msgs.join(seperator);
-	}
-	return JSON.stringify(obj, null, "\t");
 }

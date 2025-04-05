@@ -3,6 +3,7 @@ import css from "./DropdownSelectList.module.css";
 import { classList } from "../utils.tsx";
 import { filterKeys, Option } from "./DropdownSelect.tsx";
 import { useClickOutside } from "../../hooks/clickOutside.ts";
+import { useKeydown } from "@hooks/keydown.ts";
 
 type DropdownSelectListProps<T> = {
 	options: Option<T>[];
@@ -42,9 +43,9 @@ export function DropdownSelectList<T>({
 	const selectedOption = options.find(option => option.value === selection);
 
 	useClickOutside(selectRef, () => setOpen(false));
+	useKeydown(["Escape"], () => setOpen(false));
 	return (
 		<div ref={selectRef} className={className} role="input"
-			onKeyDown={filterKeys(() => setOpen(false), ["Escape"])}
 			onContextMenu={e => e.stopPropagation()}
 		>
 			<div className={css["current"]} tabIndex={0}

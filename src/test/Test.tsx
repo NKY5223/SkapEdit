@@ -10,15 +10,15 @@ import { Inspector } from "../components/view/inspector/Inspector.tsx";
 import { TestSwatch } from "./TestSwatch.tsx";
 import { TestIcons } from "./TestIcons.tsx";
 import { ErrorBoundary } from "../components/error/ErrorBoundary.tsx";
-import { toMap, Translate, Translation, TranslationProvider } from "../components/translate/Translate.tsx";
+import { toMap, Translate } from "../components/translate/Translate.tsx";
 import { ViewFC } from "../components/layout/LayoutView.tsx";
 import { Viewport } from "../components/view/viewport/Viewport.tsx";
 import { mapContext } from "../components/editor/map.ts";
 import { Bounds } from "../components/editor/bounds.ts";
 import { zero } from "../common/vec2.ts";
 import { TestError } from "./TestError.tsx";
-import { Translations, translations } from "./translations.tsx";
-import { ContextMenuProvider } from "../components/contextmenu/ContextMenu.tsx";
+import { Translations } from "./translations.tsx";
+import { ContextMenuProvider } from "@components/contextmenu/context.tsx";
 
 const uuid = () => crypto.randomUUID();
 const splitX = (ratio: number, a: LayoutDesc, b: LayoutDesc) => ({

@@ -1,95 +1,5 @@
-import { createContext, Dispatch, FC, PointerEventHandler, PropsWithChildren, ReactNode, SetStateAction, useContext, useEffect, useRef, useState } from "react";
-import css from "./ContextMenu.module.css";
-import { vec2, Vec2 } from "../../common/vec2.ts";
-import { classList } from "../utils.tsx";
-import { useClickOutside } from "../../hooks/clickOutside.ts";
-
-export type ContextMenuItem = {
-	/** A (readable) string representing this item */
-	id: string;
-	/** Node to be inserted into the <li> */
-	node: ReactNode;
-	click?: () => void;
-};
-export type ContextMenu = {
-	items: ContextMenuItem[];
-	pos: Vec2;
-};
-
-type ContextMenuProps = {
-	contextMenu: ContextMenu;
-};
-export const ContextMenu: FC<ContextMenuProps> = ({
-	contextMenu: {
-		items,
-		pos
-	}
-}) => {
-	const menuRef = useRef<HTMLElement>(null);
-	const clear = useClearContextMenu();
-
-	const [x, y] = pos;
-	const w = window.innerWidth;
-	const h = window.innerHeight;
-	const onLeft = x > w - 160;
-	const onTop = y > h - 32 * items.length;
-
-	const className = classList(
-		css["context-menu"],
-		css[onLeft ? "left" : "right"],
-		css[onTop ? "above" : "below"],
-	);
-
-	useClickOutside(menuRef, clear);
-
-	return (
-		<menu ref={menuRef} className={className} style={{
-			"--x": `${onLeft ? w - x : x}px`,
-			"--y": `${onTop ? h - y : y}px`,
-		}}>
-			{items.map(({ id, node, click }) => (
-				<li key={id} className={css["item"]} onClick={click}>
-					{node}
-				</li>
-			))}
-		</menu>
-	);
-}
-
-const contextMenuContext = createContext<
-	Dispatch<SetStateAction<ContextMenu | null>>
->(() => { });
-type UpdateContextMenu = Partial<ContextMenu>;
-
-export const useContextMenu = (
-	action: UpdateContextMenu | ((prev: ContextMenu | null) => UpdateContextMenu)
-) => {
-	const dispatch = useContext(contextMenuContext);
-	return (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-		event.preventDefault();
-		dispatch(current => ({
-			pos: vec2(event.clientX, event.clientY),
-			items: [],
-			...(typeof action === "function" ? action(current) : action),
-		}));
-	};
-}
-export const useClearContextMenu = () => {
-	const dispatch = useContext(contextMenuContext);
-	return () => dispatch(null);
-}
-
-export const ContextMenuProvider: FC<PropsWithChildren> = ({
-	children
-}) => {
-	const [current, setCurrent] = useState<ContextMenu | null>(null);
-	return (
-		<contextMenuContext.Provider value={setCurrent}>
-			{children}
-			{current && <ContextMenu contextMenu={current} />}
-		</contextMenuContext.Provider>
-	);
-}
+import { ReactNode } from "react";
+import { Vec2 } from "../../common/vec2.ts";
 
 /*
 Goal:
@@ -97,3 +7,81 @@ Extensible (how?) context menu, anchored at a parent
 children should call the "create context menu" function
 maybe children can be responsible for collecting the parents' context menus?
  */
+
+// #region types
+
+// #region item
+export type ContextMenuSingleItem = {
+	type: "single";
+	/** A (readable) string representing this item */
+	id: string;
+	display: ReactNode;
+	click?: () => void;
+};
+export type ContextMenuSubmenu = {
+	type: "submenu";
+	/** A (readable) string representing this item */
+	id: string;
+	display: ReactNode;
+	menu: ContextMenuAnchored;
+}
+export type ContextMenuSection = {
+	type: "section";
+	/** A (readable) string representing this section */
+	id: string;
+
+	title?: ReactNode;
+	items: (ContextMenuSingleItem | ContextMenuSubmenu)[];
+}
+export type ContextMenuItem = (
+	| ContextMenuSingleItem
+	| ContextMenuSubmenu
+	| ContextMenuSection
+);
+// #endregion
+
+export type ContextMenuContent = {
+	readonly items: readonly ContextMenuItem[];
+}
+
+// #region menu
+export type ContextMenuFloating = {
+	type: "floating";
+	content: ContextMenuContent;
+	pos: Vec2;
+}
+export type ContextMenuAnchored = {
+	type: "anchored";
+	content: ContextMenuContent;
+}
+export type ContextMenu = (
+	| ContextMenuFloating
+	| ContextMenuAnchored
+);
+// #endregion
+
+// #endregion
+
+// #region Constructors
+export const single = (id: string, display: ReactNode, click?: () => void): ContextMenuSingleItem => ({
+	type: "single",
+	id,
+	display,
+	click,
+});
+export const section = (id: string, title: ReactNode, items: (ContextMenuSingleItem | ContextMenuSubmenu)[]): ContextMenuSection => ({
+	type: "section",
+	id,
+	title,
+	items,
+});
+export const submenu = (id: string, display: ReactNode, items: ContextMenuAnchored["content"]["items"]): ContextMenuSubmenu => ({
+	type: "submenu",
+	id,
+	display,
+	menu: {
+		type: "anchored",
+		content: { items },
+	},
+});
+// #endregion

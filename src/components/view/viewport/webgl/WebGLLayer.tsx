@@ -25,7 +25,6 @@ export const WebGLLayer = (...renderers: WebGLLayerRenderer[]): ViewportLayerFC 
 	}, [viewportInfo]);
 
 	const initRenderers = () => {
-		console.log("WebGL Layer Init");
 		const cleanup = () => {
 			const abortRender = abortRenderRef.current;
 			if (!abortRender) {
@@ -35,7 +34,6 @@ export const WebGLLayer = (...renderers: WebGLLayerRenderer[]): ViewportLayerFC 
 			renderers.forEach(renderer => renderer.cleanup())
 			abortRenderRef.current = undefined;
 
-			console.log("WebGL Layer Cleanup");
 			return;
 		}
 		
