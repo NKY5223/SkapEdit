@@ -1,11 +1,11 @@
 import { FC } from "react";
-import { ContextMenuItem as Item } from "../ContextMenu.tsx";
+import { ContextMenu } from "../ContextMenu.tsx";
 import { ContextMenuSection } from "./Section.tsx";
 import { ContextMenuSingleItem } from "./Single.tsx";
 import { ContextMenuSubmenu } from "./Submenu.tsx";
 
 type ContextMenuItemProps = {
-	item: Item;
+	item: ContextMenu.Item;
 };
 export const ContextMenuItem: FC<ContextMenuItemProps> = ({
 	item

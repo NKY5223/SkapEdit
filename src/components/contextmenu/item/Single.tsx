@@ -1,10 +1,10 @@
 import { FC } from "react";
 import css from "../ContextMenu.module.css";
-import { ContextMenuSingleItem as SingleItem } from "../ContextMenu.tsx";
+import { ContextMenu } from "../ContextMenu.tsx";
 import { classList } from "@components/utils.tsx";
 
 type ContextMenuSingleItemProps = {
-	item: SingleItem;
+	item: ContextMenu.SingleItem;
 };
 export const ContextMenuSingleItem: FC<ContextMenuSingleItemProps> = ({
 	item

@@ -2,8 +2,8 @@ import { Dispatch, ReactNode, SetStateAction, useRef, useState } from "react";
 import css from "./DropdownSelectList.module.css";
 import { classList } from "../utils.tsx";
 import { filterKeys, Option } from "./DropdownSelect.tsx";
-import { useClickOutside } from "../../hooks/clickOutside.ts";
-import { useKeydown } from "@hooks/keydown.ts";
+import { useClickOutside } from "../../hooks/useClickOutside.ts";
+import { useKeydown } from "@hooks/useKeydown.ts";
 
 type DropdownSelectListProps<T> = {
 	options: Option<T>[];

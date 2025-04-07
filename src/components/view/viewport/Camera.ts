@@ -1,6 +1,6 @@
 import { SetStateAction, useState } from "react";
 import { Realize } from "../../../common/types.ts";
-import { Bounds } from "../../editor/bounds.ts";
+import { Bounds } from "../../../common/editor/bounds.ts";
 import { Vec2, vec2 } from "../../../common/vec2.ts";
 
 type InitCamera = ({

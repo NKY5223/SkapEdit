@@ -2,7 +2,7 @@ import { Dispatch, KeyboardEventHandler, ReactNode, SetStateAction, useRef, useS
 import css from "./DropdownSelectSectioned.module.css";
 import { classList } from "../utils.tsx";
 import { Option } from "./DropdownSelect.tsx";
-import { useClickOutside } from "../../hooks/clickOutside.ts";
+import { useClickOutside } from "../../hooks/useClickOutside.ts";
 
 export type SectionedOptions<T> = {
 	name: string;

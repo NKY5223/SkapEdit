@@ -30,6 +30,7 @@
 	}
 }
 
+
 .anchor {
 	anchor-name: --contextmenu-anchor;
 }
@@ -79,6 +80,10 @@
 	display: block;
 	padding: .25em .25em .25em 1em;
 	user-select: none;
+
+	.section + & {
+		border-top: var(--cmenu-border);
+	}
 }
 .single:hover, .submenu:hover {
 	background-color: var(--theme-primary-bg-0);
@@ -120,4 +125,13 @@
 	}
 }
 
-/* #endregion */
+.error {
+	width: fit-content;
+	min-width: 15em;
+	min-height: 20em;
+	overflow: auto;
+	position: relative;
+
+	border: var(--theme-border-width) solid var(--theme-error-bd);
+	resize: both;
+}

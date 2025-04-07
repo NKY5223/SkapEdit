@@ -48,6 +48,10 @@
 	--theme-negative-fg-1: oklch(0.90 0.10 28);
 	--theme-negative-bd-1: oklch(0.55 0.30 28);
 
+	--theme-error-bg: oklch(.10 .50 10);
+	--theme-error-fg: oklch(.95 .01 10);
+	--theme-error-bd: oklch(.30 .50 10);
+
 	--theme-font: system-ui, sans-serif;
 
 	--theme-border-width: 1px;

@@ -1,7 +1,7 @@
 import { Dispatch, FC, Reducer, useReducer } from "react";
 import { LayoutSplit } from "./LayoutSplit.tsx";
 import { LayoutViewMemo, ViewFC } from "./LayoutView.tsx";
-import { createMapContext } from "../../hooks/mapContext.tsx";
+import { createMapContext } from "../../hooks/createMapContext.tsx";
 
 /* 
 2025-02-xx

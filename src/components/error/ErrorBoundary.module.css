@@ -1,7 +1,4 @@
 .error {
-	--theme-error-bg: oklch(.10 .50 10);
-	--theme-error-fg: oklch(.95 .01 10);
-
 	padding: 1em;
 	background-color: var(--theme-error-bg);
 	color: var(--theme-error-fg);

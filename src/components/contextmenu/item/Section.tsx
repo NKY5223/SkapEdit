@@ -1,10 +1,10 @@
 import { FC } from "react";
 import css from "../ContextMenu.module.css";
-import { ContextMenuSection as Section } from "../ContextMenu.tsx";
+import { ContextMenu } from "../ContextMenu.tsx";
 import { ContextMenuItem } from "./Item.tsx";
 
 type ContextMenuSectionProps = {
-	item: Section;
+	item: ContextMenu.Section;
 };
 export const ContextMenuSection: FC<ContextMenuSectionProps> = ({
 	item

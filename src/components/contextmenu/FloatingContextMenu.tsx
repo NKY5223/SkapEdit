@@ -1,21 +1,22 @@
-import { classList } from "@components/utils.tsx";
-import { useClickOutside } from "@hooks/clickOutside.ts";
 import { FC, useRef } from "react";
-import css from "./ContextMenu.module.css";
-import { ContextMenuFloating } from "./ContextMenu.tsx";
-import { useClearContextMenu } from "./hook.tsx";
+import { ErrorBoundary } from "@components/error/ErrorBoundary.tsx";
+import { classList } from "@components/utils.tsx";
+import { useClickOutside } from "@hooks/useClickOutside.ts";
+import { useKeydown } from "@hooks/useKeydown.ts";
+import { ContextMenu } from "./ContextMenu.tsx";
+import { useClearContextMenu } from "./context.tsx";
 import { ContextMenuItem } from "./item/Item.tsx";
-import { useKeydown } from "@hooks/keydown.ts";
+import css from "./ContextMenu.module.css";
 
 type FloatingContextMenuProps = {
-	contextMenu: ContextMenuFloating;
+	contextMenu: ContextMenu.Floating;
 	dismissable?: boolean;
 };
 export const FloatingContextMenu: FC<FloatingContextMenuProps> = ({
 	contextMenu,
 	dismissable = true,
 }) => {
-	const { pos, content: { items } } = contextMenu;
+	const { pos, items } = contextMenu;
 
 	const menuRef = useRef<HTMLElement>(null);
 	const clear = useClearContextMenu();
@@ -34,13 +35,17 @@ export const FloatingContextMenu: FC<FloatingContextMenuProps> = ({
 
 	return (
 		<div className={css["floating-anchor"]} style={{
-				"--x": `${x}px`,
-				"--y": `${y}px`,
-			}}>
+			"--x": `${x}px`,
+			"--y": `${y}px`,
+		}}>
 			<menu ref={menuRef} className={className}>
-				{items.map(item => (
-					<ContextMenuItem key={item.id} item={item} />
-				))}
+				<ErrorBoundary fallback={(_, orig) => (
+					<div className={css["error"]}>{orig}</div>
+				)}>
+					{items.map(item => (
+						<ContextMenuItem key={item.id} item={item} />
+					))}
+				</ErrorBoundary>
 			</menu>
 		</div>
 	);

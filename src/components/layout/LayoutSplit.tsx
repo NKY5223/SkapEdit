@@ -1,12 +1,12 @@
 import { ReactNode, useRef } from "react";
 import css from "./LayoutSplit.module.css";
 import { LayoutDesc, LayoutDescSplit, LayoutFC } from "./Layout.tsx";
-import { useDrag } from "../../hooks/drag.ts";
+import { useDrag } from "../../hooks/useDrag.ts";
 import { classList } from "../utils.tsx";
 import { clamp } from "../../common/number.ts";
 import { createId } from "../../common/uuid.ts";
 import { single } from "@components/contextmenu/ContextMenu.tsx";
-import { useContextMenu } from "@components/contextmenu/hook.tsx";
+import { useContextMenu } from "@components/contextmenu/context.tsx";
 
 type LayoutSplitProps = {
 	children: [ReactNode, ReactNode];
@@ -33,9 +33,9 @@ export const LayoutSplit: LayoutFC<LayoutDescSplit, LayoutSplitProps> = ({
 		resizing && css["resizing"],
 	);
 
-	const handleContextMenu = useContextMenu({ items: [
+	const handleContextMenu = useContextMenu([
 		single("test", "Test"),
-	]});
+	]);
 
 	return (
 		<div ref={wrapperRef} className={`${css.split} ${css[`split-${axis}`]}`}

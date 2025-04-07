@@ -3,7 +3,7 @@ import vert from "./shader/default.vert?raw";
 import frag from "./shader/obstacle.frag?raw";
 import { ViewportInfo } from "../Viewport.tsx";
 import { WebGLLayerRenderer, WebGLViewportInfo } from "../webgl/WebGLLayer.tsx";
-import { SkapObstacle } from "../../../editor/map.ts";
+import { SkapObstacle } from "../../../../common/editor/map.ts";
 
 export class ObstacleWebGLRenderer extends WebGLLayerRenderer {
 	constructor() {

@@ -1,23 +1,24 @@
 import { classList } from "@components/utils.tsx";
-import { useClickOutside } from "@hooks/clickOutside.ts";
+import { useClickOutside } from "@hooks/useClickOutside.ts";
 import { FC, useRef } from "react";
 import css from "./ContextMenu.module.css";
-import { useClearContextMenu } from "./hook.tsx";
+import { useClearContextMenu } from "./context.tsx";
 import { ContextMenuItem } from "./item/Item.tsx";
-import { useKeydown } from "@hooks/keydown.ts";
-import { ContextMenuAnchored } from "./ContextMenu.tsx";
+import { useKeydown } from "@hooks/useKeydown.ts";
+import { ContextMenu } from "./ContextMenu.tsx";
+import { ErrorBoundary } from "@components/error/ErrorBoundary.tsx";
 
 export const contextMenuAnchorClassName = css["anchor"];
 
 type AnchoredContextMenuProps = {
-	contextMenu: ContextMenuAnchored;
-	dismiss?: boolean;
+	contextMenu: ContextMenu.Anchored;
+	dismissable?: boolean;
 };
 export const AnchoredContextMenu: FC<AnchoredContextMenuProps> = ({
 	contextMenu,
-	dismiss = true,
+	dismissable = true,
 }) => {
-	const { content: { items } } = contextMenu;
+	const { items } = contextMenu;
 
 	const menuRef = useRef<HTMLElement>(null);
 	const clear = useClearContextMenu();
@@ -27,16 +28,20 @@ export const AnchoredContextMenu: FC<AnchoredContextMenuProps> = ({
 		css["anchored"],
 	);
 
-	if (dismiss) {
+	if (dismissable) {
 		useClickOutside(menuRef, clear);
 		useKeydown(["Escape"], clear);
 	}
 
 	return (
 		<menu ref={menuRef} className={className}>
-			{items.map(item => (
-				<ContextMenuItem key={item.id} item={item} />
-			))}
+			<ErrorBoundary location="Context Menu" fallback={(_, orig) => (
+				<div className={css["error"]}>{orig}</div>
+			)}>
+				{items.map(item => (
+					<ContextMenuItem key={item.id} item={item} />
+				))}
+			</ErrorBoundary>
 		</menu>
 	);
 }

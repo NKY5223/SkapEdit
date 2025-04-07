@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Realize, Values } from "../../common/types.ts";
-import { Vec2, vec2 } from "../../common/vec2.ts";
+import { Realize, Values } from "../types.ts";
+import { Vec2, vec2 } from "../vec2.ts";
 
 // #region lrtbwh
 type BoundsLRTBWHKeys = "left" | "right" | "top" | "bottom" | "width" | "height";

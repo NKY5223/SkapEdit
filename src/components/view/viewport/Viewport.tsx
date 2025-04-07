@@ -1,14 +1,14 @@
 import { FC, useDebugValue, useMemo, useRef } from "react";
 import { Camera, useCamera } from "./camera.ts";
 import { ViewFC } from "../../layout/LayoutView.tsx";
-import { SkapMap, useMap } from "../../editor/map.ts";
+import { SkapMap, useMap } from "../../../common/editor/map.ts";
 import { WebGLLayer } from "./webgl/WebGLLayer.tsx";
 import { ObstacleWebGLRenderer } from "./renderer/obstacle.ts";
 import css from "./Viewport.module.css";
 import { ViewToolbar } from "../../layout/LayoutViewToolbar.tsx";
 import "../../../common/vector.ts";
 import { zero } from "../../../common/vec2.ts";
-import { useDrag } from "../../../hooks/drag.ts";
+import { useDrag } from "../../../hooks/useDrag.ts";
 import { tlogRec } from "../../../common/string.ts";
 
 
