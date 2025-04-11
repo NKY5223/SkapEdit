@@ -22,7 +22,7 @@ declare global {
  * declare global {
  * 	namespace Registry {
  * 		interface Icon {
- * 			// key: "whatever"
+ * 			// "key": {};
  * 		}
  * 	}
  * }

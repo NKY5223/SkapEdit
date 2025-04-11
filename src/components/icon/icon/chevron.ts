@@ -25,3 +25,15 @@ export const chevronRight = chevron(
 	vec2(6, 0),
 	vec2(15, 12)
 );
+export const chevronLeft = chevron(
+	vec2(-6, 0),
+	vec2(9, 12)
+);
+export const chevronUp = chevron(
+	vec2(0, -6),
+	vec2(12, 9)
+);
+export const chevronDown = chevron(
+	vec2(0, 6),
+	vec2(12, 15)
+);

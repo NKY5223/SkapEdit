@@ -81,7 +81,7 @@
 /* #region items */
 .item {
 	display: block;
-	padding: .25em .25em .25em 1em;
+	padding: .25em .5em .25em 1em;
 	user-select: none;
 
 	.section + & {
@@ -92,6 +92,20 @@
 	background-color: var(--theme-primary-bg-0);
 	color: var(--theme-primary-fg-0);
 }
+
+/* #region single */
+.single {
+	&.has-icon {
+		display: grid;
+		grid-template-areas: "icon content";
+		grid-template-columns: min-content auto;
+		place-items: center start;
+		gap: .25em;
+
+		padding-left: .25em;
+	}
+}
+/* #endregion */
 
 /* #region section */
 .section {

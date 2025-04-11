@@ -4,6 +4,11 @@ import { delegate, toMap, Translation, TranslationProvider } from "../components
 export const translations = {
 	"error.layout.view.unknown": ["Unknown view: ", { value: "view" }],
 
+	"layout.split.dissolve-left": "Dissolve Left",
+	"layout.split.dissolve-right": "Dissolve Right",
+	"layout.split.dissolve-up": "Dissolve Up",
+	"layout.split.dissolve-down": "Dissolve Down",
+
 	"layout.view.fallback": "View",
 	"layout.view.name": delegate("layout.view.name", "view"),
 	"layout.view.category.name": delegate("layout.view.category.name", "category"),
@@ -24,9 +29,12 @@ export const translations = {
 
 declare global {
 	namespace Registry {
-		export type Translation = keyof typeof translations;
+		export type Translation = {
+			[k in keyof typeof translations]: {};
+		}
 	}
 }
+export type TranslationKey = keyof Registry.Translation | string & {};
 
 export const Translations: FC<PropsWithChildren> = ({ children }) =>
 	<TranslationProvider translations={toMap<Translation>(translations)}>

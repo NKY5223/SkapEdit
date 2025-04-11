@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { Vec2 } from "../../common/vec2.ts";
 import { createId } from "@common/uuid.ts";
+import { IconName } from "@components/icon/NewIcon.tsx";
 
 /*
 Goal:
@@ -13,8 +14,9 @@ export namespace ContextMenu {
 	type ItemBase<T extends string, P> = {
 		type: T;
 		id: string;
-		/** @example "editor" */
+		/** @example "editor-destroy" */
 		name: string;
+		icon?: IconName;
 	} & P;
 	export type SingleItem = ItemBase<"single", {
 		display: ReactNode;
@@ -54,21 +56,22 @@ export namespace ContextMenu {
 }
 
 // #region Constructors
-export const single = (name: string, display: ReactNode, click?: () => void): ContextMenu.SingleItem => ({
+export const single = (name: string, display: ReactNode, icon?: IconName, click?: () => void): ContextMenu.SingleItem => ({
 	type: "single",
 	id: createId("cmenu-item"),
 	name,
 	display,
+	icon,
 	click,
 });
-export const section = (name: string, title: ReactNode, items: (ContextMenu.SingleItem | ContextMenu.Submenu)[]): ContextMenu.Section => ({
+export const section = (name: string, title: ReactNode, items: (ContextMenu.SingleItem | ContextMenu.Submenu)[], icon?: IconName): ContextMenu.Section => ({
 	type: "section",
 	id: createId("cmenu-item"),
 	name,
 	title,
 	items,
 });
-export const submenu = (name: string, display: ReactNode, items: readonly ContextMenu.Item[]): ContextMenu.Submenu => ({
+export const submenu = (name: string, display: ReactNode, items: readonly ContextMenu.Item[], icon?: IconName): ContextMenu.Submenu => ({
 	type: "submenu",
 	id: createId("cmenu-item"),
 	name,

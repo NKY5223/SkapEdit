@@ -1,8 +1,8 @@
 import { ThemeProvider } from "../theme/theme.tsx";
 
-import { IconInfo, IconName, IconProvider as NIconProvider } from "@components/icon/NewIcon.tsx";
+import { IconProvider as NIconProvider } from "@components/icon/NewIcon.tsx";
 import { IconProvider } from "@components/icon/Icon.tsx";
-import { aliases, icons } from "@components/icon/icons.ts";
+import { aliases, icons, nicons } from "@components/icon/icons.tsx";
 
 import { Layout, LayoutDesc, LayoutDescSplit, LayoutDescView } from "@components/layout/Layout.tsx";
 import { TestIcon } from "./TestIcon.tsx";
@@ -21,8 +21,6 @@ import { TestIcons } from "./TestIcons.tsx";
 import { TestSwatch } from "./TestSwatch.tsx";
 import { Translations } from "./translations.tsx";
 import { stringifyPath } from "@components/icon/stringify.tsx";
-import { chevronRight } from "@components/icon/icon/chevron.ts";
-import { path } from "@components/icon/path.tsx";
 
 const uuid = () => crypto.randomUUID();
 const splitX = (ratio: number, a: LayoutDesc, b: LayoutDesc) => ({
@@ -73,19 +71,6 @@ const defaultLayout: LayoutDesc = (
 		)
 	)
 );
-declare global {
-	namespace Registry {
-		interface Icon {
-			"chevron-right": "whatever"
-		}
-	}
-}
-const nicons = new Map<IconName, IconInfo>([
-	["chevron-right", {
-		content: path(chevronRight),
-	}],
-]);
-
 export function Test() {
 	// wow that's a lot of providers!!!
 	return (

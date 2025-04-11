@@ -15,6 +15,10 @@ import size_height from "./icon/size/height.svg?raw";
 
 import position_top2 from "./icon/position/top2.svg?raw";
 import size_width2 from "./icon/size/width2.svg?raw";
+import { chevronDown, chevronLeft, chevronRight, chevronUp } from "./icon/chevron.ts";
+import { IconName, IconInfo } from "./NewIcon.tsx";
+import { path } from "./path.tsx";
+import { toMap } from "@components/translate/Translate.tsx";
 
 export const icons = {
 	_guide,
@@ -29,7 +33,7 @@ export const icons = {
 
 	size_width: size_width,
 	size_height,
-	
+
 	position_top2,
 	size_width2,
 };
@@ -40,3 +44,28 @@ export const aliases = {
 	size_y: "size_height",
 };
 export type IconAutocomplete = keyof typeof icons | keyof typeof aliases;
+
+declare global {
+	namespace Registry {
+		interface Icon {
+			"chevron-left": {};
+			"chevron-right": {};
+			"chevron-up": {};
+			"chevron-down": {};
+		}
+	}
+}
+export const nicons = toMap<IconInfo, IconName>({
+	"chevron-left": {
+		content: path(chevronLeft),
+	},
+	"chevron-right": {
+		content: path(chevronRight),
+	},
+	"chevron-up": {
+		content: path(chevronUp),
+	},
+	"chevron-down": {
+		content: path(chevronDown),
+	},
+});

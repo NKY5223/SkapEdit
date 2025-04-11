@@ -159,8 +159,8 @@ function stringifyValue(value: Value): ReactNode {
 	}
 }
 
-export function toMap<T>(obj: Record<string, T>): ReadonlyMap<string, T> {
-	return new Map(Object.entries(obj));
+export function toMap<T, K extends string = string>(obj: Partial<Record<K, T>>): ReadonlyMap<K, T> {
+	return new Map(Object.entries(obj) as [K, T][]);
 }
 /**
  * @example 

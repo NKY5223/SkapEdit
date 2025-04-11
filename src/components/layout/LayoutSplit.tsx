@@ -7,6 +7,8 @@ import { clamp } from "../../common/number.ts";
 import { createId } from "../../common/uuid.ts";
 import { single } from "@components/contextmenu/ContextMenu.tsx";
 import { useContextMenu } from "@components/contextmenu/context.tsx";
+import { Translate } from "@components/translate/Translate.tsx";
+import { NewIcon } from "@components/icon/NewIcon.tsx";
 
 type LayoutSplitProps = {
 	children: [ReactNode, ReactNode];
@@ -33,8 +35,36 @@ export const LayoutSplit: LayoutFC<LayoutDescSplit, LayoutSplitProps> = ({
 		resizing && css["resizing"],
 	);
 
-	const handleContextMenu = useContextMenu([
-		single("test", "Test"),
+	const handleContextMenu = useContextMenu(desc.axis === "x" ? [
+		single("dissolve-left",
+			<Translate k="layout.split.dissolve-left" />, "chevron-left",
+			() => dispatch({
+				type: "replace",
+				target: desc,
+				desc: desc.second,
+			})),
+		single("dissolve-right",
+			<Translate k="layout.split.dissolve-right" />, "chevron-right",
+			() => dispatch({
+				type: "replace",
+				target: desc,
+				desc: desc.first,
+			})),
+	] : [
+		single("dissolve-up",
+			<Translate k="layout.split.dissolve-up" />, "chevron-up",
+			() => dispatch({
+				type: "replace",
+				target: desc,
+				desc: desc.second,
+			})),
+		single("dissolve-down",
+			<Translate k="layout.split.dissolve-down" />, "chevron-down",
+			() => dispatch({
+				type: "replace",
+				target: desc,
+				desc: desc.first,
+			})),
 	]);
 
 	return (
