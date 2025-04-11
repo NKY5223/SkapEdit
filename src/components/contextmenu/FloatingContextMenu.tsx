@@ -10,10 +10,12 @@ import css from "./ContextMenu.module.css";
 
 type FloatingContextMenuProps = {
 	contextMenu: ContextMenu.Floating;
+	open?: boolean;
 	dismissable?: boolean;
 };
 export const FloatingContextMenu: FC<FloatingContextMenuProps> = ({
 	contextMenu,
+	open = true,
 	dismissable = true,
 }) => {
 	const { pos, items } = contextMenu;
@@ -26,10 +28,11 @@ export const FloatingContextMenu: FC<FloatingContextMenuProps> = ({
 	const className = classList(
 		css["context-menu"],
 		css["floating"],
+		open && css["open"],
 	);
 
 	if (dismissable) {
-		useClickOutside(menuRef, clear);
+		useClickOutside(menuRef, open, clear);
 		useKeydown(["Escape"], clear);
 	}
 

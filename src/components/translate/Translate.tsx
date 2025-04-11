@@ -34,13 +34,13 @@ function useTranslation(key: string) {
 	return translation;
 }
 
-type TranslationKey = GlobalAutocomplete.Translation | string & {};
+type TranslationKey = Registry.Translation | string & {};
 type TranslateProps = {
-	children: TranslationKey;
+	k: TranslationKey;
 	values?: Record<string, unknown>;
 };
 export const Translate: FC<TranslateProps> = ({
-	children: key,
+	k: key,
 	values
 }) => {
 	const translation = useTranslation(key);
@@ -168,9 +168,9 @@ export function toMap<T>(obj: Record<string, T>): ReadonlyMap<string, T> {
  * "example.key": delegate("example.key", "value"), 
  * ...
  * 
- * <Translate values={{ value: "value" }}>example.key</Translate> 
+ * <Translate k={"example.key"} values={{ value: "value" }} /> 
  *     ↓    ↓    ↓
- * <Translate values={{ value: "value" }}>example.key.value</Translate>
+ * <Translate k={"example.key.value"} values={{ value: "value" }} />
  */
 export function delegate(
 	key: string, valueName: string,

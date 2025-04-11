@@ -21,20 +21,20 @@ export const ViewSelector: FC<ViewSelectorProps> = ({
 		[...views.keys()].map(name => (
 			{
 				value: name,
-				display: () => <Translate values={{ view: name }}>layout.view.name</Translate>,
+				display: () => <Translate k="layout.view.name" values={{ view: name }} />,
 				name,
 			}
 		)), ({ name }) => name.split(".")[0]
 	)).map<SectionedOptions<string>[number]>(([name, options]) => ({
 		name,
-		label: <Translate values={{ category: name }}>layout.view.category.name</Translate>,
+		label: <Translate k="layout.view.category.name" values={{ category: name }} />,
 		options: options ?? [],
 	})) satisfies SectionedOptions<string>;
 
 	return (
 		<div className={css["toolbar"]}>
 			<DropdownSelectSectioned initial={view.view} options={options}
-				fallback={<Translate>layout.view.fallback</Translate>}
+				fallback={<Translate k="layout.view.fallback" />}
 				optionsClass={css["selector-options"]}
 				onSelect={value => dispatch({
 					type: "set_view",

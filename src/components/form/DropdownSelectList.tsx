@@ -42,7 +42,7 @@ export function DropdownSelectList<T>({
 	
 	const selectedOption = options.find(option => option.value === selection);
 
-	useClickOutside(selectRef, () => setOpen(false));
+	useClickOutside(selectRef, open, () => setOpen(false));
 	useKeydown(["Escape"], () => setOpen(false));
 	return (
 		<div ref={selectRef} className={className} role="input"

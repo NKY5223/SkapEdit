@@ -23,7 +23,7 @@ export const translations = {
 } as const satisfies Record<string, Translation>;
 
 declare global {
-	namespace GlobalAutocomplete {
+	namespace Registry {
 		export type Translation = keyof typeof translations;
 	}
 }

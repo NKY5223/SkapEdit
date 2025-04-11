@@ -42,10 +42,12 @@ export function DropdownSelectSectioned<T>({
 		));
 
 		return (
-			<div key={name} className={css["section"]}>
+			<li key={name} className={css["section"]}>
 				<div className={css["label"]}>{label}</div>
-				{optionComps}
-			</div>
+				<ul>
+					{optionComps}
+				</ul>
+			</li>
 		);
 	});
 	const className = classList(
@@ -61,7 +63,7 @@ export function DropdownSelectSectioned<T>({
 		.flatMap(section => section.options)
 		.find(option => option.value === selection);
 		
-	useClickOutside(selectRef, () => setOpen(false));
+	useClickOutside(selectRef, open, () => setOpen(false));
 	
 	return (
 		<div ref={selectRef} className={className} role="input"
@@ -72,9 +74,9 @@ export function DropdownSelectSectioned<T>({
 			>
 				{selectedOption?.display(true) ?? fallback}
 			</div>
-			<div className={optionsClassName}>
+			<ul className={optionsClassName}>
 				{sectionComps}
-			</div>
+			</ul>
 		</div>
 	);
 }
@@ -105,10 +107,10 @@ export function SectionedOption<T>({
 		optionClass,
 	);
 	return (
-		<div className={className} tabIndex={0}
+		<li className={className} tabIndex={0}
 			onClick={onTrigger} onKeyDown={filterKeys(onTrigger)}>
 			{display(false)}
-		</div>
+		</li>
 	);
 }
 

@@ -1,35 +1,37 @@
 import { createContext, FC, PropsWithChildren, useContext } from "react";
 
-export function createMapContext<T>(defaultValue: ReadonlyMap<string, T> = new Map()) {
-	type M = ReadonlyMap<string, T>;
+export function createMapContext<T, K = string>(defaultValue: ReadonlyMap<K, T> = new Map()) {
+	type M = ReadonlyMap<K, T>;
 
 	const context = createContext<M>(defaultValue);
 	const useMapContext = () => useContext(context);
-	const useMapContextEntry = (key: string) => useContext(context).get(key);
+	const useMapContextEntry = (key: K) => useContext(context).get(key);
 
 	const Provider: FC<PropsWithChildren<{ value: M, extend?: boolean }>> = ({
 		value, extend = true,
 		children
-	}) => (
-		<context.Provider value={
-			extend
+	}) => {
+		const ctx = useMapContext();
+		return (
+			<context.Provider value={extend
 				? new Map([
-					...useMapContext(),
+					...ctx,
 					...value.entries(),
 				])
-				: useMapContext()
-		}>
-			{children}
-		</context.Provider>
-	);
+				: value
+			}>
+				{children}
+			</context.Provider>
+		);
+	};
 
 	const result: [
-		useMapContext: () => M, 
-		useMapContextEntry: (key: string) => T | undefined, 
+		useMapContext: () => M,
+		useMapContextEntry: (key: K) => T | undefined,
 		Provider: FC<PropsWithChildren<{
 			value: M;
 			extend?: boolean;
-		}>>, 
+		}>>,
 		context: React.Context<M>
 	] = [useMapContext, useMapContextEntry, Provider, context];
 

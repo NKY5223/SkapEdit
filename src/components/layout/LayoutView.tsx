@@ -20,22 +20,26 @@ export const LayoutView: LayoutFC<LayoutDescView, LayoutViewProps> = ({
 	desc, dispatch,
 }) => {
 	const createContextMenu = useContextMenu([
-		single("single0", "Test 0", () => console.log("clicked test 0")),
-		section("section0", "Section Title", [
-			single("section0.single0", "UwU"),
+		single("single", "Test 0"),
+		section("section-title", "Section Title", [
+			single("uwu", "UwU"),
 		]),
-		section("section1", null, [
-			single("section1.single0", "Titleless Section"),
-			submenu("section1.submenu0", "Submenu", [
-				single("section1.submenu0.single0", "Test In Submenu", () => console.log("clicked test in submenu")),
-				submenu("section1.submenu0.submenu0", "Submenu²", [
-					single("section1.submenu0.submenu0.single0", "Test In Submenu²", () => console.log("clicked test in submenu²")),
+		section("section-notitle", null, [
+			single("single", "Titleless Section"),
+			submenu("submenu0", "Submenu", [
+				single("single", "Test In Submenu",
+					() => console.log("clicked test in submenu")),
+				submenu("submenu", "Submenu²", [
+					single("single", "Test In Submenu²",
+						() => console.log("clicked test in submenu²")),
 				]),
 			]),
-			submenu("section1.submenu1", "Submenu", [
-				single("section1.submenu1.single0", "Test In Submenu", () => console.log("clicked test in submenu")),
-				submenu("section1.submenu1.submenu0", "Submenu²", [
-					single("section1.submenu1.submenu0.single0", "Test In Submenu²", () => console.log("clicked test in submenu²")),
+			submenu("submenu1", "Submenu", [
+				single("single", "Test In Submenu",
+					() => console.log("clicked test in submenu")),
+				submenu("submenu", "Submenu²", [
+					single("single", "Test In Submenu²",
+						() => console.log("clicked test in submenu²")),
 				]),
 			]),
 		]),
@@ -51,7 +55,7 @@ export const LayoutView: LayoutFC<LayoutDescView, LayoutViewProps> = ({
 		return (
 			<div className={className}>
 				<ViewSelector view={desc} dispatch={dispatch} />
-				<h1><Translate values={{ view }}>error.layout.view.unknown</Translate></h1>
+				<h1><Translate k="error.layout.view.unknown" values={{ view }} /></h1>
 			</div>
 		);
 	}

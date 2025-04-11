@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useRef } from "react";
 
 export const useTimeout = (ms: number): [timeout: (f: () => void) => void, cancel: () => void] => {
 	const id = useRef(-1);

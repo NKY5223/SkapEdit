@@ -94,7 +94,7 @@ type IconProps = {
 	vars?: Partial<{
 		color: string;
 		"guide-opacity": number;
-	}> & Record<string, string | number>
+	}> & Record<string, string | number>;
 };
 export function Icon({
 	icon,

@@ -1,5 +1,4 @@
 import { interleave, transposeTuples, tuples } from "../../common/array.ts";
-import { tlog, tlogRec } from "../../common/string.ts";
 import { signedAngle, arg, ccw90, parallel, polar, rotationMat, safeNorm, swap, Vec2, vec2 } from "../../common/vec2.ts";
 import { Matrix, Vector } from "../../common/vector.ts";
 
@@ -376,6 +375,8 @@ export type StrokeCap = (
 );
 export type StrokeJoin = (
 	| "round"
+	/** miter limit = 2 */
+	| "miter"
 	| {
 		/** miter limit */
 		miter: number
@@ -441,12 +442,12 @@ export const stroke = (options: StrokeOptions, commands: Command[]): Command[] =
 			offsetLeftSliced,
 			joinsLeft.map(d => d.join),
 		).flat(),
-		capEnd,
+		capStart,
 		interleave(
-			offsetRightSliced,
+			offsetRightSliced.toReversed(),
 			joinsRight.map(d => d.join),
 		).flat(),
-		capStart,
+		capEnd,
 	].flat();
 }
 const ends = <T>(a: T[]): [first: T, last: T, rest: T[],] => (a.length < 1
@@ -524,6 +525,9 @@ export const joinOffsetCommandPair = (
 				slicePrev,
 				sliceNext,
 			};
+		}
+		case "miter": {
+			return joinOffsetCommandPair({ ...options, join: { miter: 2 } }, prev, prevOffset, next, nextOffset, debugPhase);
 		}
 		default: {
 			if ("miter" in options.join) {

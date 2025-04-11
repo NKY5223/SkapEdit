@@ -1,5 +1,4 @@
 import { sign } from "./number.ts";
-import { tlogRec } from "./string.ts";
 import { Matrix, Vector } from "./vector.ts";
 
 export type Vec2 = Vector<2>;

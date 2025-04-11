@@ -8,14 +8,14 @@ import { useKeydown } from "@hooks/useKeydown.ts";
 import { ContextMenu } from "./ContextMenu.tsx";
 import { ErrorBoundary } from "@components/error/ErrorBoundary.tsx";
 
-export const contextMenuAnchorClassName = css["anchor"];
-
 type AnchoredContextMenuProps = {
 	contextMenu: ContextMenu.Anchored;
+	open?: boolean;
 	dismissable?: boolean;
 };
 export const AnchoredContextMenu: FC<AnchoredContextMenuProps> = ({
 	contextMenu,
+	open = true,
 	dismissable = true,
 }) => {
 	const { items } = contextMenu;
@@ -26,10 +26,11 @@ export const AnchoredContextMenu: FC<AnchoredContextMenuProps> = ({
 	const className = classList(
 		css["context-menu"],
 		css["anchored"],
+		open && css["open"],
 	);
 
 	if (dismissable) {
-		useClickOutside(menuRef, clear);
+		useClickOutside(menuRef, open, clear);
 		useKeydown(["Escape"], clear);
 	}
 

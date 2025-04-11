@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { Vec2 } from "../../common/vec2.ts";
+import { createId } from "@common/uuid.ts";
 
 /*
 Goal:
@@ -11,8 +12,9 @@ maybe children can be responsible for collecting the parents' context menus?
 export namespace ContextMenu {
 	type ItemBase<T extends string, P> = {
 		type: T;
-		/** A unique string representing this item */
 		id: string;
+		/** @example "editor" */
+		name: string;
 	} & P;
 	export type SingleItem = ItemBase<"single", {
 		display: ReactNode;
@@ -25,7 +27,6 @@ export namespace ContextMenu {
 	export type Submenu = ItemBase<"submenu", {
 		display: ReactNode;
 		items: readonly Item[];
-		opened: boolean;
 	}>;
 	export type Item = (
 		| SingleItem
@@ -34,38 +35,44 @@ export namespace ContextMenu {
 	);
 
 	export type Floating = {
-		type: "floating";
+		readonly type: "floating";
 		readonly items: readonly Item[];
-		pos: Vec2;
+		readonly pos: Vec2;
 	}
 	export type Anchored = {
-		type: "anchored";
+		readonly type: "anchored";
 		readonly items: readonly Item[];
 	}
-	export type ContextMenu = (
-		| Floating
-		| Anchored
-	);
+	export type Menu = {
+		id?: string;
+		opened: readonly string[];
+		menu: (
+			| Floating
+			| Anchored
+		);
+	};
 }
 
 // #region Constructors
-export const single = (id: string, display: ReactNode, click?: () => void): ContextMenu.SingleItem => ({
+export const single = (name: string, display: ReactNode, click?: () => void): ContextMenu.SingleItem => ({
 	type: "single",
-	id,
+	id: createId("cmenu-item"),
+	name,
 	display,
 	click,
 });
-export const section = (id: string, title: ReactNode, items: (ContextMenu.SingleItem | ContextMenu.Submenu)[]): ContextMenu.Section => ({
+export const section = (name: string, title: ReactNode, items: (ContextMenu.SingleItem | ContextMenu.Submenu)[]): ContextMenu.Section => ({
 	type: "section",
-	id,
+	id: createId("cmenu-item"),
+	name,
 	title,
 	items,
 });
-export const submenu = (id: string, display: ReactNode, items: readonly ContextMenu.Item[]): ContextMenu.Submenu => ({
+export const submenu = (name: string, display: ReactNode, items: readonly ContextMenu.Item[]): ContextMenu.Submenu => ({
 	type: "submenu",
-	id,
+	id: createId("cmenu-item"),
+	name,
 	display,
-	opened: false,
 	items,
 });
 // #endregion

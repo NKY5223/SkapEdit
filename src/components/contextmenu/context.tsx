@@ -3,9 +3,11 @@ import { ContextMenu } from "./ContextMenu.tsx";
 import { FloatingContextMenu } from "./FloatingContextMenu.tsx";
 import { Vec2, vec2, zero } from "@common/vec2.ts";
 import { createId } from "@common/uuid.ts";
+import { useTimeout } from "@hooks/useTimeout.ts";
 
 type RClickContextMenu = {
 	id: string;
+	openedIds: string[];
 	menu: ContextMenu.Floating;
 };
 
@@ -27,56 +29,52 @@ type ContextMenuAction = (
 		type: "set";
 		menu: {
 			pos: Vec2;
-			items: ContextMenu.Item[]
+			items: ContextMenu.Item[];
 		} | null;
 	}
 );
 const cmenuReducerContext = createContext<Dispatch<ContextMenuAction>>(() => {
 	throw new Error("Missing context menu reducer context.");
 });
-const reducer: Reducer<RClickContextMenu | null, ContextMenuAction> = (menu, action): RClickContextMenu | null => {
+const cmenuReducer: Reducer<RClickContextMenu | null, ContextMenuAction> = (menu, action): RClickContextMenu | null => {
 	switch (action.type) {
 		case "set": {
-			const { menu } = action;
-			if (!menu) {
+			const src = action.menu;
+			if (!src) {
 				return null;
 			}
 			const id = createId("cmenu");
-			const { pos, items } = menu;
+			const { pos, items } = src;
 			return {
 				id,
+				openedIds: [],
 				menu: {
 					type: "floating",
-					pos,
 					items,
+					pos,
 				}
 			};
 		}
 		case "open_submenu": {
-			const { target } = action;
-			if (!menu) return menu;
-			const [success, items] = openContextMenuSubmenu(menu.menu.items, target);
-			if (!success) return menu;
+			if (menu === null) return menu;
+			const ids = menu.openedIds;
+			const id = action.target;
 			return {
 				...menu,
-				menu: {
-					...menu.menu,
-					items,
-				}
-			}
+				openedIds: [
+					...ids.filter(x => x !== id),
+					id,
+				],
+			};
 		}
 		case "close_submenu": {
-			const { target } = action;
-			if (!menu) return menu;
-			const [success, items] = closeContextMenuSubmenu(menu.menu.items, target);
-			if (!success) return menu;
+			if (menu === null) return menu;
+			const ids = menu.openedIds;
+			const id = action.target;
 			return {
 				...menu,
-				menu: {
-					...menu.menu,
-					items,
-				}
-			}
+				openedIds: ids.filter(x => x !== id),
+			};
 		}
 		case "merge": {
 			const { pos = zero, items } = action;
@@ -84,10 +82,11 @@ const reducer: Reducer<RClickContextMenu | null, ContextMenuAction> = (menu, act
 				const id = createId("cmenu");
 				return {
 					id,
+					openedIds: [],
 					menu: {
 						type: "floating",
-						pos,
 						items,
+						pos,
 					}
 				};
 			}
@@ -95,6 +94,7 @@ const reducer: Reducer<RClickContextMenu | null, ContextMenuAction> = (menu, act
 			const merged = mergeContextMenuItems(destItems, items);
 			return {
 				id: menu.id,
+				openedIds: menu.openedIds,
 				menu: {
 					...menu.menu,
 					items: merged,
@@ -105,15 +105,20 @@ const reducer: Reducer<RClickContextMenu | null, ContextMenuAction> = (menu, act
 }
 export const useCmenuReducer = () => useContext(cmenuReducerContext);
 
+const cmenuOpenedIdContext = createContext<string | null>(null);
+export const useCmenuOpenedId = () => useContext(cmenuOpenedIdContext);
+
 export const ContextMenuProvider: FC<PropsWithChildren> = ({
 	children
 }) => {
-	const [current, dispatch] = useReducer(reducer, null);
+	const [current, dispatch] = useReducer(cmenuReducer, null);
 
 	useEffect(() => {
 		console.log("cmenu provider mount");
 		return () => console.log("cmenu provider unmount");
 	}, []);
+	const openedId = current?.openedIds.at(-1) ?? null;
+
 	return (
 		<div data--info="ContextMenuProvider" onContextMenuCapture={() => {
 			dispatch({
@@ -121,10 +126,15 @@ export const ContextMenuProvider: FC<PropsWithChildren> = ({
 				menu: null,
 			});
 		}}>
-			<cmenuReducerContext.Provider value={dispatch}>
-				{children}
-				{current && <FloatingContextMenu key={current.id} contextMenu={current.menu} />}
-			</cmenuReducerContext.Provider>
+			{/* I love context hell!!!! */}
+				<cmenuOpenedIdContext.Provider value={openedId}>
+					<cmenuReducerContext.Provider value={dispatch}>
+						{children}
+						{current && <FloatingContextMenu key={current.id}
+							contextMenu={current.menu}
+						/>}
+					</cmenuReducerContext.Provider>
+				</cmenuOpenedIdContext.Provider>
 		</div>
 	);
 };
@@ -150,107 +160,6 @@ export const useClearContextMenu = () => {
 	});
 };
 
-const openContextMenuSubmenu = <T extends ContextMenu.Item>(items: readonly T[], id: string):
-	[success: boolean, items: readonly T[]] => {
-	for (const [i, item] of items.entries()) {
-		switch (item.type) {
-			case "single": {
-				break;
-			}
-			case "section": {
-				const { items: oldItems } = item;
-				const [success, newItems] = openContextMenuSubmenu(oldItems, id);
-				if (!success) break;
-				return [true, closeOthers(items, i, {
-					...item,
-					items: newItems
-				})];
-			}
-			case "submenu": {
-				if (item.id === id) {
-					return [true, closeOthers(items, i, {
-						...item,
-						opened: true,
-					})];
-				} else {
-					const { items: oldItems } = item;
-					const [success, newItems] = openContextMenuSubmenu(oldItems, id);
-					if (!success) break;
-					return [true, closeOthers(items, i, {
-						...item,
-						items: newItems
-					})]
-				}
-			}
-		}
-	}
-	return [false, items];
-}
-const closeContextMenuSubmenu = <T extends ContextMenu.Item>(items: readonly T[], id: string):
-	[success: boolean, items: readonly T[]] => {
-	for (const [i, item] of items.entries()) {
-		switch (item.type) {
-			case "single": {
-				break;
-			}
-			case "section": {
-				const { items: oldItems } = item;
-				const [success, newItems] = closeContextMenuSubmenu(oldItems, id);
-				if (!success) break;
-				return [true, items.with(i, {
-					...item,
-					items: newItems.map(closeItem)
-				})];
-			}
-			case "submenu": {
-				if (item.id === id) {
-					return [true, items.with(i, closeItem(item))];
-				} else {
-					const { items: oldItems } = item;
-					const [success, newItems] = closeContextMenuSubmenu(oldItems, id);
-					if (!success) break;
-					return [true, items.with(i, {
-						...item,
-						items: newItems.map(closeItem)
-					})];
-				}
-			}
-		}
-	}
-	return [false, items];
-}
-const closeItem = <T extends ContextMenu.Item>(item: T): T => {
-	switch (item.type) {
-		case "single": {
-			return item;
-		}
-		case "section": {
-			const { items } = item;
-			return {
-				...item,
-				items: items.map(closeItem),
-			};
-		}
-		case "submenu": {
-			const { items } = item;
-			return {
-				...item,
-				opened: false,
-				items: items.map(closeItem),
-			};
-		}
-	}
-}
-const closeOthers = <T extends ContextMenu.Item>(items: readonly T[], i: number, open: T) =>
-	items.map((item, j) => (
-		j === i
-			? open
-			: item.type === "submenu" && item.opened
-				? closeItem(item)
-				: item
-	));
-
-
 export const mergeContextMenuItems = <T extends ContextMenu.Item>(
 	dest: readonly T[],
 	src: readonly T[],
@@ -258,10 +167,10 @@ export const mergeContextMenuItems = <T extends ContextMenu.Item>(
 	return [...src.reduce((acc, item): T[] => {
 		switch (item.type) {
 			case "single": {
-				const { id } = item;
+				const { name } = item;
 				const match = acc
 					.map((v, i) => [i, v] as const)
-					.find((v): v is [number, ContextMenu.SingleItem & T] => v[1].type === "single" && v[1].id === id);
+					.find((v): v is [number, ContextMenu.SingleItem & T] => v[1].type === "single" && v[1].name === name);
 				if (!match) {
 					return [...acc, item];
 				}
@@ -269,11 +178,11 @@ export const mergeContextMenuItems = <T extends ContextMenu.Item>(
 				return acc.with(index, item);
 			}
 			case "section": {
-				const { id, items } = item;
+				const { name, items } = item;
 
 				const match = acc
 					.map((v, i) => [i, v] as const)
-					.find((v): v is [number, ContextMenu.Section & T] => v[1].type === "section" && v[1].id === id);
+					.find((v): v is [number, ContextMenu.Section & T] => v[1].type === "section" && v[1].name === name);
 				if (!match) {
 					return [...acc, item];
 				}
@@ -284,11 +193,11 @@ export const mergeContextMenuItems = <T extends ContextMenu.Item>(
 				});
 			}
 			case "submenu": {
-				const { id, items } = item;
+				const { name, items } = item;
 
 				const match = acc
 					.map((v, i) => [i, v] as const)
-					.find((v): v is [number, ContextMenu.Submenu & T] => v[1].type === "submenu" && v[1].id === id);
+					.find((v): v is [number, ContextMenu.Submenu & T] => v[1].type === "submenu" && v[1].name === name);
 				if (!match) {
 					return [...acc, item];
 				}
@@ -301,4 +210,19 @@ export const mergeContextMenuItems = <T extends ContextMenu.Item>(
 			}
 		}
 	}, dest)];
+}
+/**
+ * Checks if `item` contains, or is, an item with id `id`.
+ */
+export const contains = (item: ContextMenu.Item, id: string): boolean => {
+	if (item.id === id) return true;
+	switch (item.type) {
+		case "single": {
+			return false;
+		}
+		case "section":
+		case "submenu": {
+			return item.items.some(it => contains(it, id));
+		}
+	}
 }

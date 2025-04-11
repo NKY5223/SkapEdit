@@ -18,14 +18,14 @@ const drawDot = (pos: Vec2, r: number = 0.2) => pathStr`
 `;
 const drawArrow = (pos: Vec2, direction: Vec2, size: number = 0.3) => {
 	if (direction.equal(zero)) return ``;
-	
+
 	const fw = direction.norm(size);
 	const coord = orth(fw);
-	
+
 	const h = vec2(.5, 0);
 	const l = vec2(-.5, 1);
 	const r = vec2(-.5, -1);
-	
+
 	const head = pos.add(coord.mul(h));
 	const left = pos.add(coord.mul(l));
 	const right = pos.add(coord.mul(r));
@@ -121,15 +121,19 @@ export const stringifyPath = (commands: Command[]) => {
 	const stringified: string[] = commands.reduce<{ pos: Vec2, strs: string[] }>(({ pos, strs }, command) => {
 		const { start } = command;
 		return {
-			pos,
+			pos: command.end,
 			strs: [
 				...strs,
-				// Connect disconnected commands
-				pathStr`L ${start}`,
+				...(
+					start.sub(pos).mag() > 0.001
+						// Connect disconnected commands
+						? [pathStr`M ${start}`]
+						: []
+				),
 				stringifyCommand(command)
 			]
 		};
-	}, { pos: vec2(NaN), strs: [] }).strs;
+	}, { pos: vec2(NaN), strs: [pathStr`M ${commands[0].start}`] }).strs;
 	const debug = commands.map(debugStringifyCommand).flat();
 
 	return [
