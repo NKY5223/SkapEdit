@@ -38,7 +38,7 @@ type BaseDesc<T extends string> = {
 	id: string;
 }
 export type LayoutDescView = BaseDesc<"view"> & {
-	view: string;
+	view: string | null;
 };
 export type LayoutDescSplit = BaseDesc<"split"> & {
 	axis: "x" | "y";
@@ -58,7 +58,7 @@ type BaseAction<T extends string> = {
 };
 export type LayoutAction = (
 	| BaseAction<"set_view"> & {
-		view: string;
+		view: string | null;
 	}
 	| BaseAction<"set_ratio"> & {
 		ratio: number;

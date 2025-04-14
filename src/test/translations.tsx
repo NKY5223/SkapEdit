@@ -8,11 +8,16 @@ export const translations = {
 	"layout.split.dissolve-right": "Dissolve Right",
 	"layout.split.dissolve-up": "Dissolve Up",
 	"layout.split.dissolve-down": "Dissolve Down",
+	"layout.split.swap-x": "Swap",
+	"layout.split.swap-y": "Swap",
 
-	"layout.view.fallback": "View",
+	"layout.view.fallback": "Unknown View",
+	"layout.view.empty": "Pick a view",
+	"layout.view.split-x": "Split Horizontally",
+	"layout.view.split-y": "Split Vertically",
 	"layout.view.name": delegate("layout.view.name", "view"),
 	"layout.view.category.name": delegate("layout.view.category.name", "category"),
-	
+
 	"layout.view.category.name.test": "Testing",
 	"layout.view.name.test.icon": "Icon Test",
 	"layout.view.name.test.icons": "Icons Test",
@@ -26,17 +31,18 @@ export const translations = {
 
 	"lorem": "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Esse, culpa possimus fuga, veritatis harum autem dolore ipsam provident, id praesentium distinctio ullam similique! Earum praesentium repudiandae magnam ipsum et nihil!",
 } as const satisfies Record<string, Translation>;
+type EmptyTranslations = {
+	[k in keyof typeof translations]: {};
+}
 
 declare global {
 	namespace Registry {
-		export type Translation = {
-			[k in keyof typeof translations]: {};
-		}
+		export interface Translation extends EmptyTranslations {}
 	}
 }
-export type TranslationKey = keyof Registry.Translation | string & {};
 
-export const Translations: FC<PropsWithChildren> = ({ children }) =>
+export const Translations: FC<PropsWithChildren> = ({ children }) => (
 	<TranslationProvider translations={toMap<Translation>(translations)}>
 		{children}
 	</TranslationProvider>
+);

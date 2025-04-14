@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Realize, Values } from "../types.ts";
-import { Vec2, vec2 } from "../vec2.ts";
+import { Realize, Values } from "../common/types.ts";
+import { Vec2, vec2 } from "../common/vec2.ts";
 
 // #region lrtbwh
 type BoundsLRTBWHKeys = "left" | "right" | "top" | "bottom" | "width" | "height";
@@ -57,14 +57,14 @@ export type BoundsInit = (
 		bottomRight: Vec2;
 	}
 );
-const undefBounds: Record<BoundsLRTBWHKeys, undefined> = {
+const undefBounds: Readonly<Record<BoundsLRTBWHKeys, undefined>> = {
 	left: undefined,
 	right: undefined,
 	top: undefined,
 	bottom: undefined,
 	width: undefined,
 	height: undefined,
-} as const;
+};
 export class Bounds {
 	readonly left: number;
 	readonly right: number;

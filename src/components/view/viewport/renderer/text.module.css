@@ -1,0 +1,46 @@
+@import url("https://fonts.googleapis.com/css2?family=Russo+One&display=swap");
+
+.text-container {
+	position: absolute;
+	inset: 0;
+	user-select: none;
+	--text-size: 5px;
+	font-size: var(--text-size);
+
+	--text-stroke: #000;
+}
+.text {
+	position: absolute;
+	--text-x: 0px;
+	--text-y: 0px;
+	
+	left: var(--text-x);
+	top: var(--text-y);
+	transform: translate(-50%, -50%);
+	
+	width: max-content;
+	white-space-collapse: preserve;
+	
+	color: #fff;
+	font-family: "Russo One";
+}
+.bg {
+	color: var(--text-stroke);
+	-webkit-text-stroke: .25em var(--text-stroke);
+}
+@supports not(-webkit-text-stroke: .25em var(--text-stroke)) {
+	/* text stroke hack */
+	.bg {
+		color: var(--text-stroke);
+		text-shadow: 
+			-.0625em -.0625em 0 var(--text-stroke),
+			       0 -.0625em 0 var(--text-stroke),
+			+.0625em -.0625em 0 var(--text-stroke),
+			+.0625em        0 0 var(--text-stroke),
+			+.0625em +.0625em 0 var(--text-stroke),
+			       0 +.0625em 0 var(--text-stroke),
+			-.0625em +.0625em 0 var(--text-stroke),
+			-.0625em        0 0 var(--text-stroke)
+		;
+	}
+}

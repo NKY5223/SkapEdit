@@ -34,7 +34,7 @@ function useTranslation(key: string) {
 	return translation;
 }
 
-type TranslationKey = Registry.Translation | string & {};
+type TranslationKey = keyof Registry.Translation | string & {};
 type TranslateProps = {
 	k: TranslationKey;
 	values?: Record<string, unknown>;

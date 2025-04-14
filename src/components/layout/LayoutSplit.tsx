@@ -8,7 +8,6 @@ import { createId } from "../../common/uuid.ts";
 import { single } from "@components/contextmenu/ContextMenu.tsx";
 import { useContextMenu } from "@components/contextmenu/context.tsx";
 import { Translate } from "@components/translate/Translate.tsx";
-import { NewIcon } from "@components/icon/NewIcon.tsx";
 
 type LayoutSplitProps = {
 	children: [ReactNode, ReactNode];
@@ -35,37 +34,51 @@ export const LayoutSplit: LayoutFC<LayoutDescSplit, LayoutSplitProps> = ({
 		resizing && css["resizing"],
 	);
 
-	const handleContextMenu = useContextMenu(desc.axis === "x" ? [
-		single("dissolve-left",
-			<Translate k="layout.split.dissolve-left" />, "chevron-left",
-			() => dispatch({
-				type: "replace",
-				target: desc,
-				desc: desc.second,
-			})),
-		single("dissolve-right",
-			<Translate k="layout.split.dissolve-right" />, "chevron-right",
-			() => dispatch({
-				type: "replace",
-				target: desc,
-				desc: desc.first,
-			})),
-	] : [
-		single("dissolve-up",
-			<Translate k="layout.split.dissolve-up" />, "chevron-up",
-			() => dispatch({
-				type: "replace",
-				target: desc,
-				desc: desc.second,
-			})),
-		single("dissolve-down",
-			<Translate k="layout.split.dissolve-down" />, "chevron-down",
-			() => dispatch({
-				type: "replace",
-				target: desc,
-				desc: desc.first,
-			})),
-	]);
+	const swap = () => dispatch({
+		type: "replace",
+		target: desc,
+		desc: {
+			...desc,
+			first: desc.second,
+			second: desc.first,
+		}
+	});
+	const handleContextMenu = useContextMenu(desc.axis === "x"
+		? [
+			single("dissolve-left",
+				<Translate k="layout.split.dissolve-left" />, "chevron-left",
+				() => dispatch({
+					type: "replace",
+					target: desc,
+					desc: desc.second,
+				})),
+			single("dissolve-right",
+				<Translate k="layout.split.dissolve-right" />, "chevron-right",
+				() => dispatch({
+					type: "replace",
+					target: desc,
+					desc: desc.first,
+				})),
+			single("swap", (<Translate k="layout.split.swap-x" />), "swap-x", swap),
+		]
+		: [
+			single("dissolve-up",
+				<Translate k="layout.split.dissolve-up" />, "chevron-up",
+				() => dispatch({
+					type: "replace",
+					target: desc,
+					desc: desc.second,
+				})),
+			single("dissolve-down",
+				<Translate k="layout.split.dissolve-down" />, "chevron-down",
+				() => dispatch({
+					type: "replace",
+					target: desc,
+					desc: desc.first,
+				})),
+			single("swap", (<Translate k="layout.split.swap-y" />), "swap-y", swap),
+		],
+	);
 
 	return (
 		<div ref={wrapperRef} className={`${css.split} ${css[`split-${axis}`]}`}

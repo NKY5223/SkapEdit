@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { ViewportInfo, ViewportLayerFC } from "../Viewport.tsx";
 import { WebGlRenderer } from "./webgl.ts";
 import { Vec2, vec2 } from "../../../../common/vec2.ts";
+import { tlog } from "@common/string.ts";
 
 
 export type WebGLViewportInfo = {
@@ -36,7 +37,7 @@ export const WebGLLayer = (...renderers: WebGLLayerRenderer[]): ViewportLayerFC 
 
 			return;
 		}
-		
+
 		const canvas = canvasRef.current;
 		if (!canvas) {
 			cleanup();
@@ -52,26 +53,23 @@ export const WebGLLayer = (...renderers: WebGLLayerRenderer[]): ViewportLayerFC 
 
 		const abortRender = new AbortController();
 		abortRenderRef.current = abortRender;
-
+		
 		const render = (t: DOMHighResTimeStamp) => {
 			if (abortRender.signal.aborted) return;
 
 			const viewportInfo = viewportInfoRef.current;
-			const { camera } = viewportInfo;
+			const { camera, viewportSize } = viewportInfo;
 
-			const clientRect = canvas.getBoundingClientRect();
-			if (!clientRect) {
-				throw new Error("Could not get bounding client rect of canvas");
-			}
-			const canvasCssSize = vec2(clientRect.width, clientRect.height);
-			const canvasSize = canvasCssSize.mul(window.devicePixelRatio);
+			const canvasSize = viewportSize;
+			const resolution = window.devicePixelRatio;
+			const muledSize = canvasSize.mul(resolution);
 
-			const resizeWidth = Math.abs(canvas.width - canvasSize[0]) >= 1;
-			const resizeHeight = Math.abs(canvas.height - canvasSize[1]) >= 1;
-			if (resizeWidth) canvas.width = canvasSize[0];
-			if (resizeHeight) canvas.height = canvasSize[1];
+			const resizeWidth = Math.abs(canvas.width - muledSize[0]) >= 1;
+			const resizeHeight = Math.abs(canvas.height - muledSize[1]) >= 1;
+			if (resizeWidth) canvas.width = muledSize[0];
+			if (resizeHeight) canvas.height = muledSize[1];
 			if (resizeWidth || resizeHeight) {
-				gl.viewport(0, 0, canvasSize[0], canvasSize[1]);
+				gl.viewport(0, 0, muledSize[0], muledSize[1]);
 			}
 
 			const cameraSize = camera.getBounds(canvasSize).size.mul(vec2(1, -1));

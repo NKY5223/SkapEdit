@@ -8,8 +8,8 @@ import { Layout, LayoutDesc, LayoutDescSplit, LayoutDescView } from "@components
 import { TestIcon } from "./TestIcon.tsx";
 
 import { ContextMenuProvider } from "@components/contextmenu/context.tsx";
-import { Bounds } from "../common/editor/bounds.ts";
-import { mapContext } from "../common/editor/map.ts";
+import { Bounds } from "../editor/bounds.ts";
+import { MapProvider, obstacle, text } from "../editor/map.ts";
 import { zero } from "../common/vec2.ts";
 import { ErrorBoundary } from "@components/error/ErrorBoundary.tsx";
 import { ViewFC } from "@components/layout/LayoutView.tsx";
@@ -20,7 +20,6 @@ import { TestError } from "./TestError.tsx";
 import { TestIcons } from "./TestIcons.tsx";
 import { TestSwatch } from "./TestSwatch.tsx";
 import { Translations } from "./translations.tsx";
-import { stringifyPath } from "@components/icon/stringify.tsx";
 
 const uuid = () => crypto.randomUUID();
 const splitX = (ratio: number, a: LayoutDesc, b: LayoutDesc) => ({
@@ -75,11 +74,11 @@ export function Test() {
 	// wow that's a lot of providers!!!
 	return (
 		<ErrorBoundary location="Test">
-			<mapContext.Provider value={{
+			<MapProvider value={{
 				objects: [
-					{ type: "obstacle", bounds: new Bounds({ left: 0, top: 0, right: 10, bottom: 10 }) },
-					{ type: "obstacle", bounds: new Bounds({ left: 10, top: 10, right: 20, bottom: 20 }) },
-					{ type: "text", pos: zero, text: "test    uwu" },
+					obstacle(new Bounds({ left: 0, top: 0, right: 10, bottom: 10 })),
+					obstacle(new Bounds({ left: 10, top: 10, right: 20, bottom: 20 })),
+					text(zero, "test    test"),
 				]
 			}}>
 				<Translations>
@@ -93,7 +92,7 @@ export function Test() {
 						</NIconProvider>
 					</ThemeProvider>
 				</Translations>
-			</mapContext.Provider>
+			</MapProvider>
 		</ErrorBoundary >
 	);
 }

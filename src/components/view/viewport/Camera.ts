@@ -1,6 +1,6 @@
 import { SetStateAction, useState } from "react";
 import { Realize } from "../../../common/types.ts";
-import { Bounds } from "../../../common/editor/bounds.ts";
+import { Bounds } from "../../../editor/bounds.ts";
 import { Vec2, vec2 } from "../../../common/vec2.ts";
 
 type InitCamera = ({
@@ -11,7 +11,7 @@ type InitCamera = ({
 	pos: Vec2;
 	scale: number;
 });
-type UpdateCamera = Realize<({
+type UpdateCamera = Realize<({} | {
 	pos: Vec2;
 } | {
 	x: number;
@@ -54,7 +54,7 @@ export class Camera {
 		});
 	}
 }
-;
+
 export const useCamera = (initial: InitCamera): [
 	camera: Camera,
 	setCamera: (camera: SetCamera) => void

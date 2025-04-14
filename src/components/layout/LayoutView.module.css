@@ -6,3 +6,19 @@
 .unknown {
 	padding: 0.5em;
 }
+.empty {
+	padding: 0.5em;
+	display: grid;
+	height: 100%;
+	grid-template-areas: 
+		"bar"
+		"content"
+	;
+	grid-template-rows: min-content auto;
+}
+.empty-content {
+	place-self: center;
+	opacity: 0.5;
+	user-select: none;
+	font-style: italic;
+}

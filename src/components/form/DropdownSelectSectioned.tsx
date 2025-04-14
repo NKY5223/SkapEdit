@@ -1,4 +1,4 @@
-import { Dispatch, KeyboardEventHandler, ReactNode, SetStateAction, useRef, useState } from "react";
+import { Dispatch, FC, KeyboardEventHandler, ReactNode, SetStateAction, useRef, useState } from "react";
 import css from "./DropdownSelectSectioned.module.css";
 import { classList } from "../utils.tsx";
 import { Option } from "./DropdownSelect.tsx";
@@ -20,11 +20,13 @@ type DropdownSelectSectionedProps<T> = {
 	optionsClass?: string;
 	optionClass?: string;
 };
-export function DropdownSelectSectioned<T>({
-	options: sections, initial, fallback,
-	onSelect,
-	selectClass, optionsClass, optionClass,
-}: DropdownSelectSectionedProps<T>): ReactNode {
+export const DropdownSelectSectioned = <T extends unknown>(props: DropdownSelectSectionedProps<T>) => {
+	const {
+		options: sections, initial, fallback,
+		onSelect,
+		selectClass, optionsClass, optionClass,
+	} = props;
+	
 	const selectRef = useRef<HTMLDivElement>(null);
 	const [open, setOpen] = useState(false);
 	const [selection, setSelection] = useState<T>(initial);

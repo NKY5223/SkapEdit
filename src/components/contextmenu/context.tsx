@@ -3,7 +3,6 @@ import { ContextMenu } from "./ContextMenu.tsx";
 import { FloatingContextMenu } from "./FloatingContextMenu.tsx";
 import { Vec2, vec2, zero } from "@common/vec2.ts";
 import { createId } from "@common/uuid.ts";
-import { useTimeout } from "@hooks/useTimeout.ts";
 
 type RClickContextMenu = {
 	id: string;
@@ -11,27 +10,26 @@ type RClickContextMenu = {
 	menu: ContextMenu.Floating;
 };
 
+type ActionBase<T extends string, R> = {
+	type: T;
+} & R;
 type ContextMenuAction = (
-	| {
-		type: "open_submenu";
+	| ActionBase<"open_submenu", {
 		target: string;
-	}
-	| {
-		type: "close_submenu";
+	}>
+	| ActionBase<"close_submenu", {
 		target: string;
-	}
-	| {
-		type: "merge";
+	}>
+	| ActionBase<"merge", {
 		pos?: Vec2;
 		items: ContextMenu.Item[];
-	}
-	| {
-		type: "set";
+	}>
+	| ActionBase<"set", {
 		menu: {
 			pos: Vec2;
 			items: ContextMenu.Item[];
 		} | null;
-	}
+	}>
 );
 const cmenuReducerContext = createContext<Dispatch<ContextMenuAction>>(() => {
 	throw new Error("Missing context menu reducer context.");
@@ -120,7 +118,7 @@ export const ContextMenuProvider: FC<PropsWithChildren> = ({
 	const openedId = current?.openedIds.at(-1) ?? null;
 
 	return (
-		<div data--info="ContextMenuProvider" onContextMenuCapture={() => {
+		<div data--provider-name="ContextMenuProvider" onContextMenuCapture={() => {
 			dispatch({
 				type: "set",
 				menu: null,
