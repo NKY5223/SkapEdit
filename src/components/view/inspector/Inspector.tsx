@@ -1,9 +1,9 @@
-import { NumberInput } from "../../form/NumberInput.tsx";
-import { Button } from "../../form/Button.tsx";
+import { Button } from "@components/form/Button.tsx";
+import { FormSection } from "@components/form/FormSection.tsx";
+import { NumberInput } from "@components/form/NumberInput.tsx";
+import { Icon } from "@components/icon/Icon.tsx";
+import { ViewFC } from "@components/layout/LayoutView.tsx";
 import { useBounds } from "../../../editor/bounds.ts";
-import { Icon } from "../../icon/Icon.tsx";
-import { FormSection } from "../../form/FormSection.tsx";
-import { ViewFC } from "../../layout/LayoutView.tsx";
 import css from "./Inspector.module.css";
 
 export const Inspector: ViewFC = ({
@@ -26,26 +26,26 @@ export const Inspector: ViewFC = ({
 			<FormSection>
 				<FormSection row>
 					<NumberInput name="left" value={left} onInput={setLeft} label={
-						<Icon icon="position_left" title="Left" />
+						<Icon icon="position-left" title="Left" />
 					} />
 					<NumberInput name="top" value={top} onInput={setTop} label={
-						<Icon icon="position_top" title="Top" />
+						<Icon icon="position-top" title="Top" />
 					} />
 				</FormSection>
 				<FormSection row>
 					<NumberInput name="right" value={right} onInput={setRight} label={
-						<Icon icon="position_right" title="Right" />
+						<Icon icon="position-right" title="Right" />
 					} />
 					<NumberInput name="bottom" value={bottom} onInput={setBottom} label={
-						<Icon icon="position_bottom" title="Bottom" />
+						<Icon icon="position-bottom" title="Bottom" />
 					} />
 				</FormSection>
 				<FormSection row>
 					<NumberInput name="width" value={width} onInput={setWidth} min={0} label={
-						<Icon icon="size_width" title="Width" />
+						<Icon icon="size-width" title="Width" />
 					} />
 					<NumberInput name="height" value={height} onInput={setHeight} min={0} label={
-						<Icon icon="size_height" title="Height" />
+						<Icon icon="size-height" title="Height" />
 					} />
 				</FormSection>
 				<Button icon="reset" onClick={() => {

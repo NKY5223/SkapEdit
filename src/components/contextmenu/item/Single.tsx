@@ -2,7 +2,7 @@ import { FC } from "react";
 import css from "../ContextMenu.module.css";
 import { ContextMenu } from "../ContextMenu.tsx";
 import { classList } from "@components/utils.tsx";
-import { NewIcon } from "@components/icon/NewIcon.tsx";
+import { Icon } from "@components/icon/Icon.tsx";
 import { useClearContextMenu } from "../context.tsx";
 
 type ContextMenuSingleItemProps = {
@@ -25,7 +25,7 @@ export const ContextMenuSingleItem: FC<ContextMenuSingleItemProps> = ({
 	);
 	return (
 		<li className={className} onClick={handleClick}>
-			{icon && <NewIcon icon={icon} />}
+			{icon && <Icon icon={icon} />}
 			{display}
 		</li>
 	);

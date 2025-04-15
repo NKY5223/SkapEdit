@@ -4,7 +4,7 @@ import { ContextMenu } from "../ContextMenu.tsx";
 import { classList } from "@components/utils.tsx";
 import { AnchoredContextMenu } from "../AnchoredContextMenu.tsx";
 import { contains, useCmenuOpenedId, useCmenuReducer } from "../context.tsx";
-import { NewIcon } from "@components/icon/NewIcon.tsx";
+import { Icon } from "@components/icon/Icon.tsx";
 
 type ContextMenuSubmenuProps = {
 	item: ContextMenu.Submenu;
@@ -48,7 +48,7 @@ export const ContextMenuSubmenu: FC<ContextMenuSubmenuProps> = ({
 			onClickCapture={open}
 		>
 			{display}
-			<NewIcon icon="chevron-right" height={1} classList={[
+			<Icon icon="chevron-right" height={1} classList={[
 				css["icon"]
 			]} />
 			{/* <pre style={{

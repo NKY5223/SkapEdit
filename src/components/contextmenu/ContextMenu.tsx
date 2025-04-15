@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { Vec2 } from "../../common/vec2.ts";
 import { createId } from "@common/uuid.ts";
-import { IconName } from "@components/icon/NewIcon.tsx";
+import { IconName } from "@components/icon/Icon.tsx";
 
 /*
 Goal:

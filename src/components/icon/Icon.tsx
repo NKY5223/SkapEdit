@@ -1,130 +1,92 @@
-import { createContext, useContext, useId } from "react";
-import css from "./icon.module.css";
-import { parseSVG, parseSVGElement, reactize } from "./svgParser.tsx";
-import type { IconAutocomplete } from "./icons.ts";
+import { vec2, Vec2 } from "@common/vec2.ts";
+import { classList } from "@components/utils.tsx";
+import { createMapContext } from "@hooks/createMapContext.tsx";
+import { FC, ReactNode } from "react";
 
-
-export type IconsContextType = {
-	id: string;
-	viewBox: string;
-	canonicalName: string;
+export type IconInfo = {
+	/** Contents of the `<svg>` */
+	content: ReactNode;
+	aspectRatio?: number;
+	viewBox?: Vec2;
 };
+const [useIcons, useIcon, IconProvider] = createMapContext<IconInfo>();
+export { useIcons, useIcon, IconProvider }
 
-export const IconsContext = createContext<Map<string, IconsContextType>>(new Map());
-export const useIcons = () => useContext(IconsContext);
-
-type IconTemplateProps = {
-	id: string;
-	tree: ReturnType<typeof parseSVGElement>;
-	ids: Map<string, IconsContextType>
-};
-
-export function IconTemplate({
-	id, tree, ids
-}: IconTemplateProps) {
-	const node = reactize(tree, id, ids, { id }, id);
-	return node;
+declare global {
+	namespace Registry {
+		export interface Icon {
+		}
+	}
 }
-
-type IconProviderProps = {
-	icons: Record<string, string>;
-	aliases?: Record<string, string>;
-	extend?: boolean;
-};
-export function IconProvider({
-	children,
-	icons,
-	aliases,
-	extend,
-}: React.PropsWithChildren<IconProviderProps>) {
-	const id = useId();
-	const prevContext = useIcons();
-	const data = Object.entries(icons).map(([name, svg]) => {
-		const svgDoc = parseSVG(svg);
-		const tree = parseSVGElement(svgDoc);
-		const width = "width" in tree ? tree.width : "24";
-		const height = "height" in tree ? tree.height : "24";
-		const nodeId = `${id}-${name}`;
-		return {
-			tree,
-			width, height,
-			name, id: nodeId,
-		};
-	});
-	const initContextData: Map<string, IconsContextType> = new Map(data.map<[string, IconsContextType]>(
-		({ width, height, name, id }) => [
-			name,
-			{
-				id,
-				viewBox: `0 0 ${width} ${height}`,
-				canonicalName: name,
-			}
-		]
-	));
-	const contextData: Map<string, IconsContextType> = new Map([
-		...(extend ? prevContext.entries() : []),
-		...initContextData.entries(),
-		...(aliases ? Object.entries(aliases).map(([alias, icon]) => [
-			alias, initContextData.get(icon)
-		] as const).filter((x): x is [string, IconsContextType] => !!x[1]) : [])
-	]);
-	const nodes = data.map(({ name, id, tree }) =>
-		(<IconTemplate key={name} id={id} ids={contextData} tree={tree} />)
-	);
-
-	return (
-		<IconsContext.Provider value={contextData}>
-			<div className={css.defs}>
-				{nodes}
-			</div>
-			{children}
-		</IconsContext.Provider>
-	);
-}
-
-export type IconName = IconAutocomplete | string & {};
+/**
+ * Add icon names with
+ * ```ts
+ * declare global {
+ * 	namespace Registry {
+ * 		export interface Icon {
+ * 			// "key": {};
+ * 		}
+ * 	}
+ * }
+ * ```
+ */
+export type IconName = keyof Registry.Icon;
 
 type IconProps = {
 	icon: IconName;
+	/** Size, in `em` */
+	height?: number;
+	classList?: (string | false | null | undefined)[];
+	color?: string;
 	title?: string;
-	width?: number | string;
-	height?: number | string;
-	style?: Record<string, string | number>;
-	attrs?: Record<string, string | number>;
-	vars?: Partial<{
-		color: string;
-		"guide-opacity": number;
-	}> & Record<string, string | number>;
 };
-export function Icon({
+export const Icon: FC<IconProps> = ({
 	icon,
+	height = 1.5,
+	classList: classes = [],
+	color = "currentColor",
 	title,
-	width = "1.5em",
-	height = "1.5em",
-	style,
-	attrs,
-	vars,
-}: IconProps) {
-	const context = useIcons();
-	const { id, viewBox } = context.get(icon) ?? { viewBox: "0 0 24 24" };
-
-	const combined = {
-		"--icon-color": "currentColor",
-		"--icon-guide-opacity": 0,
-		...style,
-		...(vars && Object.fromEntries(
-			Object.entries(vars)
-				.map(([name, value]) => [`--icon-${name}`, value])
-		))
-	};
-
-	return id ? (
-		<div className={css.title} title={title}>
-			<svg {...attrs} width={width} height={height} style={combined} viewBox={viewBox}>
-				<use href={`#${id}`}></use>
+}) => {
+	const info = useIcon(icon);
+	const className = classList(
+		...classes,
+	);
+	const t = title ?? `${icon} @ ${height}`;
+	if (info === undefined) {
+		const size = `${height}em`;
+		return (
+			<svg
+				width={size} height={size} viewBox="0 0 24 24"
+				className={className}
+			>
+				<title>{t}</title>
+				<text
+					x={12} y={19}
+					textAnchor="middle"
+					fill={color} fontSize="20"
+				>?</text>
+				<path
+					fill={color} stroke="none"
+					d="M0 0 h24 v24 h-24 v-24 l2 2 v20 h20 v-20 h-20 Z"
+				/>
 			</svg>
-		</div>
-	) : (
-		<i title={`${icon} @ ${width}×${height}`}>?</i>
+		);
+	}
+	const {
+		content,
+		aspectRatio = 1,
+		viewBox = vec2(24),
+	} = info;
+	const w = `${height * aspectRatio}em`;
+	const h = `${height}em`;
+	return (
+		<svg
+			width={w} height={h} viewBox={`0 0 ${viewBox[0]} ${viewBox[1]}`}
+			className={className} 
+			fill={color}
+		>
+			<title>{t}</title>
+			{content}
+		</svg>
 	);
 }

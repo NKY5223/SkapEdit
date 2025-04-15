@@ -27,8 +27,7 @@ export const Button: ExtensibleFC<ButtonProps> = ({
 		{icon && (<div className={css["icon"]}>
 			<Icon
 				icon={icon}
-				width="1.5em"
-				height="1.5em"
+				height={1.5}
 			/>
 		</div>)}
 		<div className={css.content}>

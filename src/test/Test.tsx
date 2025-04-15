@@ -1,8 +1,7 @@
 import { ThemeProvider } from "../theme/theme.tsx";
 
-import { IconProvider as NIconProvider } from "@components/icon/NewIcon.tsx";
 import { IconProvider } from "@components/icon/Icon.tsx";
-import { aliases, icons, nicons } from "@components/icon/icons.tsx";
+import { nicons } from "@components/icon/icons.tsx";
 
 import { Layout, LayoutDesc, LayoutDescSplit, LayoutDescView } from "@components/layout/Layout.tsx";
 import { TestIcon } from "./TestIcon.tsx";
@@ -84,13 +83,11 @@ export function Test() {
 			}}>
 				<Translations>
 					<ThemeProvider>
-						<NIconProvider value={nicons}>
-							<IconProvider icons={icons} aliases={aliases}>
-								<ContextMenuProvider>
-									<Layout layout={defaultLayout} views={toMap(views)} />
-								</ContextMenuProvider>
-							</IconProvider>
-						</NIconProvider>
+						<IconProvider value={nicons}>
+							<ContextMenuProvider>
+								<Layout layout={defaultLayout} views={toMap(views)} />
+							</ContextMenuProvider>
+						</IconProvider>
 					</ThemeProvider>
 				</Translations>
 			</MapProvider>
