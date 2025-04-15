@@ -13,7 +13,8 @@ import { MapProvider, obstacle, text } from "../editor/map.ts";
 import { zero } from "../common/vec2.ts";
 import { ErrorBoundary } from "@components/error/ErrorBoundary.tsx";
 import { ViewFC } from "@components/layout/LayoutView.tsx";
-import { toMap, Translate } from "@components/translate/Translate.tsx";
+import { Translate } from "@components/translate/Translate.tsx";
+import { toMap } from "@components/translate/constructors.tsx";
 import { Inspector } from "@components/view/inspector/Inspector.tsx";
 import { Viewport } from "@components/view/viewport/Viewport.tsx";
 import { TestError } from "./TestError.tsx";
@@ -52,7 +53,7 @@ const views = {
 	"map.inspector": Inspector,
 	"test.lorem": ({ children }) => (<div>
 		{children}
-		<Translate k="lorem" />
+		<Translate k="layout.view.name" />
 	</div>),
 	"map.viewport": Viewport,
 } as const satisfies Record<string, ViewFC>;

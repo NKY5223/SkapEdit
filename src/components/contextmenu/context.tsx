@@ -20,10 +20,6 @@ type ContextMenuAction = (
 	| ActionBase<"close_submenu", {
 		target: string;
 	}>
-	| ActionBase<"merge", {
-		pos?: Vec2;
-		items: ContextMenu.Item[];
-	}>
 	| ActionBase<"set", {
 		menu: {
 			pos: Vec2;
@@ -74,31 +70,6 @@ const cmenuReducer: Reducer<RClickContextMenu | null, ContextMenuAction> = (menu
 				openedIds: ids.filter(x => x !== id),
 			};
 		}
-		case "merge": {
-			const { pos = zero, items } = action;
-			if (!menu) {
-				const id = createId("cmenu");
-				return {
-					id,
-					openedIds: [],
-					menu: {
-						type: "floating",
-						items,
-						pos,
-					}
-				};
-			}
-			const destItems = menu.menu.items;
-			const merged = mergeContextMenuItems(destItems, items);
-			return {
-				id: menu.id,
-				openedIds: menu.openedIds,
-				menu: {
-					...menu.menu,
-					items: merged,
-				}
-			};
-		}
 	}
 }
 export const useCmenuReducer = () => useContext(cmenuReducerContext);
@@ -144,9 +115,11 @@ export const useContextMenu = (
 	return (event: React.MouseEvent) => {
 		event.preventDefault();
 		dispatch({
-			type: "merge",
-			pos: vec2(event.clientX, event.clientY),
-			items,
+			type: "set",
+			menu: {
+				pos: vec2(event.clientX, event.clientY),
+				items,
+			},
 		});
 	};
 };

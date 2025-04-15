@@ -63,7 +63,7 @@ export const LayoutView: LayoutFC<LayoutDescView, LayoutViewProps> = ({
 		return (
 			<div className={className} onContextMenu={handleContextMenu}>
 				<ViewSelector view={desc} dispatch={dispatch} />
-				<h1><Translate k="error.layout.view.unknown" values={{ view }} /></h1>
+				<h1><Translate k="error.layout.view.unknown" view={view} /></h1>
 			</div>
 		);
 	}

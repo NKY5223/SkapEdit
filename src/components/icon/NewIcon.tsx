@@ -1,3 +1,4 @@
+import { vec2, Vec2 } from "@common/vec2.ts";
 import { classList } from "@components/utils.tsx";
 import { createMapContext } from "@hooks/createMapContext.tsx";
 import { FC, ReactNode } from "react";
@@ -6,29 +7,30 @@ export type IconInfo = {
 	/** Contents of the `<svg>` */
 	content: ReactNode;
 	aspectRatio?: number;
+	viewBox?: Vec2;
 };
 const [useIcons, useIcon, IconProvider] = createMapContext<IconInfo>();
 export { useIcons, useIcon, IconProvider }
 
 declare global {
 	namespace Registry {
-		interface Icon {
+		export interface Icon {
 		}
 	}
 }
 /**
- * Add autocompletion with
+ * Add icon names with
  * ```ts
  * declare global {
  * 	namespace Registry {
- * 		interface Icon {
+ * 		export interface Icon {
  * 			// "key": {};
  * 		}
  * 	}
  * }
  * ```
  */
-export type IconName = keyof Registry.Icon | string & {};
+export type IconName = keyof Registry.Icon;
 
 type NewIconProps = {
 	icon: IconName;
@@ -70,12 +72,13 @@ export const NewIcon: FC<NewIconProps> = ({
 	const {
 		content,
 		aspectRatio = 1,
+		viewBox = vec2(24),
 	} = info;
 	const w = `${height * aspectRatio}em`;
 	const h = `${height}em`;
 	return (
 		<svg
-			width={w} height={h} viewBox="0 0 24 24"
+			width={w} height={h} viewBox={`0 0 ${viewBox[0]} ${viewBox[1]}`}
 			className={className} 
 			fill={color}
 		>

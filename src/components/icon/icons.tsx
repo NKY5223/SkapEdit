@@ -18,7 +18,7 @@ import size_width2 from "./icon/size/width2.svg?raw";
 import { chevronDown, chevronLeft, chevronRight, chevronUp } from "./icon/chevron.ts";
 import { IconName, IconInfo } from "./NewIcon.tsx";
 import { path } from "./path.tsx";
-import { toMap } from "@components/translate/Translate.tsx";
+import { toMap } from "@components/translate/constructors.tsx";
 
 export const icons = {
 	_guide,
@@ -47,11 +47,14 @@ export type IconAutocomplete = keyof typeof icons | keyof typeof aliases;
 
 declare global {
 	namespace Registry {
-		interface Icon {
+		export interface Icon {
 			"chevron-left": {};
 			"chevron-right": {};
 			"chevron-up": {};
 			"chevron-down": {};
+
+			"split-x": {};
+			"split-y": {};
 		}
 	}
 }

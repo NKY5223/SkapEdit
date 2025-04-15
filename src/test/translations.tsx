@@ -1,8 +1,9 @@
 import { FC, PropsWithChildren } from "react";
-import { delegate, toMap, Translation, TranslationProvider } from "../components/translate/Translate.tsx";
+import { TranslationProvider } from "../components/translate/Translate.tsx";
+import { createTranslations, delegate, Infer } from "@components/translate/constructors.tsx";
 
-export const translations = {
-	"error.layout.view.unknown": ["Unknown view: ", { value: "view" }],
+export const translations = createTranslations({
+	"error.layout.view.unknown": ["Unknown view: ", ({ view }: { view: string }) => view],
 
 	"layout.split.dissolve-left": "Dissolve Left",
 	"layout.split.dissolve-right": "Dissolve Right",
@@ -30,19 +31,17 @@ export const translations = {
 	"layout.view.name.map.viewport": "Viewport",
 
 	"lorem": "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Esse, culpa possimus fuga, veritatis harum autem dolore ipsam provident, id praesentium distinctio ullam similique! Earum praesentium repudiandae magnam ipsum et nihil!",
-} as const satisfies Record<string, Translation>;
-type EmptyTranslations = {
-	[k in keyof typeof translations]: {};
-}
-
+});
+type Inferred = Infer<typeof translations>;
 declare global {
 	namespace Registry {
-		export interface Translation extends EmptyTranslations {}
+		export interface Translation extends Inferred {
+		}
 	}
 }
 
 export const Translations: FC<PropsWithChildren> = ({ children }) => (
-	<TranslationProvider translations={toMap<Translation>(translations)}>
+	<TranslationProvider value={translations}>
 		{children}
 	</TranslationProvider>
 );

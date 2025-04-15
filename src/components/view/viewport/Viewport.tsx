@@ -1,4 +1,4 @@
-import { FC, useDebugValue, useMemo, useRef, useState } from "react";
+import { FC, useMemo, useRef, useState } from "react";
 import { Camera, useCamera } from "./camera.ts";
 import { ViewFC } from "../../layout/LayoutView.tsx";
 import { SkapMap, useMap } from "../../../editor/map.ts";
@@ -11,7 +11,6 @@ import { Vec2, zero } from "../../../common/vec2.ts";
 import { useDrag } from "../../../hooks/useDrag.ts";
 import { TextLayer } from "./renderer/text.tsx";
 import { useElementSize } from "@hooks/useElementSize.ts";
-import { tlog } from "@common/string.ts";
 
 export type ViewportInfo = {
 	camera: Camera;

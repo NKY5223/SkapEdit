@@ -21,13 +21,13 @@ export const ViewSelector: FC<ViewSelectorProps> = ({
 		[...views.keys()].map(name => (
 			{
 				value: name,
-				display: () => <Translate k="layout.view.name" values={{ view: name }} />,
+				display: () => <Translate k="layout.view.name" view={name} />,
 				name,
 			}
 		)), ({ name }) => name.split(".")[0]
 	)).map<SectionedOptions<string>[number]>(([name, options]) => ({
 		name,
-		label: <Translate k="layout.view.category.name" values={{ category: name }} />,
+		label: <Translate k="layout.view.category.name" category={name} />,
 		options: options ?? [],
 	})) satisfies SectionedOptions<string>;
 
