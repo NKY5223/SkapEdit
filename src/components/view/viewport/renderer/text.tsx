@@ -16,7 +16,7 @@ export const TextLayer: ViewportLayerFC = ({ viewportInfo }) => {
 	const bg = objs.map(obj => {
 		const pos = mapToViewport(viewportInfo, obj.pos);
 		return (
-			<span key={obj.id} className={bgClass} style={{
+			<span key={obj.id} className={bgClass} aria-hidden style={{
 				"--text-x": `${pos[0]}px`,
 				"--text-y": `${pos[1]}px`,
 			}}>{obj.text}</span>

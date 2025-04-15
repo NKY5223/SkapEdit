@@ -11,6 +11,9 @@ type BaseObject<T extends string, P> = {
 export type SkapObstacle = BaseObject<"obstacle", {
 	bounds: Bounds;
 }>;
+export type SkapLava = BaseObject<"lava", {
+	bounds: Bounds;
+}>;
 export type SkapText = BaseObject<"text", {
 	pos: Vec2;
 	text: string;
@@ -18,9 +21,9 @@ export type SkapText = BaseObject<"text", {
 
 export type SkapObject = (
 	| SkapObstacle
+	| SkapLava
 	| SkapText
 );
-// can't name it Map because naming collision
 export type SkapMap = {
 	objects: SkapObject[];
 };
@@ -29,6 +32,11 @@ export type SkapMap = {
 // #region constructors
 export const obstacle = (bounds: Bounds): SkapObstacle => ({
 	type: "obstacle",
+	id: createId(),
+	bounds,
+});
+export const lava = (bounds: Bounds): SkapLava => ({
+	type: "lava",
 	id: createId(),
 	bounds,
 });

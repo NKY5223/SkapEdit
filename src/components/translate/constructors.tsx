@@ -1,10 +1,6 @@
 import { ReactNode } from "react";
 import { TranslateFallback, TFunc, useTranslation, TranslateTranslation, TKey } from "./Translate.tsx";
 
-export function toMap<T, K extends string = string>(obj: Partial<Record<K, T>>): ReadonlyMap<K, T> {
-	return new Map(Object.entries(obj) as [K, T][]);
-}
-
 type MergeNever<A, B> = [A] extends [never] ? B : A & B;
 /**
  * @example

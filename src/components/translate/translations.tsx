@@ -1,5 +1,5 @@
 import { FC, PropsWithChildren } from "react";
-import { TranslationProvider } from "../components/translate/Translate.tsx";
+import { TranslationProvider } from "./Translate.tsx";
 import { createTranslations, delegate, Infer } from "@components/translate/constructors.tsx";
 
 export const translations = createTranslations({
@@ -12,6 +12,7 @@ export const translations = createTranslations({
 	"layout.split.swap-x": "Swap",
 	"layout.split.swap-y": "Swap",
 
+	"layout": "Layout",
 	"layout.view.fallback": "Unknown View",
 	"layout.view.empty": "Pick a view",
 	"layout.view.split-x": "Split Horizontally",

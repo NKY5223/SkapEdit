@@ -7,11 +7,11 @@ import {
 	fromSVGArc,
 } from "./math.ts";
 
-const line = (start: Vec2, end: Vec2): CommandLine => ({
+export const line = (start: Vec2, end: Vec2): CommandLine => ({
 	type: "line",
 	start, end,
 });
-const arc = (radius: Vec2, rotation: number, largeArc: boolean, clockwise: boolean, start: Vec2, end: Vec2): CommandArc => {
+export const arc = (radius: Vec2, rotation: number, largeArc: boolean, clockwise: boolean, start: Vec2, end: Vec2): CommandArc => {
 	const { center, startAngle, deltaAngle, endAngle } = fromSVGArc({
 		start, end, radius, rotation, largeArc, clockwise,
 	});

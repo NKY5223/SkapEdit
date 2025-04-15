@@ -56,22 +56,22 @@ export namespace ContextMenu {
 }
 
 // #region Constructors
-export const single = (name: string, display: ReactNode, icon?: IconName, click?: () => void): ContextMenu.SingleItem => ({
+export const single = (name: string, display: ReactNode, icon?: IconName | null, click?: () => void): ContextMenu.SingleItem => ({
 	type: "single",
 	id: createId("cmenu-item"),
 	name,
 	display,
-	icon,
+	icon: icon ?? undefined,
 	click,
 });
-export const section = (name: string, title: ReactNode, items: (ContextMenu.SingleItem | ContextMenu.Submenu)[], icon?: IconName): ContextMenu.Section => ({
+export const section = (name: string, title: ReactNode, icon: IconName | null | undefined, items: (ContextMenu.SingleItem | ContextMenu.Submenu)[]): ContextMenu.Section => ({
 	type: "section",
 	id: createId("cmenu-item"),
 	name,
 	title,
 	items,
 });
-export const submenu = (name: string, display: ReactNode, items: readonly ContextMenu.Item[], icon?: IconName): ContextMenu.Submenu => ({
+export const submenu = (name: string, display: ReactNode, icon: IconName | null | undefined, items: readonly ContextMenu.Item[]): ContextMenu.Submenu => ({
 	type: "submenu",
 	id: createId("cmenu-item"),
 	name,

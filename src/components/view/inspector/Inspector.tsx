@@ -48,7 +48,7 @@ export const Inspector: ViewFC = ({
 						<Icon icon="size-height" title="Height" />
 					} />
 				</FormSection>
-				<Button icon="reset" onClick={() => {
+				<Button icon="arrow-clockwise-large" onClick={() => {
 					setBounds({
 						left: 0,
 						top: 0,

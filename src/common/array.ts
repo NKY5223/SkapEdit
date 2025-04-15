@@ -77,6 +77,6 @@ export function tuplesCyclical<T>(array: T[], length: number): T[][] {
  * `tuples([0, 1, 2, 3, 4], 2) ↦ [[0, 1], [1, 2], [2, 3], [3, 4]]`
  */
 export function tuples<T, N extends number>(array: T[], length: N): Tuple<T, N>[] {
-	if (array.length < length) throw new Error(`cannot convert ${array} into ${length}-tuples because it's too short`);
+	if (array.length < length) throw new Error(`cannot convert [${array.join(", ")}] (${array.length}) into ${length}-tuples because it's too short`);
 	return range(array.length - length + 1).map((_, i) => array.slice(i, i + length) as Tuple<T,N>);
 }

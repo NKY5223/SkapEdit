@@ -1,15 +1,14 @@
 import { FormSection } from "@components/form/FormSection.tsx";
-import { useNumberInput } from "@components/form/NumberInput.tsx";
-import { chevronRight } from "@components/icon/icon/chevron.ts";
+import { splitsRaw } from "@components/icon/icon/split.ts";
+import { clearLogs } from "@components/icon/math.ts";
+import { ALL_COMMANDS, debug, stringifyPath } from "@components/icon/stringify.tsx";
+import { ViewFC } from "@components/layout/LayoutView.tsx";
 import { SVGAttributes } from "react";
-import { clearLogs, log } from "../components/icon/math.ts";
-import { ALL_COMMANDS, debug, stringifyPath } from "../components/icon/stringify.tsx";
-import { ViewFC } from "../components/layout/LayoutView.tsx";
 
 export const TestIcon: ViewFC = ({
 	children,
 }) => {
-	const path = chevronRight;
+	const path = splitsRaw.x;
 
 	const [d, debugInfo] = stringifyPath(path);
 
@@ -36,6 +35,7 @@ export const TestIcon: ViewFC = ({
 				Lorem Ipsum
 				<svg viewBox="0 0 24 24" width="1.5em" height="1.5em" style={{
 					verticalAlign: "middle",
+					outline: "1px solid #f004",
 				}}>
 					<path d={d} fill="currentColor" />
 				</svg>

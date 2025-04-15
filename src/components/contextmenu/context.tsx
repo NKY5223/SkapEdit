@@ -1,7 +1,7 @@
 import { createContext, Dispatch, FC, PropsWithChildren, useEffect, useContext, Reducer, useReducer } from "react";
 import { ContextMenu } from "./ContextMenu.tsx";
 import { FloatingContextMenu } from "./FloatingContextMenu.tsx";
-import { Vec2, vec2, zero } from "@common/vec2.ts";
+import { Vec2, vec2 } from "@common/vec2.ts";
 import { createId } from "@common/uuid.ts";
 
 type RClickContextMenu = {
@@ -28,7 +28,7 @@ type ContextMenuAction = (
 	}>
 );
 const cmenuReducerContext = createContext<Dispatch<ContextMenuAction>>(() => {
-	throw new Error("Missing context menu reducer context.");
+	console.error("Missing context menu reducer context.");
 });
 const cmenuReducer: Reducer<RClickContextMenu | null, ContextMenuAction> = (menu, action): RClickContextMenu | null => {
 	switch (action.type) {
@@ -96,14 +96,14 @@ export const ContextMenuProvider: FC<PropsWithChildren> = ({
 			});
 		}}>
 			{/* I love context hell!!!! */}
-				<cmenuOpenedIdContext.Provider value={openedId}>
-					<cmenuReducerContext.Provider value={dispatch}>
-						{children}
-						{current && <FloatingContextMenu key={current.id}
-							contextMenu={current.menu}
-						/>}
-					</cmenuReducerContext.Provider>
-				</cmenuOpenedIdContext.Provider>
+			<cmenuOpenedIdContext.Provider value={openedId}>
+				<cmenuReducerContext.Provider value={dispatch}>
+					{children}
+					{current && <FloatingContextMenu key={current.id}
+						contextMenu={current.menu}
+					/>}
+				</cmenuReducerContext.Provider>
+			</cmenuOpenedIdContext.Provider>
 		</div>
 	);
 };

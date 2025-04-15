@@ -27,6 +27,8 @@
 			"@components/*": ["./src/components/*"],
 			"@hooks/*": ["./src/hooks/*"],
 			"@common/*": ["./src/common/*"],
+			"@icon/*": ["./src/components/icon/icon/*"],
+			"@editor/*": ["./src/editor/*"],
 		}
   },
   "include": ["src"]

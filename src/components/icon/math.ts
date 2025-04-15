@@ -74,7 +74,7 @@ export const fromSVGArc = (arc: SVGArc): CommandArc => {
 };
 export const toSVGArc = (arc: CommandArc): SVGArc => {
 	const { start, end, radius, rotation, deltaAngle } = arc;
-	const largeArc = deltaAngle > Math.PI;
+	const largeArc = Math.abs(deltaAngle) > Math.PI;
 	const clockwise = deltaAngle > 0;
 	return {
 		start, end,
@@ -405,6 +405,8 @@ export type JoinOptions = {
 export type OffsetCommand = [forward: Command[], reverse: Command[]];
 
 export const stroke = (options: StrokeOptions, commands: Command[]): Command[] => {
+	if (commands.length === 1) return strokeSingle(options, commands[0]);
+
 	const reversedCommands = commands.map(reverseCommand);
 	const [first,] = ends(commands);
 	const [, last] = ends(reversedCommands);
@@ -450,6 +452,25 @@ export const stroke = (options: StrokeOptions, commands: Command[]): Command[] =
 		capEnd,
 	].flat();
 }
+const strokeSingle = (options: StrokeOptions, command: Command): Command[] => {
+	const reversed = reverseCommand(command);
+
+	const offsetLeft = offsetCommand(command, options.widthLeft);
+	const offsetRight = offsetCommand(reversed, options.widthRight);
+	
+	const capOptionsEnd = { cap: options.capEnd, widthLeft: options.widthLeft, widthRight: options.widthRight, };
+	const capStart = capOffsetCommand(capOptionsEnd, reversed, offsetLeft, offsetRight);
+	const capOptionsStart = { cap: options.capStart, widthLeft: options.widthRight, widthRight: options.widthLeft, };
+	const capEnd = capOffsetCommand(capOptionsStart, command, offsetRight, offsetLeft);
+
+	return [
+		offsetLeft,
+		capStart,
+		offsetRight,
+		capEnd,
+	].flat();
+}
+
 const ends = <T>(a: T[]): [first: T, last: T, rest: T[],] => (a.length < 1
 	? (() => { throw new Error("cannot pop empty array") })()
 	: [a[0], a.at(-1)!, a.slice(1, -1),]

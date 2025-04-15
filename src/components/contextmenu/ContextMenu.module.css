@@ -81,7 +81,7 @@
 /* #region items */
 .item {
 	display: block;
-	padding: .25em .5em .25em 1em;
+	padding: .25em .5em .25em .5em;
 	user-select: none;
 
 	.section + & {
@@ -101,8 +101,6 @@
 		grid-template-columns: min-content auto;
 		place-items: center start;
 		gap: .25em;
-
-		padding-left: .25em;
 	}
 }
 /* #endregion */
@@ -120,7 +118,7 @@
 	}
 }
 .title-wrapper {
-	padding: 0 0 0 1em;
+	padding: 0 0 0 .75em;
 }
 .title {
 	opacity: 0.5;

@@ -10,6 +10,8 @@ export default defineConfig({
 			"@common": path.join(__dirname, "./src/common"),
 			"@components": path.join(__dirname, "./src/components"),
 			"@hooks": path.join(__dirname, "./src/hooks"),
+			"@icon": path.join(__dirname, "./src/components/icon/icon"),
+			"@editor": path.join(__dirname, "./src/editor"),
 		}
 	}
 });

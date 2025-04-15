@@ -11,6 +11,7 @@ import { Vec2, zero } from "../../../common/vec2.ts";
 import { useDrag } from "../../../hooks/useDrag.ts";
 import { TextLayer } from "./renderer/text.tsx";
 import { useElementSize } from "@hooks/useElementSize.ts";
+import { LavaWebGLRenderer } from "./renderer/lava.ts";
 
 export type ViewportInfo = {
 	camera: Camera;
@@ -137,7 +138,8 @@ export const Viewport: ViewFC = ({
 
 	const layers = useMemo(() => [
 		WebGLLayer(
-			new ObstacleWebGLRenderer()
+			new ObstacleWebGLRenderer(),
+			new LavaWebGLRenderer(),
 		),
 		TextLayer
 	], []);

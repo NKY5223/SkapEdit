@@ -1,6 +1,6 @@
 import { createMapContext } from "@hooks/createMapContext.tsx";
 import { createContext, FC, PropsWithChildren, ReactNode, useContext } from "react";
-import { toMap } from "./constructors.tsx";
+import { toMap } from "../../common/toMap.tsx";
 
 // #region Types
 declare global {
