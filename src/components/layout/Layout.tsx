@@ -1,7 +1,8 @@
 import { Dispatch, FC, Reducer, useReducer } from "react";
+import { createMapContext } from "../../hooks/createMapContext.tsx";
+import css from "./Layout.module.css";
 import { LayoutSplit } from "./LayoutSplit.tsx";
 import { LayoutViewMemo, ViewFC } from "./LayoutView.tsx";
-import { createMapContext } from "../../hooks/createMapContext.tsx";
 
 /* 
 2025-02-xx
@@ -143,7 +144,9 @@ export const Layout: FC<LayoutProps> = ({
 	const [layout, dispatchLayout] = useReducer(layoutReducer, initialLayout);
 	return (
 		<ViewsProvider value={views}>
-			<LayoutTree layout={layout} dispatch={dispatchLayout} />
+			<div className={css["layout"]}>
+				<LayoutTree layout={layout} dispatch={dispatchLayout} />
+			</div>
 		</ViewsProvider>
 	);
 }

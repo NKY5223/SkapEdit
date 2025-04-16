@@ -72,7 +72,7 @@ export const LayoutView: LayoutFC<LayoutDescView, LayoutViewProps> = ({
 
 
 	return (
-		<ErrorBoundary location={`View "${desc.view}"`}>
+		<ErrorBoundary location={`LayoutView(${JSON.stringify(desc.view)})`}>
 			<div className={css.view} onContextMenu={handleContextMenu}>
 				<View>
 					<ViewSelector view={desc} dispatch={dispatch} />

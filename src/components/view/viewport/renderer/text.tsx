@@ -1,11 +1,12 @@
 import { classList } from "@components/utils.tsx";
-import { mapToViewport, ViewportLayerFC } from "../Viewport.tsx";
+import { ViewportLayerFC } from "../Viewport.tsx";
+import { mapToViewport } from "../utils.tsx";
 import css from "./text.module.css";
 
 export const TextLayer: ViewportLayerFC = ({ viewportInfo }) => {
 	const { 
 		camera, 
-		map
+		room: map
 	} = viewportInfo;
 
 	const objs = map.objects.filter(o => o.type === "text");

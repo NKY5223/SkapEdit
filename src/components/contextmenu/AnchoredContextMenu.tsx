@@ -36,7 +36,7 @@ export const AnchoredContextMenu: FC<AnchoredContextMenuProps> = ({
 
 	return (
 		<menu ref={menuRef} className={className}>
-			<ErrorBoundary location="Context Menu" fallback={(_, orig) => (
+			<ErrorBoundary location={`AnchoredContextMenu`} fallback={(_, orig) => (
 				<div className={css["error"]}>{orig}</div>
 			)}>
 				{items.map(item => (

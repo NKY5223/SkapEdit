@@ -1,6 +1,6 @@
 import { Bounds } from "../../../../editor/bounds.ts";
 import { ViewportInfo } from "../Viewport.tsx";
-import { WebGlRenderer, quad } from "../webgl/webgl.ts";
+import { WebGlRenderer, rect } from "../webgl/webgl.ts";
 import { WebGLLayerRenderer, WebGLViewportInfo } from "../webgl/WebGLLayer.tsx";
 import vert from "./shader/default.vert?raw";
 
@@ -14,7 +14,7 @@ export abstract class RectWebGLRenderer extends WebGLLayerRenderer {
 	abstract rects(viewportInfo: ViewportInfo, webGlViewportInfo: WebGLViewportInfo): Bounds[];
 
 	preRender(gl: WebGL2RenderingContext, viewportInfo: ViewportInfo, webGlViewportInfo: WebGLViewportInfo): void {
-		// Stop ts screaming at me
+		// satisfy "no unused variables"
 		gl;
 		viewportInfo;
 		webGlViewportInfo;
@@ -32,14 +32,13 @@ export abstract class RectWebGLRenderer extends WebGLLayerRenderer {
 		} = webGlViewportInfo;
 
 		const camera = viewportInfo.camera;
-		this.setUniformFloat2(gl, "uCameraPosition", camera.pos);
-		this.setUniformFloat2(gl, "uCameraSize", cameraSize);
+		this.setUniform2f(gl, "uCameraPosition", camera.pos);
+		this.setUniform2f(gl, "uCameraSize", cameraSize);
 
 		const boundses = this.rects(viewportInfo, webGlViewportInfo);
-		const pos = boundses.flatMap(bounds => quad(bounds));
+		const pos = boundses.flatMap(bounds => rect(bounds));
 
-		const posBuffer = this.setBuffer(gl, "aPosition", gl.ARRAY_BUFFER, new Float32Array(pos).buffer, gl.DYNAMIC_DRAW);
-		this.setAttribute(gl, gl.ARRAY_BUFFER, "aPosition", WebGlRenderer.TYPES.vec2, posBuffer);
+		this.setAttribute2f(gl, "aPosition", pos);
 
 		this.preRender(gl, viewportInfo, webGlViewportInfo);
 

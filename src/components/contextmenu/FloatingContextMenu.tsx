@@ -42,7 +42,7 @@ export const FloatingContextMenu: FC<FloatingContextMenuProps> = ({
 			"--y": `${y}px`,
 		}}>
 			<menu ref={menuRef} className={className}>
-				<ErrorBoundary fallback={(_, orig) => (
+				<ErrorBoundary location={`FloatingContextMenu`} fallback={(_, orig) => (
 					<div className={css["error"]}>{orig}</div>
 				)}>
 					{items.map(item => (

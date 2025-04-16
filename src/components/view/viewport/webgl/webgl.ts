@@ -1,3 +1,4 @@
+import { vec2, Vec2 } from "@common/vec2.ts";
 import { Vector } from "../../../../common/vector.ts";
 import { Bounds } from "../../../../editor/bounds.ts";
 
@@ -12,7 +13,7 @@ export abstract class WebGlRenderer<T extends unknown[]> {
 	info?: {
 		gl: WebGL2RenderingContext;
 		program: WebGLProgram;
-		
+
 		buffers: Map<string, WebGLBuffer>;
 		uniformLocationCache: Map<string, WebGLUniformLocation>;
 		attribLocationCache: Map<string, number>;
@@ -97,75 +98,55 @@ export abstract class WebGlRenderer<T extends unknown[]> {
 		vec3: { size: 3, type: GL_FLOAT },
 		vec4: { size: 4, type: GL_FLOAT },
 	} satisfies Record<string, WebGLValueType>;
-	protected setUniform(gl: WebGL2RenderingContext, type: WebGLValueType, name: string, ...values: number[]) {
-		const location = this.getUniformLocation(gl, name);
-		
-		switch (type.type) {
-			case GL_FLOAT: {
-				switch (type.size) {
-					case 1: {
-						gl.uniform1f(location, values[0]);
-						break;
-					}
-					case 2: {
-						gl.uniform2f(location, values[0], values[1]);
-						break;
-					}
-					case 3: {
-						gl.uniform3f(location, values[0], values[1], values[2]);
-						break;
-					}
-					case 4: {
-						gl.uniform4f(location, values[0], values[1], values[2], values[3]);
-						break;
-					}
-				}
-				break;
-			}
-			case GL_INT: {
-				switch (type.size) {
-					case 1: {
-						gl.uniform1i(location, values[0]);
-						break;
-					}
-					case 2: {
-						gl.uniform2i(location, values[0], values[1]);
-						break;
-					}
-					case 3: {
-						gl.uniform3i(location, values[0], values[1], values[2]);
-						break;
-					}
-					case 4: {
-						gl.uniform4i(location, values[0], values[1], values[2], values[3]);
-						break;
-					}
-				}
-				break;
-			}
-		}
-	}
+
 	// #region setUniformX
 	protected setUniformFloat(gl: WebGL2RenderingContext, name: string, value: number) {
+		return this.setUniform1f(gl, name, value);
+	}
+	protected setUniform1f(gl: WebGL2RenderingContext, name: string, value: number) {
 		const location = this.getUniformLocation(gl, name);
 
 		gl.uniform1f(location, value);
 	}
-	protected setUniformFloat2(gl: WebGL2RenderingContext, name: string, value: Vector<2>) {
+	protected setUniform2f(gl: WebGL2RenderingContext, name: string, value: Vector<2>) {
 		const location = this.getUniformLocation(gl, name);
 
 		gl.uniform2f(location, value[0], value[1]);
 	}
-	// #endregion
+	protected setUniform3f(gl: WebGL2RenderingContext, name: string, value: Vector<3>) {
+		const location = this.getUniformLocation(gl, name);
 
-	protected setAttribute(gl: WebGL2RenderingContext, target: GLenum, name: string, type: WebGLValueType, buffer: WebGLBuffer) {
+		gl.uniform3f(location, value[0], value[1], value[2]);
+	}
+	protected setUniform4f(gl: WebGL2RenderingContext, name: string, value: Vector<4>) {
+		const location = this.getUniformLocation(gl, name);
+
+		gl.uniform4f(location, value[0], value[1], value[2], value[3]);
+	}
+	// #endregion
+	// #region setAttributeX
+	private setAttribute(gl: WebGL2RenderingContext, name: string, values: number[], size: number, type: GLenum, target: GLenum = 34962, usage: GLenum = 35048) {
 		const location = this.getAttribLocation(gl, name);
 
-		gl.bindBuffer(target, buffer);
+		const buffer = this.setBuffer(gl, name, target, new Float32Array(values).buffer, usage);
 
-		gl.vertexAttribPointer(location, type.size, type.type, false, 0, 0);
+		gl.bindBuffer(target, buffer);
+		gl.vertexAttribPointer(location, size, type, false, 0, 0);
 		gl.enableVertexAttribArray(location);
 	}
+	protected setAttribute1f(gl: WebGL2RenderingContext, name: string, values: number[], target: GLenum = 34962, usage: GLenum = 35048) {
+		this.setAttribute(gl, name, values, 1, gl.FLOAT, target, usage);
+	}
+	protected setAttribute2f(gl: WebGL2RenderingContext, name: string, values: Vector<2>[], target: GLenum = 34962, usage: GLenum = 35048) {
+		this.setAttribute(gl, name, values.map(v => v.components).flat(), 2, gl.FLOAT, target, usage);
+	}
+	protected setAttribute3f(gl: WebGL2RenderingContext, name: string, values: Vector<3>[], target: GLenum = 34962, usage: GLenum = 35048) {
+		this.setAttribute(gl, name, values.map(v => v.components).flat(), 3, gl.FLOAT, target, usage);
+	}
+	protected setAttribute4f(gl: WebGL2RenderingContext, name: string, values: Vector<4>[], target: GLenum = 34962, usage: GLenum = 35048) {
+		this.setAttribute(gl, name, values.map(v => v.components).flat(), 4, gl.FLOAT, target, usage);
+	}
+	// #endregion
 
 	protected getBuffer(gl: WebGL2RenderingContext, name: string): WebGLBuffer {
 		if (!this.info) throw new Error(`WebGLRenderer is not initialised.`);
@@ -206,14 +187,14 @@ export abstract class WebGlRenderer<T extends unknown[]> {
 	get canvas() { return this.info?.gl.canvas; }
 }
 
-export function quad(bounds: Bounds): number[] {
-	const { left: l, top: t, right: r, bottom: b } = bounds;
+export function rect(bounds: Bounds): Vec2[] {
+	const { topLeft, topRight, bottomLeft, bottomRight, } = bounds;
 	return [
-		[0, 0],
-		[1, 0],
-		[1, 1],
-		[0, 0],
-		[1, 1],
-		[0, 1],
-	].flatMap(([x, y]) => [x ? r : l, y ? b : t]);
+		topLeft,
+		topRight,
+		bottomRight,
+		topLeft,
+		bottomLeft,
+		bottomRight,
+	];
 }

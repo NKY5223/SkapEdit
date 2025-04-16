@@ -1,7 +1,7 @@
 import { FC, useMemo, useRef, useState } from "react";
 import { Camera, useCamera } from "./camera.ts";
 import { ViewFC } from "../../layout/LayoutView.tsx";
-import { SkapMap, useMap } from "../../../editor/map.ts";
+import { SkapRoom, useMap } from "../../../editor/map.ts";
 import { WebGLLayer } from "./webgl/WebGLLayer.tsx";
 import { ObstacleWebGLRenderer } from "./renderer/obstacle.ts";
 import css from "./Viewport.module.css";
@@ -12,11 +12,16 @@ import { useDrag } from "../../../hooks/useDrag.ts";
 import { TextLayer } from "./renderer/text.tsx";
 import { useElementSize } from "@hooks/useElementSize.ts";
 import { LavaWebGLRenderer } from "./renderer/lava.ts";
+import { Bounds } from "@editor/bounds.ts";
+import { BackgroundObstacleWebGLRenderer, BackgroundWebGLRenderer } from "./renderer/background.ts";
 
 export type ViewportInfo = {
 	camera: Camera;
+	/** canvas size, in css px */
 	viewportSize: Vec2;
-	map: SkapMap;
+	/** camera bounds, in map units */
+	viewportBounds: Bounds;
+	room: SkapRoom;
 }
 export type ViewportLayerFC = FC<{
 	viewportInfo: ViewportInfo;
@@ -60,35 +65,6 @@ export const ViewportCanvas: FC<ViewportCanvasProps> = ({
 	);
 }
 
-// #region Conversion
-/**
- * Converts a `Vec2` from viewport space to map space.
- * Is the inverse of `mapToViewport`.
- * 
- * E.g. with `500x500` viewport, camera at `⟨10, 0⟩ ×5`:
- * ```ts
- * viewportToMap(info, vec2(250, 250)) ⇒ ⟨10, 0⟩;
- * viewportToMap(info, vec2(300, 325)) ⇒ ⟨20, 15⟩;
- */
-export const viewportToMap = (info: ViewportInfo, pos: Vec2): Vec2 => {
-	const { camera, viewportSize } = info;
-	return pos.sub(viewportSize.div(2)).div(camera.scale).add(camera.pos);
-}
-/**
- * Converts a `Vec2` from map space to viewport space.  
- * Is the inverse of `viewportToMap`.
- * 
- * E.g. with `500x500` viewport, camera at `⟨10, 0⟩ ×5`:
- * ```ts
- * mapToViewport(info, vec2(0, 0)) ⇒ ⟨200, 250⟩;
- * mapToViewport(info, vec2(10, 15)) ⇒ ⟨250, 325⟩;
- * ```
- */
-export const mapToViewport = (info: ViewportInfo, pos: Vec2): Vec2 => {
-	const { camera, viewportSize } = info;
-	return viewportSize.div(2).add(pos.sub(camera.pos).mul(camera.scale));
-}
-// #endregion
 
 const wheelMult = (mode: number): number => {
 	switch (mode) {
@@ -99,12 +75,23 @@ const wheelMult = (mode: number): number => {
 	}
 };
 const scaleBase = 5;
+// one "tick" of the mouse wheel is 100 units, and -1 to flip directions
 const scaleMul = -1 / 100;
 const scaleExp = 1.25;
 
 export const Viewport: ViewFC = ({
 	children,
 }) => {
+	const layers = useMemo(() => [
+		WebGLLayer(
+			new BackgroundObstacleWebGLRenderer(),
+			new BackgroundWebGLRenderer(),
+			new ObstacleWebGLRenderer(),
+			new LavaWebGLRenderer(),
+		),
+		TextLayer
+	], []);
+
 	const elRef = useRef<HTMLDivElement>(null);
 	const map = useMap();
 	const [scaleIndex, setScaleIndex] = useState(0);
@@ -129,20 +116,15 @@ export const Viewport: ViewFC = ({
 	}
 
 	const viewportSize = useElementSize(elRef);
+	const viewportBounds = camera.getBounds(viewportSize);
 
 	const viewportInfo: ViewportInfo = {
 		camera,
 		viewportSize,
-		map,
+		room: map,
+		viewportBounds,
 	};
 
-	const layers = useMemo(() => [
-		WebGLLayer(
-			new ObstacleWebGLRenderer(),
-			new LavaWebGLRenderer(),
-		),
-		TextLayer
-	], []);
 	return (
 		<div ref={elRef} className={css["viewport"]} 
 		onPointerDown={handlePointerDown} onWheel={handleWheel}>

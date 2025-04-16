@@ -1,7 +1,8 @@
 import { createContext, useContext } from "react";
 import { Bounds } from "./bounds.ts";
-import { Vec2 } from "../common/vec2.ts";
+import { vec2, Vec2 } from "../common/vec2.ts";
 import { createId } from "@common/uuid.ts";
+import { Color } from "@common/color.ts";
 
 // #region types
 type BaseObject<T extends string, P> = {
@@ -24,31 +25,37 @@ export type SkapObject = (
 	| SkapLava
 	| SkapText
 );
-export type SkapMap = {
+export type SkapRoom = {
+	bounds: Bounds;
+	obstacleColor: Color;
+	backgroundColor: Color;
 	objects: SkapObject[];
 };
 // #endregion
 
 // #region constructors
-export const obstacle = (bounds: Bounds): SkapObstacle => ({
+export const obstacle = (left: number, top: number, right: number, bottom: number): SkapObstacle => ({
 	type: "obstacle",
 	id: createId(),
-	bounds,
+	bounds: new Bounds({ left, top, right, bottom }),
 });
-export const lava = (bounds: Bounds): SkapLava => ({
+export const lava = (left: number, top: number, right: number, bottom: number): SkapLava => ({
 	type: "lava",
 	id: createId(),
-	bounds,
+	bounds: new Bounds({ left, top, right, bottom }),
 });
-export const text = (pos: Vec2, text: string): SkapText => ({
+export const text = (x: number, y: number, text: string): SkapText => ({
 	type: "text",
 	id: createId(),
-	pos,
+	pos: vec2(x, y),
 	text,
 });
 // #endregion
 
-const mapContext = createContext<SkapMap>({
+const mapContext = createContext<SkapRoom>({
+	bounds: new Bounds({ left: 0, top: 0, right: 100, bottom: 100 }),
+	obstacleColor: Color.hex(0x000a57, .8),
+	backgroundColor: Color.hex(0xe0e0e0),
 	objects: [],
 });
 export const MapProvider = mapContext.Provider;
