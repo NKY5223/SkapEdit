@@ -33,7 +33,7 @@ export const ViewSelector: FC<ViewSelectorProps> = ({
 
 	return (
 		<div className={css["toolbar"]}>
-			<DropdownSelectSectioned initial={view.view} options={options}
+			<DropdownSelectSectioned initial={view.viewId} options={options}
 				fallback={<Translate k="layout.view.fallback" />}
 				optionsClass={css["selector-options"]}
 				onSelect={value => dispatch({
@@ -45,6 +45,7 @@ export const ViewSelector: FC<ViewSelectorProps> = ({
 		</div>
 	);
 }
+/** Essentially a div */
 export const ViewToolbar: ExtensibleFC<PropsWithChildren> = ({ children, classes }) => (
 	<div className={classList(...classes ?? [])}>{children}</div>
 );

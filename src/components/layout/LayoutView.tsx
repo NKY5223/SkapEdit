@@ -1,14 +1,14 @@
-import { FC, memo, ReactNode } from "react";
-import css from "./LayoutView.module.css";
-import { LayoutDescView, LayoutFC, useView } from "./Layout.tsx";
-import { ErrorBoundary } from "../error/ErrorBoundary.tsx";
-import { classList } from "../utils.tsx";
-import { Translate } from "../translate/Translate.tsx";
-import { ViewSelector } from "./LayoutViewToolbar.tsx";
-import { createId } from "../../common/uuid.ts";
 import { useContextMenu } from "@components/contextmenu/context.tsx";
 import { section, single } from "@components/contextmenu/ContextMenu.tsx";
-import { makeLayoutSplit } from "./LayoutSplit.tsx";
+import { FC, memo, ReactNode } from "react";
+import { createId } from "../../common/uuid.ts";
+import { ErrorBoundary } from "../error/ErrorBoundary.tsx";
+import { Translate } from "../translate/Translate.tsx";
+import { classList } from "../utils.tsx";
+import { LayoutDescView, LayoutFC, useView } from "./Layout.tsx";
+import { makeSplitX, makeSplitY } from "./LayoutSplit.tsx";
+import css from "./LayoutView.module.css";
+import { ViewSelector } from "./LayoutViewToolbar.tsx";
 
 type ViewProps = {
 	children: ReactNode;
@@ -26,17 +26,17 @@ export const LayoutView: LayoutFC<LayoutDescView, LayoutViewProps> = ({
 			single("split-x", (<Translate k="layout.view.split-x" />), "split-x", () => dispatch({
 				type: "replace",
 				target: desc,
-				desc: makeLayoutSplit("x",
-					desc, makeLayoutView(null),
-					0.5
+				desc: makeSplitX(0.5,
+					desc,
+					makeView(null),
 				)
 			})),
 			single("split-y", (<Translate k="layout.view.split-y" />), "split-y", () => dispatch({
 				type: "replace",
 				target: desc,
-				desc: makeLayoutSplit("y",
-					desc, makeLayoutView(null),
-					0.5
+				desc: makeSplitY(0.5,
+					desc,
+					makeView(null),
 				)
 			})),
 		])
@@ -83,7 +83,7 @@ export const LayoutView: LayoutFC<LayoutDescView, LayoutViewProps> = ({
 }
 export const LayoutViewMemo = memo(LayoutView, ({ desc: a }, { desc: b }) => (a === b));
 
-export const makeLayoutView = (view: string | null): LayoutDescView => ({
+export const makeView = (view: string | null): LayoutDescView => ({
 	type: "view",
 	id: createId(),
 	view,

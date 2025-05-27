@@ -1,5 +1,5 @@
 import { FC, useMemo, useRef, useState } from "react";
-import { Camera, useCamera } from "./camera.ts";
+import { Camera, SetCamera, useCamera } from "./camera.ts";
 import { ViewFC } from "../../layout/LayoutView.tsx";
 import { SkapRoom, useMap } from "../../../editor/map.ts";
 import { WebGLLayer } from "./webgl/WebGLLayer.tsx";
@@ -14,6 +14,7 @@ import { useElementSize } from "@hooks/useElementSize.ts";
 import { LavaWebGLRenderer } from "./renderer/lava.ts";
 import { Bounds } from "@editor/bounds.ts";
 import { BackgroundObstacleWebGLRenderer, BackgroundWebGLRenderer } from "./renderer/background.ts";
+import { View, ViewInfo } from "@components/layout/Layout.tsx";
 
 export type ViewportInfo = {
 	camera: Camera;
@@ -108,7 +109,7 @@ export const Viewport: ViewFC = ({
 		const d = e.deltaY * wheelMult(e.deltaMode);
 		const newIndex = scaleIndex + d;
 		const newScale = scaleBase * scaleExp ** (scaleMul * newIndex);
-		
+
 		setScaleIndex(newIndex);
 		setCamera({
 			scale: newScale
@@ -118,16 +119,20 @@ export const Viewport: ViewFC = ({
 	const viewportSize = useElementSize(elRef);
 	const viewportBounds = camera.getBounds(viewportSize);
 
+	const room = map.rooms[0];
+	if (!room) {
+		throw new Error("Map has no rooms");
+	}
 	const viewportInfo: ViewportInfo = {
 		camera,
 		viewportSize,
-		room: map,
+		room,
 		viewportBounds,
 	};
 
 	return (
-		<div ref={elRef} className={css["viewport"]} 
-		onPointerDown={handlePointerDown} onWheel={handleWheel}>
+		<div ref={elRef} className={css["viewport"]}
+			onPointerDown={handlePointerDown} onWheel={handleWheel}>
 			<ViewportCanvas viewportInfo={viewportInfo} layers={layers} />
 			<ViewToolbar classes={[css["viewport-topbar"]]}>
 				{children}
@@ -135,3 +140,76 @@ export const Viewport: ViewFC = ({
 		</div>
 	);
 }
+
+export namespace Viewport {
+	export type State = {
+		camera: Camera;
+		scaleIndex: number;
+	};
+	export type Action = (
+		| {
+			type: "set_pos";
+			pos: Vec2;
+		}
+		| {
+			type: "set_scale";
+			scaleIndex: number;
+		}
+		| {
+			type: "change_scale";
+			scaleIndexChange: number;
+		}
+	);
+}
+const calcScale = (i: number) => scaleBase * scaleExp ** (scaleMul * i);
+const ViewportComp: (typeof ViewportView)["Component"] = ({
+	state, dispatch,
+	viewSwitch,
+}) => {
+	return (
+		<div>
+			<ViewToolbar>
+				{viewSwitch}
+			</ViewToolbar>
+			State: {JSON.stringify(state)}<br />
+		</div>
+	);
+};
+const ViewportView: View<Viewport.State, Viewport.Action> = {
+	name: "viewport",
+	new: () => {
+		return {
+			camera: new Camera({
+				pos: zero,
+				scale: scaleBase,
+			}),
+			scaleIndex: 0,
+		};
+	},
+	reducer: (state, action) => {
+		const { camera, scaleIndex } = state;
+		switch (action.type) {
+			case "set_pos": {
+				return {
+					...state,
+					camera: camera.set({ pos: action.pos }),
+				};
+			}
+			case "set_scale": {
+				return {
+					...state,
+					camera: camera.set({ scale: calcScale(action.scaleIndex) }),
+				};
+			}
+			case "change_scale": {
+				const newIndex = scaleIndex + action.scaleIndexChange;
+				return {
+					...state,
+					camera: camera.set({ scale: calcScale(newIndex) }),
+				};
+			}
+		}
+		return state;
+	},
+	Component: ViewportComp,
+};

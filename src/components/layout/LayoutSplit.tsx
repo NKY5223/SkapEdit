@@ -96,7 +96,8 @@ export const LayoutSplit: LayoutFC<LayoutDescSplit, LayoutSplitProps> = ({
 		</div>
 	);
 }
-export const makeLayoutSplit = (axis: "x" | "y", first: LayoutDesc, second: LayoutDesc, ratio: number): LayoutDescSplit => ({
+
+export const makeSplit = (axis: "x" | "y", ratio: number, first: LayoutDesc, second: LayoutDesc): LayoutDescSplit => ({
 	type: "split",
 	id: createId(),
 	axis,
@@ -104,3 +105,7 @@ export const makeLayoutSplit = (axis: "x" | "y", first: LayoutDesc, second: Layo
 	second,
 	ratio,
 });
+export const makeSplitX = (ratio: number, left: LayoutDesc, right: LayoutDesc) => 
+	makeSplit("x", ratio, left, right);
+export const makeSplitY = (ratio: number, top: LayoutDesc, bottom: LayoutDesc) => 
+	makeSplit("y", ratio, top, bottom);

@@ -1,8 +1,8 @@
-import { useIcons, Icon } from "../components/icon/Icon.tsx";
-import { ViewFC } from "../components/layout/LayoutView.tsx";
+import { useIcons, Icon } from "@components/icon/Icon.tsx";
+import { ViewFC } from "@components/layout/LayoutView.tsx";
 
 export const TestIcons: ViewFC = ({ children }) => {
-	const entries = [...useIcons()];
+	const entries = useIcons().entries();
 	return (
 		<div
 			style={{

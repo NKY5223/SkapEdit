@@ -3,7 +3,7 @@ import { Realize } from "../../../common/types.ts";
 import { Bounds } from "../../../editor/bounds.ts";
 import { Vec2, vec2 } from "../../../common/vec2.ts";
 
-type InitCamera = ({
+export type InitCamera = ({
 	x: number;
 	y: number;
 	scale: number;
@@ -11,7 +11,7 @@ type InitCamera = ({
 	pos: Vec2;
 	scale: number;
 });
-type UpdateCamera = Realize<({} | {
+export type UpdateCamera = Realize<({} | {
 	pos: Vec2;
 } | {
 	x: number;
@@ -20,7 +20,7 @@ type UpdateCamera = Realize<({} | {
 	scale: number;
 })>;
 
-type SetCamera = UpdateCamera | ((camera: Camera) => UpdateCamera);
+export type SetCamera = UpdateCamera | ((camera: Camera) => UpdateCamera);
 export class Camera {
 	readonly pos: Vec2;
 	readonly scale: number;

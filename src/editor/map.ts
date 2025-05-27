@@ -26,10 +26,19 @@ export type SkapObject = (
 	| SkapText
 );
 export type SkapRoom = {
+	id: string;
+	name: string;
 	bounds: Bounds;
 	obstacleColor: Color;
 	backgroundColor: Color;
 	objects: SkapObject[];
+};
+export type SkapMap = {
+	spawn: {
+		room: string;
+		position: Vec2;
+	};
+	rooms: SkapRoom[];
 };
 // #endregion
 
@@ -52,11 +61,24 @@ export const text = (x: number, y: number, text: string): SkapText => ({
 });
 // #endregion
 
-const mapContext = createContext<SkapRoom>({
-	bounds: new Bounds({ left: 0, top: 0, right: 100, bottom: 100 }),
-	obstacleColor: Color.hex(0x000a57, .8),
-	backgroundColor: Color.hex(0xe0e0e0),
-	objects: [],
+const DEFAULT_ROOM_ID = `DEFAULT_ROOM_ID(${createId()})`;
+const mapContext = createContext<SkapMap>({
+	spawn: {
+		room: DEFAULT_ROOM_ID,
+		position: vec2(0, 0),
+	},
+	rooms: [
+		{
+			id: DEFAULT_ROOM_ID,
+			name: `DEFAULT_ROOM_NAME`,
+			bounds: new Bounds({ left: 0, top: 0, right: 100, bottom: 100 }),
+			obstacleColor: Color.hex(0x000a57, .8),
+			backgroundColor: Color.hex(0xe0e0e0),
+			objects: [
+				text(0, 0, "This is the fallback map; something went wrong."),
+			],
+		}
+	],
 });
 export const MapProvider = mapContext.Provider;
 export const useMap = () => useContext(mapContext);

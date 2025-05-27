@@ -1,4 +1,4 @@
-import { Dispatch, FC, Reducer, useReducer } from "react";
+import { Dispatch, FC, ReactNode, Reducer, useReducer } from "react";
 import { createMapContext } from "../../hooks/createMapContext.tsx";
 import css from "./Layout.module.css";
 import { LayoutSplit } from "./LayoutSplit.tsx";
@@ -39,7 +39,8 @@ type BaseDesc<T extends string> = {
 	id: string;
 }
 export type LayoutDescView = BaseDesc<"view"> & {
-	view: string | null;
+	/** id reference */
+	viewId: string;
 };
 export type LayoutDescSplit = BaseDesc<"split"> & {
 	axis: "x" | "y";
@@ -52,6 +53,49 @@ export type LayoutDesc = (
 	| LayoutDescView
 	| LayoutDescSplit
 );
+
+export type ViewInfo<T = unknown> = {
+	id: string;
+	type: string;
+	state: T;
+};
+export type View<T = unknown, A = never> = {
+	/** Name for this View (e.g. `"viewport"`) */
+	name: string;
+	/** Create a new view state */
+	new: (id: string) => T;
+	
+	/**
+	 * Additional validation for `ViewInfo`.  
+	 * `info.type` is checked against `this.name` before this.
+	 */
+	valid?: (info: ViewInfo) => info is ViewInfo<T>;
+	/** 
+	 * Check if an action is valid. 
+	 * @default () => true 
+	 */
+	validAction?: (action: unknown) => action is A;
+	reducer: Reducer<T, A>;
+
+	Component: FC<{
+		state: T;
+		dispatch: Dispatch<A>;
+		/**
+		 * Dispatch a state update to some other view
+		 * (may or may not crash idk)
+		 * @returns `true` if the view accepted this update, `false` otherwise
+		 */
+		dispatchTo: <T>(id: string, action: T) => boolean;
+		
+		/** View Switcher component. Should be included in the view. */
+		viewSwitch: ReactNode;
+	}>;
+}
+
+export type LayoutRoot = {
+	views: ViewInfo[];
+	tree: LayoutDesc;
+}
 
 type BaseAction<T extends string> = {
 	type: T;
