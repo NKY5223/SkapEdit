@@ -81,7 +81,7 @@ export const Editor: FC<EditorProps> = ({
 					<Icons>
 						<ContextMenuProvider>
 							<MapProvider value={map}>
-								<Layout layout={defaultLayout} views={toMap(views)} />
+								<Layout layout={defaultLayout} viewProviders={toMap(views)} />
 							</MapProvider>
 						</ContextMenuProvider>
 					</Icons>

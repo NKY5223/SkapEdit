@@ -1,5 +1,5 @@
 import { FC, useMemo, useRef, useState } from "react";
-import { Camera, SetCamera, useCamera } from "./camera.ts";
+import { Camera, useCamera } from "./camera.ts";
 import { ViewFC } from "../../layout/LayoutView.tsx";
 import { SkapRoom, useMap } from "../../../editor/map.ts";
 import { WebGLLayer } from "./webgl/WebGLLayer.tsx";
@@ -14,7 +14,7 @@ import { useElementSize } from "@hooks/useElementSize.ts";
 import { LavaWebGLRenderer } from "./renderer/lava.ts";
 import { Bounds } from "@editor/bounds.ts";
 import { BackgroundObstacleWebGLRenderer, BackgroundWebGLRenderer } from "./renderer/background.ts";
-import { View, ViewInfo } from "@components/layout/Layout.tsx";
+import { Layout } from "@components/layout/Layout.tsx";
 
 export type ViewportInfo = {
 	camera: Camera;
@@ -163,7 +163,7 @@ export namespace Viewport {
 }
 const calcScale = (i: number) => scaleBase * scaleExp ** (scaleMul * i);
 const ViewportComp: (typeof ViewportView)["Component"] = ({
-	state, dispatch,
+	state,
 	viewSwitch,
 }) => {
 	return (
@@ -175,7 +175,7 @@ const ViewportComp: (typeof ViewportView)["Component"] = ({
 		</div>
 	);
 };
-const ViewportView: View<Viewport.State, Viewport.Action> = {
+const ViewportView: Layout.ViewProvider<Viewport.State, Viewport.Action> = {
 	name: "viewport",
 	new: () => {
 		return {

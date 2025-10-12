@@ -2,7 +2,9 @@ import { Dispatch, FC, ReactNode, Reducer, useReducer } from "react";
 import { createMapContext } from "../../hooks/createMapContext.tsx";
 import css from "./Layout.module.css";
 import { LayoutSplit } from "./LayoutSplit.tsx";
-import { LayoutViewMemo, ViewFC } from "./LayoutView.tsx";
+import { LayoutViewMemo } from "./LayoutView.tsx";
+import { ViewToolbar } from "./LayoutViewToolbar.tsx";
+import { Translate } from "@components/translate/Translate.tsx";
 
 /* 
 2025-02-xx
@@ -34,192 +36,212 @@ data
 */
 
 // #region Types
-type BaseDesc<T extends string> = {
-	type: T;
-	id: string;
-}
-export type LayoutDescView = BaseDesc<"view"> & {
-	/** id reference */
-	viewId: string;
-};
-export type LayoutDescSplit = BaseDesc<"split"> & {
-	axis: "x" | "y";
-	ratio: number;
-	first: LayoutDesc;
-	second: LayoutDesc;
-};
-
-export type LayoutDesc = (
-	| LayoutDescView
-	| LayoutDescSplit
-);
-
-export type ViewInfo<T = unknown> = {
-	id: string;
-	type: string;
-	state: T;
-};
-export type View<T = unknown, A = never> = {
-	/** Name for this View (e.g. `"viewport"`) */
-	name: string;
-	/** Create a new view state */
-	new: (id: string) => T;
-	
-	/**
-	 * Additional validation for `ViewInfo`.  
-	 * `info.type` is checked against `this.name` before this.
-	 */
-	valid?: (info: ViewInfo) => info is ViewInfo<T>;
-	/** 
-	 * Check if an action is valid. 
-	 * @default () => true 
-	 */
-	validAction?: (action: unknown) => action is A;
-	reducer: Reducer<T, A>;
-
-	Component: FC<{
-		state: T;
-		dispatch: Dispatch<A>;
-		/**
-		 * Dispatch a state update to some other view
-		 * (may or may not crash idk)
-		 * @returns `true` if the view accepted this update, `false` otherwise
-		 */
-		dispatchTo: <T>(id: string, action: T) => boolean;
-		
-		/** View Switcher component. Should be included in the view. */
-		viewSwitch: ReactNode;
-	}>;
-}
-
-export type LayoutRoot = {
-	views: ViewInfo[];
-	tree: LayoutDesc;
-}
-
-type BaseAction<T extends string> = {
-	type: T;
-	target: LayoutDesc;
-};
+export type ID = string;
 export type LayoutAction = (
-	| BaseAction<"set_view"> & {
-		view: string | null;
+	| {
+		type: "replace";
+		/** Target node uuid */
+		targetNode: ID;
+		replacement: Layout.Node;
 	}
-	| BaseAction<"set_ratio"> & {
+	| {
+		type: "set_ratio";
+		/** Target split node uuid */
+		targetNode: ID;
 		ratio: number;
 	}
-	| BaseAction<"replace"> & {
-		desc: LayoutDesc;
+	| {
+		type: "update_state"; 
+		/** Target view node uuid */
+		targetNode: ID;
+		state: unknown;
+	}
+	| {
+		type: "dispatch_to";
+		targetNode: ID;
+		action: unknown;
 	}
 );
-export type LayoutFC<T extends LayoutDesc, Props> = FC<{
-	dispatch: Dispatch<LayoutAction>;
-	desc: T;
+export type LayoutFC<T extends Layout.Node, Props> = FC<{
+	dispatchLayout: Dispatch<LayoutAction>;
+	node: T;
 } & Props>;
-// #endregion
 
-const setInLayout = <T extends LayoutDesc>(
-	layout: LayoutDesc,
-	target: LayoutDesc,
-	set: T,
-): [boolean, LayoutDesc] => {
-	if (target.id === layout.id) {
-		return [true, set];
-	}
-	switch (layout.type) {
-		case "view": {
-			return [false, layout];
-		}
-		case "split": {
-			const [foundFirst, first] = setInLayout(layout.first, target, set);
-			const [foundSecond, second] = setInLayout(layout.second, target, set);
-			if (!foundFirst && !foundSecond) return [false, layout];
-			return [true, {
-				...layout,
-				first,
-				second,
-			}];
-		}
-	}
-}
 
-const layoutReducer: Reducer<LayoutDesc, LayoutAction> = (layout, action) => {
-	switch (action.type) {
-		case "replace": {
-			const { target, desc } = action;
-			const [found, newLayout] = setInLayout(layout, target, desc);
+export namespace Layout {
 
-			if (!found) console.warn("Could not find", target, "in layout:", layout);
-			return newLayout;
-		}
-		case "set_view": {
-			const { target, view } = action;
-			const [found, newLayout] = setInLayout(layout, target, {
-				...target,
-				view,
-			});
+	export type ViewProvider<State = unknown, Action = never> = {
+		/** Name for this View (e.g. `"viewport"`) */
+		name: string;
+		/** Create a new view state */
+		new: (id: string) => State;
 
-			if (!found) console.warn("Could not find", target, "in layout:", layout);
-			return newLayout;
-		}
-		case "set_ratio": {
-			const { target, ratio } = action;
-			const [found, newLayout] = setInLayout(layout, target, {
-				...target,
-				ratio,
-			});
+		/**
+		 * Additional validation for `ViewInfo`.
+		 * `info.type` is checked against `this.name` before this.
+		 */
+		valid?: (info: unknown) => info is State;
+		/**
+		 * Check if an action is valid.
+		 * @default () => true
+		 */
+		validAction?: (action: unknown) => action is Action;
+		reducer: Reducer<State, Action>;
 
-			if (!found) console.warn("Could not find", target, "in layout:", layout);
-			return newLayout;
-		}
-	}
-}
+		Component: FC<{
+			state: State;
+			/**
+			 * Dispatch a state update to the layout
+			 */
+			dispatchLayout: Dispatch<LayoutAction>;
+			/**
+			 * Dispatch a state update to this view
+			 */
+			dispatchThis: Dispatch<Action>;
+			/**
+			 * Dispatch a state update to some other view
+			 * (may or may not crash idk)
+			 * @returns `true` if the view accepted this update, `false` otherwise
+			 */
+			dispatchTo: <A>(id: string, action: A) => boolean;
 
-export const [useViews, useView, ViewsProvider, viewsContext] = createMapContext<ViewFC>();
+			/** View Switcher component. Should be included in the view. */
+			viewSwitch: ReactNode;
+		}>;
+	};
 
-type LayoutProps = {
-	layout: LayoutDesc;
-	views: ReadonlyMap<string, ViewFC>;
-};
-export const Layout: FC<LayoutProps> = ({
-	layout: initialLayout,
-	views,
-}) => {
-	const [layout, dispatchLayout] = useReducer(layoutReducer, initialLayout);
-	return (
-		<ViewsProvider value={views}>
-			<div className={css["layout"]}>
-				<LayoutTree layout={layout} dispatch={dispatchLayout} />
-			</div>
-		</ViewsProvider>
+	export type Root = {
+		tree: Tree;
+	};
+
+	export type Tree = {
+		node: Node;
+	};
+
+	type BaseNode<T extends string> = {
+		type: T;
+		id: string;
+	};
+	export type NodeView = BaseNode<"view"> & {
+		providerName: string;
+		state: unknown;
+	};
+	export type NodeSplit = BaseNode<"split"> & {
+		axis: "x" | "y";
+		ratio: number;
+		first: Node;
+		second: Node;
+	};
+
+	export type Node = (
+		| NodeSplit 
+		| NodeView
 	);
 }
 
-type LayoutTreeProps = {
-	layout: LayoutDesc;
-	dispatch: Dispatch<LayoutAction>;
-};
-const LayoutTree: FC<LayoutTreeProps> = ({
-	layout,
-	dispatch,
-}) => {
-	switch (layout.type) {
+export const emptyViewProvider: Layout.ViewProvider<{}> = {
+	name: "empty",
+	new: () => ({}),
+	reducer: () => ({}),
+	Component: ({
+		viewSwitch
+	}) => (
+		<div>
+			<ViewToolbar>{viewSwitch}</ViewToolbar>
+			<Translate k="layout.view.empty" />
+		</div>
+	)
+}
+
+// #endregion
+
+const setInLayout = (
+	root: Layout.Node,
+	id: string,
+	f: (node: Layout.Node) => Layout.Node,
+): [success: boolean, newNode: Layout.Node] => {
+	if (root.id === id) {
+		return [true, f(root)];
+	}
+	switch (root.type) {
+		case "view": {
+			return [false, root];
+		}
 		case "split": {
-			const { first, second } = layout;
+			const [foundFirst, first] = setInLayout(root.first, id, f);
+			if (foundFirst) {
+				return [true, {
+					...root,
+					first,
+				}];
+			}
+			const [foundSecond, second] = setInLayout(root.second, id, f);
+			if (foundSecond) {
+				return [true, {
+					...root,
+					second,
+				}];
+			}
+			return [false, root];
+		}
+	}
+}
+
+const layoutReducer: Reducer<Layout.Root, LayoutAction> = (layout, action) => {
+	switch (action.type) {
+	}
+	return layout;
+}
+
+export const [useViewProviders, useViewProvider, ViewsProviderProvider, ] = createMapContext<Layout.ViewProvider>();
+export const [useViewStates, useViewState, ViewInfoStatesProvider, ] = createMapContext<unknown>();
+
+type LayoutProps = {
+	layout: Layout.Root;
+	viewProviders: ReadonlyMap<string, Layout.ViewProvider>;
+};
+export const Layout: FC<LayoutProps> = ({
+	layout: initialLayout,
+	viewProviders,
+}) => {
+	const [layout, dispatchLayout] = useReducer(layoutReducer, initialLayout);
+	const node = layout.tree.node;
+	return (
+		<ViewInfoStatesProvider value={new Map()}>
+			<ViewsProviderProvider value={viewProviders}>
+				<div className={css["layout"]}>
+					<LayoutNode node={node} dispatchLayout={dispatchLayout} />
+				</div>
+			</ViewsProviderProvider>
+		</ViewInfoStatesProvider>
+	);
+}
+
+type LayoutNodeProps = {
+	node: Layout.Node;
+	dispatchLayout: Dispatch<LayoutAction>;
+};
+const LayoutNode: FC<LayoutNodeProps> = ({
+	node,
+	dispatchLayout,
+}) => {
+	switch (node.type) {
+		case "split": {
+			const { first, second } = node;
 			return (
-				<LayoutSplit desc={layout} dispatch={dispatch}>
-					<LayoutTree layout={first} dispatch={dispatch} />
-					<LayoutTree layout={second} dispatch={dispatch} />
+				<LayoutSplit node={node} dispatchLayout={dispatchLayout}>
+					<LayoutNode node={first} dispatchLayout={dispatchLayout} />
+					<LayoutNode node={second} dispatchLayout={dispatchLayout} />
 				</LayoutSplit>
 			);
 		}
 		case "view": {
-			const { } = layout;
+			const { } = node;
 			return (
-				<LayoutViewMemo desc={layout} dispatch={dispatch} />
+				<LayoutViewMemo node={node} dispatchLayout={dispatchLayout} />
 			);
 		}
 	}
-	const errorMessage = `Layout error: could not make \n${JSON.stringify(layout, null, "\t")}`;
-	throw new Error(errorMessage, { cause: layout });
+	const errorMessage = `Layout error: could not make \n${JSON.stringify(node, null, "\t")}`;
+	throw new Error(errorMessage, { cause: node });
 }

@@ -5,7 +5,6 @@ import { FC } from "react";
 
 
 export const Test: FC = () => {
-	// wow that's a lot of providers!!!
 	return (
 		<ErrorBoundary location="Test">
 			<Editor />

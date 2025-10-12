@@ -6,22 +6,22 @@ import { Translate } from "@components/translate/Translate.tsx";
 import { classList } from "@components/utils.tsx";
 import { useDrag } from "@hooks/useDrag.ts";
 import { ReactNode, useRef } from "react";
-import { LayoutDesc, LayoutDescSplit, LayoutFC } from "./Layout.tsx";
+import { Layout, LayoutFC } from "./Layout.tsx";
 import css from "./LayoutSplit.module.css";
 
 type LayoutSplitProps = {
 	children: [ReactNode, ReactNode];
 };
-export const LayoutSplit: LayoutFC<LayoutDescSplit, LayoutSplitProps> = ({
-	dispatch,
-	desc,
+export const LayoutSplit: LayoutFC<Layout.NodeSplit, LayoutSplitProps> = ({
+	dispatchLayout: dispatch,
+	node,
 	children: [first, second],
 }) => {
-	const { ratio, axis } = desc;
+	const { ratio, axis } = node;
 	const setRatio = (ratio: number) => dispatch({
 		type: "set_ratio",
+		targetNode: node.id,
 		ratio,
-		target: desc
 	});
 	const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -36,29 +36,29 @@ export const LayoutSplit: LayoutFC<LayoutDescSplit, LayoutSplitProps> = ({
 
 	const swap = () => dispatch({
 		type: "replace",
-		target: desc,
-		desc: {
-			...desc,
-			first: desc.second,
-			second: desc.first,
-			ratio: 1 - desc.ratio,
+		targetNode: node.id,
+		replacement: {
+			...node,
+			first: node.second,
+			second: node.first,
+			ratio: 1 - node.ratio,
 		}
 	});
-	const layoutItems = desc.axis === "x"
+	const layoutItems = node.axis === "x"
 		? [
 			single("dissolve-left",
 				<Translate k="layout.split.dissolve-left" />, "arrowbar-left",
 				() => dispatch({
 					type: "replace",
-					target: desc,
-					desc: desc.second,
+					targetNode: node.id,
+					replacement: node.second,
 				})),
 			single("dissolve-right",
 				<Translate k="layout.split.dissolve-right" />, "arrowbar-right",
 				() => dispatch({
 					type: "replace",
-					target: desc,
-					desc: desc.first,
+					targetNode: node.id,
+					replacement: node.first,
 				})),
 			single("swap", (<Translate k="layout.split.swap-x" />), "arrow-x", swap),
 		]
@@ -67,15 +67,15 @@ export const LayoutSplit: LayoutFC<LayoutDescSplit, LayoutSplitProps> = ({
 				<Translate k="layout.split.dissolve-up" />, "arrowbar-up",
 				() => dispatch({
 					type: "replace",
-					target: desc,
-					desc: desc.second,
+					targetNode: node.id,
+					replacement: node.second,
 				})),
 			single("dissolve-down",
 				<Translate k="layout.split.dissolve-down" />, "arrowbar-down",
 				() => dispatch({
 					type: "replace",
-					target: desc,
-					desc: desc.first,
+					targetNode: node.id,
+					replacement: node.first,
 				})),
 			single("swap", (<Translate k="layout.split.swap-y" />), "arrow-y", swap),
 		];
@@ -97,7 +97,7 @@ export const LayoutSplit: LayoutFC<LayoutDescSplit, LayoutSplitProps> = ({
 	);
 }
 
-export const makeSplit = (axis: "x" | "y", ratio: number, first: LayoutDesc, second: LayoutDesc): LayoutDescSplit => ({
+export const makeSplit = (axis: "x" | "y", ratio: number, first: Layout.Node, second: Layout.Node): Layout.NodeSplit => ({
 	type: "split",
 	id: createId(),
 	axis,
@@ -105,7 +105,7 @@ export const makeSplit = (axis: "x" | "y", ratio: number, first: LayoutDesc, sec
 	second,
 	ratio,
 });
-export const makeSplitX = (ratio: number, left: LayoutDesc, right: LayoutDesc) => 
+export const makeSplitX = (ratio: number, left: Layout.Node, right: Layout.Node) => 
 	makeSplit("x", ratio, left, right);
-export const makeSplitY = (ratio: number, top: LayoutDesc, bottom: LayoutDesc) => 
+export const makeSplitY = (ratio: number, top: Layout.Node, bottom: Layout.Node) => 
 	makeSplit("y", ratio, top, bottom);
