@@ -1,6 +1,6 @@
 import { createContext, FC, PropsWithChildren, useContext } from "react";
 
-export function createMapContext<T, K = string>(defaultValue: ReadonlyMap<K, T> = new Map()) {
+export function createMapContext<T, K = string>(name: string = "", defaultValue: ReadonlyMap<K, T> = new Map()) {
 	type M = ReadonlyMap<K, T>;
 
 	const context = createContext<M>(defaultValue);
@@ -24,6 +24,7 @@ export function createMapContext<T, K = string>(defaultValue: ReadonlyMap<K, T> 
 			</context.Provider>
 		);
 	};
+	Provider.displayName = name ? `${name}Provider` : `Map-ContextProvider`;
 
 	const result: [
 		useMapContext: () => M,

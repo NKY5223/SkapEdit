@@ -9,7 +9,7 @@ export type IconInfo = {
 	aspectRatio?: number;
 	viewBox?: Vec2;
 };
-const [useIcons, useIcon, IconProvider] = createMapContext<IconInfo, IconName>();
+const [useIcons, useIcon, IconProvider] = createMapContext<IconInfo, IconName>("Icon");
 export { useIcons, useIcon, IconProvider }
 
 declare global {

@@ -1,20 +1,19 @@
-import { FC, useMemo, useRef, useState } from "react";
-import { Camera, useCamera } from "./camera.ts";
-import { ViewFC } from "../../layout/LayoutView.tsx";
-import { SkapRoom, useMap } from "../../../editor/map.ts";
-import { WebGLLayer } from "./webgl/WebGLLayer.tsx";
-import { ObstacleWebGLRenderer } from "./renderer/obstacle.ts";
-import css from "./Viewport.module.css";
-import { ViewToolbar } from "../../layout/LayoutViewToolbar.tsx";
-import "../../../common/vector.ts";
-import { Vec2, zero } from "../../../common/vec2.ts";
-import { useDrag } from "../../../hooks/useDrag.ts";
-import { TextLayer } from "./renderer/text.tsx";
-import { useElementSize } from "@hooks/useElementSize.ts";
-import { LavaWebGLRenderer } from "./renderer/lava.ts";
-import { Bounds } from "@editor/bounds.ts";
-import { BackgroundObstacleWebGLRenderer, BackgroundWebGLRenderer } from "./renderer/background.ts";
 import { Layout } from "@components/layout/Layout.tsx";
+import { Bounds } from "@editor/bounds.ts";
+import { useElementSize } from "@hooks/useElementSize.ts";
+import { FC, useMemo, useRef, useState } from "react";
+import { Vec2, zero } from "@common/vec2.ts";
+import "@common/vector.ts";
+import { SkapRoom, useMap } from "../../../editor/map.ts";
+import { useDrag } from "@hooks/useDrag.ts";
+import { ViewToolbar } from "../../layout/LayoutViewToolbar.tsx";
+import { Camera, useCamera } from "./camera.ts";
+import { BackgroundObstacleWebGLRenderer, BackgroundWebGLRenderer } from "./renderer/background.ts";
+import { LavaWebGLRenderer } from "./renderer/lava.ts";
+import { ObstacleWebGLRenderer } from "./renderer/obstacle.ts";
+import { TextLayer } from "./renderer/text.tsx";
+import css from "./Viewport.module.css";
+import { WebGLLayer } from "./webgl/WebGLLayer.tsx";
 
 export type ViewportInfo = {
 	camera: Camera;
@@ -79,10 +78,12 @@ const scaleBase = 5;
 // one "tick" of the mouse wheel is 100 units, and -1 to flip directions
 const scaleMul = -1 / 100;
 const scaleExp = 1.25;
+const calcScale = (i: number) => scaleBase * scaleExp ** (scaleMul * i);
 
-export const Viewport: ViewFC = ({
-	children,
+export const Viewport: Layout.ViewComponent = ({
+	viewSwitch,
 }) => {
+	// useMemo because the webgl canvas should persist
 	const layers = useMemo(() => [
 		WebGLLayer(
 			new BackgroundObstacleWebGLRenderer(),
@@ -108,7 +109,7 @@ export const Viewport: ViewFC = ({
 	const handleWheel: React.WheelEventHandler<HTMLElement> = e => {
 		const d = e.deltaY * wheelMult(e.deltaMode);
 		const newIndex = scaleIndex + d;
-		const newScale = scaleBase * scaleExp ** (scaleMul * newIndex);
+		const newScale = calcScale(newIndex);
 
 		setScaleIndex(newIndex);
 		setCamera({
@@ -135,81 +136,13 @@ export const Viewport: ViewFC = ({
 			onPointerDown={handlePointerDown} onWheel={handleWheel}>
 			<ViewportCanvas viewportInfo={viewportInfo} layers={layers} />
 			<ViewToolbar classes={[css["viewport-topbar"]]}>
-				{children}
+				{viewSwitch}
 			</ViewToolbar>
 		</div>
 	);
 }
 
-export namespace Viewport {
-	export type State = {
-		camera: Camera;
-		scaleIndex: number;
-	};
-	export type Action = (
-		| {
-			type: "set_pos";
-			pos: Vec2;
-		}
-		| {
-			type: "set_scale";
-			scaleIndex: number;
-		}
-		| {
-			type: "change_scale";
-			scaleIndexChange: number;
-		}
-	);
+export const ViewportVP: Layout.ViewProvider = {
+	name: "map.viewport",
+	Component: Viewport,
 }
-const calcScale = (i: number) => scaleBase * scaleExp ** (scaleMul * i);
-const ViewportComp: (typeof ViewportView)["Component"] = ({
-	state,
-	viewSwitch,
-}) => {
-	return (
-		<div>
-			<ViewToolbar>
-				{viewSwitch}
-			</ViewToolbar>
-			State: {JSON.stringify(state)}<br />
-		</div>
-	);
-};
-const ViewportView: Layout.ViewProvider<Viewport.State, Viewport.Action> = {
-	name: "viewport",
-	new: () => {
-		return {
-			camera: new Camera({
-				pos: zero,
-				scale: scaleBase,
-			}),
-			scaleIndex: 0,
-		};
-	},
-	reducer: (state, action) => {
-		const { camera, scaleIndex } = state;
-		switch (action.type) {
-			case "set_pos": {
-				return {
-					...state,
-					camera: camera.set({ pos: action.pos }),
-				};
-			}
-			case "set_scale": {
-				return {
-					...state,
-					camera: camera.set({ scale: calcScale(action.scaleIndex) }),
-				};
-			}
-			case "change_scale": {
-				const newIndex = scaleIndex + action.scaleIndexChange;
-				return {
-					...state,
-					camera: camera.set({ scale: calcScale(newIndex) }),
-				};
-			}
-		}
-		return state;
-	},
-	Component: ViewportComp,
-};

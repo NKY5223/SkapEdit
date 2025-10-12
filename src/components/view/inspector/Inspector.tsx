@@ -2,12 +2,12 @@ import { Button } from "@components/form/Button.tsx";
 import { FormSection } from "@components/form/FormSection.tsx";
 import { NumberInput } from "@components/form/NumberInput.tsx";
 import { Icon } from "@components/icon/Icon.tsx";
-import { ViewFC } from "@components/layout/LayoutView.tsx";
 import { useBounds } from "../../../editor/bounds.ts";
 import css from "./Inspector.module.css";
+import { Layout } from "@components/layout/Layout.tsx";
 
-export const Inspector: ViewFC = ({
-	children,
+export const Inspector: Layout.ViewComponent = ({
+	viewSwitch,
 }) => {
 	const [bounds, {
 		setLeft, setTop, setRight, setBottom,
@@ -22,7 +22,7 @@ export const Inspector: ViewFC = ({
 
 	return (
 		<div className={css["inspector"]}>
-			{children}
+			{viewSwitch}
 			<FormSection>
 				<FormSection row>
 					<NumberInput name="left" value={left} onInput={setLeft} label={
@@ -60,3 +60,8 @@ export const Inspector: ViewFC = ({
 		</div>
 	);
 }
+
+export const InspectorVP: Layout.ViewProvider = {
+	name: "map.inspector",
+	Component: Inspector,
+};

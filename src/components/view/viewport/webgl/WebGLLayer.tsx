@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ViewportInfo, ViewportLayerFC } from "../Viewport.tsx";
 import { WebGlRenderer } from "./webgl.ts";
 import { Vec2, vec2 } from "../../../../common/vec2.ts";
@@ -29,10 +29,11 @@ export const WebGLLayer = (...renderers: WebGLLayerRenderer[]): ViewportLayerFC 
 		const cleanup = () => {
 			const abortRender = abortRenderRef.current;
 			if (!abortRender) {
+				renderers.forEach(renderer => renderer.cleanup());
 				throw new Error("Attempted to stop rendering, but could not find render abort controller");
 			}
 			abortRender.abort();
-			renderers.forEach(renderer => renderer.cleanup())
+			renderers.forEach(renderer => renderer.cleanup());
 			abortRenderRef.current = undefined;
 
 			return;
@@ -54,6 +55,7 @@ export const WebGLLayer = (...renderers: WebGLLayerRenderer[]): ViewportLayerFC 
 		const abortRender = new AbortController();
 		abortRenderRef.current = abortRender;
 		
+		let prev = 0;
 		const render = (t: DOMHighResTimeStamp) => {
 			if (abortRender.signal.aborted) return;
 
@@ -100,8 +102,6 @@ export const WebGLLayer = (...renderers: WebGLLayerRenderer[]): ViewportLayerFC 
 	};
 	useEffect(initRenderers, []);
 	return (
-		<canvas ref={canvasRef}>
-			Canvas not supported :/
-		</canvas>
+		<canvas ref={canvasRef} />
 	);
 }

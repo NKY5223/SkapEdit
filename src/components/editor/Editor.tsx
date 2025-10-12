@@ -3,7 +3,7 @@ import { toMap } from "@common/toMap.tsx";
 import { ContextMenuProvider } from "@components/contextmenu/context.tsx";
 import { ErrorBoundary } from "@components/error/ErrorBoundary.tsx";
 import { Icons } from "@components/icon/icons.tsx";
-import { Layout, LayoutDesc } from "@components/layout/Layout.tsx";
+import { Layout } from "@components/layout/Layout.tsx";
 import { makeSplitX, makeSplitY } from "@components/layout/LayoutSplit.tsx";
 import { makeView } from "@components/layout/LayoutView.tsx";
 import { Translations } from "@components/translate/translations.tsx";
@@ -18,18 +18,26 @@ import { views } from "../layout/views.tsx";
 
 
 // #region defaults
-const defaultLayout: LayoutDesc = (
-	makeSplitY(0.6,
-		makeView("test.icon"),
-		makeSplitX(0.4,
-			makeView("map.viewport"),
-			makeSplitY(0.6,
-				makeView("map.inspector"),
-				makeView("test.swatch")
-			)
+const actualLayout = makeSplitX(0.75,
+	makeView("map.viewport"),
+	makeView("map.inspector"),
+)
+const testLayout = makeSplitY(0.6,
+	makeView("test.icon"),
+	makeSplitX(0.4,
+		makeView("map.viewport"),
+		makeSplitY(0.6,
+			makeView("map.inspector"),
+			makeView("test.swatch")
 		)
 	)
 );
+const defaultLayout: Layout.Node = actualLayout;
+const defaultLayoutRoot: Layout.Root = {
+	tree: {
+		node: defaultLayout
+	}
+}
 const defaultRoom: SkapRoom = {
 	id: createId(),
 	name: "Default",
@@ -81,7 +89,7 @@ export const Editor: FC<EditorProps> = ({
 					<Icons>
 						<ContextMenuProvider>
 							<MapProvider value={map}>
-								<Layout layout={defaultLayout} viewProviders={toMap(views)} />
+								<Layout layout={defaultLayoutRoot} viewProviders={toMap(views)} />
 							</MapProvider>
 						</ContextMenuProvider>
 					</Icons>

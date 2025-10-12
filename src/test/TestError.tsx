@@ -1,6 +1,6 @@
-import { ViewFC } from "@components/layout/LayoutView.tsx";
+import { Layout } from "@components/layout/Layout.tsx";
 
-export const TestError: ViewFC = () => {
+export const TestError: Layout.ViewComponent = () => {
 	throw new Error("Test error", {
 		cause: [
 			new RangeError("rangeerror"),
@@ -8,4 +8,9 @@ export const TestError: ViewFC = () => {
 		]
 	});
 	return <></>;
+};
+
+export const TestErrorVP: Layout.ViewProvider = {
+	name: "test.error",
+	Component: TestError,
 };

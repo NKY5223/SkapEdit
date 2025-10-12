@@ -2,16 +2,15 @@ import { FormSection } from "@components/form/FormSection.tsx";
 import { splitsRaw } from "@components/icon/icon/split.ts";
 import { clearLogs } from "@components/icon/math.ts";
 import { ALL_COMMANDS, debug, stringifyPath } from "@components/icon/stringify.tsx";
-import { ViewFC } from "@components/layout/LayoutView.tsx";
+import { Layout } from "@components/layout/Layout.tsx";
 import { SVGAttributes } from "react";
 
-export const TestIcon: ViewFC = ({
-	children,
+export const TestIcon: Layout.ViewComponent = ({
+	viewSwitch
 }) => {
 	const path = splitsRaw.x;
 
 	const [d, debugInfo] = stringifyPath(path);
-
 	const logs = debug(clearLogs());
 
 	const strokeScale = 24 / 480;
@@ -26,7 +25,7 @@ export const TestIcon: ViewFC = ({
 			gap: ".5em",
 			padding: ".5em",
 		}}>
-			{children}
+			{viewSwitch}
 
 			<FormSection>
 			</FormSection>
@@ -65,4 +64,9 @@ export const TestIcon: ViewFC = ({
 			</svg>
 		</div>
 	);
+};
+
+export const TestIconVP: Layout.ViewProvider = {
+	name: "test.icon",
+	Component: TestIcon,
 };

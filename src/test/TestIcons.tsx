@@ -1,7 +1,7 @@
 import { useIcons, Icon } from "@components/icon/Icon.tsx";
-import { ViewFC } from "@components/layout/LayoutView.tsx";
+import { Layout } from "@components/layout/Layout.tsx";
 
-export const TestIcons: ViewFC = ({ children }) => {
+export const TestIcons: Layout.ViewComponent = ({ viewSwitch }) => {
 	const entries = useIcons().entries();
 	return (
 		<div
@@ -13,7 +13,7 @@ export const TestIcons: ViewFC = ({ children }) => {
 				gap: ".5em",
 			}}
 		>
-			{children}
+			{viewSwitch}
 			<div style={{
 				overflow: "auto",
 			}}>
@@ -34,4 +34,9 @@ export const TestIcons: ViewFC = ({ children }) => {
 			</div>
 		</div>
 	);
+};
+
+export const TestIconsVP: Layout.ViewProvider = {
+	name: "test.icons",
+	Component: TestIcons,
 };

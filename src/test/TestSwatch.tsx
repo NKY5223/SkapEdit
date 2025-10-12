@@ -1,7 +1,17 @@
-import { ViewFC } from "../components/layout/LayoutView.tsx";
+import { Layout } from "@components/layout/Layout.tsx";
 
-export const TestSwatch: ViewFC = ({
-	children,
+const normalize = (str: string) => str
+	.replaceAll("--", "-")
+	.replace(/^theme-/, "")
+	.replaceAll(/^-+/g, "")
+	.replaceAll(/-+$/g, "");
+const getName = (bg: string) => {
+	const bgW = normalize(bg.replaceAll("bg", ""));
+	return bgW
+}
+
+export const TestSwatch: Layout.ViewComponent = ({
+	viewSwitch,
 }) => {
 	const colors: string[][] = [
 		["theme-bg-0", "theme-bg-1",],
@@ -20,7 +30,7 @@ export const TestSwatch: ViewFC = ({
 			overflow: "auto",
 			padding: ".5em",
 		}}>
-			{children}
+			{viewSwitch}
 			{colors.map((row, i) => (
 				<div key={i} style={{
 					display: "flex",
@@ -60,12 +70,7 @@ export const TestSwatch: ViewFC = ({
 	);
 }
 
-const normalize = (str: string) => str
-	.replaceAll("--", "-")
-	.replace(/^theme-/, "")
-	.replaceAll(/^-+/g, "")
-	.replaceAll(/-+$/g, "");
-const getName = (bg: string) => {
-	const bgW = normalize(bg.replaceAll("bg", ""));
-	return bgW
-}
+export const TestSwatchVP: Layout.ViewProvider = {
+	name: "test.swatch",
+	Component: TestSwatch,
+};

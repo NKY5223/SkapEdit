@@ -31,7 +31,7 @@ export type TFunc<K extends string = string, V extends Record<string, unknown> =
 );
 // #endregion
 
-export const [useTranslations, useTranslation, BaseTranslationProvider] = createMapContext<TFunc<TKey, TVal<TKey>>, string>();
+export const [useTranslations, useTranslation, BaseTranslationProvider] = createMapContext<TFunc<TKey, TVal<TKey>>, string>("Translation");
 
 type TranslateProps<K extends TKey> = {
 	k: TKey;

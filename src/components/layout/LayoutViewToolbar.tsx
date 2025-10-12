@@ -2,14 +2,14 @@ import { Dispatch, FC, PropsWithChildren } from "react";
 import { Option } from "../form/DropdownSelect.tsx";
 import { SectionedOptions, DropdownSelectSectioned } from "../form/DropdownSelectSectioned.tsx";
 import { Translate } from "../translate/Translate.tsx";
-import { LayoutDescView, LayoutAction, useViewProviders } from "./Layout.tsx";
+import { Layout, LayoutAction, useViewProviders } from "./Layout.tsx";
 import css from "./LayoutViewToolbar.module.css";
 import { Button } from "../form/Button.tsx";
 import { classList, ExtensibleFC } from "../utils.tsx";
 
 
 type ViewSelectorProps = {
-	view: LayoutDescView;
+	view: Layout.NodeView;
 	dispatch: Dispatch<LayoutAction>;
 };
 export const ViewSelector: FC<ViewSelectorProps> = ({
@@ -32,14 +32,14 @@ export const ViewSelector: FC<ViewSelectorProps> = ({
 	})) satisfies SectionedOptions<string>;
 
 	return (
-		<div className={css["toolbar"]}>
-			<DropdownSelectSectioned initial={view.viewId} options={options}
+		<div className={css["selector"]}>
+			<DropdownSelectSectioned initial={view.providerName} options={options}
 				fallback={<Translate k="layout.view.fallback" />}
 				optionsClass={css["selector-options"]}
 				onSelect={value => dispatch({
 					type: "set_view",
-					targetNode: view,
-					view: value,
+					targetNode: view.id,
+					providerName: value,
 				})}
 			/>
 		</div>

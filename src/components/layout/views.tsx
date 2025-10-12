@@ -1,21 +1,24 @@
-import { ViewFC } from "@components/layout/LayoutView.tsx";
 import { Translate } from "@components/translate/Translate.tsx";
-import { Inspector } from "@components/view/inspector/Inspector.tsx";
-import { Viewport } from "@components/view/viewport/Viewport.tsx";
-import { TestError } from "../../test/TestError.tsx";
-import { TestIcon } from "../../test/TestIcon.tsx";
-import { TestIcons } from "../../test/TestIcons.tsx";
-import { TestSwatch } from "../../test/TestSwatch.tsx";
+import { InspectorVP } from "@components/view/inspector/Inspector.tsx";
+import { ViewportVP } from "@components/view/viewport/Viewport.tsx";
+import { TestErrorVP } from "../../test/TestError.tsx";
+import { TestIconVP } from "../../test/TestIcon.tsx";
+import { TestIconsVP } from "../../test/TestIcons.tsx";
+import { TestSwatchVP } from "../../test/TestSwatch.tsx";
+import { Layout } from "./Layout.tsx";
 
 export const views = {
-	"test.icon": TestIcon,
-	"test.icons": TestIcons,
-	"test.swatch": TestSwatch,
-	"test.error": TestError,
-	"map.inspector": Inspector,
-	"test.lorem": ({ children }) => (<div>
-		{children}
-		<Translate k="lorem" />
-	</div>),
-	"map.viewport": Viewport,
-} as const satisfies Record<string, ViewFC>;
+	"test.icon": TestIconVP,
+	"test.icons": TestIconsVP,
+	"test.swatch": TestSwatchVP,
+	"test.error": TestErrorVP,
+	"test.translate.lorem": {
+		name: "test.translate.lorem",
+		Component: ({ viewSwitch }) => (<div>
+			{viewSwitch}
+			<Translate k="lorem" />
+		</div>)
+	},
+	"map.viewport": ViewportVP,
+	"map.inspector": InspectorVP,
+} as const satisfies Record<string, Layout.ViewProvider>;

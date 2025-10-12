@@ -99,7 +99,7 @@ export const LayoutSplit: LayoutFC<Layout.NodeSplit, LayoutSplitProps> = ({
 
 export const makeSplit = (axis: "x" | "y", ratio: number, first: Layout.Node, second: Layout.Node): Layout.NodeSplit => ({
 	type: "split",
-	id: createId(),
+	id: createId("layout.split"),
 	axis,
 	first,
 	second,
