@@ -40,7 +40,7 @@ export type SkapMap = {
 		room: string;
 		position: Vec2;
 	};
-	rooms: Map<ID, SkapRoom>;
+	rooms: ReadonlyMap<ID, SkapRoom>;
 };
 // #endregion
 
