@@ -4,7 +4,7 @@ import { useElementSize } from "@hooks/useElementSize.ts";
 import { FC, useMemo, useRef, useState } from "react";
 import { Vec2, zero } from "@common/vec2.ts";
 import "@common/vector.ts";
-import { SkapRoom, useMap } from "../../../editor/map.ts";
+import { SkapRoom, useSkapMap } from "../../../editor/map.ts";
 import { useDrag } from "@hooks/useDrag.ts";
 import { ViewToolbar } from "../../layout/LayoutViewToolbar.tsx";
 import { Camera, useCamera } from "./camera.ts";
@@ -95,7 +95,7 @@ export const Viewport: Layout.ViewComponent = ({
 	], []);
 
 	const elRef = useRef<HTMLDivElement>(null);
-	const map = useMap();
+	const map = useSkapMap();
 	const [scaleIndex, setScaleIndex] = useState(0);
 	const [camera, setCamera] = useCamera({ pos: zero, scale: scaleBase });
 	const { handlePointerDown } = useDrag(1, null, (curr, prev) => {
@@ -120,7 +120,7 @@ export const Viewport: Layout.ViewComponent = ({
 	const viewportSize = useElementSize(elRef);
 	const viewportBounds = camera.getBounds(viewportSize);
 
-	const room = map.rooms[0];
+	const room = map.rooms.values().next().value;
 	if (!room) {
 		throw new Error("Map has no rooms");
 	}

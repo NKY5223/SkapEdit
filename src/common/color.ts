@@ -13,7 +13,7 @@ export class Color {
 	}
 
 	/**
-	 * Construct a Color from hex format
+	 * Construct a Color from rgb hex format
 	 * @example
 	 * Color.hex(0x2080ff, 0.8);
 	 */
