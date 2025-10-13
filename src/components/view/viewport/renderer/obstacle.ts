@@ -9,9 +9,10 @@ export class ObstacleWebGLRenderer extends RectWebGLRenderer {
 		super(frag);
 	}
 	rects(viewportInfo: ViewportInfo): Bounds[] {
-		return viewportInfo.room.objects
+		return viewportInfo.room.objects.values()
 			.filter((obj): obj is SkapObstacle => obj.type === "obstacle")
-			.map(o => o.bounds);
+			.map(o => o.bounds)
+			.toArray();
 	}
 	preRender(gl: WebGL2RenderingContext, viewportInfo: ViewportInfo): void {
 		this.setUniform4f(gl, "uColor", viewportInfo.room.obstacleColor.rgba());

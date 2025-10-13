@@ -1,7 +1,7 @@
 import { createContext, useContext } from "react";
 import { Bounds } from "./bounds.ts";
 import { vec2, Vec2 } from "../common/vec2.ts";
-import { createId } from "@common/uuid.ts";
+import { createId, ID } from "@common/uuid.ts";
 import { Color } from "@common/color.ts";
 
 // #region types
@@ -31,7 +31,7 @@ export type SkapRoom = {
 	bounds: Bounds;
 	obstacleColor: Color;
 	backgroundColor: Color;
-	objects: SkapObject[];
+	objects: ReadonlyMap<ID, SkapObject>;
 };
 export type SkapMap = {
 	spawn: {
@@ -59,6 +59,8 @@ export const text = (x: number, y: number, text: string): SkapText => ({
 	pos: vec2(x, y),
 	text,
 });
+export const objects = (objs: SkapObject[]): Map<ID, SkapObject> => 
+	new Map(objs.map(o => [o.id, o]));
 // #endregion
 
 const DEFAULT_ROOM_ID = `DEFAULT_ROOM_ID(${createId()})`;
@@ -74,9 +76,9 @@ const mapContext = createContext<SkapMap>({
 			bounds: new Bounds({ left: 0, top: 0, right: 100, bottom: 100 }),
 			obstacleColor: Color.hex(0x000a57, .8),
 			backgroundColor: Color.hex(0xe0e0e0),
-			objects: [
+			objects: objects([
 				text(0, 0, "This is the fallback map; something went wrong."),
-			],
+			]),
 		}
 	],
 });

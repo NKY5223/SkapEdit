@@ -3,15 +3,15 @@ import { ViewportInfo } from "../Viewport.tsx";
 import { RectWebGLRenderer } from "./rect.ts";
 import fragObs from "./shader/obstacle.frag?raw";
 import fragBG from "./shader/solid.frag?raw";
-import { Color } from "@common/color.ts";
+import { WebGLViewportInfo } from "../webgl/WebGLLayer.tsx";
 
 export class BackgroundObstacleWebGLRenderer extends RectWebGLRenderer {
 	constructor() {
 		super(fragObs);
 	}
-	rects(viewportInfo: ViewportInfo): Bounds[] {
+	rects(_: ViewportInfo, webGlViewportInfo: WebGLViewportInfo): Bounds[] {
 		return [
-			viewportInfo.viewportBounds
+			webGlViewportInfo.canvasBounds
 		];
 	}
 	preRender(gl: WebGL2RenderingContext, viewportInfo: ViewportInfo): void {

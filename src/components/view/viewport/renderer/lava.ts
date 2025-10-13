@@ -10,9 +10,10 @@ export class LavaWebGLRenderer extends RectWebGLRenderer {
 		super(frag);
 	}
 	rects(viewportInfo: ViewportInfo): Bounds[] {
-		return viewportInfo.room.objects
+		return viewportInfo.room.objects.values()
 			.filter((obj): obj is SkapLava => obj.type === "lava")
-			.map(o => o.bounds);
+			.map(o => o.bounds)
+			.toArray();
 	}
 	preRender(gl: WebGL2RenderingContext): void {
 		this.setUniform4f(gl, "uColor", Color.hex(0xb74038).rgba());

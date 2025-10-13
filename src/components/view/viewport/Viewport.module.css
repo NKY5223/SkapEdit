@@ -12,24 +12,26 @@
 	gap: .5em;
 }
 .viewport-canvas {
+	display: grid;
 	position: absolute;
 	inset: 0;
-	grid-area: 1 / 1 / -1 / -1;
+	/* grid-area: 1 / 1 / -1 / -1; */
 	overflow: hidden;
 
-	& > canvas {
-
-	}
 	& > * {
-		/* width: 100%;
-		height: 100%; */
+		/* Still the most consistent way to center stuff when they overflow */
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		/* outline: 2px solid #f0f; */
 	}
 }
 .buttons {
 	position: absolute;
 	inset: 1em;
 	top: auto;
-	font-family: "NKYJuliaMonoExtension", "JuliaMono", monospace;
+	font-family: monospace; 
 	
 	display: flex;
 	gap: .25em;

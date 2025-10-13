@@ -1,6 +1,6 @@
 import { Bounds } from "../../../../editor/bounds.ts";
 import { ViewportInfo } from "../Viewport.tsx";
-import { WebGlRenderer, rect } from "../webgl/webgl.ts";
+import { rect } from "../webgl/webgl.ts";
 import { WebGLLayerRenderer, WebGLViewportInfo } from "../webgl/WebGLLayer.tsx";
 import vert from "./shader/default.vert?raw";
 

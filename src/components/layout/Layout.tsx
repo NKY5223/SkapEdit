@@ -5,9 +5,9 @@ import { LayoutSplit } from "./LayoutSplit.tsx";
 import { LayoutViewMemo, makeView } from "./LayoutView.tsx";
 import { ViewToolbar } from "./LayoutViewToolbar.tsx";
 import { Translate } from "@components/translate/Translate.tsx";
-import { createId } from "@common/uuid.ts";
+import { ID } from "@common/uuid.ts";
 
-/* 
+/*
 2025-02-xx
 Goal:
 Be able to edit some arbitrary data with multiple views
@@ -35,9 +35,7 @@ data
 |	 	> view
 |-----------> ??? (some other field in data)
 */
-
 // #region Types
-export type ID = string & {};
 export type LayoutAction = (
 	| {
 		type: "replace";

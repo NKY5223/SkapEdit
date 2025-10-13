@@ -41,7 +41,7 @@ declare global {
 	}
 }
 
-export const Translations: FC<PropsWithChildren> = ({ children }) => (
+export const DefaultTranslationProvider: FC<PropsWithChildren> = ({ children }) => (
 	<TranslationProvider value={translations}>
 		{children}
 	</TranslationProvider>

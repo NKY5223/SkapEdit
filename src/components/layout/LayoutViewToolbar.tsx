@@ -47,7 +47,7 @@ export const ViewSelector: FC<ViewSelectorProps> = ({
 }
 /** Essentially a div */
 export const ViewToolbar: ExtensibleFC<PropsWithChildren> = ({ children, classes }) => (
-	<div className={classList(...classes ?? [])}>{children}</div>
+	<div className={classList(css["toolbar"], ...classes ?? [])}>{children}</div>
 );
 export const ViewToolbarButton: typeof Button = ({ ...props }) => (
 	<Button {...props} classes={[...props.classes ?? [], css["button"]]}></Button>

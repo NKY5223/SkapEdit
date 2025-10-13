@@ -2,7 +2,7 @@
 
 .text-container {
 	position: absolute;
-	inset: 0;
+	inset: 50%;
 	user-select: none;
 	--text-size: 5px;
 	font-size: var(--text-size);
@@ -29,7 +29,7 @@
 	-webkit-text-stroke: .25em var(--text-stroke);
 }
 @supports not(-webkit-text-stroke: .25em var(--text-stroke)) {
-	/* text stroke hack */
+	/* text stroke hack, will only apply if -webkit-text-stroke is unsupported */
 	.bg {
 		color: var(--text-stroke);
 		text-shadow: 

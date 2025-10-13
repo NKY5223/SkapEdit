@@ -53,6 +53,6 @@ declare global {
 	}
 }
 export const icons = toMap<IconInfo, IconName>(iconsObj);
-export const Icons: FC<PropsWithChildren> = ({
+export const DefaultIconProvider: FC<PropsWithChildren> = ({
 	children
 }) => (<IconProvider value={icons}>{children}</IconProvider>);

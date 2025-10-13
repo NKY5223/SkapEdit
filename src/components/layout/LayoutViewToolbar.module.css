@@ -1,3 +1,8 @@
+.toolbar {
+	pointer-events: painted;
+}
+
+/* Specificity shenanigans? */
 .button.button {
 	padding: .25em .75em .25em .75em;
 	user-select: none;

@@ -29,3 +29,7 @@ export const mapToViewport = (info: ViewportInfo, pos: Vec2): Vec2 => {
 	const { camera, viewportSize } = info;
 	return viewportSize.div(2).add(pos.sub(camera.pos).mul(camera.scale));
 };
+export const mapToViewportCenter = (info: ViewportInfo, pos: Vec2): Vec2 => {
+	const { camera } = info;
+	return pos.sub(camera.pos).mul(camera.scale);
+};

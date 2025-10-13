@@ -1,6 +1,6 @@
 import { classList } from "@components/utils.tsx";
 import { ViewportLayerFC } from "../Viewport.tsx";
-import { mapToViewport } from "../utils.tsx";
+import { mapToViewport, mapToViewportCenter } from "../utils.tsx";
 import css from "./text.module.css";
 
 export const TextLayer: ViewportLayerFC = ({ viewportInfo }) => {
@@ -9,13 +9,13 @@ export const TextLayer: ViewportLayerFC = ({ viewportInfo }) => {
 		room: map
 	} = viewportInfo;
 
-	const objs = map.objects.filter(o => o.type === "text");
+	const objs = map.objects.values().filter(o => o.type === "text").toArray();
 	const bgClass = classList(
 		css["text"],
 		css["bg"],
 	);
 	const bg = objs.map(obj => {
-		const pos = mapToViewport(viewportInfo, obj.pos);
+		const pos = mapToViewportCenter(viewportInfo, obj.pos);
 		return (
 			<span key={obj.id} className={bgClass} aria-hidden style={{
 				"--text-x": `${pos[0]}px`,
@@ -28,7 +28,7 @@ export const TextLayer: ViewportLayerFC = ({ viewportInfo }) => {
 		css["fg"],
 	);
 	const fg = objs.map(obj => {
-		const pos = mapToViewport(viewportInfo, obj.pos);
+		const pos = mapToViewportCenter(viewportInfo, obj.pos);
 		return (
 			<span key={obj.id} className={fgClass} style={{
 				"--text-x": `${pos[0]}px`,

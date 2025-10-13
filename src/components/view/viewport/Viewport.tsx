@@ -65,7 +65,7 @@ export const ViewportCanvas: FC<ViewportCanvasProps> = ({
 	);
 }
 
-
+/** uhhh i forgor */
 const wheelMult = (mode: number): number => {
 	switch (mode) {
 		case 0x00: return 1;
