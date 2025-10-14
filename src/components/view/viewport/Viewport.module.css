@@ -1,7 +1,6 @@
 .viewport {
 	position: absolute;
 	inset: 0;
-	padding: .5em;
 
 	& > :first-child {
 		grid-area: 1 / 1 / 1 / -1;
@@ -10,6 +9,7 @@
 .viewport-topbar {
 	display: flex;
 	gap: .5em;
+	margin: .5em;
 }
 .viewport-canvas {
 	display: grid;
@@ -25,6 +25,9 @@
 		left: 50%;
 		transform: translate(-50%, -50%);
 		/* outline: 2px solid #f0f; */
+	}
+	& > canvas {
+		image-rendering: pixelated;
 	}
 }
 .buttons {

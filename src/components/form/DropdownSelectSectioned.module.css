@@ -17,11 +17,20 @@
 		border-radius: var(--theme-border-radius);
 		z-index: 3;
 
+		min-width: 2.5em;
+
 		&.icon {
 			padding: .25em .25em .25em .5em;
 			& > :first-child {
 				margin-right: .25em;
+				display: block;
+				align-self: center;
 			}
+		}
+		&.icon > :first-child,
+		& > :last-child {
+			display: block;
+			align-self: center;
 		}
 	}
 	& > .options {

@@ -14,7 +14,7 @@ export const TestSwatch: Layout.ViewComponent = ({
 	viewSwitch,
 }) => {
 	const colors: string[][] = [
-		["theme-bg-0", "theme-bg-1",],
+		["theme-bg-0", "theme-bg-1", "theme-selection-bg",],
 		["theme-primary-bg-0", "theme-primary-bg-1",],
 		["theme-secondary-bg-0", "theme-secondary-bg-1",],
 		["theme-disabled-bg",], ["theme-positive-bg-0", "theme-positive-bg-1",],

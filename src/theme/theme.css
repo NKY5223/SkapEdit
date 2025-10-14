@@ -6,6 +6,9 @@
 	--theme-bg-1: #101112;
 	--theme-fg-1: #ffffff;
 	--theme-bd-1: #383838;
+	--theme-selection-bg: oklch(0.62 0.21 257.83);
+	--theme-selection-fg: oklch(0.05 0.05 257.83);
+	--theme-selection-bd: oklch(0.75 0.21 257.83);
 	
 	/* oklch(0.62 0.21 257.83) */
 	/* #2080ff */
@@ -23,9 +26,6 @@
 	--theme-secondary-fg-1: oklch(0.90 0.10 298.86);
 	--theme-secondary-bd-1: oklch(0.50 0.25 298.86);
 	
-	--theme-selection-bg-0: oklch(0.62 0.21 257.83);
-	--theme-selection-fg-0: oklch(0.05 0.05 257.83);
-	--theme-selection-bd-0: oklch(0.75 0.21 257.83);
 
 	--theme-disabled-bg: #505050;
 	--theme-disabled-fg: #a0a0a0;
