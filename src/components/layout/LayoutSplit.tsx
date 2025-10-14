@@ -47,14 +47,14 @@ export const LayoutSplit: LayoutFC<Layout.NodeSplit, LayoutSplitProps> = ({
 	const layoutItems = node.axis === "x"
 		? [
 			single("dissolve-left",
-				<Translate k="layout.split.dissolve-left" />, "keyboard_tab",
+				<Translate k="layout.split.dissolve-left" />, "keyboard_tab_rtl",
 				() => dispatch({
 					type: "replace",
 					targetNode: node.id,
 					replacement: node.second,
 				})),
 			single("dissolve-right",
-				<Translate k="layout.split.dissolve-right" />, "keyboard_tab_rtl",
+				<Translate k="layout.split.dissolve-right" />, "keyboard_tab",
 				() => dispatch({
 					type: "replace",
 					targetNode: node.id,

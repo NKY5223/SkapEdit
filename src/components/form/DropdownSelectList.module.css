@@ -58,7 +58,7 @@
 			}
 			&.icon {
 				padding-left: .5em;
-				& > .display {
+				& > .display:not(:empty) {
 					margin-left: .25em;
 				}
 			}

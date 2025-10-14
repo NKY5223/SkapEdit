@@ -22,9 +22,11 @@
 		&.icon {
 			padding: .25em .25em .25em .5em;
 			& > :first-child {
-				margin-right: .25em;
 				display: block;
 				align-self: center;
+			}
+			& > .display:not(:empty) {
+				margin-left: .25em;
 			}
 		}
 		&.icon > :first-child,
@@ -89,8 +91,7 @@
 				&:focus-visible {
 					z-index: 2;
 				}
-
-				& > .option-content {
+				& > .display {
 					line-height: 1;
 					vertical-align: middle;
 				}

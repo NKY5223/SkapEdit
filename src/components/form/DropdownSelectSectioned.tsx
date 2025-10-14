@@ -84,7 +84,7 @@ export const DropdownSelectSectioned = <T extends unknown>(props: DropdownSelect
 				onClick={toggleOpen} onKeyDown={filterKeys(toggleOpen)}
 			>
 				{icon && <Icon icon={icon} />}
-				{selectedOption?.display(true) ?? fallback}
+				<span className="display">{selectedOption?.display(true) ?? fallback}</span>
 				{open ? <Icon icon="arrow_drop_down" /> : <Icon icon="arrow_right" />}
 			</div>
 			<ul className={optionsClassName}>
@@ -125,9 +125,7 @@ export function SectionedOption<T>({
 		<li className={className} tabIndex={0}
 			onClick={onTrigger} onKeyDown={filterKeys(onTrigger)}>
 			{icon && <Icon icon={icon(false)} />}
-			<span className={css["option-content"]}>
-				{display(false)}
-			</span>
+			<span className={css["display"]}>{display(false)}</span>
 		</li>
 	);
 }

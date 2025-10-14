@@ -21,7 +21,7 @@ export const ViewSelector: FC<ViewSelectorProps> = ({
 		views.entries().map(([name, { icon }]) => (
 			{
 				value: name,
-				display: () => <Translate k="layout.view.name" view={name} />,
+				display: (current) => current ? <></> : <Translate k="layout.view.name" view={name} />,
 				icon: icon && (() => icon),
 				name,
 			} satisfies Option<string>
