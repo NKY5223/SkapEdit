@@ -1,6 +1,6 @@
 import { Translate } from "@components/translate/Translate.tsx";
-import { InspectorVP } from "@components/view/inspector/Inspector.tsx";
-import { ViewportVP } from "@components/view/viewport/Viewport.tsx";
+import { InspectorVP } from "@components/view/inspector/InspectorVP.tsx";
+import { ViewportVP } from "@components/view/viewport/ViewportVP.tsx";
 import { TestErrorVP } from "../../test/TestError.tsx";
 import { TestIconVP } from "../../test/TestIcon.tsx";
 import { TestIconsVP } from "../../test/TestIcons.tsx";

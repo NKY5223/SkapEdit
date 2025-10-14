@@ -1,3 +1,7 @@
 .inspector {
 	padding: .5em;
+
+	.inspector-content {
+		padding: .5em;
+	}
 }

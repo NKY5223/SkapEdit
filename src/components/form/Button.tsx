@@ -8,11 +8,12 @@ export type ButtonType = "primary" | "secondary" | "confirm" | "deny";
 type ButtonProps = PropsWithChildren<{
 	type?: ButtonType;
 	icon?: IconName;
+	iconTitle?: string;
 	disabled?: boolean;
 	onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }>;
 export const Button: ExtensibleFC<ButtonProps> = ({
-	type, icon, disabled, children,
+	type, icon, iconTitle: title, disabled, children,
 	onClick,
 
 	classes = [],
@@ -23,11 +24,14 @@ export const Button: ExtensibleFC<ButtonProps> = ({
 		icon && css["has-icon"], 
 		...classes,
 	);
-	return <button className={className} disabled={disabled} onClick={onClick} onContextMenu={e => e.stopPropagation()}>
+	return <button className={className} disabled={disabled} 
+		onClick={onClick} onContextMenu={e => e.stopPropagation()}
+	>
 		{icon && (<div className={css["icon"]}>
 			<Icon
 				icon={icon}
 				height={1.5}
+				title={title}
 			/>
 		</div>)}
 		<div className={css.content}>

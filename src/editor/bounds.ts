@@ -188,7 +188,9 @@ const updateBoundsUnclamped = (
 	if (newLength !== undefined) {
 		return [start, start + newLength];
 	}
-	throw new Error(`Cannot update bounds with start-end-length: ${newStart}, ${newEnd}, ${newLength}`);
+	// Everything is undefined, return without modification
+	return [start, end];
+	// throw new Error(`Cannot update bounds with start-end-length: ${newStart}, ${newEnd}, ${newLength}`);
 }
 const updateBounds = (
 	newStart: number | undefined,
@@ -226,12 +228,33 @@ export function useBounds(initial: BoundsInit, clamp: boolean = true):
 	}] {
 	const [bounds, setBounds] = useState<Bounds>(new Bounds(initial));
 	return [bounds, {
-		setLeft: (left: number) => setBounds(b => b.setLeft(left)),
-		setTop: (top: number) => setBounds(b => b.setTop(top)),
-		setRight: (right: number) => setBounds(b => b.setRight(right)),
-		setBottom: (bottom: number) => setBounds(b => b.setBottom(bottom)),
+		setLeft: (left: number) => setBounds(b => b.set({ left }, clamp)),
+		setTop: (top: number) => setBounds(b => b.set({ top }, clamp)),
+		setRight: (right: number) => setBounds(b => b.set({ right }, clamp)),
+		setBottom: (bottom: number) => setBounds(b => b.set({ bottom }, clamp)),
 		setWidth: (width: number) => setBounds(b => b.set({ width }, clamp)),
 		setHeight: (height: number) => setBounds(b => b.set({ height }, clamp)),
 		setBounds: (bounds: BoundsInit) => setBounds(b => b.set(bounds, clamp)),
+	}];
+}
+
+export function useDerivedBounds(initial: Bounds, set: React.Dispatch<React.SetStateAction<Bounds>>, clamp: boolean = true):
+	[bounds: Bounds, setters: {
+		setLeft: (left: number) => void;
+		setTop: (top: number) => void;
+		setRight: (right: number) => void;
+		setBottom: (bottom: number) => void;
+		setWidth: (width: number) => void;
+		setHeight: (height: number) => void;
+		setBounds: (bounds: BoundsInit) => void;
+	}] {
+	return [initial, {
+		setLeft: (left: number) => set(b => b.set({ left }, clamp)),
+		setTop: (top: number) => set(b => b.set({ top }, clamp)),
+		setRight: (right: number) => set(b => b.set({ right }, clamp)),
+		setBottom: (bottom: number) => set(b => b.set({ bottom }, clamp)),
+		setWidth: (width: number) => set(b => b.set({ width }, clamp)),
+		setHeight: (height: number) => set(b => b.set({ height }, clamp)),
+		setBounds: (bounds: BoundsInit) => set(b => b.set(bounds, clamp)),
 	}];
 }

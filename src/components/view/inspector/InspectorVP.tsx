@@ -1,0 +1,8 @@
+import { Layout } from "@components/layout/Layout.tsx";
+import { Inspector } from "./Inspector.tsx";
+
+
+export const InspectorVP: Layout.ViewProvider = {
+	name: "map.inspector",
+	Component: Inspector,
+};

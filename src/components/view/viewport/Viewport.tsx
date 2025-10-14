@@ -31,7 +31,7 @@ type ViewportCanvasProps = {
 	layers: ViewportLayerFC[];
 	viewportInfo: ViewportInfo;
 };
-export const ViewportCanvas: FC<ViewportCanvasProps> = ({
+const ViewportCanvas: FC<ViewportCanvasProps> = ({
 	layers, viewportInfo
 }) => {
 	/* 
@@ -142,7 +142,3 @@ export const Viewport: Layout.ViewComponent = ({
 	);
 }
 
-export const ViewportVP: Layout.ViewProvider = {
-	name: "map.viewport",
-	Component: Viewport,
-}

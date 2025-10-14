@@ -75,6 +75,17 @@ export const mkRoom = (name: string, bounds: BoundsInit,
 	});
 // #endregion
 
+export const getObject = (
+	map: SkapMap,
+	targetObject: ID,
+): SkapObject | null => {
+	for (const [_, room] of map.rooms) {
+		for (const [id, object] of room.objects) {
+			if (id === targetObject) return object;
+		}
+	}
+	return null;
+}
 /**
  * @returns If object was successfully replaced, returns `[true, newRoom]`. Else, `[false, oldRoom]`.
 */

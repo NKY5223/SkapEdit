@@ -1,6 +1,6 @@
 .split {
 	--handle-width: var(--theme-border-width, 1px);
-	--handle-interaction: calc(10 * var(--handle-width));
+	--handle-interaction-size: calc(5 * var(--handle-width));
 
 	position: absolute;
 	inset: 0;
@@ -15,7 +15,7 @@
 		grid-template-columns: var(--ratio) var(--handle-width) auto;
 		--cursor: e-resize;
 		
-		--handle-interaction-width: var(--handle-interaction);
+		--handle-interaction-width: var(--handle-interaction-size);
 		--handle-interaction-height: 100%;
 		--handle-collapsed-width: 0;
 		--handle-collapsed-height: 100%;
@@ -27,7 +27,7 @@
 
 		
 		--handle-interaction-width: 100%;
-		--handle-interaction-height: var(--handle-interaction);
+		--handle-interaction-height: var(--handle-interaction-size);
 		--handle-collapsed-width: 100%;
 		--handle-collapsed-height: 0;
 	}

@@ -1,10 +1,10 @@
-import { ReactNode, useId, useState } from "react";
+import { FC, ReactNode, useId, useState } from "react";
 import css from "./form.module.css";
 import { Label } from "./Label.tsx";
 import { classList } from "../utils.tsx";
 
 
-type NumberInputProps = {
+export type NumberInputProps = {
 	name?: string;
 	/** *Content* of the label associated with this input */
 	label?: ReactNode;
@@ -23,12 +23,12 @@ type NumberInputProps = {
 	inputClass?: string;
 };
 
-export function NumberInput({
+export const NumberInput: FC<NumberInputProps> = ({
 	name, label, disabled,
 	value, min, max, step,
 	onInput, onChange,
 	inputClass,
-}: NumberInputProps) {
+}) => {
 	const id = useId();
 
 	const [internal, setInternal] = useState(String(value));
@@ -67,16 +67,4 @@ export function NumberInput({
 			/>
 		</Label>
 	);
-}
-
-export function useNumberInput(initialValue: number, props: Omit<NumberInputProps, "value"> = {}) {
-	const [value, setValue] = useState(initialValue);
-	const actualProps: NumberInputProps = {
-		...props,
-		value,
-		onInput: setValue,
-	};
-	const input = <NumberInput {...actualProps} />;
-
-	return [value, input, setValue] as const;
 }

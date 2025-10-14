@@ -32,7 +32,7 @@ export function createReducerContext<T, A>(name: string, reducer: Reducer<T, A>,
 	
 	const result: [
 		useValue: () => T,
-		useDispatch: Dispatch<A>,
+		useDispatch: () => Dispatch<A>,
 		Provider: FC<PropsWithChildren<{
 			initialValue: T;
 		}>>,
