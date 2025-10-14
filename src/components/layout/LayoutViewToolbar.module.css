@@ -14,8 +14,4 @@
 	display: flex;
 	flex-direction: row;
 	gap: .5em;
-	
-	& .selector-options {
-		z-index: 500;
-	}
 }

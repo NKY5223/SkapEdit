@@ -43,7 +43,7 @@ export const LayoutView: LayoutFC<Layout.NodeView, LayoutViewProps> = ({
 
 	const id = node.id;
 
-	const provider = (useViewProvider(node.providerName) as Layout.ViewProvider | undefined);
+	const provider = useViewProvider(node.providerName);
 
 	if (!provider) {
 		const className = classList(
@@ -58,12 +58,12 @@ export const LayoutView: LayoutFC<Layout.NodeView, LayoutViewProps> = ({
 		);
 	}
 	const {
-		// name,
+		name,
 		Component: ViewComp,
 	} = provider;
 
 	return (
-		<ErrorBoundary location={`LayoutView`}>
+		<ErrorBoundary location={`LayoutView(${name})`}>
 			<div className={css.view} onContextMenu={handleContextMenu}>
 				<ViewComp
 					dispatchLayout={dispatchLayout}

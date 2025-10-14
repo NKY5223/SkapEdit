@@ -15,10 +15,13 @@
 		background-color: var(--theme-bg-0);
 		border: var(--theme-border-width) solid var(--theme-bd-0);
 		border-radius: var(--theme-border-radius);
-		z-index: 3;
+		z-index: 11;
 
 		min-width: 2.5em;
 
+		.open > & {
+			z-index: 13;
+		}
 		&.icon {
 			padding: .25em .25em .25em .5em;
 			& > :first-child {
@@ -44,7 +47,7 @@
 		flex-direction: column;
 		flex-wrap: wrap;
 		gap: .5em;
-		z-index: 2;
+		z-index: 12;
 		
 		width: max-content;
 		height: fit-content;
@@ -58,6 +61,7 @@
 		border-top-left-radius: 0;
 		border-top-right-radius: 0;
 		list-style: none;
+		box-shadow: var(--theme-shadow);
 		
 		& > .section {
 			& > .label {

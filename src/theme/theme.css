@@ -60,4 +60,8 @@
 
 	--theme-border-width: 1px;
 	--theme-border-radius: .25rem;
+	
+	--theme-shadow-spread: .25em;
+	--theme-shadow-color: #000;
+	--theme-shadow: 0 0 var(--theme-shadow-spread) var(--theme-shadow-color);
 }
