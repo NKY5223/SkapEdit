@@ -18,14 +18,10 @@
 		border-radius: var(--theme-border-radius);
 		z-index: 3;
 
-		&::before {
-			min-width: 0.25em;
-			grid-column: 2 / 3;
-		}
-		&::after {
+		/* &::after {
 			content: "▸";
 			grid-column: -2 / -1;
-		}
+		} */
 	}
 	& > .options {
 		display: grid;

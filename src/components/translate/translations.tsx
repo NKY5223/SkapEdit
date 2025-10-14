@@ -1,5 +1,3 @@
-import { FC, PropsWithChildren } from "react";
-import { TranslationProvider } from "./Translate.tsx";
 import { createTranslations, delegate, Infer } from "@components/translate/constructors.tsx";
 
 export const translations = createTranslations({
@@ -21,11 +19,9 @@ export const translations = createTranslations({
 	"layout.view.category.name": delegate("layout.view.category.name", "category"),
 
 	"layout.view.category.name.test": "Testing",
-	"layout.view.name.test.icon": "Icon Test",
-	"layout.view.name.test.icons": "Icons Test",
 	"layout.view.name.test.swatch": "Theme Test",
 	"layout.view.name.test.error": "Error Test (will error this view)",
-	"layout.view.name.test.lorem": "Lorem ipsum...",
+	"layout.view.name.test.translate.lorem": "Lorem ipsum...",
 
 	"layout.view.category.name.map": "Map",
 	"layout.view.name.map.inspector": "Inspector",
@@ -40,9 +36,3 @@ declare global {
 		}
 	}
 }
-
-export const DefaultTranslationProvider: FC<PropsWithChildren> = ({ children }) => (
-	<TranslationProvider value={translations}>
-		{children}
-	</TranslationProvider>
-);

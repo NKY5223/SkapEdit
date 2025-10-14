@@ -4,6 +4,7 @@ import { classList } from "../utils.tsx";
 import { filterKeys, Option } from "./DropdownSelect.tsx";
 import { useClickOutside } from "../../hooks/useClickOutside.ts";
 import { useKeydown } from "@hooks/useKeydown.ts";
+import { Icon } from "@components/icon/Icon.tsx";
 
 type DropdownSelectListProps<T> = {
 	options: Option<T>[];
@@ -70,7 +71,7 @@ type OptionProps<T> = {
 };
 function ListOption<T>({
 	option: {
-		value, display,
+		value, display, icon,
 	},
 	optionClass,
 	selection, setSelection,
@@ -80,14 +81,16 @@ function ListOption<T>({
 		setSelection(value);
 		if (onSelect) onSelect(value);
 	};
+	const selected = Object.is(selection, value);
 	const className = classList(
 		css["option"],
-		Object.is(selection, value) ? css["selected"] : null,
+		selected && css["selected"],
 		optionClass,
 	);
 	return (
 		<div className={className} tabIndex={0}
 			onClick={onTrigger} onKeyDown={filterKeys(onTrigger)}>
+			{icon && <Icon icon={icon(false)} />}
 			{display(false)}
 		</div>
 	);

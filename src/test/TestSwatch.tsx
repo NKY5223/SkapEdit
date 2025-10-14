@@ -73,4 +73,5 @@ export const TestSwatch: Layout.ViewComponent = ({
 export const TestSwatchVP: Layout.ViewProvider = {
 	name: "test.swatch",
 	Component: TestSwatch,
+	icon: "brush",
 };

@@ -22,7 +22,7 @@ export const LayoutView: LayoutFC<Layout.NodeView, LayoutViewProps> = ({
 }) => {
 	const handleContextMenu = useContextMenu([
 		section("layout", (<Translate k="layout" />), null, [
-			single("split-x", (<Translate k="layout.view.split-x" />), "split-x", () => dispatchLayout({
+			single("split-x", (<Translate k="layout.view.split-x" />), "split_scene_left", () => dispatchLayout({
 				type: "replace",
 				targetNode: node.id,
 				replacement: makeSplitX(0.5,
@@ -30,7 +30,7 @@ export const LayoutView: LayoutFC<Layout.NodeView, LayoutViewProps> = ({
 					makeView(emptyViewProvider.name),
 				)
 			})),
-			single("split-y", (<Translate k="layout.view.split-y" />), "split-y", () => dispatchLayout({
+			single("split-y", (<Translate k="layout.view.split-y" />), "split_scene_up", () => dispatchLayout({
 				type: "replace",
 				targetNode: node.id,
 				replacement: makeSplitY(0.5,

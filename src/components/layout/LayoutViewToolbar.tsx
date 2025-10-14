@@ -18,12 +18,13 @@ export const ViewSelector: FC<ViewSelectorProps> = ({
 	const views = useViewProviders();
 
 	const options = Object.entries(Object.groupBy<string, Option<string>>(
-		[...views.keys()].map(name => (
+		views.entries().map(([name, { icon }]) => (
 			{
 				value: name,
 				display: () => <Translate k="layout.view.name" view={name} />,
+				icon: icon && (() => icon),
 				name,
-			}
+			} satisfies Option<string>
 		)), ({ name }) => name.split(".")[0]
 	)).map<SectionedOptions<string>[number]>(([name, options]) => ({
 		name,

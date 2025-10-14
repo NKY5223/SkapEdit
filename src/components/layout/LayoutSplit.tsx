@@ -47,37 +47,37 @@ export const LayoutSplit: LayoutFC<Layout.NodeSplit, LayoutSplitProps> = ({
 	const layoutItems = node.axis === "x"
 		? [
 			single("dissolve-left",
-				<Translate k="layout.split.dissolve-left" />, "arrowbar-left",
+				<Translate k="layout.split.dissolve-left" />, "keyboard_tab",
 				() => dispatch({
 					type: "replace",
 					targetNode: node.id,
 					replacement: node.second,
 				})),
 			single("dissolve-right",
-				<Translate k="layout.split.dissolve-right" />, "arrowbar-right",
+				<Translate k="layout.split.dissolve-right" />, "keyboard_tab_rtl",
 				() => dispatch({
 					type: "replace",
 					targetNode: node.id,
 					replacement: node.first,
 				})),
-			single("swap", (<Translate k="layout.split.swap-x" />), "arrow-x", swap),
+			single("swap", (<Translate k="layout.split.swap-x" />), "swap_horiz", swap),
 		]
 		: [
 			single("dissolve-up",
-				<Translate k="layout.split.dissolve-up" />, "arrowbar-up",
+				<Translate k="layout.split.dissolve-up" />, "vertical_align_top",
 				() => dispatch({
 					type: "replace",
 					targetNode: node.id,
 					replacement: node.second,
 				})),
 			single("dissolve-down",
-				<Translate k="layout.split.dissolve-down" />, "arrowbar-down",
+				<Translate k="layout.split.dissolve-down" />, "vertical_align_bottom",
 				() => dispatch({
 					type: "replace",
 					targetNode: node.id,
 					replacement: node.first,
 				})),
-			single("swap", (<Translate k="layout.split.swap-y" />), "arrow-y", swap),
+			single("swap", (<Translate k="layout.split.swap-y" />), "swap_vert", swap),
 		];
 	const handleContextMenu = useContextMenu([
 		section("layout", (<Translate k="layout" />), null, layoutItems),

@@ -1,7 +1,17 @@
-.defs {
-	display: none;
-}
-.title {
-	/* I *don't know* why setting display:grid on the wrapper element fixes it going to 24x28 */
-	display: grid;
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined");
+
+:global(.material-symbols-outlined) {
+	/* To get it to align in the middle of labels */
+	vertical-align: middle;
+
+	user-select: none;
+	cursor: default;
+
+	--size: 1.5;
+	font-size: calc(var(--size) * 1rem);
+	font-variation-settings:
+		'FILL' 0,
+		'wght' 400,
+		'GRAD' 0,
+		'opsz' 24;
 }

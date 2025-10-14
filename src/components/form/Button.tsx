@@ -1,5 +1,6 @@
 import { PropsWithChildren } from "react";
-import { Icon, IconName } from "../icon/Icon.tsx";
+import { Icon } from "../icon/Icon.tsx";
+import { IconName } from "@components/icon/IconName.ts";
 import { classList, ExtensibleFC } from "../utils.tsx";
 import css from "./Button.module.css";
 
@@ -30,7 +31,7 @@ export const Button: ExtensibleFC<ButtonProps> = ({
 		{icon && (<div className={css["icon"]}>
 			<Icon
 				icon={icon}
-				height={1.5}
+				size={1.5}
 				title={title}
 			/>
 		</div>)}

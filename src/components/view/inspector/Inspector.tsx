@@ -53,30 +53,30 @@ export const Inspector: Layout.ViewComponent = ({
 				<div className={css["inspector"]}>
 					{viewSwitch}
 					<div className={css["inspector-content"]}>
-						Selection: <code>{selectedID}</code>
+						<span><Icon icon="select" title="Selection" /> <code>{selectedID}</code></span>
 						<FormSection>
 							<FormSection row>
 								<NumberInput name="left" value={left} onInput={setLeft} label={
-									<Icon icon="position-left" title="Left" />
+									<Icon icon="keyboard_tab" title="Left" />
 								} />
 								<NumberInput name="top" value={top} onInput={setTop} label={
-									<Icon icon="position-top" title="Top" />
+									<Icon icon="vertical_align_bottom" title="Top" />
 								} />
 							</FormSection>
 							<FormSection row>
 								<NumberInput name="right" value={right} onInput={setRight} label={
-									<Icon icon="position-right" title="Right" />
+									<Icon icon="keyboard_tab_rtl" title="Right" />
 								} />
 								<NumberInput name="bottom" value={bottom} onInput={setBottom} label={
-									<Icon icon="position-bottom" title="Bottom" />
+									<Icon icon="vertical_align_top" title="Bottom" />
 								} />
 							</FormSection>
 							<FormSection row>
 								<NumberInput name="width" value={width} onInput={setWidth} min={0} label={
-									<Icon icon="size-width" title="Width" />
+									<Icon icon="width" title="Width" />
 								} />
 								<NumberInput name="height" value={height} onInput={setHeight} min={0} label={
-									<Icon icon="size-height" title="Height" />
+									<Icon icon="height" title="Height" />
 								} />
 							</FormSection>
 						</FormSection>

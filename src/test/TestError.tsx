@@ -13,4 +13,5 @@ export const TestError: Layout.ViewComponent = () => {
 export const TestErrorVP: Layout.ViewProvider = {
 	name: "test.error",
 	Component: TestError,
+	icon: "error",
 };

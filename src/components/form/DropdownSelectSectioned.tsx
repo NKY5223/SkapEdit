@@ -1,8 +1,9 @@
-import { Dispatch, FC, KeyboardEventHandler, ReactNode, SetStateAction, useRef, useState } from "react";
+import { Dispatch, KeyboardEventHandler, ReactNode, SetStateAction, useRef, useState } from "react";
 import css from "./DropdownSelectSectioned.module.css";
 import { classList } from "../utils.tsx";
 import { Option } from "./DropdownSelect.tsx";
 import { useClickOutside } from "../../hooks/useClickOutside.ts";
+import { Icon } from "@components/icon/Icon.tsx";
 
 export type SectionedOptions<T> = {
 	name: string;
@@ -66,15 +67,23 @@ export const DropdownSelectSectioned = <T extends unknown>(props: DropdownSelect
 		.find(option => option.value === selection);
 		
 	useClickOutside(selectRef, open, () => setOpen(false));
+
+	const icon = selectedOption?.icon?.(true);
+	const currentClassName = classList(
+		css["current"],
+		icon && css["icon"],
+	);
 	
 	return (
 		<div ref={selectRef} className={className} role="input"
 			onKeyDown={filterKeys(() => setOpen(false), ["Escape"])}
 		>
-			<div className={css["current"]} tabIndex={0}
+			<div className={currentClassName} tabIndex={0}
 				onClick={toggleOpen} onKeyDown={filterKeys(toggleOpen)}
 			>
+				{icon && <Icon icon={icon} />}
 				{selectedOption?.display(true) ?? fallback}
+				{open ? <Icon icon="arrow_drop_down" /> : <Icon icon="arrow_right" />}
 			</div>
 			<ul className={optionsClassName}>
 				{sectionComps}
@@ -93,7 +102,7 @@ type OptionProps<T> = {
 };
 export function SectionedOption<T>({
 	option: {
-		value, display,
+		value, display, icon,
 	},
 	optionClass,
 	selection, setSelection,
@@ -103,14 +112,17 @@ export function SectionedOption<T>({
 		setSelection(value);
 		if (onSelect) onSelect(value);
 	};
+	const selected = Object.is(selection, value);
 	const className = classList(
 		css["option"],
-		Object.is(selection, value) ? css["selected"] : null,
+		icon && css["icon"],
+		selected && css["selected"],
 		optionClass,
 	);
 	return (
 		<li className={className} tabIndex={0}
 			onClick={onTrigger} onKeyDown={filterKeys(onTrigger)}>
+			{icon && <Icon icon={icon(false)} />}
 			{display(false)}
 		</li>
 	);

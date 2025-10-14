@@ -48,7 +48,7 @@ export const ContextMenuSubmenu: FC<ContextMenuSubmenuProps> = ({
 			onClickCapture={open}
 		>
 			{display}
-			<Icon icon="chevron-right" height={1} classList={[
+			<Icon icon="chevron-right" size={1} classList={[
 				css["icon"]
 			]} />
 			{/* <pre style={{

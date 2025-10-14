@@ -5,4 +5,5 @@ import { Inspector } from "./Inspector.tsx";
 export const InspectorVP: Layout.ViewProvider = {
 	name: "map.inspector",
 	Component: Inspector,
+	icon: "frame_inspect",
 };
