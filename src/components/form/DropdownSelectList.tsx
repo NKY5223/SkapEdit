@@ -35,14 +35,19 @@ export function DropdownSelectList<T>({
 			onSelect,
 		}} />
 	));
+
 	const className = classList(
 		css["select"],
-		open ? css["open"] : null,
+		open && css["open"],
 		selectedClass,
 	);
-	
+
 	const selectedOption = options.find(option => option.value === selection);
 	const icon = selectedOption?.icon?.(true);
+	const currentClassName = classList(
+		css["current"],
+		icon && css["icon"],
+	);
 
 	useClickOutside(selectRef, open, () => setOpen(false));
 	useKeydown(["Escape"], () => setOpen(false));
@@ -50,11 +55,12 @@ export function DropdownSelectList<T>({
 		<div ref={selectRef} className={className} role="input"
 			onContextMenu={e => e.stopPropagation()}
 		>
-			<div className={css["current"]} tabIndex={0}
+			<div className={currentClassName} tabIndex={0}
 				onClick={toggleOpen} onKeyDown={filterKeys(toggleOpen)}
 			>
 				{icon && <Icon icon={icon} />}
 				{selectedOption?.display(true) ?? fallback}
+				{open ? <Icon icon="arrow_drop_down" /> : <Icon icon="arrow_right" />}
 			</div>
 			<div className={css["options"]}>
 				{optionComps}
@@ -87,13 +93,16 @@ function ListOption<T>({
 	const className = classList(
 		css["option"],
 		selected && css["selected"],
+		icon && css["icon"],
 		optionClass,
 	);
 	return (
 		<div className={className} tabIndex={0}
 			onClick={onTrigger} onKeyDown={filterKeys(onTrigger)}>
 			{icon && <Icon icon={icon(false)} />}
-			{display(false)}
+			<span className={css["display"]}>
+				{display(false)}
+			</span>
 		</div>
 	);
 }

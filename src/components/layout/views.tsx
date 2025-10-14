@@ -14,7 +14,7 @@ export const views = {
 			{viewSwitch}
 			<Translate k="lorem" />
 		</div>),
-		icon: "text_snippet",
+		// icon: "text_snippet",
 	},
 	"map.viewport": ViewportVP,
 	"map.inspector": InspectorVP,

@@ -85,5 +85,4 @@ export const Inspector: Layout.ViewComponent = ({
 			);
 		}
 	}
-
 }
