@@ -1,4 +1,4 @@
-import { vec2, Vec2 } from "@common/vec2.ts";
+import { Vec2 } from "@common/vec2.ts";
 import { Vector } from "../../../../common/vector.ts";
 import { Bounds } from "../../../../editor/bounds.ts";
 

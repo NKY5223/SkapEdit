@@ -4,6 +4,7 @@ import { classList } from "../utils.tsx";
 import { Option } from "./DropdownSelect.tsx";
 import { useClickOutside } from "../../hooks/useClickOutside.ts";
 import { Icon } from "@components/icon/Icon.tsx";
+import { IconName } from "@components/icon/IconName.ts";
 
 export type SectionedOptions<T> = {
 	name: string;
@@ -14,6 +15,7 @@ type DropdownSelectSectionedProps<T> = {
 	options: SectionedOptions<T>;
 	initial: T;
 	fallback?: ReactNode;
+	fallbackIcon?: IconName;
 
 	onSelect?: (value: T) => void;
 
@@ -23,11 +25,11 @@ type DropdownSelectSectionedProps<T> = {
 };
 export const DropdownSelectSectioned = <T extends unknown>(props: DropdownSelectSectionedProps<T>) => {
 	const {
-		options: sections, initial, fallback,
+		options: sections, initial, fallback, fallbackIcon,
 		onSelect,
 		selectClass, optionsClass, optionClass,
 	} = props;
-	
+
 	const selectRef = useRef<HTMLDivElement>(null);
 	const [open, setOpen] = useState(false);
 	const [selection, setSelection] = useState<T>(initial);
@@ -65,15 +67,15 @@ export const DropdownSelectSectioned = <T extends unknown>(props: DropdownSelect
 	const selectedOption = sections
 		.flatMap(section => section.options)
 		.find(option => option.value === selection);
-		
+
 	useClickOutside(selectRef, open, () => setOpen(false));
 
-	const icon = selectedOption?.icon?.(true);
+	const icon = selectedOption ? selectedOption.icon?.(true) : fallbackIcon;
 	const currentClassName = classList(
 		css["current"],
 		icon && css["icon"],
 	);
-	
+
 	return (
 		<div ref={selectRef} className={className} role="input"
 			onKeyDown={filterKeys(() => setOpen(false), ["Escape"])}
@@ -123,7 +125,9 @@ export function SectionedOption<T>({
 		<li className={className} tabIndex={0}
 			onClick={onTrigger} onKeyDown={filterKeys(onTrigger)}>
 			{icon && <Icon icon={icon(false)} />}
-			{display(false)}
+			<span className={css["option-content"]}>
+				{display(false)}
+			</span>
 		</li>
 	);
 }

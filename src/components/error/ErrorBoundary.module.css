@@ -5,13 +5,22 @@
 	position: absolute;
 	inset: 0;
 	overflow: auto;
+	font-family: monospace;
 
 	& > h1 {
 		font-size: 3em;
-		margin-bottom: 1rem;
-		font-family: monospace;
 	}
 	& > pre {
 		tab-size: 4;
 	}
+	& button {
+		all: unset;
+		font-family: inherit;
+		cursor: pointer;
+		text-decoration: underline;
+		margin: 1em;
+	}
+}
+.face {
+	white-space: nowrap;
 }

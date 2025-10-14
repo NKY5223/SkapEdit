@@ -41,7 +41,7 @@ export const LayoutSplit: LayoutFC<Layout.NodeSplit, LayoutSplitProps> = ({
 			...node,
 			first: node.second,
 			second: node.first,
-			ratio: 1 - node.ratio,
+			ratio: node.ratio,
 		}
 	});
 	const layoutItems = node.axis === "x"

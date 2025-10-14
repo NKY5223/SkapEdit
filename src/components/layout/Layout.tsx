@@ -3,8 +3,6 @@ import { createMapContext } from "../../hooks/createMapContext.tsx";
 import css from "./Layout.module.css";
 import { LayoutSplit } from "./LayoutSplit.tsx";
 import { LayoutViewMemo, makeView } from "./LayoutView.tsx";
-import { ViewToolbar } from "./LayoutViewToolbar.tsx";
-import { Translate } from "@components/translate/Translate.tsx";
 import { ID } from "@common/uuid.ts";
 import { IconName } from "@components/icon/IconName.ts";
 
@@ -107,18 +105,6 @@ export namespace Layout {
 		| NodeSplit 
 		| NodeView
 	);
-}
-
-export const emptyViewProvider: Layout.ViewProvider = {
-	name: "empty",
-	Component: ({
-		viewSwitch
-	}) => (
-		<div>
-			<ViewToolbar>{viewSwitch}</ViewToolbar>
-			<Translate k="layout.view.empty" />
-		</div>
-	)
 }
 
 // #endregion

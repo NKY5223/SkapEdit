@@ -17,7 +17,7 @@ export type WebGLLayerRendererParams = [
 ];
 export abstract class WebGLLayerRenderer extends WebGlRenderer<WebGLLayerRendererParams> { };
 
-const resizeInterval = 250;
+const resizeInterval = 100;
 
 export const WebGLLayer = (...renderers: WebGLLayerRenderer[]): ViewportLayerFC => {
 	const WebGLLayer: ViewportLayerFC = ({
@@ -61,7 +61,8 @@ export const WebGLLayer = (...renderers: WebGLLayerRenderer[]): ViewportLayerFC 
 			abortRenderRef.current = abortRender;
 
 			let prev = 0;
-			let accDt = 1000;
+			// Immediately resize
+			let accDt = Infinity;
 			const render = (t: DOMHighResTimeStamp) => {
 				if (abortRender.signal.aborted) return;
 

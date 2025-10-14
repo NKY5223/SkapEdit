@@ -42,6 +42,7 @@ export function DropdownSelectList<T>({
 	);
 	
 	const selectedOption = options.find(option => option.value === selection);
+	const icon = selectedOption?.icon?.(true);
 
 	useClickOutside(selectRef, open, () => setOpen(false));
 	useKeydown(["Escape"], () => setOpen(false));
@@ -52,6 +53,7 @@ export function DropdownSelectList<T>({
 			<div className={css["current"]} tabIndex={0}
 				onClick={toggleOpen} onKeyDown={filterKeys(toggleOpen)}
 			>
+				{icon && <Icon icon={icon} />}
 				{selectedOption?.display(true) ?? fallback}
 			</div>
 			<div className={css["options"]}>

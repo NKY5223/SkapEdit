@@ -36,6 +36,7 @@ export const ViewSelector: FC<ViewSelectorProps> = ({
 		<div className={css["selector"]}>
 			<DropdownSelectSectioned initial={view.providerName} options={options}
 				fallback={<Translate k="layout.view.fallback" />}
+				fallbackIcon="indeterminate_question_box"
 				optionsClass={css["selector-options"]}
 				onSelect={value => dispatch({
 					type: "set_view",

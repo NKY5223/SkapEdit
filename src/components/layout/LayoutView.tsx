@@ -5,7 +5,7 @@ import { createId } from "../../common/uuid.ts";
 import { ErrorBoundary } from "../error/ErrorBoundary.tsx";
 import { Translate } from "../translate/Translate.tsx";
 import { classList } from "../utils.tsx";
-import { emptyViewProvider, Layout, LayoutFC, useViewProvider } from "./Layout.tsx";
+import { Layout, LayoutFC, useViewProvider } from "./Layout.tsx";
 import { makeSplitX, makeSplitY } from "./LayoutSplit.tsx";
 import css from "./LayoutView.module.css";
 import { ViewSelector } from "./LayoutViewToolbar.tsx";
@@ -27,7 +27,7 @@ export const LayoutView: LayoutFC<Layout.NodeView, LayoutViewProps> = ({
 				targetNode: node.id,
 				replacement: makeSplitX(0.5,
 					node,
-					makeView(emptyViewProvider.name),
+					makeView(node.providerName),
 				)
 			})),
 			single("split-y", (<Translate k="layout.view.split-y" />), "split_scene_up", () => dispatchLayout({
@@ -35,7 +35,7 @@ export const LayoutView: LayoutFC<Layout.NodeView, LayoutViewProps> = ({
 				targetNode: node.id,
 				replacement: makeSplitY(0.5,
 					node,
-					makeView(emptyViewProvider.name),
+					makeView(node.providerName),
 				)
 			})),
 		])
@@ -63,7 +63,7 @@ export const LayoutView: LayoutFC<Layout.NodeView, LayoutViewProps> = ({
 	} = provider;
 
 	return (
-		<ErrorBoundary location={`LayoutView(${JSON.stringify(id)})`}>
+		<ErrorBoundary location={`LayoutView`}>
 			<div className={css.view} onContextMenu={handleContextMenu}>
 				<ViewComp
 					dispatchLayout={dispatchLayout}

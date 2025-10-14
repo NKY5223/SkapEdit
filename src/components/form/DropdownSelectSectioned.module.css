@@ -6,6 +6,10 @@
 	grid-template-rows: auto 0;
 
 	& > .current {
+		display: flex;
+		flex-wrap: nowrap;
+		overflow: hidden;
+		
 		padding: .25em .25em .25em 1em;
 		user-select: none;
 		background-color: var(--theme-bg-0);
@@ -75,6 +79,11 @@
 				}
 				&:focus-visible {
 					z-index: 2;
+				}
+
+				& > .option-content {
+					line-height: 1;
+					vertical-align: middle;
 				}
 			}
 		}
