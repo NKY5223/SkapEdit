@@ -2,12 +2,16 @@ import { clamp } from "@common/number.ts";
 import { createId } from "@common/uuid.ts";
 import { section, Sections, single } from "@components/contextmenu/ContextMenu.ts";
 import { useContextMenu } from "@components/contextmenu/reducer.ts";
-import { Translate } from "@components/translate/Translate.tsx";
 import { classList } from "@components/utils.tsx";
 import { useDrag } from "@hooks/useDrag.ts";
-import { ReactNode, useRef } from "react";
+import { KeyboardEventHandler, ReactNode, useRef } from "react";
 import { Layout, LayoutFC } from "./Layout.tsx";
 import css from "./LayoutSplit.module.css";
+
+const KeyMap = {
+	x: ["ArrowLeft", "ArrowRight"],
+	y: ["ArrowUp", "ArrowDown"],
+} as const;
 
 type LayoutSplitProps = {
 	children: [ReactNode, ReactNode];
@@ -21,12 +25,12 @@ export const LayoutSplit: LayoutFC<Layout.NodeSplit, LayoutSplitProps> = ({
 	const setRatio = (ratio: number) => dispatch({
 		type: "set_ratio",
 		targetNode: node.id,
-		ratio,
+		ratio: clamp(0, 1)(ratio),
 	});
 	const wrapperRef = useRef<HTMLDivElement>(null);
 
 	const { handlePointerDown: startDrag, dragging: resizing } = useDrag(0, wrapperRef, curr => {
-		setRatio(clamp(0, 1)(axis === "x" ? curr[0] : curr[1]));
+		setRatio(axis === "x" ? curr[0] : curr[1]);
 	});
 
 	const handleClassName = classList(
@@ -44,7 +48,7 @@ export const LayoutSplit: LayoutFC<Layout.NodeSplit, LayoutSplitProps> = ({
 			ratio: node.ratio,
 		}
 	});
-	const layoutItems = node.axis === "x"
+	const layoutItems = axis === "x"
 		? [
 			single("layout.dissolve-left", "keyboard_tab_rtl",
 				() => dispatch({
@@ -78,17 +82,28 @@ export const LayoutSplit: LayoutFC<Layout.NodeSplit, LayoutSplitProps> = ({
 	const addContextMenuItems = useContextMenu([
 		section(Sections.layout, layoutItems),
 	]);
+	const handleKeyDown: KeyboardEventHandler = e => {
+		const [less, more] = KeyMap[axis];
+		const dir =
+			(e.code === less ? -1 : e.code === more ? 1 : 0)
+			* (document.dir === "rtl" && axis === "x" ? -1 : 1);
+		
+		setRatio(ratio + 0.025 * dir);
+	}
 
 	return (
 		<div ref={wrapperRef} className={`${css.split} ${css[`split-${axis}`]}`}
 			style={{ "--ratio": `${ratio * 100}%` }}
 		>
 			<div className={css["split-child"]}>{first}</div>
-			<div className={css["split-child"]}>{second}</div>
-			<div className={handleClassName} onPointerDown={startDrag} onContextMenuCapture={addContextMenuItems}>
+			<div className={handleClassName}
+				onPointerDown={startDrag} onContextMenuCapture={addContextMenuItems}
+				onKeyDown={handleKeyDown}
+				tabIndex={0}>
 				<div className={css.interaction}></div>
 				<div className={css.visual}></div>
 			</div>
+			<div className={css["split-child"]}>{second}</div>
 		</div>
 	);
 }
@@ -101,7 +116,7 @@ export const makeSplit = (axis: "x" | "y", ratio: number, first: Layout.Node, se
 	second,
 	ratio,
 });
-export const makeSplitX = (ratio: number, left: Layout.Node, right: Layout.Node) => 
+export const makeSplitX = (ratio: number, left: Layout.Node, right: Layout.Node) =>
 	makeSplit("x", ratio, left, right);
-export const makeSplitY = (ratio: number, top: Layout.Node, bottom: Layout.Node) => 
+export const makeSplitY = (ratio: number, top: Layout.Node, bottom: Layout.Node) =>
 	makeSplit("y", ratio, top, bottom);

@@ -1,6 +1,6 @@
 .split {
 	--handle-width: var(--theme-border-width, 1px);
-	--handle-interaction-size: calc(5 * var(--handle-width));
+	--handle-interaction-size: calc(10 * var(--handle-width));
 
 	position: absolute;
 	inset: 0;
@@ -10,6 +10,8 @@
 	--hover-color: var(--theme-primary-bg-0);
 
 	display: grid;
+	isolation: isolate;
+
 	&.split-x {
 		grid-template-areas: "a h b";
 		grid-template-columns: var(--ratio) var(--handle-width) auto;
@@ -73,13 +75,20 @@
 				height .2s 0;
 			pointer-events: none;
 		}
-		&:is(:hover, .resizing) {
+		&:is(:hover, .resizing, :focus) {
 			& > .visual {
 				width: var(--handle-interaction-width);
 				height: var(--handle-interaction-height);
-				transition: 
-					width .1s .5s, 
-					height .1s .5s;
+				transition: width height;
+				transition-duration: .1s;
+				transition-delay: .5s;
+			}
+		}
+		&:focus {
+			outline: none;
+			& > .visual {
+				transition-delay: 0s;
+				transition-duration: .025s;
 			}
 		}
 	}
