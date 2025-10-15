@@ -1,5 +1,5 @@
 import { useContextMenu } from "@components/contextmenu/reducer.ts";
-import { section, single } from "@components/contextmenu/ContextMenu.ts";
+import { section, Sections, single } from "@components/contextmenu/ContextMenu.ts";
 import { FC, memo, ReactNode } from "react";
 import { createId } from "../../common/uuid.ts";
 import { ErrorBoundary } from "../error/ErrorBoundary.tsx";
@@ -21,8 +21,8 @@ export const LayoutView: LayoutFC<Layout.NodeView, LayoutViewProps> = ({
 	node, dispatchLayout,
 }) => {
 	const addContextMenuItems = useContextMenu([
-		section("layout", null, [
-			single("split-x", "split_scene_left", () => dispatchLayout({
+		section(Sections.layout, [
+			single("layout.split-x", "split_scene_left", () => dispatchLayout({
 				type: "replace",
 				targetNode: node.id,
 				replacement: makeSplitX(0.5,
@@ -30,7 +30,7 @@ export const LayoutView: LayoutFC<Layout.NodeView, LayoutViewProps> = ({
 					makeView(node.providerName),
 				)
 			})),
-			single("split-y", "split_scene_up", () => dispatchLayout({
+			single("layout.split-y", "split_scene_up", () => dispatchLayout({
 				type: "replace",
 				targetNode: node.id,
 				replacement: makeSplitY(0.5,

@@ -29,7 +29,20 @@ export const translations = createTranslations({
 	"layout.view.name.map.inspector": "Inspector",
 	"layout.view.name.map.viewport": "Viewport",
 
-	"viewport.reset_camera": "Reset Camera",
+	"contextmenu.item.name": delegate("contextmenu.item.name", "name"),
+	"contextmenu.item.name.layout": "Layout",
+	"contextmenu.item.name.layout.split-x": "Split Horizontally",
+	"contextmenu.item.name.layout.split-y": "Split Vertically",
+	
+	"contextmenu.item.name.layout.dissolve-left": "Dissolve Left",
+	"contextmenu.item.name.layout.dissolve-right": "Dissolve Right",
+	"contextmenu.item.name.layout.dissolve-up": "Dissolve Up",
+	"contextmenu.item.name.layout.dissolve-down": "Dissolve Down",
+
+	"contextmenu.item.name.layout.swap-x": "Swap",
+	"contextmenu.item.name.layout.swap-y": "Swap",
+	"contextmenu.item.name.viewport": "Viewport",
+	"contextmenu.item.name.viewport.reset_camera": "Reset Camera",
 
 	"lorem":
 		"Lorem ipsum dolor, sit amet consectetur adipisicing elit. Esse, culpa possimus fuga, veritatis harum autem dolore ipsam provident, id praesentium distinctio ullam similique! Earum praesentium repudiandae magnam ipsum et nihil! " +

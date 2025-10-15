@@ -13,7 +13,10 @@ export namespace ContextMenu {
 	type ItemBase<T extends string, P> = {
 		type: T;
 		id: string;
-		/** @example "editor.delete" */
+		/** 
+		 * Will be used for the display of the item.  
+		 * `<Translate k="contextmenu.item.name" name={name} />`
+		 * @example "editor.delete" */
 		name: string;
 		icon: IconName | null;
 	} & P;
@@ -64,7 +67,23 @@ export const single = (
 	icon: icon ?? null,
 	click,
 });
-export const section = (name: string, icon: IconName | null, items: readonly (ContextMenu.SingleItem | ContextMenu.Submenu)[]): ContextMenu.Section => ({
+
+type SectionPref = {
+	name: string;
+	icon: IconName | null;
+};
+export const Sections = {
+	layout: {
+		name: "layout",
+		icon: "dashboard",	
+	},
+	viewport: {
+		name: "viewport",
+		icon: "monitor",
+	},
+} as const satisfies Record<string, SectionPref>;
+
+export const section = ({ name, icon }: SectionPref, items: readonly (ContextMenu.SingleItem | ContextMenu.Submenu)[]): ContextMenu.Section => ({
 	type: "section",
 	id: createId("cmenu-section"),
 	icon,

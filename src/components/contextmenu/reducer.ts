@@ -66,7 +66,7 @@ const mergeItems = <T extends ContextMenu.Item>(items: readonly T[], newItems: r
 				}
 				const [i, section] = match;
 				if (section.type !== "section") {
-					throw new Error("Item that was section is no longer section. This should not be possible");
+					throw new Error("Item that was section is no longer section. This should not be possible.");
 				}
 				return items.with(i, {
 					...section,
@@ -81,7 +81,7 @@ const mergeItems = <T extends ContextMenu.Item>(items: readonly T[], newItems: r
 				}
 				const [i, submenu] = match;
 				if (submenu.type !== "submenu") {
-					throw new Error("Item that was submenu is no longer submenu. This should not be possible");
+					throw new Error("Item that was submenu is no longer submenu. This should not be possible.");
 				}
 				return items.with(i, {
 					...submenu,

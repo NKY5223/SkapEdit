@@ -84,6 +84,7 @@
 	display: block;
 	padding: .25em .5em;
 	user-select: none;
+	min-height: 2rem;
 
 	.section + & {
 		border-top: var(--cmenu-border);
@@ -124,13 +125,17 @@
 		border-top: var(--cmenu-border);
 	}
 }
-.name-wrapper {
-	padding: 0;
-	padding-inline-start: .75em;
-}
 .name {
+	display: flex;
+	gap: 0.25rem;
+	padding: 0;
+	padding-inline-start: .75rem;
 	opacity: 0.5;
 	font-size: .75em;
+
+	&.has-icon {
+		padding-inline-start: .5rem;
+	}
 }
 /* #endregion */
 

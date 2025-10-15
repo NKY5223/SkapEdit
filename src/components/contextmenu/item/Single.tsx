@@ -5,6 +5,7 @@ import { classList } from "@components/utils.tsx";
 import { Icon } from "@components/icon/Icon.tsx";
 import { useClearContextMenu } from "../reducer.ts";
 import { filterKeys } from "@components/form/DropdownSelect.tsx";
+import { Translate } from "@components/translate/Translate.tsx";
 
 type ContextMenuSingleItemProps = {
 	item: ContextMenu.SingleItem;
@@ -27,7 +28,7 @@ export const ContextMenuSingleItem: FC<ContextMenuSingleItemProps> = ({
 	return (
 		<li className={className} onClick={handleClick} onKeyDown={filterKeys(handleClick)} tabIndex={0}>
 			{icon && <Icon icon={icon} />}
-			{name}
+			<Translate k="contextmenu.item.name" name={name} />
 		</li>
 	);
 }

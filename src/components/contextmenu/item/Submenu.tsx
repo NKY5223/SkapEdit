@@ -4,6 +4,7 @@ import { ContextMenu } from "../ContextMenu.ts";
 import { classList } from "@components/utils.tsx";
 import { AnchoredContextMenu } from "../AnchoredContextMenu.tsx";
 import { Icon } from "@components/icon/Icon.tsx";
+import { Translate } from "@components/translate/Translate.tsx";
 
 type ContextMenuSubmenuProps = {
 	item: ContextMenu.Submenu;
@@ -20,7 +21,7 @@ export const ContextMenuSubmenu: FC<ContextMenuSubmenuProps> = ({
 
 	return (
 		<li className={className} tabIndex={0}>
-			{name}
+			<Translate k="contextmenu.item.name" name={name} />
 			<Icon icon="arrow_right" size={1} classList={[
 				css["icon"]
 			]} />

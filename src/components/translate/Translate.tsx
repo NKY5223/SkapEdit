@@ -56,7 +56,12 @@ export const TranslateFallback: FC<TranslationFallbackProps> = ({
 	children: key
 }) => {
 	return (
-		`Translate{ ${key} }`
+		<em style={{
+			fontFamily: "monospace",
+			color: "var(--theme-error-fg)",
+		}}>
+			{key}
+		</em>
 	);
 }
 

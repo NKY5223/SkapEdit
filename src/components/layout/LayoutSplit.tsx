@@ -1,6 +1,6 @@
 import { clamp } from "@common/number.ts";
 import { createId } from "@common/uuid.ts";
-import { section, single } from "@components/contextmenu/ContextMenu.ts";
+import { section, Sections, single } from "@components/contextmenu/ContextMenu.ts";
 import { useContextMenu } from "@components/contextmenu/reducer.ts";
 import { Translate } from "@components/translate/Translate.tsx";
 import { classList } from "@components/utils.tsx";
@@ -46,37 +46,37 @@ export const LayoutSplit: LayoutFC<Layout.NodeSplit, LayoutSplitProps> = ({
 	});
 	const layoutItems = node.axis === "x"
 		? [
-			single("dissolve-left", "keyboard_tab_rtl",
+			single("layout.dissolve-left", "keyboard_tab_rtl",
 				() => dispatch({
 					type: "replace",
 					targetNode: node.id,
 					replacement: node.second,
 				})),
-			single("dissolve-right", "keyboard_tab",
+			single("layout.dissolve-right", "keyboard_tab",
 				() => dispatch({
 					type: "replace",
 					targetNode: node.id,
 					replacement: node.first,
 				})),
-			single("swap", "swap_horiz", swap),
+			single("layout.swap-x", "swap_horiz", swap),
 		]
 		: [
-			single("dissolve-up", "vertical_align_top",
+			single("layout.dissolve-up", "vertical_align_top",
 				() => dispatch({
 					type: "replace",
 					targetNode: node.id,
 					replacement: node.second,
 				})),
-			single("dissolve-down", "vertical_align_bottom",
+			single("layout.dissolve-down", "vertical_align_bottom",
 				() => dispatch({
 					type: "replace",
 					targetNode: node.id,
 					replacement: node.first,
 				})),
-			single("swap", "swap_vert", swap),
+			single("layout.swap-y", "swap_vert", swap),
 		];
 	const addContextMenuItems = useContextMenu([
-		section("layout", null, layoutItems),
+		section(Sections.layout, layoutItems),
 	]);
 
 	return (
