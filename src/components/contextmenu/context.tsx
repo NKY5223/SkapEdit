@@ -76,6 +76,13 @@ export const useCmenuReducer = () => useContext(cmenuReducerContext);
 export const cmenuOpenedIdContext = createContext<string | null>(null);
 export const useCmenuOpenedId = () => useContext(cmenuOpenedIdContext);
 
+/**
+ * @example
+ * 
+ * const handleContextMenu = useContextMenu([...]);
+ * 
+ * <div onContextMenu={handleContextMenu}>...</div>
+ */
 export const useContextMenu = (
 	items: ContextMenu.Item[]
 ) => {

@@ -29,6 +29,7 @@ export const translations = createTranslations({
 	"layout.view.name.map.inspector": "Inspector",
 	"layout.view.name.map.viewport": "Viewport",
 
+	"viewport.reset_camera": "Reset Camera",
 
 	"lorem":
 		"Lorem ipsum dolor, sit amet consectetur adipisicing elit. Esse, culpa possimus fuga, veritatis harum autem dolore ipsam provident, id praesentium distinctio ullam similique! Earum praesentium repudiandae magnam ipsum et nihil! " +
