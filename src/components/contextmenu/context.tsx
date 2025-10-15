@@ -1,6 +1,5 @@
-import { createContext, Dispatch, FC, PropsWithChildren, useEffect, useContext, Reducer, useReducer } from "react";
+import { createContext, Dispatch, useContext, Reducer } from "react";
 import { ContextMenu } from "./ContextMenu.tsx";
-import { FloatingContextMenu } from "./FloatingContextMenu.tsx";
 import { Vec2, vec2 } from "@common/vec2.ts";
 import { createId } from "@common/uuid.ts";
 
@@ -27,10 +26,10 @@ type ContextMenuAction = (
 		} | null;
 	}>
 );
-const cmenuReducerContext = createContext<Dispatch<ContextMenuAction>>(() => {
+export const cmenuReducerContext = createContext<Dispatch<ContextMenuAction>>(() => {
 	console.error("Missing context menu reducer context.");
-});
-const cmenuReducer: Reducer<RClickContextMenu | null, ContextMenuAction> = (menu, action): RClickContextMenu | null => {
+}); 
+export const cmenuReducer: Reducer<RClickContextMenu | null, ContextMenuAction> = (menu, action): RClickContextMenu | null => {
 	switch (action.type) {
 		case "set": {
 			const src = action.menu;
@@ -74,39 +73,8 @@ const cmenuReducer: Reducer<RClickContextMenu | null, ContextMenuAction> = (menu
 }
 export const useCmenuReducer = () => useContext(cmenuReducerContext);
 
-const cmenuOpenedIdContext = createContext<string | null>(null);
+export const cmenuOpenedIdContext = createContext<string | null>(null);
 export const useCmenuOpenedId = () => useContext(cmenuOpenedIdContext);
-
-export const ContextMenuProvider: FC<PropsWithChildren> = ({
-	children
-}) => {
-	const [current, dispatch] = useReducer(cmenuReducer, null);
-
-	useEffect(() => {
-		console.log("cmenu provider mount");
-		return () => console.log("cmenu provider unmount");
-	}, []);
-	const openedId = current?.openedIds.at(-1) ?? null;
-
-	return (
-		<div data--provider-name="ContextMenuProvider" onContextMenuCapture={() => {
-			dispatch({
-				type: "set",
-				menu: null,
-			});
-		}}>
-			{/* I love context hell!!!! */}
-			<cmenuOpenedIdContext.Provider value={openedId}>
-				<cmenuReducerContext.Provider value={dispatch}>
-					{children}
-					{current && <FloatingContextMenu key={current.id}
-						contextMenu={current.menu}
-					/>}
-				</cmenuReducerContext.Provider>
-			</cmenuOpenedIdContext.Provider>
-		</div>
-	);
-};
 
 export const useContextMenu = (
 	items: ContextMenu.Item[]

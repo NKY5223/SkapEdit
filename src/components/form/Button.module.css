@@ -57,7 +57,7 @@
 	}
 
 	&.has-icon {
-		padding-left: .5em;
+		padding-inline-start: .5em;
 		grid-template-areas: "icon content";
 	}
 	& > .icon {

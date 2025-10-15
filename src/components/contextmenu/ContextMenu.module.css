@@ -58,10 +58,11 @@
 
 		position-anchor: --contextmenu-anchor;
 		position-area: right span-y-end;
+		position-area: inline-end span-y-end;
 		position-try-fallbacks: 
-			left span-y-end,
-			right span-y-start,
-			left span-y-start
+			flip-inline,
+			flip-block,
+			flip-inline flip-block
 		;
 
 		top: calc(-1 * var(--cmenu-bwidth));
@@ -81,7 +82,7 @@
 /* #region items */
 .item {
 	display: block;
-	padding: .25em .5em .25em .5em;
+	padding: .25em .5em;
 	user-select: none;
 
 	.section + & {
@@ -118,7 +119,8 @@
 	}
 }
 .title-wrapper {
-	padding: 0 0 0 .75em;
+	padding: 0;
+	padding-inline-start: .75em;
 }
 .title {
 	opacity: 0.5;

@@ -1,5 +1,5 @@
 import { toMap } from "@common/toMap.tsx";
-import { ContextMenuProvider } from "@components/contextmenu/context.tsx";
+import { ContextMenuProvider } from "@components/contextmenu/ContextMenuProvider.tsx";
 import { ErrorBoundary } from "@components/error/ErrorBoundary.tsx";
 import { Layout } from "@components/layout/Layout.tsx";
 import { DefaultTranslationProvider } from "@components/translate/DefaultTranslationProvider.tsx";

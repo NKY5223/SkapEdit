@@ -22,7 +22,7 @@
 	flex-wrap: nowrap;
 	overflow: hidden;
 	
-	padding: .25em .25em .25em;
+	padding: .25em;
 	padding-inline-start: 1em;
 	user-select: none;
 	background-color: var(--theme-bg-0);

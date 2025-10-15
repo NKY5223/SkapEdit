@@ -6,6 +6,7 @@ import css from "./Inspector.module.css";
 import { Layout } from "@components/layout/Layout.tsx";
 import { useSelection } from "@components/editor/selection.ts";
 import { getObject, useDispatchSkapMap, useSkapMap } from "@editor/map.ts";
+import { Button } from "@components/form/Button.tsx";
 
 export const Inspector: Layout.ViewComponent = ({
 	viewSwitch,
@@ -79,6 +80,7 @@ export const Inspector: Layout.ViewComponent = ({
 									<Icon icon="height" title="Height" />
 								} />
 							</FormSection>
+							<Button icon="html">uwu</Button>
 						</FormSection>
 					</div>
 				</div>

@@ -11,7 +11,8 @@
 		display: grid;
 		grid-template-columns: min-content auto min-content;
 		width: 100%;
-		padding: .25em .25em .25em 1em;
+		padding: .25em;
+		padding-inline-start: 1em;
 		user-select: none;
 
 		background-color: var(--theme-bg-0);
@@ -21,7 +22,7 @@
 		z-index: 3;
 
 		&.icon {
-			padding-left: .5em;
+			padding-inline-start: .5em;
 			& > :first-child {
 				margin-right: .25em;
 			}
@@ -33,7 +34,8 @@
 		z-index: 2;
 		
 		& > .option {
-			padding: .25em 1em .25em 2.25em;
+			padding: .25em 1em;
+			padding-inline-start: 2.25em;
 			min-height: 2em;
 			height: fit-content;
 			user-select: none;
