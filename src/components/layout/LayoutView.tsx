@@ -51,11 +51,9 @@ export const LayoutView: LayoutFC<Layout.NodeView, LayoutViewProps> = ({
 		return (
 			<div className={className} onContextMenuCapture={addContextMenuItems}>
 				<ViewSelector view={node} dispatch={dispatchLayout} />
-				<div>
-					<h1>
-						<Translate k="error.layout.view.unknown" viewProviderName={node.providerName} />
-					</h1>
-				</div>
+				<h1>
+					<Translate k="error.layout.view.unknown" viewProviderName={node.providerName} />
+				</h1>
 			</div>
 		);
 	}

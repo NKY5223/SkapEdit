@@ -15,7 +15,7 @@ import { TextLayer } from "./renderer/text.tsx";
 import css from "./Viewport.module.css";
 import { WebGLLayer } from "./webgl/WebGLLayer.tsx";
 import { useContextMenu } from "@components/contextmenu/reducer.ts";
-import { section, single } from "@components/contextmenu/ContextMenu.ts";
+import { section, single, submenu } from "@components/contextmenu/ContextMenu.ts";
 import { Translate } from "@components/translate/Translate.tsx";
 
 export type ViewportInfo = {
@@ -132,8 +132,14 @@ export const Viewport: Layout.ViewComponent = ({
 				setCamera({
 					x: 0, y: 0, scale: 5,
 				});
-			})
-		])
+			}),
+			submenu("viewport.do_stuff", null, [
+				single("viewport.do_stuff.0"),
+				single("viewport.do_stuff.1"),
+				single("viewport.do_stuff.2"),
+				single("viewport.do_stuff.3"),
+			]),
+		]),
 	]);
 
 	const viewportSize = useElementSize(elRef);

@@ -4,6 +4,7 @@ import { ContextMenu } from "../ContextMenu.ts";
 import { classList } from "@components/utils.tsx";
 import { Icon } from "@components/icon/Icon.tsx";
 import { useClearContextMenu } from "../reducer.ts";
+import { filterKeys } from "@components/form/DropdownSelect.tsx";
 
 type ContextMenuSingleItemProps = {
 	item: ContextMenu.SingleItem;
@@ -24,7 +25,7 @@ export const ContextMenuSingleItem: FC<ContextMenuSingleItemProps> = ({
 		icon && css["has-icon"],
 	);
 	return (
-		<li className={className} onClick={handleClick}>
+		<li className={className} onClick={handleClick} onKeyDown={filterKeys(handleClick)} tabIndex={0}>
 			{icon && <Icon icon={icon} />}
 			{name}
 		</li>

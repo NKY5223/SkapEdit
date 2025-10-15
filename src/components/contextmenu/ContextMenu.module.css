@@ -89,15 +89,21 @@
 		border-top: var(--cmenu-border);
 	}
 }
-.single:hover, .submenu:hover {
-	background-color: var(--theme-primary-bg-0);
-	color: var(--theme-primary-fg-0);
+.single, .submenu {
+	padding-inline-start: 2.25em;
+
+	&:hover, &:focus {
+		background-color: var(--theme-primary-bg-0);
+		color: var(--theme-primary-fg-0);
+	}
 }
+
 
 /* #region single */
 .single {
 	&.has-icon {
 		display: grid;
+		padding-inline-start: .5em;
 		grid-template-areas: "icon content";
 		grid-template-columns: min-content auto;
 		place-items: center start;
@@ -136,6 +142,10 @@
 	anchor-name: --contextmenu-anchor;
 
 	align-items: center;
+
+	&:not(:hover, :focus, :focus-within) > .context-menu {
+		display: none;
+	}
 }
 .icon {
 	grid-area: icon;

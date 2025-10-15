@@ -11,52 +11,23 @@ type ContextMenuSubmenuProps = {
 export const ContextMenuSubmenu: FC<ContextMenuSubmenuProps> = ({
 	item,
 }) => {
-	const { id, name, items } = item;
-	// const dispatch = useCmenuReducer();
-	// const openedId = useCmenuOpenedId();
-	// const opened = openedId !== null && contains(item, openedId);
-
-	// const open = () => {
-	// 	dispatch({
-	// 		type: "open_submenu",
-	// 		target: id,
-	// 	});
-	// };
-	// const readyOpen = () => {
-	// 	dispatch({
-	// 		type: "open_submenu",
-	// 		target: id,
-	// 	});
-	// };
-	// const readyClose = () => {
-	// 	dispatch({
-	// 		type: "close_submenu",
-	// 		target: id,
-	// 	});
-	// };
+	const { name, items } = item;
 
 	const className = classList(
 		css["item"],
 		css["submenu"],
-		// opened && css["open"],
 	);
 
 	return (
-		<li className={className}
-			// onPointerEnter={readyOpen} onPointerLeave={opened ? readyClose : () => { }}
-			// onClickCapture={open}
-		>
+		<li className={className} tabIndex={0}>
 			{name}
 			<Icon icon="arrow_right" size={1} classList={[
 				css["icon"]
 			]} />
-			{/* <pre style={{
-				lineHeight: 2,
-			}}>{id}</pre> */}
 			<AnchoredContextMenu contextMenu={{
 				type: "anchored",
 				items,
-			}} /* open={opened} */ dismissable={false} />
+			}} dismissable={false} />
 		</li>
 	);
 }

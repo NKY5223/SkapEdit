@@ -12,11 +12,13 @@ type FloatingContextMenuProps = {
 	contextMenu: ContextMenu.Floating;
 	open?: boolean;
 	dismissable?: boolean;
+	ref?: React.RefObject<HTMLDivElement | null>;
 };
 export const FloatingContextMenu: FC<FloatingContextMenuProps> = ({
 	contextMenu,
 	open = true,
 	dismissable = true,
+	ref,
 }) => {
 	const { pos, items } = contextMenu;
 
@@ -37,7 +39,7 @@ export const FloatingContextMenu: FC<FloatingContextMenuProps> = ({
 	}
 
 	return (
-		<div className={css["floating-anchor"]} style={{
+		<div ref={ref} className={css["floating-anchor"]} style={{
 			"--x": `${x}px`,
 			"--y": `${y}px`,
 		}}>
