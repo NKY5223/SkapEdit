@@ -25,11 +25,9 @@ export const ContextMenuProviderInternal: FC<PropsWithChildren<ContextMenuProvid
 	}
 	useEffect(() => {
 		if (!menu) return;
-		console.log("Attempting focus");
 		const current = ref?.current;
 		if (!current) return;
 		
-		console.log("Attempting focus on", current);
 		current.focus();
 	}, [menu, ref.current]);
 
