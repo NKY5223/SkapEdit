@@ -118,11 +118,11 @@
 		border-top: var(--cmenu-border);
 	}
 }
-.title-wrapper {
+.name-wrapper {
 	padding: 0;
 	padding-inline-start: .75em;
 }
-.title {
+.name {
 	opacity: 0.5;
 	font-size: .75em;
 }

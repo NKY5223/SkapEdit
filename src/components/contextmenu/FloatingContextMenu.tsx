@@ -3,8 +3,8 @@ import { ErrorBoundary } from "@components/error/ErrorBoundary.tsx";
 import { classList } from "@components/utils.tsx";
 import { useClickOutside } from "@hooks/useClickOutside.ts";
 import { useKeydown } from "@hooks/useKeydown.ts";
-import { ContextMenu } from "./ContextMenu.tsx";
-import { useClearContextMenu } from "./context.tsx";
+import { ContextMenu } from "./ContextMenu.ts";
+import { useClearContextMenu } from "./reducer.ts";
 import { ContextMenuItem } from "./item/Item.tsx";
 import css from "./ContextMenu.module.css";
 

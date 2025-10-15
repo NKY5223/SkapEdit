@@ -1,6 +1,6 @@
 import { FC } from "react";
 import css from "../ContextMenu.module.css";
-import { ContextMenu } from "../ContextMenu.tsx";
+import { ContextMenu } from "../ContextMenu.ts";
 import { ContextMenuItem } from "./Item.tsx";
 
 type ContextMenuSectionProps = {
@@ -9,12 +9,12 @@ type ContextMenuSectionProps = {
 export const ContextMenuSection: FC<ContextMenuSectionProps> = ({
 	item
 }) => {
-	const { title, items } = item;
+	const { name, items } = item;
 	return (
 		<li className={css["section"]}>
-			{title &&
-				<div className={css["title-wrapper"]}>
-					<div className={css["title"]}>{title}</div>
+			{name &&
+				<div className={css["name-wrapper"]}>
+					<div className={css["name"]}>{name}</div>
 				</div>
 			}
 			<ul>

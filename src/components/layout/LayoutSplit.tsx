@@ -1,7 +1,7 @@
 import { clamp } from "@common/number.ts";
 import { createId } from "@common/uuid.ts";
-import { section, single } from "@components/contextmenu/ContextMenu.tsx";
-import { useContextMenu } from "@components/contextmenu/context.tsx";
+import { section, single } from "@components/contextmenu/ContextMenu.ts";
+import { useContextMenu } from "@components/contextmenu/reducer.ts";
 import { Translate } from "@components/translate/Translate.tsx";
 import { classList } from "@components/utils.tsx";
 import { useDrag } from "@hooks/useDrag.ts";
@@ -46,41 +46,37 @@ export const LayoutSplit: LayoutFC<Layout.NodeSplit, LayoutSplitProps> = ({
 	});
 	const layoutItems = node.axis === "x"
 		? [
-			single("dissolve-left",
-				<Translate k="layout.split.dissolve-left" />, "keyboard_tab_rtl",
+			single("dissolve-left", "keyboard_tab_rtl",
 				() => dispatch({
 					type: "replace",
 					targetNode: node.id,
 					replacement: node.second,
 				})),
-			single("dissolve-right",
-				<Translate k="layout.split.dissolve-right" />, "keyboard_tab",
+			single("dissolve-right", "keyboard_tab",
 				() => dispatch({
 					type: "replace",
 					targetNode: node.id,
 					replacement: node.first,
 				})),
-			single("swap", (<Translate k="layout.split.swap-x" />), "swap_horiz", swap),
+			single("swap", "swap_horiz", swap),
 		]
 		: [
-			single("dissolve-up",
-				<Translate k="layout.split.dissolve-up" />, "vertical_align_top",
+			single("dissolve-up", "vertical_align_top",
 				() => dispatch({
 					type: "replace",
 					targetNode: node.id,
 					replacement: node.second,
 				})),
-			single("dissolve-down",
-				<Translate k="layout.split.dissolve-down" />, "vertical_align_bottom",
+			single("dissolve-down", "vertical_align_bottom",
 				() => dispatch({
 					type: "replace",
 					targetNode: node.id,
 					replacement: node.first,
 				})),
-			single("swap", (<Translate k="layout.split.swap-y" />), "swap_vert", swap),
+			single("swap", "swap_vert", swap),
 		];
-	const handleContextMenu = useContextMenu([
-		section("layout", (<Translate k="layout" />), null, layoutItems),
+	const addContextMenuItems = useContextMenu([
+		section("layout", null, layoutItems),
 	]);
 
 	return (
@@ -89,7 +85,7 @@ export const LayoutSplit: LayoutFC<Layout.NodeSplit, LayoutSplitProps> = ({
 		>
 			<div className={css["split-child"]}>{first}</div>
 			<div className={css["split-child"]}>{second}</div>
-			<div className={handleClassName} onPointerDown={startDrag} onContextMenu={handleContextMenu}>
+			<div className={handleClassName} onPointerDown={startDrag} onContextMenuCapture={addContextMenuItems}>
 				<div className={css.interaction}></div>
 				<div className={css.visual}></div>
 			</div>

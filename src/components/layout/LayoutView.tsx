@@ -1,5 +1,5 @@
-import { useContextMenu } from "@components/contextmenu/context.tsx";
-import { section, single } from "@components/contextmenu/ContextMenu.tsx";
+import { useContextMenu } from "@components/contextmenu/reducer.ts";
+import { section, single } from "@components/contextmenu/ContextMenu.ts";
 import { FC, memo, ReactNode } from "react";
 import { createId } from "../../common/uuid.ts";
 import { ErrorBoundary } from "../error/ErrorBoundary.tsx";
@@ -20,9 +20,9 @@ type LayoutViewProps = {
 export const LayoutView: LayoutFC<Layout.NodeView, LayoutViewProps> = ({
 	node, dispatchLayout,
 }) => {
-	const handleContextMenu = useContextMenu([
-		section("layout", (<Translate k="layout" />), null, [
-			single("split-x", (<Translate k="layout.view.split-x" />), "split_scene_left", () => dispatchLayout({
+	const addContextMenuItems = useContextMenu([
+		section("layout", null, [
+			single("split-x", "split_scene_left", () => dispatchLayout({
 				type: "replace",
 				targetNode: node.id,
 				replacement: makeSplitX(0.5,
@@ -30,7 +30,7 @@ export const LayoutView: LayoutFC<Layout.NodeView, LayoutViewProps> = ({
 					makeView(node.providerName),
 				)
 			})),
-			single("split-y", (<Translate k="layout.view.split-y" />), "split_scene_up", () => dispatchLayout({
+			single("split-y", "split_scene_up", () => dispatchLayout({
 				type: "replace",
 				targetNode: node.id,
 				replacement: makeSplitY(0.5,
@@ -49,7 +49,7 @@ export const LayoutView: LayoutFC<Layout.NodeView, LayoutViewProps> = ({
 			css["unknown"],
 		);
 		return (
-			<div className={className} onContextMenu={handleContextMenu}>
+			<div className={className} onContextMenuCapture={addContextMenuItems}>
 				<ViewSelector view={node} dispatch={dispatchLayout} />
 				<div>
 					<h1>
@@ -66,7 +66,7 @@ export const LayoutView: LayoutFC<Layout.NodeView, LayoutViewProps> = ({
 
 	return (
 		<ErrorBoundary location={`LayoutView(${name})`}>
-			<div className={css.view} onContextMenu={handleContextMenu}>
+			<div className={css.view} onContextMenuCapture={addContextMenuItems}>
 				<ViewComp
 					dispatchLayout={dispatchLayout}
 					viewSwitch={<ViewSelector view={node} dispatch={dispatchLayout} />}

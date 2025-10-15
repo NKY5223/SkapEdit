@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { ContextMenu } from "../ContextMenu.tsx";
+import { ContextMenu } from "../ContextMenu.ts";
 import { ContextMenuSection } from "./Section.tsx";
 import { ContextMenuSingleItem } from "./Single.tsx";
 import { ContextMenuSubmenu } from "./Submenu.tsx";

@@ -1,6 +1,14 @@
 import { createContext, Dispatch, FC, PropsWithChildren, Reducer, useContext, useReducer } from "react";
 
-export function createReducerContext<T, A>(name: string, reducer: Reducer<T, A>, defaultValue?: T) {
+export function createReducerContext<T, A>(name: string, reducer: Reducer<T, A>, defaultValue?: T): [
+	useValue: () => T,
+	useDispatch: () => Dispatch<A>,
+	Provider: FC<PropsWithChildren<{
+		initialValue: T;
+	}>>,
+	useValueDispatch: () => [T, Dispatch<A>],
+	context: React.Context<[T, Dispatch<A>] | null>
+] {
 	const context = createContext<[T, Dispatch<A>] | null>(null);
 	const useValue = (): T => {
 		const s = useContext(context);
@@ -29,15 +37,11 @@ export function createReducerContext<T, A>(name: string, reducer: Reducer<T, A>,
 	}
 	Provider.displayName = `${name}Provider`;
 
-	
-	const result: [
-		useValue: () => T,
-		useDispatch: () => Dispatch<A>,
-		Provider: FC<PropsWithChildren<{
-			initialValue: T;
-		}>>,
-		context: React.Context<[T, Dispatch<A>] | null>
-	] = [useValue, useDispatch, Provider, context];
+	const useValueDispatch = () => {
+		const s = useContext(context);
+		if (!s) throw new Error("Cannot use context value & dispatch without provider");
+		return s;
+	}
 
-	return result;
+	return [useValue, useDispatch, Provider, useValueDispatch, context];
 }

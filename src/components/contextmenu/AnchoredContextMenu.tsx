@@ -2,10 +2,10 @@ import { classList } from "@components/utils.tsx";
 import { useClickOutside } from "@hooks/useClickOutside.ts";
 import { FC, useRef } from "react";
 import css from "./ContextMenu.module.css";
-import { useClearContextMenu } from "./context.tsx";
+import { useClearContextMenu } from "./reducer.ts";
 import { ContextMenuItem } from "./item/Item.tsx";
 import { useKeydown } from "@hooks/useKeydown.ts";
-import { ContextMenu } from "./ContextMenu.tsx";
+import { ContextMenu } from "./ContextMenu.ts";
 import { ErrorBoundary } from "@components/error/ErrorBoundary.tsx";
 
 type AnchoredContextMenuProps = {

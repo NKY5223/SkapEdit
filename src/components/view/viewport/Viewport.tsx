@@ -14,8 +14,8 @@ import { ObstacleWebGLRenderer } from "./renderer/obstacle.ts";
 import { TextLayer } from "./renderer/text.tsx";
 import css from "./Viewport.module.css";
 import { WebGLLayer } from "./webgl/WebGLLayer.tsx";
-import { useContextMenu } from "@components/contextmenu/context.tsx";
-import { section, single } from "@components/contextmenu/ContextMenu.tsx";
+import { useContextMenu } from "@components/contextmenu/reducer.ts";
+import { section, single } from "@components/contextmenu/ContextMenu.ts";
 import { Translate } from "@components/translate/Translate.tsx";
 
 export type ViewportInfo = {
@@ -34,12 +34,12 @@ type ViewportCanvasProps = {
 	layers: ViewportLayerFC[];
 	viewportInfo: ViewportInfo;
 	onPointerDown?: React.PointerEventHandler;
-	onContextMenu?: React.MouseEventHandler;
+	onContextMenuCapture?: React.MouseEventHandler;
 	onWheel?: React.WheelEventHandler;
 };
 const ViewportCanvas: FC<ViewportCanvasProps> = ({
 	layers, viewportInfo,
-	onPointerDown, onContextMenu, onWheel,
+	onPointerDown, onContextMenuCapture, onWheel,
 }) => {
 	/* 
 	Desired structure:
@@ -62,8 +62,8 @@ const ViewportCanvas: FC<ViewportCanvasProps> = ({
 		}
 	*/
 	return (
-		<div className={css["viewport-canvas"]} 
-			onPointerDown={onPointerDown} onContextMenu={onContextMenu} onWheel={onWheel}>
+		<div className={css["viewport-canvas"]}
+			{...{ onPointerDown, onContextMenuCapture, onWheel, }}>
 			{
 				layers.map((Layer, i) => (
 					<Layer key={i} viewportInfo={viewportInfo} />
@@ -124,10 +124,10 @@ export const Viewport: Layout.ViewComponent = ({
 			scale: newScale
 		});
 	}
-	
-	const handleContextMenu = useContextMenu([
-		section("viewport", <Translate k="layout.view.name.map.viewport" />, "monitor", [
-			single("viewport.reset_camera", <Translate k="viewport.reset_camera" />, "restore", () => {
+
+	const addContextMenuItems = useContextMenu([
+		section("viewport", "monitor", [
+			single("viewport.reset_camera", "restore", () => {
 				setScaleIndex(0);
 				setCamera({
 					x: 0, y: 0, scale: 5,
@@ -153,7 +153,7 @@ export const Viewport: Layout.ViewComponent = ({
 	return (
 		<div ref={elRef} className={css["viewport"]}>
 			<ViewportCanvas viewportInfo={viewportInfo} layers={layers}
-				onPointerDown={handlePointerDown} onWheel={handleWheel} onContextMenu={handleContextMenu}/>
+				onPointerDown={handlePointerDown} onWheel={handleWheel} onContextMenuCapture={addContextMenuItems} />
 			<ViewToolbar classes={[css["viewport-topbar"]]}>
 				{viewSwitch}
 			</ViewToolbar>

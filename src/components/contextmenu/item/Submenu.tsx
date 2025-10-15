@@ -1,9 +1,8 @@
 import { FC } from "react";
 import css from "../ContextMenu.module.css";
-import { ContextMenu } from "../ContextMenu.tsx";
+import { ContextMenu } from "../ContextMenu.ts";
 import { classList } from "@components/utils.tsx";
 import { AnchoredContextMenu } from "../AnchoredContextMenu.tsx";
-import { contains, useCmenuOpenedId, useCmenuReducer } from "../context.tsx";
 import { Icon } from "@components/icon/Icon.tsx";
 
 type ContextMenuSubmenuProps = {
@@ -12,42 +11,42 @@ type ContextMenuSubmenuProps = {
 export const ContextMenuSubmenu: FC<ContextMenuSubmenuProps> = ({
 	item,
 }) => {
-	const { id, display, items } = item;
-	const dispatch = useCmenuReducer();
-	const openedId = useCmenuOpenedId();
-	const opened = openedId !== null && contains(item, openedId);
+	const { id, name, items } = item;
+	// const dispatch = useCmenuReducer();
+	// const openedId = useCmenuOpenedId();
+	// const opened = openedId !== null && contains(item, openedId);
 
-	const open = () => {
-		dispatch({
-			type: "open_submenu",
-			target: id,
-		});
-	};
-	const readyOpen = () => {
-		dispatch({
-			type: "open_submenu",
-			target: id,
-		});
-	};
-	const readyClose = () => {
-		dispatch({
-			type: "close_submenu",
-			target: id,
-		});
-	};
+	// const open = () => {
+	// 	dispatch({
+	// 		type: "open_submenu",
+	// 		target: id,
+	// 	});
+	// };
+	// const readyOpen = () => {
+	// 	dispatch({
+	// 		type: "open_submenu",
+	// 		target: id,
+	// 	});
+	// };
+	// const readyClose = () => {
+	// 	dispatch({
+	// 		type: "close_submenu",
+	// 		target: id,
+	// 	});
+	// };
 
 	const className = classList(
 		css["item"],
 		css["submenu"],
-		opened && css["open"],
+		// opened && css["open"],
 	);
 
 	return (
 		<li className={className}
-			onPointerEnter={readyOpen} onPointerLeave={opened ? readyClose : () => { }}
-			onClickCapture={open}
+			// onPointerEnter={readyOpen} onPointerLeave={opened ? readyClose : () => { }}
+			// onClickCapture={open}
 		>
-			{display}
+			{name}
 			<Icon icon="arrow_right" size={1} classList={[
 				css["icon"]
 			]} />
@@ -57,7 +56,7 @@ export const ContextMenuSubmenu: FC<ContextMenuSubmenuProps> = ({
 			<AnchoredContextMenu contextMenu={{
 				type: "anchored",
 				items,
-			}} open={opened} dismissable={false} />
+			}} /* open={opened} */ dismissable={false} />
 		</li>
 	);
 }

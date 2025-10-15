@@ -1,9 +1,9 @@
 import { FC } from "react";
 import css from "../ContextMenu.module.css";
-import { ContextMenu } from "../ContextMenu.tsx";
+import { ContextMenu } from "../ContextMenu.ts";
 import { classList } from "@components/utils.tsx";
 import { Icon } from "@components/icon/Icon.tsx";
-import { useClearContextMenu } from "../context.tsx";
+import { useClearContextMenu } from "../reducer.ts";
 
 type ContextMenuSingleItemProps = {
 	item: ContextMenu.SingleItem;
@@ -11,7 +11,7 @@ type ContextMenuSingleItemProps = {
 export const ContextMenuSingleItem: FC<ContextMenuSingleItemProps> = ({
 	item
 }) => {
-	const { display, icon, click } = item;
+	const { name, icon, click } = item;
 	const clear = useClearContextMenu();
 	const handleClick = () => {
 		if (!click) return;
@@ -26,7 +26,7 @@ export const ContextMenuSingleItem: FC<ContextMenuSingleItemProps> = ({
 	return (
 		<li className={className} onClick={handleClick}>
 			{icon && <Icon icon={icon} />}
-			{display}
+			{name}
 		</li>
 	);
 }

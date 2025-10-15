@@ -1,4 +1,3 @@
-import { ReactNode } from "react";
 import { Vec2 } from "../../common/vec2.ts";
 import { createId } from "@common/uuid.ts";
 import { IconName } from "@components/icon/IconName.ts";
@@ -14,20 +13,17 @@ export namespace ContextMenu {
 	type ItemBase<T extends string, P> = {
 		type: T;
 		id: string;
-		/** @example "editor-destroy" */
+		/** @example "editor.delete" */
 		name: string;
-		icon?: IconName;
+		icon: IconName | null;
 	} & P;
 	export type SingleItem = ItemBase<"single", {
-		display: ReactNode;
 		click?: () => void;
 	}>;
 	export type Section = ItemBase<"section", {
-		title?: ReactNode;
 		items: readonly (SingleItem | Submenu)[];
 	}>;
 	export type Submenu = ItemBase<"submenu", {
-		display: ReactNode;
 		items: readonly Item[];
 	}>;
 	export type Item = (
@@ -56,26 +52,30 @@ export namespace ContextMenu {
 }
 
 // #region Constructors
-export const single = (name: string, display: ReactNode, icon?: IconName | null, click?: () => void): ContextMenu.SingleItem => ({
+export const single = (
+	/** The item will display ``<Translate k={`contextmenu.item.${name}`} />``*/ 
+	name: string, 
+	icon?: IconName | null, 
+	click?: () => void
+): ContextMenu.SingleItem => ({
 	type: "single",
-	id: createId("cmenu-item"),
+	id: createId("cmenu-single"),
 	name,
-	display,
-	icon: icon ?? undefined,
+	icon: icon ?? null,
 	click,
 });
-export const section = (name: string, title: ReactNode, icon: IconName | null | undefined, items: (ContextMenu.SingleItem | ContextMenu.Submenu)[]): ContextMenu.Section => ({
+export const section = (name: string, icon: IconName | null, items: readonly (ContextMenu.SingleItem | ContextMenu.Submenu)[]): ContextMenu.Section => ({
 	type: "section",
-	id: createId("cmenu-item"),
+	id: createId("cmenu-section"),
+	icon,
 	name,
-	title,
 	items,
 });
-export const submenu = (name: string, display: ReactNode, icon: IconName | null | undefined, items: readonly ContextMenu.Item[]): ContextMenu.Submenu => ({
+export const submenu = (name: string, icon: IconName | null, items: readonly ContextMenu.Item[]): ContextMenu.Submenu => ({
 	type: "submenu",
-	id: createId("cmenu-item"),
+	id: createId("cmenu-submenu"),
+	icon,
 	name,
-	display,
 	items,
 });
 // #endregion
