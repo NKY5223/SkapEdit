@@ -8,7 +8,7 @@ export const useDrag = (
 	 * Element to measure pointer position against.  
 	 * If passed, will normalize pointer position to between `⟨0, 0⟩` and `⟨1, 1⟩`.
 	 */
-	normalize?: RefObject<Element> | null,
+	normalize?: RefObject<Element | null> | null,
 	onDrag?: (current: Vec2, previous: Vec2, beforeDrag: Vec2) => void,
 ): {
 	/** Current pointer position. */

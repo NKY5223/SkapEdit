@@ -1,7 +1,7 @@
 import { vec2 } from "@common/vec2.ts";
 import { RefObject, useEffect, useState } from "react";
 
-export function useElementSize(ref: RefObject<HTMLElement>) {
+export function useElementSize(ref: RefObject<HTMLElement | null>) {
 	const [size, setSize] = useState(vec2(1));
 
 	useEffect(() => {

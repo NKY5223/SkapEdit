@@ -1,7 +1,7 @@
 import { RefObject, useEffect } from "react";
 
 export const useClickOutside = <T extends Element>(
-	targetRef: RefObject<T>,
+	targetRef: RefObject<T | null>,
 	condition: boolean,
 	handleClickOutside: (event: MouseEvent) => void,
 ) => {

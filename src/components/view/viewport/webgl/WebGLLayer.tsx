@@ -23,7 +23,7 @@ export const WebGLLayer = (...renderers: WebGLLayerRenderer[]): ViewportLayerFC 
 	const WebGLLayer: ViewportLayerFC = ({
 		viewportInfo,
 	}) => {
-		const abortRenderRef = useRef<AbortController>();
+		const abortRenderRef = useRef<AbortController>(null);
 		const canvasRef = useRef<HTMLCanvasElement>(null);
 		const viewportInfoRef = useRef(viewportInfo);
 		useEffect(() => {
@@ -39,7 +39,7 @@ export const WebGLLayer = (...renderers: WebGLLayerRenderer[]): ViewportLayerFC 
 				}
 				abortRender.abort();
 				renderers.forEach(renderer => renderer.cleanup());
-				abortRenderRef.current = undefined;
+				abortRenderRef.current = null;
 
 				return;
 			}
