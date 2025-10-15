@@ -3,23 +3,19 @@
 	width: fit-content;
 	height: fit-content;
 
-	&.open {
+	&:not(:has(> .options:popover-open)) {
+		& > .current {
+			& > .arrow-opened { display: none; }
+		}
+	}
+	&:has(> .options:popover-open) {
 		& > .current {
 			border-bottom-left-radius: 0;
 			border-bottom-right-radius: 0;
+
+			& > .arrow-closed { display: none; }
 		}
 	}
-	&:not(.open) > .options {
-		/* visibility: hidden; */
-		display: none;
-	}
-}
-.anchor {
-	position: absolute;
-	inset: 0;
-	inset-block: var(--theme-border-width);
-	anchor-name: --select-anchor;
-	pointer-events: none;
 }
 .current {
 	display: flex;
@@ -56,7 +52,6 @@
 	}
 }
 .options {
-	display: flex;
 	flex-direction: column;
 	flex-wrap: wrap;
 	gap: .5em;
@@ -75,19 +70,23 @@
 	border-radius: var(--theme-border-radius);
 	border-top-left-radius: 0;
 	border-top-right-radius: 0;
+
+	&:popover-open {
+		display: flex;
+	}
 }
 
 @supports (position-anchor: auto) {
 	.options {
-		position: fixed;
-		top: 0;
+		position: absolute;
 
-		position-anchor: --select-anchor;
-		position-area: span-x-end bottom;
-		position-try: 
-			span-x-start bottom,
-			span-x-end top,
-			span-x-start top
+		inset: auto;
+		inset-block-start: calc(anchor(end) - var(--theme-border-width));
+		inset-inline-start: anchor(start);
+		position-try-fallbacks: 
+			flip-inline,
+			flip-block,
+			flip-inline flip-block
 		;
 	}
 }

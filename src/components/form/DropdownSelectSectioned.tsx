@@ -1,8 +1,7 @@
-import { Dispatch, KeyboardEventHandler, ReactNode, SetStateAction, useRef, useState } from "react";
+import { Dispatch, KeyboardEventHandler, ReactNode, SetStateAction, useId, useRef, useState } from "react";
 import css from "./DropdownSelectSectioned.module.css";
 import { classList } from "../utils.tsx";
 import { Option } from "./DropdownSelect.tsx";
-import { useClickOutside } from "../../hooks/useClickOutside.ts";
 import { Icon } from "@components/icon/Icon.tsx";
 import { IconName } from "@components/icon/IconName.ts";
 
@@ -30,10 +29,10 @@ export const DropdownSelectSectioned = <T extends unknown>(props: DropdownSelect
 		selectClass, optionsClass, optionClass,
 	} = props;
 
+	const optionsId = `options:${useId()}`;
+
 	const selectRef = useRef<HTMLDivElement>(null);
-	const [open, setOpen] = useState(false);
 	const [selection, setSelection] = useState<T>(initial);
-	const toggleOpen = () => setOpen(v => !v);
 
 	const sectionComps = sections.map(({ name, label, options }) => {
 		const optionComps = options.map((option) => (
@@ -57,7 +56,6 @@ export const DropdownSelectSectioned = <T extends unknown>(props: DropdownSelect
 	});
 	const className = classList(
 		css["select"],
-		open ? css["open"] : null,
 		selectClass,
 	);
 	const optionsClassName = classList(
@@ -68,7 +66,6 @@ export const DropdownSelectSectioned = <T extends unknown>(props: DropdownSelect
 		.flatMap(section => section.options)
 		.find(option => option.value === selection);
 
-	useClickOutside(selectRef, open, () => setOpen(false));
 
 	const icon = selectedOption ? selectedOption.icon?.(true) : fallbackIcon;
 	const currentClassName = classList(
@@ -78,17 +75,16 @@ export const DropdownSelectSectioned = <T extends unknown>(props: DropdownSelect
 
 	return (
 		<div ref={selectRef} className={className} role="input"
-			onKeyDown={filterKeys(() => setOpen(false), ["Escape"])}
 		>
-			<div className={css["anchor"]}></div>
-			<div className={currentClassName} tabIndex={0}
-				onClick={toggleOpen} onKeyDown={filterKeys(toggleOpen)}
+			<button className={currentClassName} tabIndex={0}
+				popoverTarget={optionsId}
 			>
 				{icon && <Icon icon={icon} />}
 				<span className={css["display"]}>{selectedOption?.display(true) ?? fallback}</span>
-				{open ? <Icon icon="arrow_drop_down" /> : <Icon icon="arrow_right" />}
-			</div>
-			<menu className={optionsClassName}>
+				<Icon classList={[css["arrow-opened"]]} icon="arrow_drop_down" />
+				<Icon classList={[css["arrow-closed"]]} icon="arrow_right" />
+			</button>
+			<menu id={optionsId} className={optionsClassName} popover="auto">
 				{sectionComps}
 			</menu>
 		</div>
