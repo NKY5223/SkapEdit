@@ -1,5 +1,6 @@
 import { useState, useEffect, RefObject, PointerEventHandler, Dispatch, SetStateAction, useRef } from "react";
 import { Vec2, vec2, zero } from "../common/vec2.ts";
+import { elementIsRtl } from "./elementIsRtl.ts";
 
 export const useDrag = (
 	/** Mouse button to use for dragging. Use `"*"` for any button. */
@@ -33,7 +34,6 @@ export const useDrag = (
 		const handleMove = (event: PointerEvent): void => {
 			event.preventDefault();
 			const pointer = vec2(event.clientX, event.clientY);
-			const doDirNorm = normalizeDir && document.dir === "rtl";
 			if (!normalize) {
 				// Do not normalize
 				const newPos = pointer;
@@ -52,6 +52,7 @@ export const useDrag = (
 			const targetSize = vec2(bounds.width, bounds.height);
 			const newPos = pointer.sub(targetPos).div(targetSize);
 
+			const doDirNorm = normalizeDir && elementIsRtl(target);
 			const normedNewPos = doDirNorm
 				? vec2(1 - newPos[0], newPos[1])
 				: newPos;

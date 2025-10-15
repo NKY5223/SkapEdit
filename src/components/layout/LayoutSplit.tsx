@@ -7,6 +7,7 @@ import { useDrag } from "@hooks/useDrag.ts";
 import { KeyboardEventHandler, ReactNode, useRef } from "react";
 import { Layout, LayoutFC } from "./Layout.tsx";
 import css from "./LayoutSplit.module.css";
+import { elementIsRtl } from "@hooks/elementIsRtl.ts";
 
 const KeyMap = {
 	x: ["ArrowLeft", "ArrowRight"],
@@ -27,9 +28,9 @@ export const LayoutSplit: LayoutFC<Layout.NodeSplit, LayoutSplitProps> = ({
 		targetNode: node.id,
 		ratio: clamp(0, 1)(ratio),
 	});
-	const wrapperRef = useRef<HTMLDivElement>(null);
+	const splitRef = useRef<HTMLDivElement>(null);
 
-	const { handlePointerDown: startDrag, dragging: resizing } = useDrag(0, wrapperRef, curr => {
+	const { handlePointerDown: startDrag, dragging: resizing } = useDrag(0, splitRef, curr => {
 		setRatio(axis === "x" ? curr[0] : curr[1]);
 	});
 
@@ -86,13 +87,13 @@ export const LayoutSplit: LayoutFC<Layout.NodeSplit, LayoutSplitProps> = ({
 		const [less, more] = KeyMap[axis];
 		const dir =
 			(e.code === less ? -1 : e.code === more ? 1 : 0)
-			* (document.dir === "rtl" && axis === "x" ? -1 : 1);
+			* (axis === "x" && splitRef.current && elementIsRtl(splitRef.current) ? -1 : 1);
 		
 		setRatio(ratio + 0.025 * dir);
 	}
 
 	return (
-		<div ref={wrapperRef} className={`${css.split} ${css[`split-${axis}`]}`}
+		<div ref={splitRef} className={`${css.split} ${css[`split-${axis}`]}`}
 			style={{ "--ratio": `${ratio * 100}%` }}
 		>
 			<div className={css["split-child"]}>{first}</div>
