@@ -17,8 +17,12 @@
 		all: unset;
 		font-family: inherit;
 		cursor: pointer;
-		text-decoration: underline;
-		margin: 1em;
+		margin: 0.5em;
+		padding: .5em;
+		outline: 1px solid var(--theme-error-bd);
+	}
+	& a {
+		color: inherit;
 	}
 }
 .face {

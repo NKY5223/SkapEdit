@@ -1,7 +1,8 @@
 import { createTranslations, delegate, Infer } from "@components/translate/constructors.tsx";
+import { Translate } from "./Translate.tsx";
 
 export const translations = createTranslations({
-	"error.layout.view.unknown": ["Unknown view: ", ({ view }: { view: string }) => view],
+	"error.layout.view.unknown": ["Unknown view provider: ", ({ viewProviderName }: { viewProviderName: string }) => viewProviderName],
 
 	"layout.split.dissolve-left": "Dissolve Left",
 	"layout.split.dissolve-right": "Dissolve Right",
@@ -12,7 +13,7 @@ export const translations = createTranslations({
 
 	"layout": "Layout",
 	"layout.view.fallback": "Unknown View",
-	"layout.view.empty": "Pick a view",
+	"layout.view.empty": "Empty",
 	"layout.view.split-x": "Split Horizontally",
 	"layout.view.split-y": "Split Vertically",
 	"layout.view.name": delegate("layout.view.name", "view"),
@@ -21,11 +22,13 @@ export const translations = createTranslations({
 	"layout.view.category.name.test": "Testing",
 	"layout.view.name.test.swatch": "Theme Test",
 	"layout.view.name.test.error": "Error Test (will error this view)",
-	"layout.view.name.test.translate.lorem": "Lorem ipsum...",
-
+	"layout.view.name.test.translate.lorem": () => <Translate k="lorem" />,
+	"layout.view.name.test.empty": "Empty",
+	
 	"layout.view.category.name.map": "Map",
 	"layout.view.name.map.inspector": "Inspector",
 	"layout.view.name.map.viewport": "Viewport",
+
 
 	"lorem": "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Esse, culpa possimus fuga, veritatis harum autem dolore ipsam provident, id praesentium distinctio ullam similique! Earum praesentium repudiandae magnam ipsum et nihil!",
 });

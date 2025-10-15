@@ -9,8 +9,11 @@ const actualLayout = makeSplitX(0.75,
 	makeView("map.viewport"),
 	makeView("map.inspector")
 );
-const testLayout = makeSplitY(0.6,
-	makeView("test.icon"),
+const testLayout = makeSplitY(0.2,
+	makeSplitX(0.5,
+		makeView("test.empty"),
+		makeView("ILLEGAL"),
+	),
 	makeSplitX(0.4,
 		makeView("map.viewport"),
 		makeSplitY(0.6,
@@ -19,7 +22,7 @@ const testLayout = makeSplitY(0.6,
 		)
 	)
 );
-const defaultLayout: Layout.Node = false ? testLayout : actualLayout;
+const defaultLayout: Layout.Node = true ? testLayout : actualLayout;
 export const defaultLayoutRoot: Layout.Root = {
 	tree: {
 		node: defaultLayout

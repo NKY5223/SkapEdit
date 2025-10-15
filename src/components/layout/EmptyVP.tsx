@@ -8,9 +8,14 @@ export const EmptyVP: Layout.ViewProvider = {
 	Component: ({
 		viewSwitch
 	}) => (
-		<div>
-			<ViewToolbar>{viewSwitch}</ViewToolbar>
-			<Translate k="layout.view.empty" />
+		<div style={{
+			padding: ".5em",
+		}}>
+			<ViewToolbar>
+				{viewSwitch}
+				<Translate k="layout.view.empty" />
+			</ViewToolbar>
 		</div>
-	)
+	),
+	icon: "circle",
 };

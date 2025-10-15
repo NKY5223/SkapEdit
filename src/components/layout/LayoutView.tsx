@@ -41,8 +41,6 @@ export const LayoutView: LayoutFC<Layout.NodeView, LayoutViewProps> = ({
 		])
 	]);
 
-	const id = node.id;
-
 	const provider = useViewProvider(node.providerName);
 
 	if (!provider) {
@@ -53,7 +51,11 @@ export const LayoutView: LayoutFC<Layout.NodeView, LayoutViewProps> = ({
 		return (
 			<div className={className} onContextMenu={handleContextMenu}>
 				<ViewSelector view={node} dispatch={dispatchLayout} />
-				<h1><Translate k="error.layout.view.unknown" view={id} /></h1>
+				<div>
+					<h1>
+						<Translate k="error.layout.view.unknown" viewProviderName={node.providerName} />
+					</h1>
+				</div>
 			</div>
 		);
 	}

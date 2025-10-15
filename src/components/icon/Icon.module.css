@@ -1,8 +1,7 @@
-@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined");
-
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");
 :global(.material-symbols-outlined) {
 	/* To get it to align in the middle of labels */
-	vertical-align: middle;
+	/* vertical-align: middle; */
 
 	user-select: none;
 	cursor: default;
@@ -11,7 +10,7 @@
 	font-size: calc(var(--size) * 1rem);
 	font-variation-settings:
 		'FILL' 0,
-		'wght' 400,
+		'wght' 350,
 		'GRAD' 0,
 		'opsz' 24;
 }

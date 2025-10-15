@@ -80,16 +80,17 @@ export const DropdownSelectSectioned = <T extends unknown>(props: DropdownSelect
 		<div ref={selectRef} className={className} role="input"
 			onKeyDown={filterKeys(() => setOpen(false), ["Escape"])}
 		>
+			<div className={css["anchor"]}></div>
 			<div className={currentClassName} tabIndex={0}
 				onClick={toggleOpen} onKeyDown={filterKeys(toggleOpen)}
 			>
 				{icon && <Icon icon={icon} />}
-				<span className="display">{selectedOption?.display(true) ?? fallback}</span>
+				<span className={css["display"]}>{selectedOption?.display(true) ?? fallback}</span>
 				{open ? <Icon icon="arrow_drop_down" /> : <Icon icon="arrow_right" />}
 			</div>
-			<ul className={optionsClassName}>
+			<menu className={optionsClassName}>
 				{sectionComps}
-			</ul>
+			</menu>
 		</div>
 	);
 }

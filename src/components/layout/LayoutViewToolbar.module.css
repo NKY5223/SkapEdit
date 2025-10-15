@@ -1,4 +1,8 @@
 .toolbar {
+	display: flex;
+	flex-direction: row;
+	gap: .5em;
+	align-items: center;
 	pointer-events: painted;
 }
 

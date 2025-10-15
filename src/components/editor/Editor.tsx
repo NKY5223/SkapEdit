@@ -7,7 +7,7 @@ import { SkapMapProvider } from "@editor/map.ts";
 import { FC } from "react";
 import { ThemeProvider } from "../../theme/theme.tsx";
 import { views } from "../layout/views.tsx";
-import { defaultLayoutRoot, defaultMap, obj1 } from "./defaultMap.tsx";
+import { defaultLayoutRoot, defaultMap, obj1 } from "./default.tsx";
 import { SelectionProvider } from "./selection.ts";
 
 
