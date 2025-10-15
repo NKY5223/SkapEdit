@@ -1,5 +1,5 @@
 .view {
-	/* overflow: hidden; */
+	overflow: hidden;
 	position: absolute;
 	inset: 0;
 }

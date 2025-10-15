@@ -1,7 +1,7 @@
 import { Layout } from "@components/layout/Layout.tsx";
 import { Bounds } from "@editor/bounds.ts";
 import { useElementSize } from "@hooks/useElementSize.ts";
-import { FC, useMemo, useRef, useState } from "react";
+import React, { FC, useMemo, useRef, useState } from "react";
 import { Vec2, zero } from "@common/vec2.ts";
 import "@common/vector.ts";
 import { SkapRoom, useSkapMap } from "../../../editor/map.ts";
@@ -30,9 +30,12 @@ export type ViewportLayerFC = FC<{
 type ViewportCanvasProps = {
 	layers: ViewportLayerFC[];
 	viewportInfo: ViewportInfo;
+	onPointerDown?: React.PointerEventHandler;
+	onWheel?: React.WheelEventHandler;
 };
 const ViewportCanvas: FC<ViewportCanvasProps> = ({
-	layers, viewportInfo
+	layers, viewportInfo,
+	onPointerDown, onWheel,
 }) => {
 	/* 
 	Desired structure:
@@ -55,7 +58,7 @@ const ViewportCanvas: FC<ViewportCanvasProps> = ({
 		}
 	*/
 	return (
-		<div className={css["viewport-canvas"]}>
+		<div className={css["viewport-canvas"]} onPointerDown={onPointerDown} onWheel={onWheel}>
 			{
 				layers.map((Layer, i) => (
 					<Layer key={i} viewportInfo={viewportInfo} />
@@ -132,9 +135,9 @@ export const Viewport: Layout.ViewComponent = ({
 	};
 
 	return (
-		<div ref={elRef} className={css["viewport"]}
-			onPointerDown={handlePointerDown} onWheel={handleWheel}>
-			<ViewportCanvas viewportInfo={viewportInfo} layers={layers} />
+		<div ref={elRef} className={css["viewport"]}>
+			<ViewportCanvas viewportInfo={viewportInfo} layers={layers}
+				onPointerDown={handlePointerDown} onWheel={handleWheel} />
 			<ViewToolbar classes={[css["viewport-topbar"]]}>
 				{viewSwitch}
 			</ViewToolbar>

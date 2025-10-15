@@ -42,7 +42,7 @@
 			align-self: center;
 		}
 		& > .display:not(:empty) {
-			margin-left: .25em;
+			margin-inline-start: .25em;
 		}
 	}
 	&.icon > :first-child,

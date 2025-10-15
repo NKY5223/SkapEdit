@@ -10,6 +10,8 @@ export const useDrag = (
 	 */
 	normalize?: RefObject<Element | null> | null,
 	onDrag?: (current: Vec2, previous: Vec2, beforeDrag: Vec2) => void,
+	/** If set to true, will flip the x direction when `document.dir === "rtl"`. Will not work without normalize. Defaults to true. */
+	normalizeDir: boolean = true,
 ): {
 	/** Current pointer position. */
 	current: Vec2;
@@ -31,13 +33,16 @@ export const useDrag = (
 		const handleMove = (event: PointerEvent): void => {
 			event.preventDefault();
 			const pointer = vec2(event.clientX, event.clientY);
+			const doDirNorm = normalizeDir && document.dir === "rtl";
 			if (!normalize) {
+				// Do not normalize
 				const newPos = pointer;
 				if (onDrag) onDrag(newPos, previous.current, beforeDrag);
 				setCurrent(newPos);
 				previous.current = newPos;
 				return;
 			}
+			// Normalize to [0, 1]
 			const target = normalize.current;
 			if (!target) return;
 
@@ -47,9 +52,13 @@ export const useDrag = (
 			const targetSize = vec2(bounds.width, bounds.height);
 			const newPos = pointer.sub(targetPos).div(targetSize);
 
-			if (onDrag) onDrag(newPos, previous.current, beforeDrag);
-			setCurrent(newPos);
-			previous.current = newPos;
+			const normedNewPos = doDirNorm
+				? vec2(1 - newPos[0], newPos[1])
+				: newPos;
+
+			if (onDrag) onDrag(normedNewPos, previous.current, beforeDrag);
+			setCurrent(normedNewPos);
+			previous.current = normedNewPos;
 		};
 		window.addEventListener("pointermove", handleMove);
 		return () => window.removeEventListener("pointermove", handleMove);

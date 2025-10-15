@@ -24,13 +24,15 @@ export const translations = createTranslations({
 	"layout.view.name.test.error": "Error Test (will error this view)",
 	"layout.view.name.test.translate.lorem": () => <Translate k="lorem" />,
 	"layout.view.name.test.empty": "Empty",
-	
+
 	"layout.view.category.name.map": "Map",
 	"layout.view.name.map.inspector": "Inspector",
 	"layout.view.name.map.viewport": "Viewport",
 
 
-	"lorem": "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Esse, culpa possimus fuga, veritatis harum autem dolore ipsam provident, id praesentium distinctio ullam similique! Earum praesentium repudiandae magnam ipsum et nihil!",
+	"lorem":
+		"Lorem ipsum dolor, sit amet consectetur adipisicing elit. Esse, culpa possimus fuga, veritatis harum autem dolore ipsam provident, id praesentium distinctio ullam similique! Earum praesentium repudiandae magnam ipsum et nihil! " +
+		"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quam, libero magnam quia fuga est tempore autem reprehenderit id culpa nesciunt praesentium necessitatibus saepe veritatis in similique, impedit, iure corporis! Sint!",
 });
 type Inferred = Infer<typeof translations>;
 declare global {

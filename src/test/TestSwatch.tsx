@@ -58,7 +58,7 @@ export const TestSwatch: Layout.ViewComponent = ({
 							}}>{getName(bg)}
 								<div style={{
 									height: "100%",
-									borderLeft: `1px solid var(--${bd})`,
+									borderInlineStart: `1px solid var(--${bd})`,
 									aspectRatio: "1",
 								}}></div>
 							</div>

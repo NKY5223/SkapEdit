@@ -57,9 +57,9 @@
 				border-bottom-right-radius: var(--theme-border-radius);
 			}
 			&.icon {
-				padding-left: .5em;
+				padding-inline-start: .5em;
 				& > .display:not(:empty) {
-					margin-left: .25em;
+					margin-inline-start: .25em;
 				}
 			}
 			&:hover, &:focus-visible {

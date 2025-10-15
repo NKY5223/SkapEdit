@@ -7,11 +7,13 @@ export type ExtensibleFC<T> = FC<T & {
 	classes?: string[];
 }>;
 
+/** Duplicates a map and sets key to value. Preserves order. */
 export const mapWith = <K, T>(map: ReadonlyMap<K, T>, key: K, value: T) => {
 	const newMap = new Map(map);
 	newMap.set(key, value);
 	return newMap;
 }
+/** Duplicates a map and removes key. Preserves order. */
 export const mapWithout = <K, T>(map: ReadonlyMap<K, T>, key: K) => {
 	const newMap = new Map(map);
 	newMap.delete(key);

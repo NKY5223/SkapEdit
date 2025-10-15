@@ -23,6 +23,10 @@
 			color: var(--theme-selection-fg);
 		}
 	}
+	* {
+		scrollbar-width: thin;
+		scrollbar-color: var(--theme-scrollbar-fg) var(--theme-scrollbar-bg);
+	}
 }
 @layer misc {
 	#app_root {
