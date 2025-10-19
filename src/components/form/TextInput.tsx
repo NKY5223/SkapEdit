@@ -1,7 +1,7 @@
 import { ReactNode, useId, useState } from "react";
 import css from "./form.module.css";
 import { Label } from "./Label.tsx";
-import { classList } from "../utils.tsx";
+import { toClassName } from "../utils.tsx";
 
 
 type TextInputProps = {
@@ -32,7 +32,7 @@ export function TextInput({
 	const [internal, setInternal] = useState(value);
 	const [editing, setEditing] = useState(false);
 
-	const className = classList(
+	const className = toClassName(
 		css["input"], css["text"], 
 		inputClass
 	);

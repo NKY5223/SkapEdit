@@ -2,7 +2,7 @@ import { clamp } from "@common/number.ts";
 import { createId } from "@common/uuid.ts";
 import { section, Sections, single } from "@components/contextmenu/ContextMenu.ts";
 import { useContextMenu } from "@components/contextmenu/reducer.ts";
-import { classList } from "@components/utils.tsx";
+import { toClassName } from "@components/utils.tsx";
 import { useDrag } from "@hooks/useDrag.ts";
 import { KeyboardEventHandler, ReactNode, useRef } from "react";
 import { Layout, LayoutFC } from "./Layout.tsx";
@@ -34,7 +34,7 @@ export const LayoutSplit: LayoutFC<Layout.NodeSplit, LayoutSplitProps> = ({
 		setRatio(axis === "x" ? curr[0] : curr[1]);
 	});
 
-	const handleClassName = classList(
+	const handleClassName = toClassName(
 		css["handle"],
 		resizing && css["resizing"],
 	);

@@ -1,7 +1,7 @@
 import { FC } from "react";
 import "./Icon.module.css";
 import { IconName } from "./IconName.ts";
-import { classList } from "@components/utils.tsx";
+import { toClassName } from "@components/utils.tsx";
 
 type IconProps = {
 	icon: IconName;
@@ -12,7 +12,7 @@ type IconProps = {
 export const Icon: FC<IconProps> = ({
 	icon, size: height = 1.5, title, classList: extraClasses = [],
 }) => {
-	const className = classList(
+	const className = toClassName(
 		"material-symbols-outlined",
 		...extraClasses,
 	);

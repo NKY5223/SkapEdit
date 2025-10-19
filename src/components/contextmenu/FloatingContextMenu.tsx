@@ -1,6 +1,6 @@
 import { FC, useRef } from "react";
 import { ErrorBoundary } from "@components/error/ErrorBoundary.tsx";
-import { classList } from "@components/utils.tsx";
+import { toClassName } from "@components/utils.tsx";
 import { useClickOutside } from "@hooks/useClickOutside.ts";
 import { useKeydown } from "@hooks/useKeydown.ts";
 import { ContextMenu } from "./ContextMenu.ts";
@@ -27,7 +27,7 @@ export const FloatingContextMenu: FC<FloatingContextMenuProps> = ({
 
 	const [x, y] = pos;
 
-	const className = classList(
+	const className = toClassName(
 		css["context-menu"],
 		css["floating"],
 		open && css["open"],

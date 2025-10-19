@@ -1,10 +1,10 @@
 import { FC } from "react";
 import css from "../ContextMenu.module.css";
 import { ContextMenu } from "../ContextMenu.ts";
-import { classList } from "@components/utils.tsx";
+import { toClassName } from "@components/utils.tsx";
 import { Icon } from "@components/icon/Icon.tsx";
 import { useClearContextMenu } from "../reducer.ts";
-import { filterKeys } from "@components/form/DropdownSelect.tsx";
+import { filterKeys } from "@components/utils.tsx";
 import { Translate } from "@components/translate/Translate.tsx";
 
 type ContextMenuSingleItemProps = {
@@ -20,7 +20,7 @@ export const ContextMenuSingleItem: FC<ContextMenuSingleItemProps> = ({
 		click();
 		clear();
 	}
-	const className = classList(
+	const className = toClassName(
 		css["item"],
 		css["single"],
 		icon && css["has-icon"],

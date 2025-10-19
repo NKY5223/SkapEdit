@@ -1,11 +1,12 @@
 import { Dispatch, FC, PropsWithChildren } from "react";
-import { Option } from "../form/DropdownSelect.tsx";
-import { SectionedOptions, DropdownSelectSectioned } from "../form/DropdownSelectSectioned.tsx";
+import { Option } from "@components/form/dropdown/Dropdown.ts";
+import { SectionedOptions, DropdownSelectSectioned } from "../form/dropdown/DropdownSelectSectioned.tsx";
 import { Translate } from "../translate/Translate.tsx";
 import { Layout, LayoutAction, useViewProviders } from "./Layout.tsx";
 import css from "./LayoutViewToolbar.module.css";
 import { Button } from "../form/Button.tsx";
-import { classList, ExtensibleFC } from "../utils.tsx";
+import { toClassName, ExtensibleFC } from "../utils.tsx";
+import { DropdownSelect } from "@components/form/dropdown/DropdownSelect.tsx";
 
 
 type ViewSelectorProps = {
@@ -21,7 +22,7 @@ export const ViewSelector: FC<ViewSelectorProps> = ({
 		views.entries().map(([name, { icon }]) => (
 			{
 				value: name,
-				display: (current) => current && icon
+				label: (current) => current && icon
 					? (<></>)
 					: (<Translate k="layout.view.name" view={name} />),
 				icon: icon && (() => icon),
@@ -36,10 +37,10 @@ export const ViewSelector: FC<ViewSelectorProps> = ({
 
 	return (
 		<div className={css["selector"]}>
-			<DropdownSelectSectioned initial={view.providerName} options={options}
-				fallback={<Translate k="layout.view.fallback" />}
+			<DropdownSelect initialValue={view.providerName} options={options}
+				fallbackLabel={<Translate k="layout.view.fallback" />}
 				fallbackIcon="indeterminate_question_box"
-				optionsClass={css["selector-options"]}
+				optionsClassList={[css["selector-options"]]}
 				onSelect={value => dispatch({
 					type: "set_view",
 					targetNode: view.id,
@@ -51,7 +52,7 @@ export const ViewSelector: FC<ViewSelectorProps> = ({
 }
 /** Essentially a div */
 export const ViewToolbar: ExtensibleFC<PropsWithChildren> = ({ children, classes }) => (
-	<div className={classList(css["toolbar"], ...classes ?? [])}>{children}</div>
+	<div className={toClassName(css["toolbar"], ...classes ?? [])}>{children}</div>
 );
 export const ViewToolbarButton: typeof Button = ({ ...props }) => (
 	<Button {...props} classes={[...props.classes ?? [], css["button"]]}></Button>

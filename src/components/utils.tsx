@@ -1,7 +1,8 @@
 import { ID } from "@common/uuid.ts";
-import { FC } from "react";
+import { FC, KeyboardEventHandler } from "react";
 
-export const classList = (...list: (string | undefined | null | false)[]) => list.filter(s => !!s).join(" ");
+export const toClassName = (...list: (string | undefined | null | false | string[])[]) => 
+	list.filter((s): s is string | string[] => !!s).flat().join(" ");
 
 export type ExtensibleFC<T> = FC<T & {
 	classes?: string[];
@@ -21,3 +22,10 @@ export const mapWithout = <K, T>(map: ReadonlyMap<K, T>, key: K) => {
 }
 export const idMapWith = <T extends { id: ID }>(map: ReadonlyMap<ID, T>, value: T) =>
 	mapWith(map, value.id, value);
+export function filterKeys(f: KeyboardEventHandler, keys = ["Enter", "Space"]): KeyboardEventHandler {
+	return e => {
+		if (keys.includes(e.code)) {
+			f(e);
+		}
+	};
+}

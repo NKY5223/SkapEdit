@@ -7,6 +7,84 @@ import { Layout } from "@components/layout/Layout.tsx";
 import { useSelection } from "@components/editor/selection.ts";
 import { getObject, useDispatchSkapMap, useSkapMap } from "@editor/map.ts";
 import { Button } from "@components/form/Button.tsx";
+import { DropdownSelect } from "@components/form/dropdown/DropdownSelect.tsx";
+import { Option, OptionSection } from "@components/form/dropdown/Dropdown.ts";
+
+const testOptions: (Option<number> | OptionSection<number>)[] = [
+	{
+		name: "integer",
+		label: "Integers",
+		options: [
+			{
+				name: "zero",
+				value: 0,
+				label: "0",
+				icon: "counter_0",
+			},
+			{
+				name: "one",
+				value: 1,
+				label: "ONE",
+				// icon: "counter_1",
+			},
+			{
+				name: "two",
+				value: 2,
+				label: "twooooooooooooooooooooooooooo ooooooooooooooooooooooooooooo oooooooo",
+				icon: "counter_2",
+			},
+			{
+				name: "three",
+				value: 3,
+				label: "三",
+				icon: "counter_3",
+			},
+		]
+	},
+	{
+		name: "integer2",
+		label: "Integers 2",
+		icon: "numbers",
+		options: [
+			{
+				name: "zero",
+				value: 0,
+				label: "0",
+			},
+			{
+				name: "one",
+				value: 1,
+				label: "ONE",
+			},
+			{
+				name: "two",
+				value: 2,
+				label: "twooo",
+			},
+			{
+				name: "three",
+				value: 3,
+				label: "三",
+			},
+		]
+	},
+	{
+		name: "pi",
+		value: Math.PI,
+		label: "π",
+	},
+	{
+		name: "e",
+		value: Math.E,
+		label: "e",
+	},
+	{
+		name: "sqrt2",
+		value: Math.SQRT2,
+		label: "√2",
+		icon: "diagonal_line",
+	},
+];
 
 export const Inspector: Layout.ViewComponent = ({
 	viewSwitch,
@@ -80,6 +158,7 @@ export const Inspector: Layout.ViewComponent = ({
 									<Icon icon="height" title="Height" />
 								} />
 							</FormSection>
+							<DropdownSelect nowrap initialValue={0} options={testOptions} />
 							<Button icon="html">uwu</Button>
 						</FormSection>
 					</div>

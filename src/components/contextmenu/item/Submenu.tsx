@@ -1,7 +1,7 @@
 import { FC } from "react";
 import css from "../ContextMenu.module.css";
 import { ContextMenu } from "../ContextMenu.ts";
-import { classList } from "@components/utils.tsx";
+import { toClassName } from "@components/utils.tsx";
 import { AnchoredContextMenu } from "../AnchoredContextMenu.tsx";
 import { Icon } from "@components/icon/Icon.tsx";
 import { Translate } from "@components/translate/Translate.tsx";
@@ -14,7 +14,7 @@ export const ContextMenuSubmenu: FC<ContextMenuSubmenuProps> = ({
 }) => {
 	const { name, items } = item;
 
-	const className = classList(
+	const className = toClassName(
 		css["item"],
 		css["submenu"],
 	);

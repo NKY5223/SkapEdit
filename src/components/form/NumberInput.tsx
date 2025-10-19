@@ -1,7 +1,7 @@
 import { FC, ReactNode, useId, useState } from "react";
 import css from "./form.module.css";
 import { Label } from "./Label.tsx";
-import { classList } from "../utils.tsx";
+import { toClassName } from "../utils.tsx";
 
 
 export type NumberInputProps = {
@@ -34,7 +34,7 @@ export const NumberInput: FC<NumberInputProps> = ({
 	const [internal, setInternal] = useState(String(value));
 	const [editing, setEditing] = useState(false);
 
-	const className = classList(css["input"], css["number"], inputClass);
+	const className = toClassName(css["input"], css["number"], inputClass);
 	return (
 		<Label for={id}>
 			{label}

@@ -4,7 +4,7 @@ import { ContextMenu } from "../ContextMenu.ts";
 import { ContextMenuItem } from "./Item.tsx";
 import { Translate } from "@components/translate/Translate.tsx";
 import { Icon } from "@components/icon/Icon.tsx";
-import { classList } from "@components/utils.tsx";
+import { toClassName } from "@components/utils.tsx";
 
 type ContextMenuSectionProps = {
 	item: ContextMenu.Section;
@@ -13,7 +13,7 @@ export const ContextMenuSection: FC<ContextMenuSectionProps> = ({
 	item
 }) => {
 	const { name, icon, items } = item;
-	const nameClassName = classList(
+	const nameClassName = toClassName(
 		css["name"],
 		icon && css["has-icon"],
 	);
@@ -21,7 +21,7 @@ export const ContextMenuSection: FC<ContextMenuSectionProps> = ({
 		<li className={css["section"]}>
 			{name &&
 				<div className={nameClassName}>
-					{icon && <Icon icon={icon} size={0.75 * 1.5} />}
+					{icon && <Icon icon={icon} />}
 					<Translate k="contextmenu.item.name" name={name} />
 				</div>
 			}

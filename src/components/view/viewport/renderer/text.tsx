@@ -1,4 +1,4 @@
-import { classList } from "@components/utils.tsx";
+import { toClassName } from "@components/utils.tsx";
 import { ViewportLayerFC } from "../Viewport.tsx";
 import { mapToViewport, mapToViewportCenter } from "../utils.tsx";
 import css from "./text.module.css";
@@ -10,7 +10,7 @@ export const TextLayer: ViewportLayerFC = ({ viewportInfo }) => {
 	} = viewportInfo;
 
 	const objs = map.objects.values().filter(o => o.type === "text").toArray();
-	const bgClass = classList(
+	const bgClass = toClassName(
 		css["text"],
 		css["bg"],
 	);
@@ -23,7 +23,7 @@ export const TextLayer: ViewportLayerFC = ({ viewportInfo }) => {
 			}}>{obj.text}</span>
 		);
 	});
-	const fgClass = classList(
+	const fgClass = toClassName(
 		css["text"],
 		css["fg"],
 	);
@@ -38,7 +38,7 @@ export const TextLayer: ViewportLayerFC = ({ viewportInfo }) => {
 	});
 	const textSize = 5 * camera.scale;
 
-	const className = classList(
+	const className = toClassName(
 		css["text-container"]
 	);
 	return (

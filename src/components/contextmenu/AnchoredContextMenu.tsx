@@ -1,4 +1,4 @@
-import { classList } from "@components/utils.tsx";
+import { toClassName } from "@components/utils.tsx";
 import { useClickOutside } from "@hooks/useClickOutside.ts";
 import { FC, useRef } from "react";
 import css from "./ContextMenu.module.css";
@@ -23,7 +23,7 @@ export const AnchoredContextMenu: FC<AnchoredContextMenuProps> = ({
 	const menuRef = useRef<HTMLElement>(null);
 	const clear = useClearContextMenu();
 
-	const className = classList(
+	const className = toClassName(
 		css["context-menu"],
 		css["anchored"],
 		open && css["open"],

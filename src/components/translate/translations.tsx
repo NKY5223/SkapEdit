@@ -33,7 +33,7 @@ export const translations = createTranslations({
 	"contextmenu.item.name.layout": "Layout",
 	"contextmenu.item.name.layout.split-x": "Split Horizontally",
 	"contextmenu.item.name.layout.split-y": "Split Vertically",
-	
+
 	"contextmenu.item.name.layout.dissolve-left": "Dissolve Left",
 	"contextmenu.item.name.layout.dissolve-right": "Dissolve Right",
 	"contextmenu.item.name.layout.dissolve-up": "Dissolve Up",
@@ -44,9 +44,12 @@ export const translations = createTranslations({
 	"contextmenu.item.name.viewport": "Viewport",
 	"contextmenu.item.name.viewport.reset_camera": "Reset Camera",
 
-	"lorem":
-		"Lorem ipsum dolor, sit amet consectetur adipisicing elit. Esse, culpa possimus fuga, veritatis harum autem dolore ipsam provident, id praesentium distinctio ullam similique! Earum praesentium repudiandae magnam ipsum et nihil! " +
-		"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quam, libero magnam quia fuga est tempore autem reprehenderit id culpa nesciunt praesentium necessitatibus saepe veritatis in similique, impedit, iure corporis! Sint!",
+	"lorem": true
+		? "Lorem ipsum dolor sit amet"
+		: (
+			"Lorem ipsum dolor, sit amet consectetur adipisicing elit. Esse, culpa possimus fuga, veritatis harum autem dolore ipsam provident, id praesentium distinctio ullam similique! Earum praesentium repudiandae magnam ipsum et nihil! " +
+			"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quam, libero magnam quia fuga est tempore autem reprehenderit id culpa nesciunt praesentium necessitatibus saepe veritatis in similique, impedit, iure corporis! Sint!"
+		),
 });
 type Inferred = Infer<typeof translations>;
 declare global {

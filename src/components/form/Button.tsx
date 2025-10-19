@@ -1,7 +1,7 @@
 import { PropsWithChildren } from "react";
 import { Icon } from "../icon/Icon.tsx";
 import { IconName } from "@components/icon/IconName.ts";
-import { classList, ExtensibleFC } from "../utils.tsx";
+import { toClassName, ExtensibleFC } from "../utils.tsx";
 import css from "./Button.module.css";
 
 export type ButtonType = "primary" | "secondary" | "confirm" | "deny";
@@ -19,7 +19,7 @@ export const Button: ExtensibleFC<ButtonProps> = ({
 
 	classes = [],
 }) => {
-	const className = classList(
+	const className = toClassName(
 		css["button"], 
 		type && css[type], 
 		icon && css["has-icon"], 

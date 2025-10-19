@@ -4,7 +4,7 @@ import { FC, memo, ReactNode } from "react";
 import { createId } from "../../common/uuid.ts";
 import { ErrorBoundary } from "../error/ErrorBoundary.tsx";
 import { Translate } from "../translate/Translate.tsx";
-import { classList } from "../utils.tsx";
+import { toClassName } from "../utils.tsx";
 import { Layout, LayoutFC, useViewProvider } from "./Layout.tsx";
 import { makeSplitX, makeSplitY } from "./LayoutSplit.tsx";
 import css from "./LayoutView.module.css";
@@ -44,7 +44,7 @@ export const LayoutView: LayoutFC<Layout.NodeView, LayoutViewProps> = ({
 	const provider = useViewProvider(node.providerName);
 
 	if (!provider) {
-		const className = classList(
+		const className = toClassName(
 			css["view"],
 			css["unknown"],
 		);
