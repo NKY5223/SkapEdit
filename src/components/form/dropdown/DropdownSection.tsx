@@ -1,9 +1,10 @@
-import { Dispatch, ReactNode, SetStateAction } from "react";
-import css from "./DropdownSelect.module.css";
-import { OptionSection } from "./Dropdown.ts";
-import { DropdownOption } from "./DropdownOption.tsx";
 import { Icon } from "@components/icon/Icon.tsx";
 import { toClassName } from "@components/utils.tsx";
+import { Dispatch, ReactNode, SetStateAction } from "react";
+import { OptionSection } from "./Dropdown.ts";
+import { DropdownOption } from "./DropdownOption.tsx";
+import css from "./DropdownSelect.module.css";
+import menuCss from "../../menu.module.css";
 
 type DropdownSectionProps<T> = {
 	section: OptionSection<T>;
@@ -34,13 +35,13 @@ export const DropdownSection = <T,>({
 	));
 
 	return (
-		<li key={name} className={css["section"]}>
+		<li key={name} className={menuCss["section"]}>
 			<div className={toClassName(
-				css["label"],
-				icon && css["icon"],
+				menuCss["label"],
+				icon && menuCss["icon"],
 			)}>
 				{icon && <Icon icon={icon} />}
-				<span className="label-content">{label}</span>
+				<span>{label}</span>
 			</div>
 			<menu>
 				{optionComps}

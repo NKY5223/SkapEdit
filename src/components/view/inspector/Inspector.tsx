@@ -39,6 +39,24 @@ const testOptions: (Option<number> | OptionSection<number>)[] = [
 				label: "三",
 				icon: "counter_3",
 			},
+			{
+				name: "three",
+				value: 3,
+				label: "三",
+				icon: "counter_3",
+			},
+			{
+				name: "three",
+				value: 3,
+				label: "三",
+				icon: "counter_3",
+			},
+			{
+				name: "three",
+				value: 3,
+				label: "三",
+				icon: "counter_3",
+			},
 		]
 	},
 	{
@@ -72,6 +90,7 @@ const testOptions: (Option<number> | OptionSection<number>)[] = [
 		name: "pi",
 		value: Math.PI,
 		label: "π",
+		icon: "circle",
 	},
 	{
 		name: "e",
@@ -84,6 +103,12 @@ const testOptions: (Option<number> | OptionSection<number>)[] = [
 		label: "√2",
 		icon: "diagonal_line",
 	},
+	{
+		name: "masceroni",
+		value: 0.558,
+		label: "γ",
+		icon: "language_pinyin"
+	}
 ];
 
 export const Inspector: Layout.ViewComponent = ({
@@ -158,8 +183,8 @@ export const Inspector: Layout.ViewComponent = ({
 									<Icon icon="height" title="Height" />
 								} />
 							</FormSection>
-							<DropdownSelect nowrap initialValue={0} options={testOptions} />
 							<Button icon="html">uwu</Button>
+							<DropdownSelect nowrap initialValue={0} options={testOptions} />
 						</FormSection>
 					</div>
 				</div>

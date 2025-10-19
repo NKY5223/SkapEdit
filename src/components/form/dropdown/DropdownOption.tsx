@@ -1,8 +1,9 @@
 import { Icon } from "@components/icon/Icon.tsx";
-import { toClassName, filterKeys } from "@components/utils.tsx";
+import { filterKeys, toClassName } from "@components/utils.tsx";
 import { Dispatch, ReactNode, SetStateAction } from "react";
-import css from "./DropdownSelect.module.css";
+import menuCss from "../../menu.module.css";
 import { Option, selectedDep } from "./Dropdown.ts";
+import css from "./DropdownSelect.module.css";
 
 type DropdownOptionProps<T> = {
 	option: Option<T>;
@@ -28,8 +29,9 @@ export function DropdownOption<T>({
 	const selected = Object.is(value, selectedValue);
 	const className = toClassName(
 		css["option"],
-		icon && css["icon"],
-		selected && css["selected"],
+		menuCss["item"],
+		icon && menuCss["icon"],
+		selected && menuCss["active"],
 		...classList ?? [],
 	);
 	const iconName = selectedDep(icon, false);
@@ -37,7 +39,7 @@ export function DropdownOption<T>({
 		<li className={className} tabIndex={0}
 			onClick={onTrigger} onKeyDown={filterKeys(onTrigger)}>
 			{iconName && <Icon icon={iconName} />}
-			<span className={css["label"]}>
+			<span className={menuCss["label"]}>
 				{selectedDep(display, false)}
 			</span>
 		</li>

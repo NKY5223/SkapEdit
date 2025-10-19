@@ -6,6 +6,7 @@ import { Option, OptionSection, selectedDep } from "./Dropdown.ts";
 import { DropdownOption } from "./DropdownOption.tsx";
 import { DropdownSection } from "./DropdownSection.tsx";
 import css from "./DropdownSelect.module.css";
+import menuCss from "../../menu.module.css";
 
 type DropdownSelectProps<T> = {
 	options: readonly (Option<T> | OptionSection<T>)[];
@@ -22,7 +23,6 @@ type DropdownSelectProps<T> = {
 
 	/** Disable options wrapping to next column. Can be desirable for list-type dropdowns. */
 	nowrap?: boolean;
-	allowContextMenuPropagation?: boolean;
 };
 export const DropdownSelect = <T,>({
 	options, initialValue,
@@ -30,7 +30,6 @@ export const DropdownSelect = <T,>({
 	onSelect,
 	classList, optionsClassList, optionClassList,
 
-	allowContextMenuPropagation = false,
 	nowrap = false,
 }: DropdownSelectProps<T>): ReactNode => {
 	const optionsId = `options-${useId()}`;
@@ -50,7 +49,6 @@ export const DropdownSelect = <T,>({
 	return (
 		<div className={toClassName(
 			css["select"],
-			nowrap && css["nowrap"],
 			classList,
 		)} role="input">
 			<button tabIndex={0} popoverTarget={optionsId} className={toClassName(
@@ -64,13 +62,10 @@ export const DropdownSelect = <T,>({
 			</button>
 			<menu id={optionsId} popover="auto" className={toClassName(
 				css["options"],
+				menuCss["menu"],
+				nowrap && menuCss["nowrap"],
 				optionsClassList,
-			)} onContextMenu={e => {
-				if (!allowContextMenuPropagation) {
-					// console.log("Stopping propagation");
-					e.stopPropagation();
-				}
-			}}>
+			)}>
 				{optionNodes}
 			</menu>
 		</div>
