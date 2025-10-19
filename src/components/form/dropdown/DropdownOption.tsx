@@ -2,7 +2,7 @@ import { Icon } from "@components/icon/Icon.tsx";
 import { filterKeys, toClassName } from "@components/utils.tsx";
 import { Dispatch, ReactNode, SetStateAction } from "react";
 import menuCss from "../../menu.module.css";
-import { Option, selectedDep } from "./Dropdown.ts";
+import { Option, maybeConst } from "./Dropdown.ts";
 import css from "./DropdownSelect.module.css";
 
 type DropdownOptionProps<T> = {
@@ -34,13 +34,13 @@ export function DropdownOption<T>({
 		selected && menuCss["active"],
 		...classList ?? [],
 	);
-	const iconName = selectedDep(icon, false);
+	const iconName = maybeConst(icon, false);
 	return (
 		<li className={className} tabIndex={0}
 			onClick={onTrigger} onKeyDown={filterKeys(onTrigger)}>
 			{iconName && <Icon icon={iconName} />}
 			<span className={menuCss["label"]}>
-				{selectedDep(display, false)}
+				{maybeConst(display, false)}
 			</span>
 		</li>
 	);

@@ -40,19 +40,19 @@ const testOptions: (Option<number> | OptionSection<number>)[] = [
 				icon: "counter_3",
 			},
 			{
-				name: "three",
+				name: "three.1",
 				value: 3,
 				label: "三",
 				icon: "counter_3",
 			},
 			{
-				name: "three",
+				name: "three.2",
 				value: 3,
 				label: "三",
 				icon: "counter_3",
 			},
 			{
-				name: "three",
+				name: "three.3",
 				value: 3,
 				label: "三",
 				icon: "counter_3",
@@ -138,7 +138,6 @@ export const Inspector: Layout.ViewComponent = ({
 			const [bounds, {
 				setLeft, setTop, setRight, setBottom,
 				setWidth, setHeight,
-				// setBounds,
 			}] = useDerivedBounds(selectedObject.bounds, action => {
 				if (typeof action === "function") action = action(selectedObject.bounds);
 				dispatchMap({

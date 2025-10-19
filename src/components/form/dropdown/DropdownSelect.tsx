@@ -2,7 +2,7 @@ import { Icon } from "@components/icon/Icon.tsx";
 import { IconName } from "@components/icon/IconName.ts";
 import { toClassName } from "@components/utils.tsx";
 import { FC, ReactNode, useId, useState } from "react";
-import { Option, OptionSection, selectedDep } from "./Dropdown.ts";
+import { maybeConst, Option, OptionSection } from "./Dropdown.ts";
 import { DropdownOption } from "./DropdownOption.tsx";
 import { DropdownSection } from "./DropdownSection.tsx";
 import css from "./DropdownSelect.module.css";
@@ -12,8 +12,8 @@ type DropdownSelectProps<T> = {
 	options: readonly (Option<T> | OptionSection<T>)[];
 	initialValue: T;
 
-	fallbackLabel?: ReactNode;
-	fallbackIcon?: IconName;
+	fallbackLabel?: ReactNode | ((value: T) => ReactNode);
+	fallbackIcon?: IconName | ((value: T) => IconName);
 
 	onSelect?: (value: T) => void;
 
@@ -43,8 +43,12 @@ export const DropdownSelect = <T,>({
 	const optionsFlat = options.flatMap(opt => "options" in opt ? opt.options : opt);
 
 	const selectedOption = optionsFlat.find(opt => Object.is(opt.value, selectedValue));
-	const currentSelectionLabel = selectedDep(selectedOption?.label, true) ?? fallbackLabel;
-	const currentSelectionIcon = selectedDep(selectedOption?.icon, true) ?? fallbackIcon;
+	const currentSelectionLabel = 
+		maybeConst(selectedOption?.label, true) ?? 
+		maybeConst(fallbackLabel, selectedValue);
+	const currentSelectionIcon = 
+		maybeConst(selectedOption?.icon, true) ?? 
+		maybeConst(fallbackIcon, selectedValue);
 
 	return (
 		<div className={toClassName(

@@ -1,28 +1,32 @@
 import { IconName } from "@components/icon/IconName.ts";
 import { ReactNode } from "react";
 
-/** T should NOT be a function. If T is a function, selectedDep will fail. */
-export type SelectedDep<T> = T | ((selected: boolean) => T);
+// Prevent union distributing
+export type MaybeConst<I, O> = [O] extends [Function]
+	? (value: I) => O
+	: O | ((value: I) => O);
 
 export type Option<T> = {
+	/** Should be unique. */
 	readonly name: string;
 	readonly value: T;
-	readonly label: SelectedDep<ReactNode>;
-	readonly icon?: SelectedDep<IconName>;
+	readonly label: MaybeConst<boolean, ReactNode>;
+	readonly icon?: MaybeConst<boolean, IconName>;
 };
 export type OptionSection<T> = {
+	/** Should be unique. */
 	readonly name: string;
 	readonly label: ReactNode;
 	readonly icon?: IconName;
 	readonly options: readonly Option<T>[];
 };
 
-export function selectedDep<T,>(value: SelectedDep<T>, selected?: boolean): T;
-export function selectedDep<T,>(value: SelectedDep<T> | undefined, selected?: boolean): T | undefined;
-export function selectedDep<T,>(value: SelectedDep<T> | undefined, selected: boolean = false): T | undefined {
-	if (value === undefined) return undefined;
-	if (typeof value === "function") {
-		return (value as (selected: boolean) => T)(selected);
-	}
-	return value as T;
-}
+export function maybeConst<I, O>(f: MaybeConst<I, O>, value: I): O;
+export function maybeConst<I, O>(f: MaybeConst<I, O> | undefined, value: I): O | undefined;
+export function maybeConst<I, O>(f: MaybeConst<I, O> | undefined, value: I): O | undefined {
+	if (f === undefined) return undefined;
+	if (typeof f === "function") return f(value);
+	// Typescript does not narrow the type of value properly here.
+	// @ts-expect-error
+	return f;
+};
