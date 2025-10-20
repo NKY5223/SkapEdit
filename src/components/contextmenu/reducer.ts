@@ -3,22 +3,6 @@ import { ContextMenu } from "./ContextMenu.ts";
 import { Vec2 } from "@common/vec2.ts";
 import { createReducerContext } from "@hooks/createReducerContext.tsx";
 
-
-/*
-
-When user right clicks on an element:
-
-onContextMenuCapture goes down the tree.
-onContextMenu goes up the tree.
-
-When provider receives onContextMenuCapture, clear the menu.
-When children receive onContextMenuCapture, add items.
-
-When provider receives onContextMenu, update context menu.
-This allows children to stop contextmenu propagation.
-
-*/
-
 type ContextMenuAction = (
 	| {
 		type: "set_pos";

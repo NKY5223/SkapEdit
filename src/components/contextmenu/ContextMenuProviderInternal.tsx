@@ -4,6 +4,21 @@ import { vec2 } from "@common/vec2.ts";
 import { FloatingContextMenu } from "./FloatingContextMenu.tsx";
 import { ContextMenu } from "./ContextMenu.ts";
 
+/*
+
+When user right clicks on an element:
+
+onContextMenuCapture goes down the tree.
+onContextMenu goes up the tree.
+
+When provider receives onContextMenuCapture, clear the menu.
+When children receive onContextMenuCapture, add items.
+
+When provider receives onContextMenu, update context menu.
+This allows children to stop contextmenu propagation.
+
+*/
+
 type ContextMenuProviderInternalProps = {
 
 };
@@ -26,6 +41,7 @@ export const ContextMenuProviderInternal: FC<PropsWithChildren<ContextMenuProvid
 	}
 	const handleContextMenu: MouseEventHandler = e => {
 		e.preventDefault();
+		e.stopPropagation();
 		const items = menuInfo.items.reduce(mergeItems, []);
 		if (items.length === 0) return;
 		setMenu({
