@@ -1,51 +1,53 @@
-import { FC, useRef } from "react";
+import { FC, MouseEventHandler, useEffect, useRef } from "react";
 import { ErrorBoundary } from "@components/error/ErrorBoundary.tsx";
 import { toClassName } from "@components/utils.tsx";
-import { useClickOutside } from "@hooks/useClickOutside.ts";
-import { useKeydown } from "@hooks/useKeydown.ts";
 import { ContextMenu } from "./ContextMenu.ts";
-import { useClearContextMenu } from "./reducer.ts";
-import { ContextMenuItem } from "./item/Item.tsx";
+import { ContextMenuItem } from "./ContextMenuItem.tsx";
 import css from "./ContextMenu.module.css";
+import menuCss from "../menu.module.css";
 
 type FloatingContextMenuProps = {
 	contextMenu: ContextMenu.Floating;
-	open?: boolean;
-	dismissable?: boolean;
 	ref?: React.RefObject<HTMLDivElement | null>;
 };
 export const FloatingContextMenu: FC<FloatingContextMenuProps> = ({
 	contextMenu,
-	open = true,
-	dismissable = true,
 	ref,
 }) => {
 	const { pos, items } = contextMenu;
 
 	const menuRef = useRef<HTMLElement>(null);
-	const clear = useClearContextMenu();
 
 	const [x, y] = pos;
 
 	const className = toClassName(
+		menuCss["menu"],
+		menuCss["nowrap"],
 		css["context-menu"],
 		css["floating"],
-		open && css["open"],
 	);
 
-	if (dismissable) {
-		useClickOutside(menuRef, open, clear);
-		useKeydown(["Escape"], clear);
-	}
+	useEffect(() => {
+		const menu = menuRef.current;
+		if (menu === null) return;
+
+		menu.hidePopover();
+		menu.showPopover();
+	}, [menuRef.current, contextMenu]);
+
+	const handleContextMenu: MouseEventHandler = e => { e.stopPropagation(); }
 
 	return (
 		<div ref={ref} className={css["floating-anchor"]} style={{
 			"--x": `${x}px`,
 			"--y": `${y}px`,
 		}}>
-			<menu ref={menuRef} className={className}>
+			<menu ref={menuRef} className={className} popover="auto" onContextMenu={handleContextMenu}>
 				<ErrorBoundary location={`FloatingContextMenu`} fallback={(_, orig) => (
-					<div className={css["error"]}>{orig}</div>
+					<div className={css["error"]}>
+						{orig}
+						<code>Context menu data: {JSON.stringify(contextMenu)}</code>
+					</div>
 				)}>
 					{items.map(item => (
 						<ContextMenuItem key={item.id} item={item} />

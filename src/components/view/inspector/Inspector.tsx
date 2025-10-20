@@ -9,6 +9,8 @@ import { getObject, useDispatchSkapMap, useSkapMap } from "@editor/map.ts";
 import { Button } from "@components/form/Button.tsx";
 import { DropdownSelect } from "@components/form/dropdown/DropdownSelect.tsx";
 import { Option, OptionSection } from "@components/form/dropdown/Dropdown.ts";
+import { useContextMenu } from "@components/contextmenu/reducer.ts";
+import { section, single, submenu } from "@components/contextmenu/ContextMenu.ts";
 
 const testOptions: (Option<number> | OptionSection<number>)[] = [
 	{
@@ -132,6 +134,19 @@ export const Inspector: Layout.ViewComponent = ({
 		</div>
 	);
 
+	const handleContextMenuCapture = useContextMenu([
+		submenu("test", null, [
+			section({ name: "inspector.test", icon: null }, [
+				single("inspector.test.0", "hd"),
+				single("inspector.test.1", "2k"),
+				single("inspector.test.2", "4k"),
+				single("inspector.test.3", "8k"),
+				single("inspector.test.4", "10k"),
+			]),
+			single("inspector.test.error", "error", () => { throw new Error("uwu") })
+		]),
+	]);
+
 	switch (selectedObject.type) {
 		case "obstacle":
 		case "lava": {
@@ -153,7 +168,7 @@ export const Inspector: Layout.ViewComponent = ({
 			} = bounds;
 
 			return (
-				<div className={css["inspector"]}>
+				<div className={css["inspector"]} onContextMenuCapture={handleContextMenuCapture}>
 					{viewSwitch}
 					<div className={css["inspector-content"]}>
 						<span><Icon icon="select" title="Selection" /> <code>{selectedID}</code></span>

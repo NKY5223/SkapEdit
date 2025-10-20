@@ -40,8 +40,8 @@
 @supports (position-anchor: auto) {
 	.options {
 		position: absolute;
+		inset: unset;
 
-		inset: auto;
 		inset-inline-start: anchor(start);
 		inset-block-start: calc(anchor(end) - var(--theme-border-width));
 		position-try-fallbacks: 

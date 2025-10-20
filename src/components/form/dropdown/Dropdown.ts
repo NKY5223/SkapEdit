@@ -1,10 +1,11 @@
 import { IconName } from "@components/icon/IconName.ts";
 import { ReactNode } from "react";
 
-// Prevent union distributing
-export type MaybeConst<I, O> = [O] extends [Function]
-	? (value: I) => O
-	: O | ((value: I) => O);
+// If O is a function, it should be wrapped in `() =>`. 
+export type MaybeConst<I, O> =
+	| ((value: I) => O)
+	| Exclude<O, Function>;
+
 
 export type Option<T> = {
 	/** Should be unique. */
@@ -25,8 +26,9 @@ export function maybeConst<I, O>(f: MaybeConst<I, O>, value: I): O;
 export function maybeConst<I, O>(f: MaybeConst<I, O> | undefined, value: I): O | undefined;
 export function maybeConst<I, O>(f: MaybeConst<I, O> | undefined, value: I): O | undefined {
 	if (f === undefined) return undefined;
-	if (typeof f === "function") return f(value);
-	// Typescript does not narrow the type of value properly here.
+	// Type 'Exclude<O, Function> & Function' has no call signatures.
+	// mfw typescript doesn't realise Exclude<A, B> & B = never
 	// @ts-expect-error
+	if (typeof f === "function") return f(value);
 	return f;
 };

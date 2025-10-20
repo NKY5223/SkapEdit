@@ -1,38 +1,5 @@
 .context-menu {
-	position: relative;
-	z-index: 99999;
-	display: grid;
-
-	grid-template-columns: auto;
-
-	--cmenu-bwidth: var(--theme-border-width);
-	--cmenu-border: var(--cmenu-bwidth) solid var(--theme-bd-0);
-
-	min-width: 10em;
-	width: fit-content;
-	height: fit-content;
-	
-	background: var(--theme-bg-0);
-	color: var(--theme-fg-0);
-	border: var(--cmenu-border);
-	border-radius: var(--theme-border-radius);
-	overflow: visible;
-
-	box-shadow: var(--theme-shadow);
-
-	& > :first-child {
-		border-top-left-radius: var(--theme-border-radius);
-		border-top-right-radius: var(--theme-border-radius);
-	}
-	& > :last-child {
-		border-bottom-left-radius: var(--theme-border-radius);
-		border-bottom-right-radius: var(--theme-border-radius);
-	}
-	&:not(.open) {
-		display: none;
-	}
 }
-
 
 .anchor {
 	anchor-name: --contextmenu-anchor;
@@ -55,17 +22,21 @@
 @supports (position-anchor: auto) {
 	.context-menu {
 		position: fixed;
+		inset: unset;
 
 		position-anchor: --contextmenu-anchor;
-		position-area: right span-y-end;
-		position-area: inline-end span-y-end;
+		inset-inline-start: anchor(end);
+		inset-block-start: anchor(start);
 		position-try-fallbacks: 
 			flip-inline,
 			flip-block,
 			flip-inline flip-block
 		;
 
-		top: calc(-1 * var(--cmenu-bwidth));
+		&.anchored {
+			inset-inline-start: calc(anchor(end) + 0.5em + var(--theme-border-width));
+			inset-block-start: calc(anchor(start) - 0.5em - var(--theme-border-width));
+		}
 	}
 }
 @supports not (position-anchor: auto) {
@@ -80,82 +51,23 @@
 }
 
 /* #region items */
-.item {
-	display: block;
-	padding: .25em .5em;
-	user-select: none;
-	min-height: 2rem;
-
-	.section + & {
-		border-top: var(--cmenu-border);
-	}
-}
-.single, .submenu {
-	padding-inline-start: 2.25em;
-
-	&:hover, &:focus {
-		background-color: var(--theme-primary-bg-0);
-		color: var(--theme-primary-fg-0);
-	}
-}
-
-
-/* #region single */
-.single {
-	&.has-icon {
-		display: grid;
-		padding-inline-start: .5em;
-		grid-template-areas: "icon content";
-		grid-template-columns: min-content auto;
-		place-items: center start;
-		gap: .25em;
-	}
-}
-/* #endregion */
-
-/* #region section */
-.section {
-	display: grid;
-	user-select: none;
-	padding: .25em 0;
-	/* items are in a ul, so this doesn't affect them */
-	gap: .25em;
-
-	&:not(:first-child) {
-		border-top: var(--cmenu-border);
-	}
-}
-.name {
-	display: flex;
-	gap: 0.25rem;
-	padding: 0;
-	padding-inline-start: .75rem;
-	opacity: 0.5;
-	font-size: .75em;
-
-	&.has-icon {
-		padding-inline-start: .5rem;
-	}
-}
-/* #endregion */
 
 .submenu {
 	position: relative;
-	display: grid;
-	grid-template-columns: max-content auto min-content;
-	grid-template-areas: "content . icon";
 	anchor-name: --contextmenu-anchor;
-
-	align-items: center;
+	padding-inline-end: .5em;
 
 	&:not(:hover, :focus, :focus-within) > .context-menu {
 		display: none;
 	}
-}
-.icon {
-	grid-area: icon;
-	aspect-ratio: 1 / 1;
-	opacity: 0.5;
+
+	/* Extend hover range */
+	&::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		inset-inline: -0.625em;
+	}
 }
 
 .error {

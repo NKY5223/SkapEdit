@@ -1,6 +1,6 @@
-import { Reducer } from "react";
+import { createContext, Reducer, useContext } from "react";
 import { ContextMenu } from "./ContextMenu.ts";
-import { vec2 } from "@common/vec2.ts";
+import { Vec2 } from "@common/vec2.ts";
 import { createReducerContext } from "@hooks/createReducerContext.tsx";
 
 
@@ -14,45 +14,45 @@ onContextMenu goes up the tree.
 When provider receives onContextMenuCapture, clear the menu.
 When children receive onContextMenuCapture, add items.
 
-provider will rerender and render the contextmenu anyways
-// When provider receives onContextMenu, show context menu.
+When provider receives onContextMenu, update context menu.
+This allows children to stop contextmenu propagation.
 
 */
 
 type ContextMenuAction = (
 	| {
-		type: "set",
-		menu: ContextMenu.Floating | null;
+		type: "set_pos";
+		pos: Vec2;
 	}
 	| {
-		type: "add_items",
+		type: "clear_items";
+	}
+	| {
+		type: "add_items";
 		items: readonly ContextMenu.Item[];
 	}
 );
+export type ContextMenuInfo = {
+	readonly pos: Vec2;
+	readonly items: readonly (readonly ContextMenu.Item[])[];
+};
 
-const contextMenuReducer: Reducer<ContextMenu.Floating | null, ContextMenuAction> = (state, action) => {
+const contextMenuReducer: Reducer<ContextMenuInfo, ContextMenuAction> = (state, action) => {
 	switch (action.type) {
-		case "set": {
-			const { menu } = action;
-			return menu;
+		case "set_pos": {
+			const { pos } = action;
+			return { ...state, pos };
+		}
+		case "clear_items": {
+			return { ...state, items: [], };
 		}
 		case "add_items": {
 			const { items } = action;
-			if (state === null) {
-				return {
-					type: "floating",
-					pos: vec2(100),
-					items,
-				}
-			}
-			return {
-				...state,
-				items: mergeItems(state.items, items),
-			};
+			return { ...state, items: [...state.items, items], };
 		}
 	}
 }
-const mergeItems = <T extends ContextMenu.Item>(items: readonly T[], newItems: readonly T[]): T[] => {
+export const mergeItems = <T extends ContextMenu.Item>(items: readonly T[], newItems: readonly T[]): T[] => {
 	return newItems.reduce((items, item): T[] => {
 		switch (item.type) {
 			case "single": {
@@ -60,7 +60,9 @@ const mergeItems = <T extends ContextMenu.Item>(items: readonly T[], newItems: r
 			}
 			case "section": {
 				const { name, items: sectionItems } = item;
-				const match = items.entries().find(([, item]) => item.type === "section" && item.name === name);
+				const match = items.entries()
+					.filter(([, item]) => item.type === "section")
+					.find(([, item]) => item.name === name);
 				if (!match) {
 					return [...items, item];
 				}
@@ -75,7 +77,9 @@ const mergeItems = <T extends ContextMenu.Item>(items: readonly T[], newItems: r
 			}
 			case "submenu": {
 				const { name, items: submenuItems } = item;
-				const match = items.entries().find(([, item]) => item.type === "submenu" && item.name === name);
+				const match = items.entries()
+					.filter(([, item]) => item.type === "submenu")
+					.find(([, item]) => item.name === name);
 				if (!match) {
 					return [...items, item];
 				}
@@ -92,7 +96,10 @@ const mergeItems = <T extends ContextMenu.Item>(items: readonly T[], newItems: r
 	}, [...items]);
 }
 
-const [useContextMenuValue, useContextMenuDispatch, ContextMenuContextProvider, useContextMenuValueDispatch] = createReducerContext("ContextMenu", contextMenuReducer);
+const [useContextMenuValue, useContextMenuDispatch, ContextMenuContextProvider, useContextMenuValueDispatch] = 
+	createReducerContext("ContextMenu", contextMenuReducer);
+
+export const clearContextMenuContext = createContext(() => console.warn("clearContextMenuContext Provider missing"));
 
 export {
 	/** Do not use. */
@@ -123,11 +130,5 @@ export const useContextMenu = (items: readonly ContextMenu.Item[]): React.MouseE
 }
 
 export const useClearContextMenu = () => {
-	const dispatch = useContextMenuDispatch();
-	return () => {
-		dispatch({
-			type: "set",
-			menu: null,
-		});
-	}
+	return useContext(clearContextMenuContext);
 }
