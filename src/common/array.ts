@@ -78,5 +78,16 @@ export function tuplesCyclical<T>(array: T[], length: number): T[][] {
  */
 export function tuples<T, N extends number>(array: T[], length: N): Tuple<T, N>[] {
 	if (array.length < length) throw new Error(`cannot convert [${array.join(", ")}] (${array.length}) into ${length}-tuples because it's too short`);
-	return range(array.length - length + 1).map((_, i) => array.slice(i, i + length) as Tuple<T,N>);
+	return range(array.length - length + 1).map((_, i) => array.slice(i, i + length) as Tuple<T, N>);
 }
+
+/** Sorts an array using a comparator on values derived from its values. */
+export const sortBy = <T, U>(array: readonly T[],
+	/** The values to sort by */
+	map: (value: T, index: number) => U, 
+	/** Sorting comparator, see: {@linkcode Array.sort} */
+	sort: (a: U, b: U) => number,
+): T[] => array
+	.map((v, i) => [v, map(v, i)] as const)
+	.sort(([, x], [, y]) => sort(x, y))
+	.map(([a,]) => a);

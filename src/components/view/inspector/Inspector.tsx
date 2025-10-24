@@ -1,5 +1,5 @@
 import { makeSection, makeSingle, makeSubmenu, useContextMenu } from "@components/contextmenu/ContextMenu.ts";
-import { useSelection } from "@components/editor/selection.ts";
+import { useEditorSelection } from "@components/editor/selection.ts";
 import { Button } from "@components/form/Button.tsx";
 import { DropdownSelect } from "@components/form/dropdown/DropdownSelect.tsx";
 import { FormSection } from "@components/form/FormSection.tsx";
@@ -123,7 +123,7 @@ export const Inspector: Layout.ViewComponent = ({
 	viewSwitch,
 }) => {
 	const layout = useLayoutTree();
-	const selectedID = useSelection();
+	const selectedID = useEditorSelection();
 	const map = useSkapMap();
 	const dispatchMap = useDispatchSkapMap();
 

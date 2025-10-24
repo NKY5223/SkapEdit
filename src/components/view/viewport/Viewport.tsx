@@ -4,8 +4,8 @@ import { useElementSize } from "@hooks/useElementSize.ts";
 import React, { FC, useMemo, useRef, useState } from "react";
 import { vec2, Vec2, zero } from "@common/vec2.ts";
 import "@common/vector.ts";
-import { SkapObject, SkapRoom, useDispatchSkapMap, useSkapMap } from "../../../editor/map.ts";
-import { useDrag } from "@hooks/useDrag.ts";
+import { SkapRoom, useSkapMap } from "../../../editor/map.ts";
+import { MouseButtons, useDrag } from "@hooks/useDrag.ts";
 import { ViewToolbar } from "../../layout/LayoutViewToolbar.tsx";
 import { Camera, useCamera } from "./camera.ts";
 import { BackgroundObstacleWebGLRenderer, BackgroundWebGLRenderer } from "./renderer/background.ts";
@@ -17,7 +17,10 @@ import { WebGLLayer } from "./webgl/WebGLLayer.tsx";
 import { useContextMenu } from "@components/contextmenu/ContextMenu.ts";
 import { makeSection, Sections, makeSingle } from "@components/contextmenu/ContextMenu.ts";
 import { viewportToMap } from "./utils.tsx";
-import { useDispatchSelection } from "@components/editor/selection.ts";
+import { useDispatchSelection, useEditorSelection } from "@components/editor/selection.ts";
+import { clickbox, zIndex } from "./objectProperties.ts";
+import { sortBy } from "@common/array.ts";
+import { ActiveSelection } from "./ActiveSelection.tsx";
 
 export type ViewportInfo = {
 	camera: Camera;
@@ -31,6 +34,26 @@ export type ViewportLayerFC = FC<{
 	viewportInfo: ViewportInfo;
 }>;
 
+/* 
+Desired structure:
+layers:
+	webgl {
+		gl
+		renderer { shared gl, shaders, program, buffers etc... }
+		renderer { shared gl, shaders, program, buffers etc... }
+		renderer { shared gl, shaders, program, buffers etc... }
+		renderer { shared gl, shaders, program, buffers etc... }
+		gl and renderers **MUST** persist across renders
+		else contexts will probably be lost all the time idk
+	}
+	text {
+		probably just a regular React.FC
+	}
+	webgl {
+		gl
+		renderer { ... }
+	}
+*/
 type ViewportCanvasProps = {
 	layers: ViewportLayerFC[];
 	viewportInfo: ViewportInfo;
@@ -39,26 +62,6 @@ const ViewportCanvas: FC<ViewportCanvasProps> = ({
 	layers, viewportInfo,
 	...attrs
 }) => {
-	/* 
-	Desired structure:
-	layers:
-		webgl {
-			gl
-			renderer { shared gl, shaders, program, buffers etc... }
-			renderer { shared gl, shaders, program, buffers etc... }
-			renderer { shared gl, shaders, program, buffers etc... }
-			renderer { shared gl, shaders, program, buffers etc... }
-			gl and renderers **MUST** persist across renders
-			else contexts will probably be lost all the time idk
-		}
-		text {
-			probably just a regular React.FC
-		}
-		webgl {
-			gl
-			renderer { ... }
-		}
-	*/
 	return (
 		<div className={css["viewport-canvas"]} {...attrs}>
 			{
@@ -87,25 +90,6 @@ const scaleMul = -1 / 100;
 const scaleExp = 1.25;
 const calcScale = (i: number) => scaleBase * scaleExp ** (scaleMul * i);
 
-const zIndex = (obj: SkapObject): number => {
-	switch (obj.type) {
-		case "obstacle": return 0;
-		case "lava": return 5;
-		case "text": return 10;
-	}
-}
-const clicksOn = (obj: SkapObject, clickPos: Vec2): boolean => {
-	switch (obj.type) {
-		case "obstacle":
-		case "lava": {
-			return obj.bounds.contains(clickPos);
-		}
-		case "text": {
-			return obj.pos.sub(clickPos).mag() <= 5;
-		}
-	}
-}
-
 export const Viewport: Layout.ViewComponent = ({
 	viewSwitch,
 }) => {
@@ -122,10 +106,9 @@ export const Viewport: Layout.ViewComponent = ({
 
 	const elRef = useRef<HTMLDivElement>(null);
 	const map = useSkapMap();
-	const dispatchMap = useDispatchSkapMap();
 	const [scaleIndex, setScaleIndex] = useState(0);
 	const [camera, setCamera] = useCamera({ pos: zero, scale: scaleBase });
-	const { handlePointerDown } = useDrag(1, null, (curr, prev) => {
+	const { handlePointerDown } = useDrag(MouseButtons.Middle, null, (curr, prev) => {
 		setCamera(camera => {
 			const diff = curr.sub(prev).div(camera.scale);
 			return {
@@ -181,15 +164,14 @@ export const Viewport: Layout.ViewComponent = ({
 		const { left, top } = e.currentTarget.getBoundingClientRect();
 		const clickPos = viewportToMap(viewportInfo, vec2(e.clientX - left, e.clientY - top));
 
-		const clickedObjects = room.objects.values()
-			.filter(obj => clicksOn(obj, clickPos))
-			.map(obj => [obj, zIndex(obj)] as const)
-			.toArray()
-			// Sort for object with highest z-index
-			.sort(([, la], [, lb]) => lb - la)
-			.map(([obj,]) => obj);
-
-		// console.table(clickedObjects);
+		const clickedObjects = sortBy(
+			room.objects.values()
+				.filter(obj => clickbox(obj, clickPos))
+				.toArray(),
+			zIndex,
+			// Descending order of z-index
+			(a, b) => b - a
+		);
 
 		dispatchSelection({
 			type: "set_selection",
@@ -198,11 +180,14 @@ export const Viewport: Layout.ViewComponent = ({
 	}
 
 	return (
-		<div ref={elRef} className={css["viewport"]}>
+		<div ref={elRef} className={css["viewport"]}
+			onPointerDown={handlePointerDown} onWheel={handleWheel}
+			onClick={handleClick}>
 			<ViewportCanvas viewportInfo={viewportInfo} layers={layers}
-				onPointerDown={handlePointerDown} onWheel={handleWheel}
-				onClick={handleClick}
 				{...contextMenu} />
+
+			<ActiveSelection viewportInfo={viewportInfo} />
+
 			<ViewToolbar>
 				{viewSwitch}
 			</ViewToolbar>

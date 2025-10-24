@@ -2,9 +2,20 @@ import { useState, useEffect, RefObject, PointerEventHandler, Dispatch, SetState
 import { Vec2, vec2, zero } from "../common/vec2.ts";
 import { elementIsRtl } from "./elementIsRtl.ts";
 
+export type MouseButtons = number;
+export const MouseButtons = {
+	Left: 1 << 0,
+	Middle: 1 << 1,
+	Right: 1 << 2,
+
+	All: ~0,
+} as const;
+
+const mouseButtonMatches = (button: number, buttons: MouseButtons) => !!(1 << button & buttons);
+
 export const useDrag = (
-	/** Mouse button to use for dragging. Use `"*"` for any button. */
-	button: number | "*" = "*",
+	/** Bitflags: mouse buttons to use for dragging. Use `MouseButton.All` for any button. */
+	buttons: MouseButtons,
 	/** 
 	 * Element to measure pointer position against.  
 	 * If passed, will normalize pointer position to between `⟨0, 0⟩` and `⟨1, 1⟩`.
@@ -68,7 +79,7 @@ export const useDrag = (
 	useEffect(() => {
 		const handleBlur = () => setDragging(false);
 		const handlePointerUp = (event: PointerEvent) => {
-			if (button === "*" || event.button === button) {
+			if (mouseButtonMatches(event.button, buttons)) {
 				setDragging(false);
 			}
 		}
@@ -82,7 +93,7 @@ export const useDrag = (
 	});
 
 	const handlePointerDown: PointerEventHandler = event => {
-		if (button === "*" || event.button === button) {
+		if (mouseButtonMatches(event.button, buttons)) {
 			setDragging(true);
 			const pointer = vec2(event.clientX, event.clientY);
 

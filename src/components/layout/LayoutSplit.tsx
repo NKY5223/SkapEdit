@@ -1,13 +1,12 @@
 import { clamp } from "@common/number.ts";
 import { createId } from "@common/uuid.ts";
-import { makeSection, Sections, makeSingle } from "@components/contextmenu/ContextMenu.ts";
-import { useContextMenu } from "@components/contextmenu/ContextMenu.ts";
+import { makeSection, makeSingle, Sections, useContextMenu } from "@components/contextmenu/ContextMenu.ts";
 import { toClassName } from "@components/utils.tsx";
-import { useDrag } from "@hooks/useDrag.ts";
+import { elementIsRtl } from "@hooks/elementIsRtl.ts";
+import { MouseButtons, useDrag } from "@hooks/useDrag.ts";
 import { KeyboardEventHandler, ReactNode, useRef } from "react";
 import { Layout, LayoutFC, useDispatchLayout } from "./layout.ts";
 import css from "./LayoutSplit.module.css";
-import { elementIsRtl } from "@hooks/elementIsRtl.ts";
 
 const KeyMap = {
 	x: ["ArrowLeft", "ArrowRight"],
@@ -30,7 +29,7 @@ export const LayoutSplit: LayoutFC<Layout.SplitNode, LayoutSplitProps> = ({
 	});
 	const splitRef = useRef<HTMLDivElement>(null);
 
-	const { handlePointerDown: startDrag, dragging: resizing } = useDrag(0, splitRef, curr => {
+	const { handlePointerDown: startDrag, dragging: resizing } = useDrag(MouseButtons.Left, splitRef, curr => {
 		setRatio(axis === "x" ? curr[0] : curr[1]);
 	});
 

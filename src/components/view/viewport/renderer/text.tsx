@@ -6,10 +6,10 @@ import css from "./text.module.css";
 export const TextLayer: ViewportLayerFC = ({ viewportInfo }) => {
 	const { 
 		camera, 
-		room: map
+		room
 	} = viewportInfo;
 
-	const objs = map.objects.values().filter(o => o.type === "text").toArray();
+	const objs = room.objects.values().filter(o => o.type === "text").toArray();
 	const bgClass = toClassName(
 		css["text"],
 		css["bg"],

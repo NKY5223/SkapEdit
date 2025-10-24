@@ -1,0 +1,13 @@
+.selection {
+	position: absolute;
+	--selected-outline-width: 2px;
+	--selected-outline-color: #0080ff;
+	outline: var(--selected-outline-width) solid var(--selected-outline-color);
+}
+.circle {
+	--r: 25px;
+	width: calc(2 * var(--r));
+	height: calc(2 * var(--r));
+	translate: -50% -50%;
+	border-radius: 50%;
+}

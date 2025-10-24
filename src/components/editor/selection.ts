@@ -19,5 +19,5 @@ const selectionReducer: Reducer<EditorSelection, SelectionAction> = (selection, 
 	}
 	return selection;
 };
-export const [useSelection, useDispatchSelection, SelectionProvider] =
+export const [useEditorSelection, useDispatchSelection, SelectionProvider] =
 	createReducerContext<EditorSelection, SelectionAction>("Selection", selectionReducer);
