@@ -17,7 +17,7 @@ export const Button: ExtensibleFC<ButtonProps> = ({
 	type, icon, iconTitle: title, disabled, children,
 	onClick,
 
-	classes = [],
+	classList: classes = [],
 }) => {
 	const className = toClassName(
 		css["button"], 

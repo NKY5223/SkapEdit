@@ -5,7 +5,7 @@ export const toClassName = (...list: (string | undefined | null | false | string
 	list.filter((s): s is string | string[] => !!s).flat().join(" ");
 
 export type ExtensibleFC<T> = FC<T & {
-	classes?: string[];
+	classList?: string[];
 }>;
 
 /** Duplicates a map and sets key to value. Preserves order. */

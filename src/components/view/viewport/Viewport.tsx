@@ -176,7 +176,7 @@ export const Viewport: Layout.ViewComponent = ({
 				onPointerDown={handlePointerDown} onWheel={handleWheel} 
 				onClick={handleClick}
 				{...contextMenu} />
-			<ViewToolbar classes={[css["viewport-topbar"]]}>
+			<ViewToolbar>
 				{viewSwitch}
 			</ViewToolbar>
 		</div>

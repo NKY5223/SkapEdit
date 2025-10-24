@@ -1,11 +1,13 @@
-import { createContext, Dispatch, FC, PropsWithChildren, Reducer, useContext, useReducer } from "react";
+import { maybeConst, MaybeConst } from "@common/maybeConst.ts";
+import { createContext, Dispatch, FC, ReactNode, Reducer, useContext, useReducer } from "react";
 
 export function createReducerContext<T, A>(name: string, reducer: Reducer<T, A>, defaultValue?: T): [
 	useValue: () => T,
 	useDispatch: () => Dispatch<A>,
-	Provider: FC<PropsWithChildren<{
+	Provider: FC<{
 		initialValue: T;
-	}>>,
+		children: MaybeConst<[T, Dispatch<A>], ReactNode>
+	}>,
 	useValueDispatch: () => [T, Dispatch<A>],
 	context: React.Context<[T, Dispatch<A>] | null>
 ] {
@@ -25,13 +27,13 @@ export function createReducerContext<T, A>(name: string, reducer: Reducer<T, A>,
 			(action => console.warn(`Could not find reducer context dispatch function for`, action));
 	}
 
-	const Provider: FC<PropsWithChildren<{ initialValue: T }>> = ({
+	const Provider: FC<{ initialValue: T; children: MaybeConst<[T, Dispatch<A>], ReactNode>; }> = ({
 		initialValue, children
 	}) => {
 		const [state, dispatch] = useReducer(reducer, initialValue);
 		return (
 			<context.Provider value={[state, dispatch]}>
-				{children}
+				{maybeConst(children, [state, dispatch])}
 			</context.Provider>
 		);
 	}

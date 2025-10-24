@@ -17,7 +17,7 @@ const KeyMap = {
 type LayoutSplitProps = {
 	children: [ReactNode, ReactNode];
 };
-export const LayoutSplit: LayoutFC<Layout.NodeSplit, LayoutSplitProps> = ({
+export const LayoutSplit: LayoutFC<Layout.SplitNode, LayoutSplitProps> = ({
 	node,
 	children: [first, second],
 }) => {
@@ -109,7 +109,7 @@ export const LayoutSplit: LayoutFC<Layout.NodeSplit, LayoutSplitProps> = ({
 	);
 }
 
-export const makeSplit = (axis: "x" | "y", ratio: number, first: Layout.Node, second: Layout.Node): Layout.NodeSplit => ({
+export const makeSplit = (axis: "x" | "y", ratio: number, first: Layout.Node, second: Layout.Node): Layout.SplitNode => ({
 	type: "split",
 	id: createId("layout.split"),
 	axis,

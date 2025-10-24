@@ -35,23 +35,24 @@ data
 
 // #region Types
 
-export type LayoutAction = ({
-	type: "replace";
-	/** Target node uuid */
-	targetNode: ID;
-	replacement: Layout.Node;
-} |
-{
-	type: "set_ratio";
-	/** Target split node uuid */
-	targetNode: ID;
-	ratio: number;
-});
+export type LayoutAction = (
+	| {
+		type: "replace";
+		/** Target node uuid */
+		targetNode: ID;
+		replacement: Layout.Node;
+	}
+	| {
+		type: "set_ratio";
+		/** Target split node uuid */
+		targetNode: ID;
+		ratio: number;
+	}
+);
 export type LayoutFC<T extends Layout.Node, Props> = FC<{
 	node: T;
 } & Props>;
 
-export const Layout = {};
 export namespace Layout {
 	export type ViewComponent = FC<{
 		/** View Switcher component. Should be included in the view. */
@@ -73,18 +74,20 @@ export namespace Layout {
 		type: T;
 		id: ID;
 	};
-	export type NodeView = BaseNode<"view"> & {
+	export type ViewNode = BaseNode<"view"> & {
 		providerName: string;
 	};
-	export type NodeSplit = BaseNode<"split"> & {
+	export type SplitNode = BaseNode<"split"> & {
 		axis: "x" | "y";
 		ratio: number;
 		first: Node;
 		second: Node;
 	};
 
-	export type Node = (NodeSplit |
-		NodeView);
+	export type Node = (
+		| SplitNode
+		| ViewNode
+	);
 }
 // #endregion
 
@@ -146,6 +149,6 @@ const layoutReducer: Reducer<Layout.Tree, LayoutAction> = (layout, action) => {
 	throw new Error(`Layout action not implemented: ${action["type"]}`);
 };
 
-export const [useViewProviders, useViewProvider, ViewsProviderProvider,] = createMapContext<Layout.ViewProvider>("ViewProvider");
+export const [useViewProviders, useViewProvider, ViewProvidersProvider,] = createMapContext<Layout.ViewProvider>("ViewProvider");
 export const [useViewStates, useViewState, ViewInfoStatesProvider,] = createMapContext<unknown>("??");
 export const [useLayoutTree, useDispatchLayout, LayoutProvider] = createReducerContext<Layout.Tree, LayoutAction>("Layout", layoutReducer);

@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { LayoutSplit } from "./LayoutSplit.tsx";
 import { LayoutViewMemo } from "./LayoutView.tsx";
-import { type Layout, LayoutProvider, ViewInfoStatesProvider, ViewsProviderProvider, useLayoutTree } from "./layout.ts";
+import { Layout, LayoutProvider, ViewInfoStatesProvider, ViewProvidersProvider } from "./layout.ts";
 import css from "./Layout.module.css";
 
 type LayoutProps = {
@@ -13,21 +13,16 @@ export const LayoutRoot: FC<LayoutProps> = ({
 	viewProviders,
 }) => {
 	return (
-		<LayoutProvider initialValue={initialLayout}>
-			<ViewInfoStatesProvider value={new Map()}>
-				<ViewsProviderProvider value={viewProviders}>
-					<div className={css["layout"]}>
-						<LayoutTree />
-					</div>
-				</ViewsProviderProvider>
-			</ViewInfoStatesProvider>
-		</LayoutProvider>
+		<ViewInfoStatesProvider value={new Map()}>
+			<ViewProvidersProvider value={viewProviders}>
+				<LayoutProvider initialValue={initialLayout}>
+					{([tree]) => (<div className={css["layout"]}>
+						<LayoutNode node={tree.node} />
+					</div>)}
+				</LayoutProvider>
+			</ViewProvidersProvider>
+		</ViewInfoStatesProvider>
 	);
-}
-
-const LayoutTree: FC<{}> = () => {
-	const tree = useLayoutTree();
-	return (<LayoutNode node={tree.node} />);
 }
 
 type LayoutNodeProps = {

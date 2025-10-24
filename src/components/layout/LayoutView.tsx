@@ -17,7 +17,7 @@ export type ViewFC = FC<ViewProps>;
 
 type LayoutViewProps = {
 };
-export const LayoutView: LayoutFC<Layout.NodeView, LayoutViewProps> = ({
+export const LayoutView: LayoutFC<Layout.ViewNode, LayoutViewProps> = ({
 	node,
 }) => {
 	const dispatchLayout = useDispatchLayout();
@@ -73,7 +73,7 @@ export const LayoutView: LayoutFC<Layout.NodeView, LayoutViewProps> = ({
 }
 export const LayoutViewMemo = memo(LayoutView, ({ node: a }, { node: b }) => (a === b));
 
-export const makeView = (providerName: string): Layout.NodeView => {
+export const makeView = (providerName: string): Layout.ViewNode => {
 	return {
 		type: "view",
 		id: createId("layout.view"),

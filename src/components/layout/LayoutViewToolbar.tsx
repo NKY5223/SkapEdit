@@ -11,7 +11,7 @@ import { makeView } from "./LayoutView.tsx";
 
 
 type ViewSelectorProps = {
-	view: Layout.NodeView;
+	view: Layout.ViewNode;
 	dispatch: Dispatch<LayoutAction>;
 };
 export const ViewSelector: FC<ViewSelectorProps> = ({
@@ -53,9 +53,9 @@ export const ViewSelector: FC<ViewSelectorProps> = ({
 	);
 }
 /** Essentially a div */
-export const ViewToolbar: ExtensibleFC<PropsWithChildren> = ({ children, classes }) => (
+export const ViewToolbar: ExtensibleFC<PropsWithChildren> = ({ children, classList: classes }) => (
 	<div className={toClassName(css["toolbar"], ...classes ?? [])}>{children}</div>
 );
 export const ViewToolbarButton: typeof Button = ({ ...props }) => (
-	<Button {...props} classes={[...props.classes ?? [], css["button"]]}></Button>
+	<Button {...props} classList={[...props.classList ?? [], css["button"]]}></Button>
 );

@@ -6,11 +6,6 @@
 		grid-area: 1 / 1 / 1 / -1;
 	}
 }
-.viewport-topbar {
-	display: flex;
-	gap: .5em;
-	margin: .5em;
-}
 .viewport-canvas {
 	display: grid;
 	position: absolute;
