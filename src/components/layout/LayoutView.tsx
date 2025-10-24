@@ -10,11 +10,6 @@ import { makeSplitX, makeSplitY } from "./LayoutSplit.tsx";
 import css from "./LayoutView.module.css";
 import { ViewSelector } from "./LayoutViewToolbar.tsx";
 
-type ViewProps = {
-	children: ReactNode;
-};
-export type ViewFC = FC<ViewProps>;
-
 type LayoutViewProps = {
 };
 export const LayoutView: LayoutFC<Layout.ViewNode, LayoutViewProps> = ({

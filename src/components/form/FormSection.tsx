@@ -1,6 +1,6 @@
+import { toClassName } from "@components/utils.tsx";
 import { FC, PropsWithChildren } from "react";
 import css from "./form.module.css";
-import { toClassName } from "@components/utils.tsx";
 
 type FormSectionProps = {
 	row?: boolean

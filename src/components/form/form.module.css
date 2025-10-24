@@ -1,6 +1,6 @@
 .form-section {
 	display: flex;
-	min-width: fit-content;
+	/* min-width: fit-content; */
 	gap: .25em .5em;
 
 	flex-wrap: wrap;
@@ -9,20 +9,19 @@
 }
 .label {
 	display: grid;
-	gap: .25em;
-	grid-template-areas: "label input";
-	place-items: center;
-	max-width: 100%;
+	grid-auto-flow: column;
+	grid-template-columns: min-content auto;
+	gap: .5em;
+	align-items: center;
 }
 .label-content {
 	height: min-content;
 }
-.input[type=number],
-.input[type=text] {
+.input {
 	display: block;
-	padding: 0.5em 1em;
-	width: 7.5em;
-	height: 2.5em;
+	padding-block: .5em;
+	padding-inline: 1em .5em;
+	min-height: 2.5em;
 
 	font-size: 1em;
 	background: none;
@@ -32,9 +31,16 @@
 	&::-webkit-inner-spin-button {
 		appearance: none;
 	}
-
 	&:focus {
 		outline: none;
 		border-color: var(--theme-primary-bg-0);
 	}
+}
+.input[type=number] {
+	min-width: 3.5em;
+	max-width: 7.5em;
+}
+.input[type=text] {
+	min-width: 5em;
+	max-width: 15em;
 }

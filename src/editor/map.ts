@@ -45,17 +45,17 @@ export type SkapMap = {
 // #endregion
 
 // #region constructors
-export const mkObstacle = (left: number, top: number, right: number, bottom: number): SkapObstacle => ({
+export const makeObstacle = (left: number, top: number, right: number, bottom: number): SkapObstacle => ({
 	type: "obstacle",
 	id: createId(),
 	bounds: new Bounds({ left, top, right, bottom }),
 });
-export const mkLava = (left: number, top: number, right: number, bottom: number): SkapLava => ({
+export const makeLava = (left: number, top: number, right: number, bottom: number): SkapLava => ({
 	type: "lava",
 	id: createId(),
 	bounds: new Bounds({ left, top, right, bottom }),
 });
-export const mkText = (x: number, y: number, text: string): SkapText => ({
+export const makeText = (x: number, y: number, text: string): SkapText => ({
 	type: "text",
 	id: createId(),
 	pos: vec2(x, y),
@@ -64,7 +64,7 @@ export const mkText = (x: number, y: number, text: string): SkapText => ({
 export const objectWithIdArrayToMap = <T extends { id: ID; }>(objs: T[]): Map<ID, T> =>
 	new Map(objs.map(o => [o.id, o]));
 
-export const mkRoom = (name: string, bounds: BoundsInit,
+export const makeRoom = (name: string, bounds: BoundsInit,
 	obstacleColor: Color, backgroundColor: Color, objects: SkapObject[]): SkapRoom => ({
 		id: createId("room"),
 		name,
@@ -168,4 +168,3 @@ const skapMapReducer: Reducer<SkapMap, SkapMapAction> = (map, action) => {
 	return map;
 }
 export const [useSkapMap, useDispatchSkapMap, SkapMapProvider] = createReducerContext("Map", skapMapReducer);
-

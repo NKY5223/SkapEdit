@@ -4,7 +4,6 @@ import { ViewportVP } from "@components/view/viewport/ViewportVP.tsx";
 import { TestErrorVP } from "../../test/TestError.tsx";
 import { TestSwatchVP } from "../../test/TestSwatch.tsx";
 import { Layout } from "./layout.ts";
-import { EmptyVP } from "./EmptyVP.tsx";
 
 export const views = {
 	"test.swatch": TestSwatchVP,
@@ -17,7 +16,6 @@ export const views = {
 		</div>),
 		icon: "text_snippet",
 	},
-	"test.empty": EmptyVP,
 	"map.viewport": ViewportVP,
 	"map.inspector": InspectorVP,
 } as const satisfies Record<string, Layout.ViewProvider>;

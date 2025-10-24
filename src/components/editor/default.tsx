@@ -3,20 +3,17 @@ import { vec2 } from "@common/vec2.ts";
 import { Layout } from "@components/layout/layout";
 import { makeSplitX, makeSplitY } from "@components/layout/LayoutSplit.tsx";
 import { makeView } from "@components/layout/LayoutView.tsx";
-import { mkObstacle, SkapRoom, mkRoom, mkLava, mkText, SkapMap, objectWithIdArrayToMap } from "@editor/map.ts";
+import { makeObstacle, SkapRoom, makeRoom, makeLava, makeText, SkapMap, objectWithIdArrayToMap } from "@editor/map.ts";
 
 const actualLayout = makeSplitX(0.75,
 	makeView("map.viewport"),
 	makeView("map.inspector")
 );
-const testLayout = makeSplitY(0.2,
-	makeSplitX(0.5,
-		makeView("test.empty"),
-		makeView("ILLEGAL"),
-	),
+const testLayout = makeSplitY(0.1,
+	makeView("ILLEGAL"),
 	makeSplitX(0.75,
 		makeView("map.viewport"),
-		makeSplitY(0.6,
+		makeSplitY(0.8,
 			makeView("map.inspector"),
 			makeView("test.swatch")
 		)
@@ -26,20 +23,19 @@ const defaultLayout: Layout.Node = true ? testLayout : actualLayout;
 export const defaultLayoutTree: Layout.Tree = {
 	node: defaultLayout
 };
-export const obj1 = mkObstacle(0, 0, 10, 10);
-const defaultRoom: SkapRoom = mkRoom(
+export const obj1 = makeObstacle(0, 0, 10, 10);
+const defaultRoom: SkapRoom = makeRoom(
 	"Default",
 	{ left: 0, top: 0, right: 50, bottom: 25 },
 	Color.hex(0x000a57, 0.8),
 	Color.hex(0xe6e6e6),
 	[
 		obj1,
-		mkObstacle(10, 10, 20, 20),
-		mkLava(15, 15, 25, 50),
-		mkLava(-10, 15, 40, 25),
-		// i can't even read that
+		makeObstacle(10, 10, 20, 20),
+		makeLava(15, 15, 25, 50),
+		makeLava(-10, 15, 40, 25),
 		// also the windows 10 sc IME interprets "biang" as "bi'ang" so i had to google it
-		mkText(15, 10, "a,    M_²[ℤ𰻞乙a"),
+		makeText(15, 10, "a,    M_²[ℤ𰻞乙a"),
 	]
 );
 export const defaultMap: SkapMap = {

@@ -1,18 +1,24 @@
 import { makeSection, makeSingle, makeSubmenu, useContextMenu } from "@components/contextmenu/ContextMenu.ts";
 import { useSelection } from "@components/editor/selection.ts";
 import { Button } from "@components/form/Button.tsx";
-import { Option, OptionSection } from "@components/form/dropdown/Dropdown.ts";
 import { DropdownSelect } from "@components/form/dropdown/DropdownSelect.tsx";
 import { FormSection } from "@components/form/FormSection.tsx";
 import { NumberInput } from "@components/form/NumberInput.tsx";
 import { Icon } from "@components/icon/Icon.tsx";
 import { Layout, useLayoutTree } from "@components/layout/layout.ts";
 import { getObject, useDispatchSkapMap, useSkapMap } from "@editor/map.ts";
-import { useDerivedBounds } from "../../../editor/bounds.ts";
+import { boundsSetters } from "@hooks/useBounds";
 import css from "./Inspector.module.css";
 import { ViewToolbar } from "@components/layout/LayoutViewToolbar.tsx";
+import { ReactNode } from "react";
+import { TextInput } from "@components/form/TextInput.tsx";
+import { vec2 } from "@common/vec2.ts";
+import { BoundsInput } from "@editor/BoundsInput.tsx";
+import { Vec2Input } from "@editor/Vec2Input.tsx";
 
-const testOptions: (Option<number> | OptionSection<number>)[] = [
+type Opts = Parameters<typeof DropdownSelect<number>>[0]["options"];
+
+const testOptions: Opts = [
 	{
 		name: "integer",
 		label: "Integers",
@@ -118,22 +124,9 @@ export const Inspector: Layout.ViewComponent = ({
 }) => {
 	const layout = useLayoutTree();
 	const selectedID = useSelection();
-	if (!selectedID) return (
-		<div className={css["inspector"]}>
-			{viewSwitch}
-			No object selected
-		</div>
-	);
 	const map = useSkapMap();
 	const dispatchMap = useDispatchSkapMap();
 
-	const selectedObject = getObject(map, selectedID);
-	if (!selectedObject) return (
-		<div className={css["inspector"]}>
-			{viewSwitch}
-			Could not find selected object, id: <code>{selectedID}</code>
-		</div>
-	);
 
 	const contextMenu = useContextMenu([
 		makeSubmenu("test", "zoom_in", [
@@ -148,67 +141,78 @@ export const Inspector: Layout.ViewComponent = ({
 		]),
 	]);
 
-	switch (selectedObject.type) {
-		case "obstacle":
-		case "lava": {
-			const [bounds, {
-				setLeft, setTop, setRight, setBottom,
-				setWidth, setHeight,
-			}] = useDerivedBounds(selectedObject.bounds, action => {
-				if (typeof action === "function") action = action(selectedObject.bounds);
-				dispatchMap({
-					type: "replace_object",
-					targetObject: selectedID,
-					replacement: obj => ({ ...obj, bounds: action })
-				});
-			}, true);
-
-			const {
-				left, top, right, bottom,
-				width, height
-			} = bounds;
-
-			return (
-				<div className={css["inspector"]} {...contextMenu}>
-					<ViewToolbar>
-						{viewSwitch}
-					</ViewToolbar>
-					<div className={css["inspector-content"]}>
-						<span><Icon icon="select" title="Current Selection" /><code>{selectedID}</code></span>
-						<FormSection>
-							<FormSection row>
-								<NumberInput name="left" value={left} onInput={setLeft} label={
-									<Icon icon="keyboard_tab" title="Left" />
-								} />
-								<NumberInput name="top" value={top} onInput={setTop} label={
-									<Icon icon="vertical_align_bottom" title="Top" />
-								} />
-							</FormSection>
-							<FormSection row>
-								<NumberInput name="right" value={right} onInput={setRight} label={
-									<Icon icon="keyboard_tab_rtl" title="Right" />
-								} />
-								<NumberInput name="bottom" value={bottom} onInput={setBottom} label={
-									<Icon icon="vertical_align_top" title="Bottom" />
-								} />
-							</FormSection>
-							<FormSection row>
-								<NumberInput name="width" value={width} onInput={setWidth} min={0} label={
-									<Icon icon="width" title="Width" />
-								} />
-								<NumberInput name="height" value={height} onInput={setHeight} min={0} label={
-									<Icon icon="height" title="Height" />
-								} />
-							</FormSection>
+	const inspectorContents = ((): Exclude<ReactNode, undefined> => {
+		if (!selectedID) return (
+			<p>
+				No object selected
+			</p>
+		);
+		const selectedObject = getObject(map, selectedID);
+		if (!selectedObject) return (
+			<p>
+				Could not find selected object, id: <code>{selectedID}</code>
+			</p>
+		);
+		switch (selectedObject.type) {
+			case "obstacle":
+			case "lava": {
+				const bounds = selectedObject.bounds;
+				return (
+					<FormSection>
+						<p>Object type: <code>{selectedObject.type}</code></p>
+						<BoundsInput bounds={bounds} setBounds={bounds => dispatchMap({
+							type: "replace_object",
+							targetObject: selectedID,
+							replacement: obj => ({ ...obj, bounds })
+						})} />
+					</FormSection>
+				);
+			}
+			case "text": {
+				const { id, text, pos } = selectedObject;
+				return (
+					<FormSection>
+						<FormSection row>
+							<TextInput value={text} label={<Icon icon="text_fields" title="Text" />}
+								onInput={text => dispatchMap({
+									type: "replace_object",
+									targetObject: id,
+									replacement: obj => ({
+										...obj,
+										text,
+									}),
+								})} />
 						</FormSection>
-						<Button icon="html">uwu</Button>
-						<DropdownSelect nowrap initialValue={0} options={testOptions} />
-						<pre>
-							{JSON.stringify(layout, null, "\t")}
-						</pre>
-					</div>
-				</div>
-			);
+						<Vec2Input vec={pos} setVec={pos => dispatchMap({
+							type: "replace_object",
+							targetObject: id,
+							replacement: obj => ({
+								...obj,
+								pos,
+							}),
+						})} />
+					</FormSection>
+				);
+			}
 		}
-	}
+	})();
+	return (
+		<div className={css["inspector"]} {...contextMenu}>
+			<ViewToolbar>
+				{viewSwitch}
+			</ViewToolbar>
+			<div className={css["inspector-content"]}>
+				<span>
+					<Icon icon="select" title="Current Selection" />
+					<code style={{ marginInlineStart: ".5em" }}>{selectedID ?? "(none)"}</code>
+				</span>
+				{inspectorContents}
+				{/* <Button icon="html">uwu</Button>
+				<DropdownSelect nowrap initialValue={0} options={testOptions} />
+				<pre>{JSON.stringify(layout, null, "\t")}</pre> */}
+			</div>
+		</div>
+	);
+
+
 }

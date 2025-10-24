@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Realize, Values } from "../common/types.ts";
 import { Vec2, vec2 } from "../common/vec2.ts";
 
@@ -142,6 +141,16 @@ export class Bounds {
 			top, bottom,
 		});
 	}
+
+	/** Returns true if point is within bounds OR is on the boundary. */
+	contains(point: Vec2): boolean {
+		return (
+			point[0] >= this.left &&
+			point[0] <= this.right &&
+			point[1] >= this.top &&
+			point[1] <= this.bottom
+		);
+	}
 }
 
 const completeBounds = (
@@ -200,61 +209,19 @@ const updateBounds = (
 	end: number,
 	clamp: boolean = true,
 ): [start: number, end: number] => {
-	const [_start, _end] = updateBoundsUnclamped(newStart, newEnd, newLength, start, end);
-	if (clamp && _start > _end) {
+	const [oldStart, oldEnd] = updateBoundsUnclamped(newStart, newEnd, newLength, start, end);
+	if (clamp && oldStart > oldEnd) {
 		if (newStart !== undefined) {
-			return [_start, _start];
+			return [oldStart, oldStart];
 		} else if (newEnd !== undefined) {
-			return [_end, _end];
+			return [oldEnd, oldEnd];
 		} else if (newLength !== undefined) {
 			// Only length defined, fallback to start
-			return [_start, _start]
+			return [oldStart, oldStart];
 		} else {
-			throw new Error(`Could not update clamped bounds with start-end-length: ${newStart}, ${newEnd}, ${newLength}`);
+			console.error(`Could not update clamped bounds with start-end-length: ${newStart}, ${newEnd}, ${newLength}`);
 		}
 	}
-	return [_start, _end];
+	return [oldStart, oldEnd];
 }
 
-export function useBounds(initial: BoundsInit, clamp: boolean = true):
-	[bounds: Bounds, setters: {
-		setLeft: (left: number) => void;
-		setTop: (top: number) => void;
-		setRight: (right: number) => void;
-		setBottom: (bottom: number) => void;
-		setWidth: (width: number) => void;
-		setHeight: (height: number) => void;
-		setBounds: (bounds: BoundsInit) => void;
-	}] {
-	const [bounds, setBounds] = useState<Bounds>(new Bounds(initial));
-	return [bounds, {
-		setLeft: (left: number) => setBounds(b => b.set({ left }, clamp)),
-		setTop: (top: number) => setBounds(b => b.set({ top }, clamp)),
-		setRight: (right: number) => setBounds(b => b.set({ right }, clamp)),
-		setBottom: (bottom: number) => setBounds(b => b.set({ bottom }, clamp)),
-		setWidth: (width: number) => setBounds(b => b.set({ width }, clamp)),
-		setHeight: (height: number) => setBounds(b => b.set({ height }, clamp)),
-		setBounds: (bounds: BoundsInit) => setBounds(b => b.set(bounds, clamp)),
-	}];
-}
-
-export function useDerivedBounds(initial: Bounds, set: React.Dispatch<React.SetStateAction<Bounds>>, clamp: boolean = true):
-	[bounds: Bounds, setters: {
-		setLeft: (left: number) => void;
-		setTop: (top: number) => void;
-		setRight: (right: number) => void;
-		setBottom: (bottom: number) => void;
-		setWidth: (width: number) => void;
-		setHeight: (height: number) => void;
-		setBounds: (bounds: BoundsInit) => void;
-	}] {
-	return [initial, {
-		setLeft: (left: number) => set(b => b.set({ left }, clamp)),
-		setTop: (top: number) => set(b => b.set({ top }, clamp)),
-		setRight: (right: number) => set(b => b.set({ right }, clamp)),
-		setBottom: (bottom: number) => set(b => b.set({ bottom }, clamp)),
-		setWidth: (width: number) => set(b => b.set({ width }, clamp)),
-		setHeight: (height: number) => set(b => b.set({ height }, clamp)),
-		setBounds: (bounds: BoundsInit) => set(b => b.set(bounds, clamp)),
-	}];
-}

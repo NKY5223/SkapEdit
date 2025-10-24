@@ -22,7 +22,7 @@
 		font-family: var(--theme-font);
 		tab-size: 4;
 	}
-	::selection {
+	body::selection {
 		background-color: var(--theme-selection-bg);
 		color: var(--theme-selection-fg);
 	}

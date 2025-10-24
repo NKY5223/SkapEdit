@@ -4,7 +4,7 @@ import { useElementSize } from "@hooks/useElementSize.ts";
 import React, { FC, useMemo, useRef, useState } from "react";
 import { vec2, Vec2, zero } from "@common/vec2.ts";
 import "@common/vector.ts";
-import { SkapRoom, useDispatchSkapMap, useSkapMap } from "../../../editor/map.ts";
+import { SkapObject, SkapRoom, useDispatchSkapMap, useSkapMap } from "../../../editor/map.ts";
 import { useDrag } from "@hooks/useDrag.ts";
 import { ViewToolbar } from "../../layout/LayoutViewToolbar.tsx";
 import { Camera, useCamera } from "./camera.ts";
@@ -17,6 +17,7 @@ import { WebGLLayer } from "./webgl/WebGLLayer.tsx";
 import { useContextMenu } from "@components/contextmenu/ContextMenu.ts";
 import { makeSection, Sections, makeSingle } from "@components/contextmenu/ContextMenu.ts";
 import { viewportToMap } from "./utils.tsx";
+import { useDispatchSelection } from "@components/editor/selection.ts";
 
 export type ViewportInfo = {
 	camera: Camera;
@@ -85,6 +86,25 @@ const scaleBase = 5;
 const scaleMul = -1 / 100;
 const scaleExp = 1.25;
 const calcScale = (i: number) => scaleBase * scaleExp ** (scaleMul * i);
+
+const zIndex = (obj: SkapObject): number => {
+	switch (obj.type) {
+		case "obstacle": return 0;
+		case "lava": return 5;
+		case "text": return 10;
+	}
+}
+const clicksOn = (obj: SkapObject, clickPos: Vec2): boolean => {
+	switch (obj.type) {
+		case "obstacle":
+		case "lava": {
+			return obj.bounds.contains(clickPos);
+		}
+		case "text": {
+			return obj.pos.sub(clickPos).mag() <= 5;
+		}
+	}
+}
 
 export const Viewport: Layout.ViewComponent = ({
 	viewSwitch,
@@ -155,25 +175,32 @@ export const Viewport: Layout.ViewComponent = ({
 		viewportBounds,
 	};
 
+	const dispatchSelection = useDispatchSelection();
+
 	const handleClick: React.MouseEventHandler = e => {
 		const { left, top } = e.currentTarget.getBoundingClientRect();
-		const client = vec2(e.clientX - left, e.clientY - top);
-		const pos = viewportToMap(viewportInfo, client);
+		const clickPos = viewportToMap(viewportInfo, vec2(e.clientX - left, e.clientY - top));
 
-		dispatchMap({
-			type: "replace_object",
-			targetObject: obj => obj.type === "text",
-			replacement: obj => ({
-				...obj,
-				pos,
-			})
+		const clickedObjects = room.objects.values()
+			.filter(obj => clicksOn(obj, clickPos))
+			.map(obj => [obj, zIndex(obj)] as const)
+			.toArray()
+			// Sort for object with highest z-index
+			.sort(([, la], [, lb]) => lb - la)
+			.map(([obj,]) => obj);
+
+		// console.table(clickedObjects);
+
+		dispatchSelection({
+			type: "set_selection",
+			selection: clickedObjects[0]?.id ?? null
 		});
 	}
 
 	return (
 		<div ref={elRef} className={css["viewport"]}>
 			<ViewportCanvas viewportInfo={viewportInfo} layers={layers}
-				onPointerDown={handlePointerDown} onWheel={handleWheel} 
+				onPointerDown={handlePointerDown} onWheel={handleWheel}
 				onClick={handleClick}
 				{...contextMenu} />
 			<ViewToolbar>
@@ -182,4 +209,3 @@ export const Viewport: Layout.ViewComponent = ({
 		</div>
 	);
 }
-
