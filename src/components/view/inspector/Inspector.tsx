@@ -141,13 +141,13 @@ export const Inspector: Layout.ViewComponent = ({
 		]),
 	]);
 
+	const selectedObject = selectedID && getObject(map, selectedID);
 	const inspectorContents = ((): Exclude<ReactNode, undefined> => {
 		if (!selectedID) return (
 			<p>
 				No object selected
 			</p>
 		);
-		const selectedObject = getObject(map, selectedID);
 		if (!selectedObject) return (
 			<p>
 				Could not find selected object, id: <code>{selectedID}</code>
@@ -159,7 +159,6 @@ export const Inspector: Layout.ViewComponent = ({
 				const bounds = selectedObject.bounds;
 				return (
 					<FormSection>
-						<p>Object type: <code>{selectedObject.type}</code></p>
 						<BoundsInput bounds={bounds} setBounds={bounds => dispatchMap({
 							type: "replace_object",
 							targetObject: selectedID,
@@ -204,7 +203,10 @@ export const Inspector: Layout.ViewComponent = ({
 			<div className={css["inspector-content"]}>
 				<span>
 					<Icon icon="select" title="Current Selection" />
-					<code style={{ marginInlineStart: ".5em" }}>{selectedID ?? "(none)"}</code>
+					&nbsp;
+					{selectedObject
+						? (<code>{selectedObject.type} {selectedID}</code>)
+						: (<code>(none)</code>)}
 				</span>
 				{inspectorContents}
 				{/* <Button icon="html">uwu</Button>
@@ -213,6 +215,4 @@ export const Inspector: Layout.ViewComponent = ({
 			</div>
 		</div>
 	);
-
-
 }
