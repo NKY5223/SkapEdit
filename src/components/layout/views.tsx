@@ -3,7 +3,7 @@ import { InspectorVP } from "@components/view/inspector/InspectorVP.tsx";
 import { ViewportVP } from "@components/view/viewport/ViewportVP.tsx";
 import { TestErrorVP } from "../../test/TestError.tsx";
 import { TestSwatchVP } from "../../test/TestSwatch.tsx";
-import { Layout } from "./Layout.tsx";
+import { Layout } from "./layout.ts";
 import { EmptyVP } from "./EmptyVP.tsx";
 
 export const views = {

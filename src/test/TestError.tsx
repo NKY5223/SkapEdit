@@ -1,4 +1,4 @@
-import { Layout } from "@components/layout/Layout.tsx";
+import { Layout } from "@components/layout/layout";
 
 export const TestError: Layout.ViewComponent = () => {
 	throw new Error("Test error", {

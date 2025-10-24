@@ -75,7 +75,7 @@
 				height .2s 0;
 			pointer-events: none;
 		}
-		&:is(:hover, .resizing, :focus) {
+		&:is(:hover, .resizing, :focus-visible) {
 			& > .visual {
 				width: var(--handle-interaction-width);
 				height: var(--handle-interaction-height);
@@ -84,7 +84,7 @@
 				transition-delay: .5s;
 			}
 		}
-		&:focus {
+		&:focus-visible {
 			outline: none;
 			& > .visual {
 				transition-delay: 0s;

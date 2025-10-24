@@ -1,0 +1,151 @@
+import { ID } from "@common/uuid.ts";
+import { IconName } from "@components/icon/IconName.ts";
+import { createMapContext } from "@hooks/createMapContext.tsx";
+import { createReducerContext } from "@hooks/createReducerContext.tsx";
+import { FC, ReactNode, Reducer } from "react";
+
+/*
+2025-02-xx
+Goal:
+Be able to edit some arbitrary data with multiple views
+tagged data?
+
+2025-03-24
+what the fuck does "tagged data" mean wtf nky
+i don't know if we need floating views
+
+2025-04-03
+floating views would be nice :3
+spiky `:3` :(
+
+data
+| Layout
+|	> split
+|		> view
+|-----------> viewport (map)
+|		> view
+|-----------> inspector (map)
+|	> floating
+|		> view
+|-----------> stats (all)
+|	> floating
+|	 	> view
+|-----------> ??? (some other field in data)
+*/
+
+// #region Types
+
+export type LayoutAction = ({
+	type: "replace";
+	/** Target node uuid */
+	targetNode: ID;
+	replacement: Layout.Node;
+} |
+{
+	type: "set_ratio";
+	/** Target split node uuid */
+	targetNode: ID;
+	ratio: number;
+});
+export type LayoutFC<T extends Layout.Node, Props> = FC<{
+	node: T;
+} & Props>;
+
+export const Layout = {};
+export namespace Layout {
+	export type ViewComponent = FC<{
+		/** View Switcher component. Should be included in the view. */
+		viewSwitch: ReactNode;
+	}>;
+
+	export type ViewProvider = {
+		/** Name for this View (e.g. `"viewport"`) */
+		name: string;
+		Component: ViewComponent;
+		icon?: IconName;
+	};
+
+	export type Tree = {
+		node: Node;
+	};
+
+	type BaseNode<T extends string> = {
+		type: T;
+		id: ID;
+	};
+	export type NodeView = BaseNode<"view"> & {
+		providerName: string;
+	};
+	export type NodeSplit = BaseNode<"split"> & {
+		axis: "x" | "y";
+		ratio: number;
+		first: Node;
+		second: Node;
+	};
+
+	export type Node = (NodeSplit |
+		NodeView);
+}
+// #endregion
+
+/**
+ * @returns If node was successfully replaced, returns `[true, newNode]`, else `[false, oldNode]`.
+ */
+const setInLayout = (
+	root: Layout.Node,
+	target: string,
+	/** function that transforms old node into new node */
+	f: (node: Layout.Node) => Layout.Node
+): [success: boolean, newNode: Layout.Node] => {
+	if (root.id === target) {
+		return [true, f(root)];
+	}
+	switch (root.type) {
+		case "view": {
+			return [false, root];
+		}
+		case "split": {
+			const [foundFirst, first] = setInLayout(root.first, target, f);
+			if (foundFirst) {
+				return [true, {
+					...root,
+					first,
+				}];
+			}
+			const [foundSecond, second] = setInLayout(root.second, target, f);
+			if (foundSecond) {
+				return [true, {
+					...root,
+					second,
+				}];
+			}
+			return [false, root];
+		}
+	}
+};
+const layoutReducer: Reducer<Layout.Tree, LayoutAction> = (layout, action) => {
+	const rootNode = layout.node;
+	switch (action.type) {
+		case "replace": {
+			const { targetNode, replacement } = action;
+			const [success, newNode] = setInLayout(rootNode, targetNode, () => replacement);
+			if (!success) console.warn("Could not find target node", targetNode, ".");
+			return {
+				node: newNode,
+			};
+		}
+		case "set_ratio": {
+			const { targetNode, ratio } = action;
+			const [success, newNode] = setInLayout(rootNode, targetNode, node => ({ ...node, ratio }));
+			if (!success) console.warn("Could not find target node", targetNode, ".");
+			return {
+				node: newNode,
+			};
+		}
+	}
+	throw new Error(`Layout action not implemented: ${action["type"]}`);
+};
+
+export const [useViewProviders, useViewProvider, ViewsProviderProvider,] = createMapContext<Layout.ViewProvider>("ViewProvider");
+export const [useViewStates, useViewState, ViewInfoStatesProvider,] = createMapContext<unknown>("??");
+export const [useLayoutTree, useDispatchLayout, LayoutProvider] = createReducerContext<Layout.Tree, LayoutAction>("Layout", layoutReducer);

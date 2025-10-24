@@ -1,7 +1,7 @@
+import { toClassName } from "@components/utils.tsx";
 import { FC } from "react";
 import "./Icon.module.css";
 import { IconName } from "./IconName.ts";
-import { toClassName } from "@components/utils.tsx";
 
 type IconProps = {
 	icon: IconName;
@@ -10,13 +10,16 @@ type IconProps = {
 	classList?: string[];
 };
 export const Icon: FC<IconProps> = ({
-	icon, size: height = 1.5, title, classList: extraClasses = [],
+	icon, size, title, classList,
 }) => {
 	const className = toClassName(
 		"material-symbols-outlined",
-		...extraClasses,
+		classList,
 	);
+	// terribly inaccessible but cannot deal with it rn
 	return (
-		<span role="img" className={className} style={{ "--size": height }} title={title}>{icon}</span>
+		<span role="img" {...{ className, title }} style={{ "--size": size }}>
+			{icon}
+		</span>
 	);
 }

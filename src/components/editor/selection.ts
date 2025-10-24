@@ -3,5 +3,7 @@ import { createReducerContext } from "@hooks/createReducerContext.tsx";
 
 export type EditorSelection = ID | null;
 
+type SelectionAction = never;
+
 export const [useSelection, useDispatchSelection, SelectionProvider] =
-	createReducerContext<ID | null, {}>("Selection", (id, _) => id);
+	createReducerContext<EditorSelection, SelectionAction>("Selection", (id, _) => id);

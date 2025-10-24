@@ -1,5 +1,5 @@
 import { FC, PropsWithChildren } from "react";
-import { ContextMenuContextProvider } from "./reducer.ts";
+import { ContextMenuContextProvider } from "./ContextMenu.ts";
 import { ContextMenuProviderInternal } from "./ContextMenuProviderInternal.tsx";
 import { vec2 } from "@common/vec2.ts";
 

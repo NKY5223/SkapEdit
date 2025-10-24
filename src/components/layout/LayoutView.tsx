@@ -1,11 +1,11 @@
-import { useContextMenu } from "@components/contextmenu/reducer.ts";
-import { section, Sections, single } from "@components/contextmenu/ContextMenu.ts";
+import { useContextMenu } from "@components/contextmenu/ContextMenu.ts";
+import { makeSection, Sections, makeSingle } from "@components/contextmenu/ContextMenu.ts";
 import { FC, memo, ReactNode } from "react";
 import { createId } from "../../common/uuid.ts";
 import { ErrorBoundary } from "../error/ErrorBoundary.tsx";
 import { Translate } from "../translate/Translate.tsx";
 import { toClassName } from "../utils.tsx";
-import { Layout, LayoutFC, useViewProvider } from "./Layout.tsx";
+import { Layout, LayoutFC, useDispatchLayout, useViewProvider } from "./layout.ts";
 import { makeSplitX, makeSplitY } from "./LayoutSplit.tsx";
 import css from "./LayoutView.module.css";
 import { ViewSelector } from "./LayoutViewToolbar.tsx";
@@ -18,11 +18,12 @@ export type ViewFC = FC<ViewProps>;
 type LayoutViewProps = {
 };
 export const LayoutView: LayoutFC<Layout.NodeView, LayoutViewProps> = ({
-	node, dispatchLayout,
+	node,
 }) => {
-	const addContextMenuItems = useContextMenu([
-		section(Sections.layout, [
-			single("layout.split-x", "split_scene_left", () => dispatchLayout({
+	const dispatchLayout = useDispatchLayout();
+	const contextMenu = useContextMenu([
+		makeSection(Sections.layout, [
+			makeSingle("layout.split-x", "split_scene_left", () => dispatchLayout({
 				type: "replace",
 				targetNode: node.id,
 				replacement: makeSplitX(0.5,
@@ -30,7 +31,7 @@ export const LayoutView: LayoutFC<Layout.NodeView, LayoutViewProps> = ({
 					makeView(node.providerName),
 				)
 			})),
-			single("layout.split-y", "split_scene_up", () => dispatchLayout({
+			makeSingle("layout.split-y", "split_scene_up", () => dispatchLayout({
 				type: "replace",
 				targetNode: node.id,
 				replacement: makeSplitY(0.5,
@@ -49,7 +50,7 @@ export const LayoutView: LayoutFC<Layout.NodeView, LayoutViewProps> = ({
 			css["unknown"],
 		);
 		return (
-			<div className={className} onContextMenuCapture={addContextMenuItems}>
+			<div className={className} {...contextMenu}>
 				<ViewSelector view={node} dispatch={dispatchLayout} />
 				<h1>
 					<Translate k="error.layout.view.unknown" viewProviderName={node.providerName} />
@@ -64,11 +65,8 @@ export const LayoutView: LayoutFC<Layout.NodeView, LayoutViewProps> = ({
 
 	return (
 		<ErrorBoundary location={`LayoutView(${name})`}>
-			<div className={css.view} onContextMenuCapture={addContextMenuItems}>
-				<ViewComp
-					dispatchLayout={dispatchLayout}
-					viewSwitch={<ViewSelector view={node} dispatch={dispatchLayout} />}
-				/>
+			<div className={css.view} {...contextMenu}>
+				<ViewComp viewSwitch={<ViewSelector view={node} dispatch={dispatchLayout} />} />
 			</div>
 		</ErrorBoundary>
 	);

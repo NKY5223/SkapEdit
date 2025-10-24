@@ -1,6 +1,6 @@
 import { Color } from "@common/color.ts";
 import { vec2 } from "@common/vec2.ts";
-import { Layout } from "@components/layout/Layout.tsx";
+import { Layout } from "@components/layout/layout";
 import { makeSplitX, makeSplitY } from "@components/layout/LayoutSplit.tsx";
 import { makeView } from "@components/layout/LayoutView.tsx";
 import { mkObstacle, SkapRoom, mkRoom, mkLava, mkText, SkapMap, objectWithIdArrayToMap } from "@editor/map.ts";
@@ -14,7 +14,7 @@ const testLayout = makeSplitY(0.2,
 		makeView("test.empty"),
 		makeView("ILLEGAL"),
 	),
-	makeSplitX(0.4,
+	makeSplitX(0.75,
 		makeView("map.viewport"),
 		makeSplitY(0.6,
 			makeView("map.inspector"),
@@ -23,10 +23,8 @@ const testLayout = makeSplitY(0.2,
 	)
 );
 const defaultLayout: Layout.Node = true ? testLayout : actualLayout;
-export const defaultLayoutRoot: Layout.Root = {
-	tree: {
-		node: defaultLayout
-	}
+export const defaultLayoutTree: Layout.Tree = {
+	node: defaultLayout
 };
 export const obj1 = mkObstacle(0, 0, 10, 10);
 const defaultRoom: SkapRoom = mkRoom(

@@ -1,9 +1,9 @@
 import { interleave } from "./array.ts";
-import { alignH, bracketPresets, concat, normalize, NormTextBlock, tlog, typeset } from "./string.ts";
+import { alignH, bracketPresets, concat, normalize, NormTextBlock } from "./string.ts";
 import { map, ReadonlyTuple, tuple } from "./tuple.ts";
 
 // #region Helpers
-const str = (places = 5) => (n: number) => {
+const toStr = (places = 5) => (n: number) => {
 	if (Object.is(n, Infinity)) return `∞`;
 	if (Object.is(n, -Infinity)) return `-∞`;
 	if (Object.is(n, NaN)) return `NaN`;
@@ -172,10 +172,10 @@ export class Vector<N extends number> {
 	}
 
 	// #region Text
-	static rowStr(values: readonly number[], stringifier = str()): string {
+	static rowStr(values: readonly number[], stringifier = toStr()): string {
 		return `[${values.map(stringifier).join(", ")}]`;
 	}
-	toText(numStr = str(), brackets = bracketPresets.square): NormTextBlock {
+	toText(numStr = toStr(), brackets = bracketPresets.square): NormTextBlock {
 		const strs = this.components.map(numStr);
 
 		const aligned = alignH({
@@ -185,8 +185,8 @@ export class Vector<N extends number> {
 
 		return brackets(aligned);
 	}
-	toString(numStr = str()) {
-		return this.toText(numStr).lines.join("\n");
+	toString(numStr = toStr()) {
+		return Vector.rowStr(this.components, numStr);
 	}
 	// #endregion
 
@@ -604,8 +604,8 @@ export class Matrix<M extends number, N extends number> {
 	}
 
 	// #region Text
-	detText(numStr = str()) { return this.toText(numStr, bracketPresets.straight); }
-	toText(numStr = str(), brackets = bracketPresets.square): NormTextBlock {
+	detText(numStr = toStr()) { return this.toText(numStr, bracketPresets.straight); }
+	toText(numStr = toStr(), brackets = bracketPresets.square): NormTextBlock {
 		const strs = this.vectors.map(vec =>
 			vec.components.map(numStr)
 		);
@@ -618,7 +618,7 @@ export class Matrix<M extends number, N extends number> {
 			columns.map(() => normalize(" ")).slice(1)
 		)));
 	}
-	toString(numStr = str()): string {
+	toString(numStr = toStr()): string {
 		return this.toText(numStr).lines.join("\n");
 	}
 	// #endregion

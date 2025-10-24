@@ -86,22 +86,24 @@ export const getObject = (
 	}
 	return null;
 }
+export const findInRoom = (
+	room: SkapRoom,
+	targetObject: TargetObject,
+): [id: ID, obj: SkapObject] | undefined =>
+	room.objects.entries().find(([, obj]) => matches(obj, targetObject));
 /**
  * @returns If object was successfully replaced, returns `[true, newRoom]`. Else, `[false, oldRoom]`.
 */
 export const setInRoom = (
 	room: SkapRoom,
-	targetObject: ID,
+	targetObject: TargetObject,
 	/** function that transforms old object into new object */
-	f: (node: SkapObject) => SkapObject,
+	replace: (node: SkapObject) => SkapObject,
 ): [success: boolean, room: SkapRoom] => {
-	const obj = room.objects.get(targetObject);
-	if (!obj) return [false, room];
-	if (obj.id !== targetObject) {
-		console.error("An entry in room", room, "'s objects map did not have id matching key.");
-		return [false, room];
-	}
-	const newObj = f(obj);
+	const match = findInRoom(room, targetObject);
+	if (!match) return [false, room];
+	const [, obj] = match;
+	const newObj = replace(obj);
 	const newObjs = new Map(room.objects);
 	newObjs.set(newObj.id, newObj);
 	return [true, {
@@ -110,16 +112,24 @@ export const setInRoom = (
 	}];
 }
 
+type TargetObject = ID | ((obj: SkapObject) => boolean);
+const matches = (obj: SkapObject, target: TargetObject) => {
+	if (typeof target === "string") return obj.id === target;
+	return target(obj);
+}
+
 type SkapMapAction = (
 	| {
 		type: "replace_object";
-		targetObject: ID;
+		/** Either an `ID` or a filter function. */
+		targetObject: TargetObject;
 		/** Replacement function that returns new object, given old object. */
 		replacement: (prevObject: SkapObject) => SkapObject;
 	}
 	| {
 		type: "remove_object";
-		targetObject: ID;
+		/** Either an `ID` or a filter function. */
+		targetObject: TargetObject;
 	}
 );
 const skapMapReducer: Reducer<SkapMap, SkapMapAction> = (map, action) => {
@@ -140,15 +150,16 @@ const skapMapReducer: Reducer<SkapMap, SkapMapAction> = (map, action) => {
 		case "remove_object": {
 			const { targetObject } = action;
 			for (const room of map.rooms.values()) {
-				if (room.objects.has(targetObject)) {
-					const newRoom = {
-						...room,
-						objects: mapWithout(room.objects, targetObject),
-					};
-					return {
-						...map,
-						rooms: idMapWith(map.rooms, newRoom),
-					}
+				const match = findInRoom(room, targetObject);
+				if (!match) return map;
+				const [id,] = match;
+				const newRoom = {
+					...room,
+					objects: mapWithout(room.objects, id),
+				};
+				return {
+					...map,
+					rooms: idMapWith(map.rooms, newRoom),
 				}
 			}
 			return map;

@@ -50,11 +50,11 @@ export const NumberInput: FC<NumberInputProps> = ({
 					setInternal(newValue);
 					if (onInput) onInput(+newValue);
 				}}
-				onFocus={e => {
+				onFocus={() => {
 					setEditing(true);
 					setInternal(String(value));
 				}}
-				onBlur={e => {
+				onBlur={() => {
 					setEditing(false);
 					setInternal(String(value));
 					if (onChange) onChange(+internal);

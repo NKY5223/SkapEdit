@@ -1,10 +1,10 @@
-import { ReactNode, useId, useState } from "react";
+import { FC, ReactNode, useId, useState } from "react";
 import css from "./form.module.css";
 import { Label } from "./Label.tsx";
 import { toClassName } from "../utils.tsx";
 
 
-type TextInputProps = {
+export type TextInputProps = {
 	name?: string;
 	/** *Content* of the label associated with this input */
 	label?: ReactNode;
@@ -21,12 +21,12 @@ type TextInputProps = {
 	inputClass?: string;
 };
 
-export function TextInput({
+export const TextInput: FC<TextInputProps> = ({
 	name, label, disabled,
 	value, maxLength,
 	onInput, onChange,
 	inputClass,
-}: TextInputProps) {
+}) => {
 	const id = useId();
 
 	const [internal, setInternal] = useState(value);
@@ -51,11 +51,11 @@ export function TextInput({
 					setInternal(newValue);
 					if (onInput) onInput(newValue);
 				}}
-				onFocus={e => {
+				onFocus={() => {
 					setEditing(true);
 					setInternal(value);
 				}}
-				onBlur={e => {
+				onBlur={() => {
 					setEditing(false);
 					setInternal(value);
 					if (onChange) onChange(internal);
@@ -68,16 +68,4 @@ export function TextInput({
 			/>
 		</Label>
 	);
-}
-
-export function useTextInput(initialValue: string, props: Omit<TextInputProps, "value"> = {}) {
-	const [value, setValue] = useState(initialValue);
-	const actualProps: TextInputProps = {
-		...props,
-		value,
-		onInput: setValue,
-	};
-	const input = <TextInput {...actualProps} />;
-
-	return [value, input, setValue] as const;
 }

@@ -1,6 +1,8 @@
 import { Vec2 } from "../../common/vec2.ts";
 import { createId } from "@common/uuid.ts";
 import { IconName } from "@components/icon/IconName.ts";
+import { createReducerContext } from "@hooks/createReducerContext.tsx";
+import { Reducer, createContext, useContext } from "react";
 
 /*
 Goal:
@@ -55,10 +57,10 @@ export namespace ContextMenu {
 }
 
 // #region Constructors
-export const single = (
-	/** The item will display ``<Translate k={`contextmenu.item.${name}`} />``*/ 
-	name: string, 
-	icon?: IconName | null, 
+export const makeSingle = (
+	/** The item will display ``<Translate k={`contextmenu.item.${name}`} />``*/
+	name: string,
+	icon?: IconName | null,
 	click?: () => void
 ): ContextMenu.SingleItem => ({
 	type: "single",
@@ -75,7 +77,7 @@ type SectionPref = {
 export const Sections = {
 	layout: {
 		name: "layout",
-		icon: "dashboard",	
+		icon: "dashboard",
 	},
 	viewport: {
 		name: "viewport",
@@ -83,18 +85,129 @@ export const Sections = {
 	},
 } as const satisfies Record<string, SectionPref>;
 
-export const section = ({ name, icon }: SectionPref, items: readonly (ContextMenu.SingleItem | ContextMenu.Submenu)[]): ContextMenu.Section => ({
+export const makeSection = ({ name, icon }: SectionPref, items: readonly (ContextMenu.SingleItem | ContextMenu.Submenu)[]): ContextMenu.Section => ({
 	type: "section",
 	id: createId("cmenu-section"),
 	icon,
 	name,
 	items,
 });
-export const submenu = (name: string, icon: IconName | null, items: readonly ContextMenu.Item[]): ContextMenu.Submenu => ({
+export const makeSubmenu = (name: string, icon: IconName | null, items: readonly ContextMenu.Item[]): ContextMenu.Submenu => ({
 	type: "submenu",
 	id: createId("cmenu-submenu"),
 	icon,
 	name,
 	items,
 });
+
+
+type ContextMenuAction = ({
+	type: "set_pos";
+	pos: Vec2;
+} |
+{
+	type: "clear_items";
+} |
+{
+	type: "add_items";
+	items: readonly ContextMenu.Item[];
+});
+export type ContextMenuInfo = {
+	readonly pos: Vec2;
+	readonly items: readonly (readonly ContextMenu.Item[])[];
+};
+const contextMenuReducer: Reducer<ContextMenuInfo, ContextMenuAction> = (state, action) => {
+	switch (action.type) {
+		case "set_pos": {
+			const { pos } = action;
+			return { ...state, pos };
+		}
+		case "clear_items": {
+			return { ...state, items: [], };
+		}
+		case "add_items": {
+			const { items } = action;
+			return { ...state, items: [...state.items, items], };
+		}
+	}
+};
+export const mergeItems = <T extends ContextMenu.Item>(items: readonly T[], newItems: readonly T[]): T[] => {
+	return newItems.reduce((items, item): T[] => {
+		switch (item.type) {
+			case "single": {
+				return [...items, item];
+			}
+			case "section": {
+				const { name, items: sectionItems } = item;
+				const match = items.entries()
+					.filter(([, item]) => item.type === "section")
+					.find(([, item]) => item.name === name);
+				if (!match) {
+					return [...items, item];
+				}
+				const [i, section] = match;
+				if (section.type !== "section") {
+					throw new Error("Item that was section is no longer section. This should not be possible.");
+				}
+				return items.with(i, {
+					...section,
+					items: mergeItems(sectionItems, section.items)
+				});
+			}
+			case "submenu": {
+				const { name, items: submenuItems } = item;
+				const match = items.entries()
+					.filter(([, item]) => item.type === "submenu")
+					.find(([, item]) => item.name === name);
+				if (!match) {
+					return [...items, item];
+				}
+				const [i, submenu] = match;
+				if (submenu.type !== "submenu") {
+					throw new Error("Item that was submenu is no longer submenu. This should not be possible.");
+				}
+				return items.with(i, {
+					...submenu,
+					items: mergeItems(submenuItems, submenu.items)
+				});
+			}
+		}
+	}, [...items]);
+};
+const [useContextMenuValue, useContextMenuDispatch, ContextMenuContextProvider, useContextMenuValueDispatch] = createReducerContext("ContextMenu", contextMenuReducer);
+
+export const clearContextMenuContext = createContext(() => console.warn("clearContextMenuContext Provider missing"));
+export {
+	/** Do not use. */
+	useContextMenuValue,
+	/** Do not use; Use `useContextMenu` instead. */
+	useContextMenuDispatch,
+	/** Do not use. */
+	useContextMenuValueDispatch,
+	/** Do not use; Use `ContextMenuProvider` instead. */
+	ContextMenuContextProvider,
+};
+/**
+ * @example
+ *
+ * const contextMenu = useContextMenu([...]);
+ *
+ * <div {...contextMenu}>
+ */
+
+export const useContextMenu = (items: readonly ContextMenu.Item[]): React.HTMLAttributes<HTMLElement> => {
+	const dispatch = useContextMenuDispatch();
+	return {
+		onContextMenuCapture: () => {
+			dispatch({
+				type: "add_items",
+				items,
+			});
+		}
+	};
+};
+
+export const useClearContextMenu = () => {
+	return useContext(clearContextMenuContext);
+};
 // #endregion

@@ -1,4 +1,4 @@
-import { Layout } from "@components/layout/Layout.tsx";
+import { Layout } from "@components/layout/layout";
 
 const normalize = (str: string) => str
 	.replaceAll("--", "-")

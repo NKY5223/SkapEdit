@@ -1,10 +1,10 @@
-import { Layout } from "@components/layout/Layout.tsx";
+import { Layout } from "@components/layout/layout.ts";
 import { Bounds } from "@editor/bounds.ts";
 import { useElementSize } from "@hooks/useElementSize.ts";
 import React, { FC, useMemo, useRef, useState } from "react";
-import { Vec2, zero } from "@common/vec2.ts";
+import { vec2, Vec2, zero } from "@common/vec2.ts";
 import "@common/vector.ts";
-import { SkapRoom, useSkapMap } from "../../../editor/map.ts";
+import { SkapRoom, useDispatchSkapMap, useSkapMap } from "../../../editor/map.ts";
 import { useDrag } from "@hooks/useDrag.ts";
 import { ViewToolbar } from "../../layout/LayoutViewToolbar.tsx";
 import { Camera, useCamera } from "./camera.ts";
@@ -14,9 +14,9 @@ import { ObstacleWebGLRenderer } from "./renderer/obstacle.ts";
 import { TextLayer } from "./renderer/text.tsx";
 import css from "./Viewport.module.css";
 import { WebGLLayer } from "./webgl/WebGLLayer.tsx";
-import { useContextMenu } from "@components/contextmenu/reducer.ts";
-import { section, Sections, single, submenu } from "@components/contextmenu/ContextMenu.ts";
-import { Translate } from "@components/translate/Translate.tsx";
+import { useContextMenu } from "@components/contextmenu/ContextMenu.ts";
+import { makeSection, Sections, makeSingle } from "@components/contextmenu/ContextMenu.ts";
+import { viewportToMap } from "./utils.tsx";
 
 export type ViewportInfo = {
 	camera: Camera;
@@ -33,13 +33,10 @@ export type ViewportLayerFC = FC<{
 type ViewportCanvasProps = {
 	layers: ViewportLayerFC[];
 	viewportInfo: ViewportInfo;
-	onPointerDown?: React.PointerEventHandler;
-	onContextMenuCapture?: React.MouseEventHandler;
-	onWheel?: React.WheelEventHandler;
-};
+} & React.HTMLAttributes<HTMLDivElement>;
 const ViewportCanvas: FC<ViewportCanvasProps> = ({
 	layers, viewportInfo,
-	onPointerDown, onContextMenuCapture, onWheel,
+	...attrs
 }) => {
 	/* 
 	Desired structure:
@@ -62,8 +59,7 @@ const ViewportCanvas: FC<ViewportCanvasProps> = ({
 		}
 	*/
 	return (
-		<div className={css["viewport-canvas"]}
-			{...{ onPointerDown, onContextMenuCapture, onWheel, }}>
+		<div className={css["viewport-canvas"]} {...attrs}>
 			{
 				layers.map((Layer, i) => (
 					<Layer key={i} viewportInfo={viewportInfo} />
@@ -73,12 +69,14 @@ const ViewportCanvas: FC<ViewportCanvasProps> = ({
 	);
 }
 
-/** uhhh i forgor */
+/** multiplier for wheel event "mode"
+ * will almost always be 0
+ */
 const wheelMult = (mode: number): number => {
 	switch (mode) {
-		case 0x00: return 1;
-		case 0x01: return 2;
-		case 0x02: return 5;
+		case 0: return 1;
+		case 1: return 2;
+		case 2: return 5;
 		default: return 1;
 	}
 };
@@ -104,6 +102,7 @@ export const Viewport: Layout.ViewComponent = ({
 
 	const elRef = useRef<HTMLDivElement>(null);
 	const map = useSkapMap();
+	const dispatchMap = useDispatchSkapMap();
 	const [scaleIndex, setScaleIndex] = useState(0);
 	const [camera, setCamera] = useCamera({ pos: zero, scale: scaleBase });
 	const { handlePointerDown } = useDrag(1, null, (curr, prev) => {
@@ -125,9 +124,9 @@ export const Viewport: Layout.ViewComponent = ({
 		});
 	}
 
-	const addContextMenuItems = useContextMenu([
-		section(Sections.viewport, [
-			single("viewport.reset_camera", "restore", () => {
+	const contextMenu = useContextMenu([
+		makeSection(Sections.viewport, [
+			makeSingle("viewport.reset_camera", "reset_shutter_speed", () => {
 				setScaleIndex(0);
 				setCamera({
 					x: 0, y: 0, scale: 5,
@@ -156,10 +155,27 @@ export const Viewport: Layout.ViewComponent = ({
 		viewportBounds,
 	};
 
+	const handleClick: React.MouseEventHandler = e => {
+		const { left, top } = e.currentTarget.getBoundingClientRect();
+		const client = vec2(e.clientX - left, e.clientY - top);
+		const pos = viewportToMap(viewportInfo, client);
+
+		dispatchMap({
+			type: "replace_object",
+			targetObject: obj => obj.type === "text",
+			replacement: obj => ({
+				...obj,
+				pos,
+			})
+		});
+	}
+
 	return (
 		<div ref={elRef} className={css["viewport"]}>
 			<ViewportCanvas viewportInfo={viewportInfo} layers={layers}
-				onPointerDown={handlePointerDown} onWheel={handleWheel} onContextMenuCapture={addContextMenuItems} />
+				onPointerDown={handlePointerDown} onWheel={handleWheel} 
+				onClick={handleClick}
+				{...contextMenu} />
 			<ViewToolbar classes={[css["viewport-topbar"]]}>
 				{viewSwitch}
 			</ViewToolbar>

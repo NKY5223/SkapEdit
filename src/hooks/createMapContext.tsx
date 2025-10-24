@@ -1,13 +1,11 @@
 import { createContext, FC, PropsWithChildren, useContext } from "react";
 
 export function createMapContext<T, K = string>(name: string, defaultValue: ReadonlyMap<K, T> = new Map()) {
-	type M = ReadonlyMap<K, T>;
-
-	const context = createContext<M>(defaultValue);
+	const context = createContext<ReadonlyMap<K, T>>(defaultValue);
 	const useMapContext = () => useContext(context);
 	const useMapContextEntry = (key: K) => useContext(context).get(key);
 
-	const Provider: FC<PropsWithChildren<{ value: M, extend?: boolean }>> = ({
+	const Provider: FC<PropsWithChildren<{ value: ReadonlyMap<K, T>, extend?: boolean }>> = ({
 		value, extend = true,
 		children
 	}) => {
@@ -25,15 +23,18 @@ export function createMapContext<T, K = string>(name: string, defaultValue: Read
 		);
 	};
 	Provider.displayName = `${name}Provider`;
+	// context.Provider does not have a displayName field (why?)
+	// But setting displayName does change its displayName (???)
+	Object.assign(context.Provider, { displayName: `${name}Context` });
 
 	const result: [
-		useMapContext: () => M,
+		useMapContext: () => ReadonlyMap<K, T>,
 		useMapContextEntry: (key: K) => T | undefined,
 		Provider: FC<PropsWithChildren<{
-			value: M;
+			value: ReadonlyMap<K, T>;
 			extend?: boolean;
 		}>>,
-		context: React.Context<M>
+		context: React.Context<ReadonlyMap<K, T>>
 	] = [useMapContext, useMapContextEntry, Provider, context];
 
 	return result;

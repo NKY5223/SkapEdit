@@ -1,16 +1,16 @@
+import { makeSection, makeSingle, makeSubmenu, useContextMenu } from "@components/contextmenu/ContextMenu.ts";
+import { useSelection } from "@components/editor/selection.ts";
+import { Button } from "@components/form/Button.tsx";
+import { Option, OptionSection } from "@components/form/dropdown/Dropdown.ts";
+import { DropdownSelect } from "@components/form/dropdown/DropdownSelect.tsx";
 import { FormSection } from "@components/form/FormSection.tsx";
 import { NumberInput } from "@components/form/NumberInput.tsx";
 import { Icon } from "@components/icon/Icon.tsx";
+import { Layout, useLayoutTree } from "@components/layout/layout.ts";
+import { getObject, useDispatchSkapMap, useSkapMap } from "@editor/map.ts";
 import { useDerivedBounds } from "../../../editor/bounds.ts";
 import css from "./Inspector.module.css";
-import { Layout } from "@components/layout/Layout.tsx";
-import { useSelection } from "@components/editor/selection.ts";
-import { getObject, useDispatchSkapMap, useSkapMap } from "@editor/map.ts";
-import { Button } from "@components/form/Button.tsx";
-import { DropdownSelect } from "@components/form/dropdown/DropdownSelect.tsx";
-import { Option, OptionSection } from "@components/form/dropdown/Dropdown.ts";
-import { useContextMenu } from "@components/contextmenu/reducer.ts";
-import { section, single, submenu } from "@components/contextmenu/ContextMenu.ts";
+import { ViewToolbar } from "@components/layout/LayoutViewToolbar.tsx";
 
 const testOptions: (Option<number> | OptionSection<number>)[] = [
 	{
@@ -116,6 +116,7 @@ const testOptions: (Option<number> | OptionSection<number>)[] = [
 export const Inspector: Layout.ViewComponent = ({
 	viewSwitch,
 }) => {
+	const layout = useLayoutTree();
 	const selectedID = useSelection();
 	if (!selectedID) return (
 		<div className={css["inspector"]}>
@@ -134,16 +135,16 @@ export const Inspector: Layout.ViewComponent = ({
 		</div>
 	);
 
-	const handleContextMenuCapture = useContextMenu([
-		submenu("test", null, [
-			section({ name: "inspector.test", icon: null }, [
-				single("inspector.test.0", "hd"),
-				single("inspector.test.1", "2k"),
-				single("inspector.test.2", "4k"),
-				single("inspector.test.3", "8k"),
-				single("inspector.test.4", "10k"),
+	const contextMenu = useContextMenu([
+		makeSubmenu("test", "zoom_in", [
+			makeSection({ name: "inspector.test", icon: null }, [
+				makeSingle("inspector.test.0", "hd"),
+				makeSingle("inspector.test.1", "2k"),
+				makeSingle("inspector.test.2", "4k"),
+				makeSingle("inspector.test.3", "8k"),
+				makeSingle("inspector.test.4", "10k"),
 			]),
-			single("inspector.test.error", "error", () => { throw new Error("uwu") })
+			makeSingle("inspector.test.error", "error", () => { throw new Error("uwu") })
 		]),
 	]);
 
@@ -168,10 +169,12 @@ export const Inspector: Layout.ViewComponent = ({
 			} = bounds;
 
 			return (
-				<div className={css["inspector"]} onContextMenuCapture={handleContextMenuCapture}>
-					{viewSwitch}
+				<div className={css["inspector"]} {...contextMenu}>
+					<ViewToolbar>
+						{viewSwitch}
+					</ViewToolbar>
 					<div className={css["inspector-content"]}>
-						<span><Icon icon="select" title="Selection" /> <code>{selectedID}</code></span>
+						<span><Icon icon="select" title="Current Selection" /><code>{selectedID}</code></span>
 						<FormSection>
 							<FormSection row>
 								<NumberInput name="left" value={left} onInput={setLeft} label={
@@ -197,9 +200,12 @@ export const Inspector: Layout.ViewComponent = ({
 									<Icon icon="height" title="Height" />
 								} />
 							</FormSection>
-							<Button icon="html">uwu</Button>
-							<DropdownSelect nowrap initialValue={0} options={testOptions} />
 						</FormSection>
+						<Button icon="html">uwu</Button>
+						<DropdownSelect nowrap initialValue={0} options={testOptions} />
+						<pre>
+							{JSON.stringify(layout, null, "\t")}
+						</pre>
 					</div>
 				</div>
 			);

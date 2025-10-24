@@ -1,12 +1,13 @@
 import { Dispatch, FC, PropsWithChildren } from "react";
 import { Option } from "@components/form/dropdown/Dropdown.ts";
-import { SectionedOptions, DropdownSelectSectioned } from "../form/dropdown/DropdownSelectSectioned.tsx";
+import { OptionSection } from "../form/dropdown/Dropdown.ts";
 import { Translate } from "../translate/Translate.tsx";
-import { Layout, LayoutAction, useViewProviders } from "./Layout.tsx";
+import { Layout, LayoutAction, useViewProviders } from "./layout.ts";
 import css from "./LayoutViewToolbar.module.css";
 import { Button } from "../form/Button.tsx";
 import { toClassName, ExtensibleFC } from "../utils.tsx";
 import { DropdownSelect } from "@components/form/dropdown/DropdownSelect.tsx";
+import { makeView } from "./LayoutView.tsx";
 
 
 type ViewSelectorProps = {
@@ -18,7 +19,8 @@ export const ViewSelector: FC<ViewSelectorProps> = ({
 }) => {
 	const views = useViewProviders();
 
-	const options = Object.entries(Object.groupBy<string, Option<string>>(
+	// Holy confusing
+	const options: OptionSection<string>[] = Object.entries(Object.groupBy<string, Option<string>>(
 		views.entries().map(([name, { icon }]) => (
 			{
 				value: name,
@@ -29,11 +31,11 @@ export const ViewSelector: FC<ViewSelectorProps> = ({
 				name,
 			} satisfies Option<string>
 		)), ({ name }) => name.split(".")[0]
-	)).map<SectionedOptions<string>[number]>(([name, options]) => ({
+	)).map<OptionSection<string>>(([name, options]) => ({
 		name,
 		label: <Translate k="layout.view.category.name" category={name} />,
 		options: options ?? [],
-	})) satisfies SectionedOptions<string>;
+	}));
 
 	return (
 		<div className={css["selector"]}>
@@ -42,9 +44,9 @@ export const ViewSelector: FC<ViewSelectorProps> = ({
 				fallbackIcon="indeterminate_question_box"
 				optionsClassList={[css["selector-options"]]}
 				onSelect={value => dispatch({
-					type: "set_view",
+					type: "replace",
 					targetNode: view.id,
-					providerName: value,
+					replacement: makeView(value)
 				})}
 			/>
 		</div>

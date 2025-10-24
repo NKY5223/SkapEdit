@@ -1,5 +1,5 @@
-import { createRef, FC, MouseEventHandler, PropsWithChildren, useEffect, useState } from "react";
-import { clearContextMenuContext, mergeItems, useContextMenuValueDispatch } from "./reducer.ts";
+import { createRef, FC, MouseEventHandler, PropsWithChildren, useState } from "react";
+import { clearContextMenuContext, mergeItems, useContextMenuValueDispatch } from "./ContextMenu.ts";
 import { vec2 } from "@common/vec2.ts";
 import { FloatingContextMenu } from "./FloatingContextMenu.tsx";
 import { ContextMenu } from "./ContextMenu.ts";
@@ -49,14 +49,11 @@ export const ContextMenuProviderInternal: FC<PropsWithChildren<ContextMenuProvid
 			pos: menuInfo.pos,
 			items,
 		});
-	};
-
-	// focus hack
-	useEffect(() => {
+		// focus hack
 		const current = ref?.current;
 		if (!current) return;
 		current.focus();
-	}, [ref.current]);
+	};
 
 	return (
 		<clearContextMenuContext.Provider value={() => setMenu(null)}>

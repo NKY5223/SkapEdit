@@ -1,5 +1,5 @@
 import { Translate } from "@components/translate/Translate.tsx";
-import { Layout } from "./Layout.tsx";
+import { Layout } from "./layout.ts";
 import { ViewToolbar } from "./LayoutViewToolbar.tsx";
 
 

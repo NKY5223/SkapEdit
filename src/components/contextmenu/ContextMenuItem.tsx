@@ -4,7 +4,7 @@ import { Icon } from "@components/icon/Icon.tsx";
 import { Translate } from "@components/translate/Translate.tsx";
 import { toClassName, filterKeys } from "@components/utils.tsx";
 import { AnchoredContextMenu } from "./AnchoredContextMenu.tsx";
-import { useClearContextMenu } from "./reducer.ts";
+import { useClearContextMenu } from "./ContextMenu.ts";
 import css from "./ContextMenu.module.css";
 import menuCss from "../menu.module.css";
 
@@ -38,8 +38,7 @@ const ContextMenuSection: FC<ContextMenuSectionProps> = ({
 	const { name, icon, items } = item;
 	const nameClassName = toClassName(
 		menuCss["label"],
-		css["name"],
-		icon && css["has-icon"],
+		icon && menuCss["icon"],
 	);
 	return (
 		<li className={toClassName(
@@ -75,9 +74,9 @@ const ContextMenuSingleItem: FC<ContextMenuSingleItemProps> = ({
 	return (
 		<li className={toClassName(
 			menuCss["item"],
+			icon && menuCss["icon"],
 			css["item"],
 			css["single"],
-			icon && css["has-icon"]
 		)} onClick={handleClick} onKeyDown={filterKeys(handleClick)} tabIndex={0}>
 			{icon && <Icon icon={icon} />}
 			<Translate k="contextmenu.item.name" name={name} />
@@ -94,11 +93,12 @@ const ContextMenuSubmenu: FC<ContextMenuSubmenuProps> = ({
 	return (
 		<li className={toClassName(
 			menuCss["item"],
+			icon && menuCss["icon"],
 			css["item"],
 			css["submenu"]
 		)} tabIndex={0}>
-			<Translate k="contextmenu.item.name" name={name} />
 			{icon && <Icon icon={icon} />}
+			<Translate k="contextmenu.item.name" name={name} />
 			<Icon icon="arrow_right" size={1} classList={[
 				css["icon"]
 			]} />

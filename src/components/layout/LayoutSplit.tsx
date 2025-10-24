@@ -1,11 +1,11 @@
 import { clamp } from "@common/number.ts";
 import { createId } from "@common/uuid.ts";
-import { section, Sections, single } from "@components/contextmenu/ContextMenu.ts";
-import { useContextMenu } from "@components/contextmenu/reducer.ts";
+import { makeSection, Sections, makeSingle } from "@components/contextmenu/ContextMenu.ts";
+import { useContextMenu } from "@components/contextmenu/ContextMenu.ts";
 import { toClassName } from "@components/utils.tsx";
 import { useDrag } from "@hooks/useDrag.ts";
 import { KeyboardEventHandler, ReactNode, useRef } from "react";
-import { Layout, LayoutFC } from "./Layout.tsx";
+import { Layout, LayoutFC, useDispatchLayout } from "./layout.ts";
 import css from "./LayoutSplit.module.css";
 import { elementIsRtl } from "@hooks/elementIsRtl.ts";
 
@@ -18,11 +18,11 @@ type LayoutSplitProps = {
 	children: [ReactNode, ReactNode];
 };
 export const LayoutSplit: LayoutFC<Layout.NodeSplit, LayoutSplitProps> = ({
-	dispatchLayout: dispatch,
 	node,
 	children: [first, second],
 }) => {
 	const { ratio, axis } = node;
+	const dispatch = useDispatchLayout();
 	const setRatio = (ratio: number) => dispatch({
 		type: "set_ratio",
 		targetNode: node.id,
@@ -51,37 +51,37 @@ export const LayoutSplit: LayoutFC<Layout.NodeSplit, LayoutSplitProps> = ({
 	});
 	const layoutItems = axis === "x"
 		? [
-			single("layout.dissolve-left", "keyboard_tab_rtl",
+			makeSingle("layout.dissolve-left", "keyboard_tab_rtl",
 				() => dispatch({
 					type: "replace",
 					targetNode: node.id,
 					replacement: node.second,
 				})),
-			single("layout.dissolve-right", "keyboard_tab",
+			makeSingle("layout.dissolve-right", "keyboard_tab",
 				() => dispatch({
 					type: "replace",
 					targetNode: node.id,
 					replacement: node.first,
 				})),
-			single("layout.swap-x", "swap_horiz", swap),
+			makeSingle("layout.swap-x", "swap_horiz", swap),
 		]
 		: [
-			single("layout.dissolve-up", "vertical_align_top",
+			makeSingle("layout.dissolve-up", "vertical_align_top",
 				() => dispatch({
 					type: "replace",
 					targetNode: node.id,
 					replacement: node.second,
 				})),
-			single("layout.dissolve-down", "vertical_align_bottom",
+			makeSingle("layout.dissolve-down", "vertical_align_bottom",
 				() => dispatch({
 					type: "replace",
 					targetNode: node.id,
 					replacement: node.first,
 				})),
-			single("layout.swap-y", "swap_vert", swap),
+			makeSingle("layout.swap-y", "swap_vert", swap),
 		];
-	const addContextMenuItems = useContextMenu([
-		section(Sections.layout, layoutItems),
+	const contextMenu = useContextMenu([
+		makeSection(Sections.layout, layoutItems),
 	]);
 	const handleKeyDown: KeyboardEventHandler = e => {
 		const [less, more] = KeyMap[axis];
@@ -97,8 +97,8 @@ export const LayoutSplit: LayoutFC<Layout.NodeSplit, LayoutSplitProps> = ({
 			style={{ "--ratio": `${ratio * 100}%` }}
 		>
 			<div className={css["split-child"]}>{first}</div>
-			<div className={handleClassName}
-				onPointerDown={startDrag} onContextMenuCapture={addContextMenuItems}
+			<div className={handleClassName} {...contextMenu}
+				onPointerDown={startDrag}
 				onKeyDown={handleKeyDown}
 				tabIndex={0}>
 				<div className={css.interaction}></div>

@@ -6,7 +6,7 @@ import { FC, useRef } from "react";
 import css from "./ContextMenu.module.css";
 import { ContextMenu } from "./ContextMenu.ts";
 import { ContextMenuItem } from "./ContextMenuItem.tsx";
-import { useClearContextMenu } from "./reducer.ts";
+import { useClearContextMenu } from "./ContextMenu.ts";
 import menuCss from "../menu.module.css";
 
 type AnchoredContextMenuProps = {

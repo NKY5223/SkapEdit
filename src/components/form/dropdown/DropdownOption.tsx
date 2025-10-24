@@ -2,7 +2,8 @@ import { Icon } from "@components/icon/Icon.tsx";
 import { filterKeys, toClassName } from "@components/utils.tsx";
 import { Dispatch, ReactNode, SetStateAction } from "react";
 import menuCss from "../../menu.module.css";
-import { Option, maybeConst } from "./Dropdown.ts";
+import { Option } from "./Dropdown.ts";
+import { maybeConst } from "@common/maybeConst.ts";
 import css from "./DropdownSelect.module.css";
 
 type DropdownOptionProps<T> = {
