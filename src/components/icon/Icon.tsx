@@ -1,6 +1,6 @@
 import { toClassName } from "@components/utils.tsx";
 import { FC } from "react";
-import "./Icon.module.css";
+import "./Icon.css";
 import { IconName } from "./IconName.ts";
 
 type IconProps = {
