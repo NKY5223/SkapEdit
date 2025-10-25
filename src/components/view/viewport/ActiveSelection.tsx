@@ -1,12 +1,12 @@
 import { FC } from "react";
 import { useEditorSelection } from "@components/editor/selection.ts";
-import { getObject, useDispatchSkapMap, useSkapMap } from "@editor/map.ts";
+import { getObject, SkapObject, useDispatchSkapMap, useSkapMap } from "@editor/map.ts";
 import css from "./ActiveSelection.module.css";
 import { ViewportInfo } from "./Viewport.tsx";
 import { viewportToMap } from "./utils.tsx";
 import { toClassName } from "@components/utils.tsx";
 import { MouseButtons, useDrag } from "@hooks/useDrag.ts";
-import { BoundsUpdateLRTBWH } from "@editor/bounds.ts";
+import { Bounds, BoundsUpdateLRTBWH } from "@editor/bounds.ts";
 import { vec2 } from "@common/vec2.ts";
 
 const rounding = 1;
@@ -19,52 +19,18 @@ export const ActiveSelection: FC<ActiveSelectionProps> = ({
 }) => {
 	const selection = useEditorSelection();
 	const map = useSkapMap();
-	const dispatchMap = useDispatchSkapMap();
 
 	if (!selection) return null;
-	const selectedObject = getObject(map, selection);
-	if (!selectedObject) return null;
+	const object = getObject(map, selection);
+	if (!object) return null;
 
-	switch (selectedObject.type) {
+	switch (object.type) {
 		case "obstacle":
 		case "lava": {
-			const [x, y] = selectedObject.bounds.topLeft;
-			const [w, h] = selectedObject.bounds.size;
-			const onUpdate = (update: BoundsUpdateLRTBWH) => {
-				dispatchMap({
-					type: "replace_object",
-					targetObject: selectedObject.id,
-					replacement: obj => "bounds" in obj ? {
-						...obj,
-						bounds: obj.bounds.set(update, "prefer-old")
-					} : obj
-				});
-			}
-			const props = {
-				viewportInfo,
-				onUpdate
-			};
-			return (
-				<div className={toClassName(css["selection"], css["rect"])} style={{
-					"--x": `${x}px`,
-					"--y": `${y}px`,
-					"--w": `${w}px`,
-					"--h": `${h}px`,
-				}}>
-					<ResizeHandle x={-1} y={-1} {...props} />
-					<ResizeHandle x={+1} y={-1} {...props} />
-					<ResizeHandle x={-1} y={+1} {...props} />
-					<ResizeHandle x={+1} y={+1} {...props} />
-
-					<ResizeHandle x={+0} y={-1} {...props} />
-					<ResizeHandle x={-1} y={+0} {...props} />
-					<ResizeHandle x={+1} y={+0} {...props} />
-					<ResizeHandle x={+0} y={+1} {...props} />
-				</div>
-			);
+			return <BoundsActiveSelection {...{ viewportInfo, object }} />
 		}
 		case "text": {
-			const [x, y] = selectedObject.pos;
+			const [x, y] = object.pos;
 			return (
 				<div className={toClassName(css["selection"], css["circle"])} style={{
 					"--x": `${x}px`,
@@ -74,6 +40,73 @@ export const ActiveSelection: FC<ActiveSelectionProps> = ({
 			);
 		}
 	}
+}
+
+type BoundsActiveSelectionProps = {
+	viewportInfo: ViewportInfo;
+	object: SkapObject & { bounds: Bounds };
+};
+const BoundsActiveSelection: FC<BoundsActiveSelectionProps> = ({
+	viewportInfo, object
+}) => {
+	const dispatchMap = useDispatchSkapMap();
+
+	const [x, y] = object.bounds.topLeft;
+	const [w, h] = object.bounds.size;
+	const onUpdate = (update: BoundsUpdateLRTBWH) => {
+		dispatchMap({
+			type: "replace_object",
+			targetObject: object.id,
+			replacement: obj => "bounds" in obj ? {
+				...obj,
+				bounds: obj.bounds.set(update, "prefer-old")
+			} : obj
+		});
+	}
+	const { handlePointerDown, dragging } = useDrag(MouseButtons.Left, null, (curr, prev, orig) => {
+		const diff = curr.sub(orig).div(viewportInfo.camera.scale);
+		const rounded = vec2(
+			Math.round(diff[0] / rounding) * rounding,
+			Math.round(diff[1] / rounding) * rounding,
+		);
+		dispatchMap({
+			type: "replace_object",
+			targetObject: object.id,
+			replacement: obj => ({
+				...obj,
+				// object.bounds is the ORIGINAL bounds
+				// because closures
+				bounds: object.bounds.translate(rounded)
+			})
+		});
+	});
+	const props = {
+		viewportInfo,
+		onUpdate
+	};
+	const className = toClassName(
+		css["selection"], 
+		css["rect"], 
+		dragging && css["dragging"]
+	);
+	return (
+		<div className={className} style={{
+			"--x": `${x}px`,
+			"--y": `${y}px`,
+			"--w": `${w}px`,
+			"--h": `${h}px`,
+		}} onPointerDown={handlePointerDown}>
+			<ResizeHandle x={-1} y={-1} {...props} />
+			<ResizeHandle x={+1} y={-1} {...props} />
+			<ResizeHandle x={-1} y={+1} {...props} />
+			<ResizeHandle x={+1} y={+1} {...props} />
+
+			<ResizeHandle x={+0} y={-1} {...props} />
+			<ResizeHandle x={-1} y={+0} {...props} />
+			<ResizeHandle x={+1} y={+0} {...props} />
+			<ResizeHandle x={+0} y={+1} {...props} />
+		</div>
+	);
 }
 
 const xName = (x: -1 | 0 | 1) => {
@@ -113,8 +146,8 @@ const ResizeHandle: FC<ResizeHandleProps> = ({
 		const rounded = vec2(
 			Math.round(normed[0] / rounding) * rounding,
 			Math.round(normed[1] / rounding) * rounding,
-		)
-		
+		);
+
 		if (xn) {
 			onUpdate({
 				[xn]: rounded[0]
@@ -127,11 +160,14 @@ const ResizeHandle: FC<ResizeHandleProps> = ({
 		}
 	});
 	const className = toClassName(
-		css["handle"], 
+		css["handle"],
 		css[name],
 		dragging && css["dragging"],
 	);
 	return (
-		<div className={className} onPointerDown={handlePointerDown}></div>
+		<div className={className} onPointerDown={e => {
+			e.stopPropagation();
+			handlePointerDown(e);
+		}}></div>
 	);
 }

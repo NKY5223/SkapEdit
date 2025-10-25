@@ -152,6 +152,15 @@ export class Bounds {
 			point[1] <= this.bottom
 		);
 	}
+	translate(by: Vec2): Bounds {
+		const [x, y] = by;
+		return new Bounds({
+			left: this.left + x,
+			right: this.right + x,
+			top: this.top + y,
+			bottom: this.bottom + y,
+		});
+	}
 }
 
 const completeBounds = (

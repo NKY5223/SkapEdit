@@ -189,14 +189,13 @@ export const Viewport: Layout.ViewComponent = ({
 
 	return (
 		<div ref={elRef} className={css["viewport"]}
-			onPointerDown={handlePointerDown} onWheel={handleWheel} onClick={handleClick}
+			onPointerDown={handlePointerDown} onWheel={handleWheel} onClick={handleClick} {...contextMenu}
 			style={{
 				"--viewport-x": `${camera.x}px`,
 				"--viewport-y": `${camera.y}px`,
 				"--viewport-scale": `${camera.scale}`,
 			}}>
-			<ViewportCanvas viewportInfo={viewportInfo} layers={layers}
-				{...contextMenu} />
+			<ViewportCanvas viewportInfo={viewportInfo} layers={layers} />
 
 			<ActiveSelection viewportInfo={viewportInfo} />
 

@@ -195,7 +195,7 @@ export {
  * <div {...contextMenu}>
  */
 
-export const useContextMenu = (items: readonly ContextMenu.Item[]): React.HTMLAttributes<HTMLElement> => {
+export const useContextMenu = (items: readonly ContextMenu.Item[]) => {
 	const dispatch = useContextMenuDispatch();
 	return {
 		onContextMenuCapture: () => {
