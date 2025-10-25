@@ -1,13 +1,13 @@
-import { FC } from "react";
+import { Vec2, vec2 } from "@common/vec2.ts";
 import { useEditorSelection } from "@components/editor/selection.ts";
-import { getObject, SkapObject, useDispatchSkapMap, useSkapMap } from "@editor/map.ts";
-import css from "./ActiveSelection.module.css";
-import { ViewportInfo } from "./Viewport.tsx";
-import { viewportToMap } from "./utils.tsx";
 import { toClassName } from "@components/utils.tsx";
-import { MouseButtons, useDrag } from "@hooks/useDrag.ts";
 import { Bounds, BoundsUpdateLRTBWH } from "@editor/bounds.ts";
-import { vec2 } from "@common/vec2.ts";
+import { getObject, SkapObject, useDispatchSkapMap, useSkapMap } from "@editor/map.ts";
+import { MouseButtons, useDrag } from "@hooks/useDrag.ts";
+import { FC } from "react";
+import css from "./ActiveSelection.module.css";
+import { ResizeHandle } from "./ResizeHandle.tsx";
+import { ViewportInfo } from "./Viewport.tsx";
 
 const rounding = 1;
 
@@ -30,14 +30,7 @@ export const ActiveSelection: FC<ActiveSelectionProps> = ({
 			return <BoundsActiveSelection {...{ viewportInfo, object }} />
 		}
 		case "text": {
-			const [x, y] = object.pos;
-			return (
-				<div className={toClassName(css["selection"], css["circle"])} style={{
-					"--x": `${x}px`,
-					"--y": `${y}px`,
-					"--r": `5px`,
-				}}></div>
-			);
+			return <CircleActiveSelection {...{ viewportInfo, object }} />
 		}
 	}
 }
@@ -63,7 +56,7 @@ const BoundsActiveSelection: FC<BoundsActiveSelectionProps> = ({
 			} : obj
 		});
 	}
-	const { handlePointerDown, dragging } = useDrag(MouseButtons.Left, null, (curr, prev, orig) => {
+	const { handlePointerDown, dragging } = useDrag(MouseButtons.Left, null, (curr, _, orig) => {
 		const diff = curr.sub(orig).div(viewportInfo.camera.scale);
 		const rounded = vec2(
 			Math.round(diff[0] / rounding) * rounding,
@@ -85,8 +78,8 @@ const BoundsActiveSelection: FC<BoundsActiveSelectionProps> = ({
 		onUpdate
 	};
 	const className = toClassName(
-		css["selection"], 
-		css["rect"], 
+		css["selection"],
+		css["rect"],
 		dragging && css["dragging"]
 	);
 	return (
@@ -109,65 +102,44 @@ const BoundsActiveSelection: FC<BoundsActiveSelectionProps> = ({
 	);
 }
 
-const xName = (x: -1 | 0 | 1) => {
-	switch (x) {
-		case -1: return "left";
-		case 1: return "right";
-		default: return null;
-	}
-}
-const yName = (y: -1 | 0 | 1) => {
-	switch (y) {
-		case -1: return "top";
-		case 1: return "bottom";
-		default: return null;
-	}
-}
-
-type ResizeHandleProps = {
-	/** -1: left | 0: middle | 1: right */
-	x: -1 | 0 | 1;
-	/** -1: top | 0: middle | 1: bottom */
-	y: -1 | 0 | 1;
+type CircleActiveSelectionProps = {
 	viewportInfo: ViewportInfo;
-	onUpdate: (update: BoundsUpdateLRTBWH) => void;
-};
-const ResizeHandle: FC<ResizeHandleProps> = ({
-	x, y, viewportInfo, onUpdate,
+	object: SkapObject & { pos: Vec2 };
+}
+const CircleActiveSelection: FC<CircleActiveSelectionProps> = ({
+	viewportInfo, object
 }) => {
-	const xn = xName(x);
-	const yn = yName(y);
-	// Uses || for the case where x === y === 0
-	const name = [yn, xn].filter(x => x !== null).join("-") || "middle";
 
-	const { handlePointerDown, dragging } = useDrag(MouseButtons.Left, null, (curr) => {
-		const sub = curr.sub(viewportInfo.viewportPos);
-		const normed = viewportToMap(viewportInfo, sub);
+	const dispatchMap = useDispatchSkapMap();
+	const { handlePointerDown, dragging } = useDrag(MouseButtons.Left, null, (curr, _, orig) => {
+		const diff = curr.sub(orig).div(viewportInfo.camera.scale);
 		const rounded = vec2(
-			Math.round(normed[0] / rounding) * rounding,
-			Math.round(normed[1] / rounding) * rounding,
+			Math.round(diff[0] / rounding) * rounding,
+			Math.round(diff[1] / rounding) * rounding,
 		);
-
-		if (xn) {
-			onUpdate({
-				[xn]: rounded[0]
-			});
-		}
-		if (yn) {
-			onUpdate({
-				[yn]: rounded[1]
-			});
-		}
+		dispatchMap({
+			type: "replace_object",
+			targetObject: object.id,
+			replacement: obj => ({
+				...obj,
+				// object.pos is the ORIGINAL pos
+				// because closures
+				pos: object.pos.add(rounded)
+			})
+		});
 	});
+
+	const [x, y] = object.pos;
 	const className = toClassName(
-		css["handle"],
-		css[name],
+		css["selection"], 
+		css["circle"],
 		dragging && css["dragging"],
 	);
 	return (
-		<div className={className} onPointerDown={e => {
-			e.stopPropagation();
-			handlePointerDown(e);
-		}}></div>
+		<div className={className} style={{
+			"--x": `${x}px`,
+			"--y": `${y}px`,
+			"--r": `5px`,
+		}} onPointerDown={handlePointerDown}></div>
 	);
 }
