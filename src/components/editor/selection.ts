@@ -2,7 +2,16 @@ import { ID } from "@common/uuid.ts";
 import { createReducerContext } from "@hooks/createReducerContext.tsx";
 import { Reducer } from "react";
 
-export type EditorSelection = ID | null;
+export type EditorSelection = 
+	| null
+	| {
+		type: "object";
+		id: ID;
+	}
+	| {
+		type: "room";
+		id: ID;
+	};
 
 type SelectionAction = (
 	| {

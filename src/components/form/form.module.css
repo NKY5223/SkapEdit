@@ -7,6 +7,10 @@
 	flex-direction: column;
 	&.row { flex-direction: row; }
 }
+.title {
+	font-size: 1.25em;
+	font-weight: 500;
+}
 .label {
 	display: grid;
 	grid-auto-flow: column;

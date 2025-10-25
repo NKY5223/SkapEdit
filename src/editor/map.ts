@@ -120,24 +120,41 @@ const matches = (obj: SkapObject, target: TargetObject) => {
 
 type SkapMapAction = (
 	| {
+		type: "replace_room";
+		/** Room ID. */
+		target: ID;
+		/** Replacement function that returns new room, given old room. */
+		replacement: (prevRoom: SkapRoom) => SkapRoom;
+	}
+	| {
 		type: "replace_object";
 		/** Either an `ID` or a filter function. */
-		targetObject: TargetObject;
+		target: TargetObject;
 		/** Replacement function that returns new object, given old object. */
 		replacement: (prevObject: SkapObject) => SkapObject;
 	}
 	| {
 		type: "remove_object";
 		/** Either an `ID` or a filter function. */
-		targetObject: TargetObject;
+		target: TargetObject;
 	}
 );
 const skapMapReducer: Reducer<SkapMap, SkapMapAction> = (map, action) => {
 	switch (action.type) {
+		case "replace_room": {
+			const { target, replacement } = action;
+			const room = map.rooms.get(target);
+			if (!room) return map;
+			const newRoom = replacement(room);
+			return {
+				...map,
+				rooms: idMapWith(map.rooms, newRoom),
+			};
+		}
 		case "replace_object": {
-			const { targetObject, replacement } = action;
+			const { target, replacement } = action;
 			for (const room of map.rooms.values()) {
-				const [success, newRoom] = setInRoom(room, targetObject, replacement);
+				const [success, newRoom] = setInRoom(room, target, replacement);
 				if (!success) continue;
 				return {
 					...map,
@@ -148,9 +165,9 @@ const skapMapReducer: Reducer<SkapMap, SkapMapAction> = (map, action) => {
 			return map;
 		}
 		case "remove_object": {
-			const { targetObject } = action;
+			const { target } = action;
 			for (const room of map.rooms.values()) {
-				const match = findInRoom(room, targetObject);
+				const match = findInRoom(room, target);
 				if (!match) return map;
 				const [id,] = match;
 				const newRoom = {

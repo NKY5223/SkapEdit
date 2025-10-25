@@ -173,17 +173,29 @@ export const Viewport: Layout.ViewComponent = ({
 		const clickPos = viewportToMap(viewportInfo, vec2(e.clientX - left, e.clientY - top));
 
 		const clickedObjects = sortBy(
-			room.objects.values()
-				.filter(obj => clickbox(obj, clickPos))
-				.toArray(),
+			[...room.objects.values(), room]
+				.filter(obj => clickbox(obj, clickPos)),
 			zIndex,
 			// Descending order of z-index
 			(a, b) => b - a
 		);
 
+		const obj = clickedObjects[0];
+		if (!obj) {
+			dispatchSelection({
+				type: "set_selection",
+				selection: null,
+			});
+			return;
+		}
+		const id = obj.id;
+		const type = "type" in obj ? "object" : "room";
+
 		dispatchSelection({
 			type: "set_selection",
-			selection: clickedObjects[0]?.id ?? null
+			selection: {
+				type, id,
+			}
 		});
 	}
 

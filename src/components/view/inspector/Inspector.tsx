@@ -11,6 +11,7 @@ import { ReactNode } from "react";
 import { TextInput } from "@components/form/TextInput.tsx";
 import { BoundsInput } from "@editor/BoundsInput.tsx";
 import { Vec2Input } from "@editor/Vec2Input.tsx";
+import { FormTitle } from "@components/form/FormTitle.tsx";
 
 type Opts = Parameters<typeof DropdownSelect<number>>[0]["options"];
 
@@ -119,10 +120,9 @@ export const Inspector: Layout.ViewComponent = ({
 	viewSwitch,
 }) => {
 	const layout = useLayoutTree();
-	const selectedID = useEditorSelection();
+	const selection = useEditorSelection();
 	const map = useSkapMap();
 	const dispatchMap = useDispatchSkapMap();
-
 
 	const contextMenu = useContextMenu([
 		makeSubmenu("test", "zoom_in", [
@@ -137,77 +137,102 @@ export const Inspector: Layout.ViewComponent = ({
 		]),
 	]);
 
-	const selectedObject = selectedID && getObject(map, selectedID);
-	const inspectorContents = ((): Exclude<ReactNode, undefined> => {
-		if (!selectedID) return (
+	const selectedRoom = selection && selection.type === "room" && map.rooms.get(selection.id);
+	const selectedObject = selection && selection.type === "object" && getObject(map, selection.id);
+	const selectionForm = ((): Exclude<ReactNode, undefined> => {
+		if (!selection) return (
 			<p>
 				No object selected
 			</p>
 		);
-		if (!selectedObject) return (
-			<p>
-				Could not find selected object, id: <code>{selectedID}</code>
-			</p>
-		);
-		switch (selectedObject.type) {
-			case "obstacle":
-			case "lava": {
-				const bounds = selectedObject.bounds;
+		switch (selection.type) {
+			case "room": {
+				if (!selectedRoom) return (
+					<p>
+						Could not find room selection, id: <code>{selection.id}</code>
+					</p>
+				);
+				const bounds = selectedRoom.bounds;
 				return (
-					<FormSection>
+					<>
 						<BoundsInput bounds={bounds} setBounds={bounds => dispatchMap({
 							type: "replace_object",
-							targetObject: selectedID,
+							target: selection.id,
 							replacement: obj => ({ ...obj, bounds })
 						})} />
-					</FormSection>
+					</>
 				);
 			}
-			case "text": {
-				const { id, text, pos } = selectedObject;
-				return (
-					<FormSection>
-						<FormSection row>
-							<TextInput value={text} label={<Icon icon="text_fields" title="Text" />}
-								onInput={text => dispatchMap({
+			case "object": {
+				if (!selectedObject) return (
+					<p>
+						Could not find object selection, id: <code>{selection.id}</code>
+					</p>
+				);
+				switch (selectedObject.type) {
+					case "obstacle":
+					case "lava": {
+						const bounds = selectedObject.bounds;
+						return (
+							<>
+								<BoundsInput bounds={bounds} setBounds={bounds => dispatchMap({
 									type: "replace_object",
-									targetObject: id,
+									target: selection.id,
+									replacement: obj => ({ ...obj, bounds })
+								})} />
+							</>
+						);
+					}
+					case "text": {
+						const { id, text, pos } = selectedObject;
+						return (
+							<>
+								<FormSection row>
+									<TextInput value={text} label={<Icon icon="text_fields" title="Text" />}
+										onInput={text => dispatchMap({
+											type: "replace_object",
+											target: id,
+											replacement: obj => ({
+												...obj,
+												text,
+											}),
+										})} />
+								</FormSection>
+								<Vec2Input vec={pos} setVec={pos => dispatchMap({
+									type: "replace_object",
+									target: id,
 									replacement: obj => ({
 										...obj,
-										text,
+										pos,
 									}),
 								})} />
-						</FormSection>
-						<Vec2Input vec={pos} setVec={pos => dispatchMap({
-							type: "replace_object",
-							targetObject: id,
-							replacement: obj => ({
-								...obj,
-								pos,
-							}),
-						})} />
-					</FormSection>
-				);
+							</>
+						);
+					}
+				}
 			}
 		}
 	})();
+
 	return (
 		<div className={css["inspector"]} {...contextMenu}>
 			<ViewToolbar>
 				{viewSwitch}
 			</ViewToolbar>
 			<div className={css["inspector-content"]}>
-				<span>
-					<Icon icon="select" title="Current Selection" />
-					&nbsp;
-					{selectedObject
-						? (<code>{selectedObject.type} {selectedID}</code>)
-						: (<code>(none)</code>)}
-				</span>
-				{inspectorContents}
-				{/* <Button icon="html">uwu</Button>
-				<DropdownSelect nowrap initialValue={0} options={testOptions} />
-				<pre>{JSON.stringify(layout, null, "\t")}</pre> */}
+				<FormSection>
+					<FormTitle>Selection</FormTitle>
+					<span>
+						<Icon icon="select" title="Current Selection" />
+						&nbsp;
+						{selectedObject
+							? (<code>{selectedObject.type} {selection.id}</code>)
+							: selectedRoom
+								? (<code>{selection.id}</code>)
+								: (<code>(none)</code>)}
+					</span>
+					{selectionForm}
+				</FormSection>
 			</div>
 		</div>
 	);
