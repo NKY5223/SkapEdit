@@ -11,21 +11,23 @@
 	inset: 0;
 	/* grid-area: 1 / 1 / -1 / -1; */
 	overflow: hidden;
+	pointer-events: none;
+	user-select: none;
 
 	& > * {
-		/* Still the most consistent way to center stuff when they overflow */
 		position: absolute;
-		outline: 2px solid #f0f;
+		/* outline: 2px solid #f0f; */
 		/* scale: 0.5; */
 	}
 	& > canvas {
 		/* --canvas-x: 0px;
 		--canvas-y: 0px;
 		left: calc(); */
+		/* Still the most consistent way to center stuff when they overflow */
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);
-		/* image-rendering: pixelated; */
+		image-rendering: pixelated;
 	}
 }
 .buttons {

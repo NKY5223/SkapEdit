@@ -4,6 +4,7 @@
 	position: absolute;
 	inset: 0;
 	user-select: none;
+	pointer-events: none;
 	--text-size: 5px;
 	font-size: var(--text-size);
 

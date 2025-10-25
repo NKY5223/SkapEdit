@@ -1,18 +1,14 @@
 import { makeSection, makeSingle, makeSubmenu, useContextMenu } from "@components/contextmenu/ContextMenu.ts";
 import { useEditorSelection } from "@components/editor/selection.ts";
-import { Button } from "@components/form/Button.tsx";
 import { DropdownSelect } from "@components/form/dropdown/DropdownSelect.tsx";
 import { FormSection } from "@components/form/FormSection.tsx";
-import { NumberInput } from "@components/form/NumberInput.tsx";
 import { Icon } from "@components/icon/Icon.tsx";
 import { Layout, useLayoutTree } from "@components/layout/layout.ts";
 import { getObject, useDispatchSkapMap, useSkapMap } from "@editor/map.ts";
-import { boundsSetters } from "@hooks/useBounds";
 import css from "./Inspector.module.css";
 import { ViewToolbar } from "@components/layout/LayoutViewToolbar.tsx";
 import { ReactNode } from "react";
 import { TextInput } from "@components/form/TextInput.tsx";
-import { vec2 } from "@common/vec2.ts";
 import { BoundsInput } from "@editor/BoundsInput.tsx";
 import { Vec2Input } from "@editor/Vec2Input.tsx";
 

@@ -1,5 +1,5 @@
 import { Dispatch, FC } from "react";
-import { Bounds } from "./bounds.ts";
+import { Bounds, BoundsClampBehavior } from "./bounds.ts";
 import { toDispatchSetStateAction } from "@components/utils.tsx";
 import { FormSection } from "@components/form/FormSection.tsx";
 import { NumberInput } from "@components/form/NumberInput.tsx";
@@ -9,12 +9,12 @@ import { boundsSetters } from "@hooks/useBounds.ts";
 type BoundsInputProps = {
 	bounds: Bounds;
 	setBounds: Dispatch<Bounds>;
-	clamp?: boolean;
+	clamp?: BoundsClampBehavior;
 };
 
 /** Despite the name, does not return an `<input />`; Returns `<><FormSection row>...</>`. */
 export const BoundsInput: FC<BoundsInputProps> = ({
-	bounds, setBounds, clamp = true,
+	bounds, setBounds, clamp = "prefer-new",
 }) => {
 	const {
 		setLeft, setTop, setRight, setBottom,

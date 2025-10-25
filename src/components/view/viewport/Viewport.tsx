@@ -24,8 +24,10 @@ import { ActiveSelection } from "./ActiveSelection.tsx";
 
 export type ViewportInfo = {
 	camera: Camera;
-	/** canvas size, in css px */
+	/** viewport size, in css px */
 	viewportSize: Vec2;
+	/** viewport position relative to screen, in css px */
+	viewportPos: Vec2;
 	/** camera bounds, in map units */
 	viewportBounds: Bounds;
 	room: SkapRoom;
@@ -145,6 +147,8 @@ export const Viewport: Layout.ViewComponent = ({
 	]);
 
 	const viewportSize = useElementSize(elRef);
+	const rect = elRef.current?.getBoundingClientRect();
+	const viewportPos = vec2(rect?.left ?? 0, rect?.top ?? 0);
 	const viewportBounds = camera.getBounds(viewportSize);
 
 	const room = map.rooms.values().next().value;
@@ -154,6 +158,7 @@ export const Viewport: Layout.ViewComponent = ({
 	const viewportInfo: ViewportInfo = {
 		camera,
 		viewportSize,
+		viewportPos,
 		room,
 		viewportBounds,
 	};
@@ -161,6 +166,9 @@ export const Viewport: Layout.ViewComponent = ({
 	const dispatchSelection = useDispatchSelection();
 
 	const handleClick: React.MouseEventHandler = e => {
+		// Must be a click originating in this element
+		if (e.target !== e.currentTarget) return;
+
 		const { left, top } = e.currentTarget.getBoundingClientRect();
 		const clickPos = viewportToMap(viewportInfo, vec2(e.clientX - left, e.clientY - top));
 
@@ -178,8 +186,6 @@ export const Viewport: Layout.ViewComponent = ({
 			selection: clickedObjects[0]?.id ?? null
 		});
 	}
-
-	console.log(camera.pos, camera.x, camera.y, camera.scale);
 
 	return (
 		<div ref={elRef} className={css["viewport"]}

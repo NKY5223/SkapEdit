@@ -1,13 +1,24 @@
 .selection {
 	position: absolute;
-	--selected-outline-width: 2px;
-	--selected-outline-color: #0080ff;
-	outline: var(--selected-outline-width) solid var(--selected-outline-color);
+	--selection-border-width: 2px;
+	--selection-border-color: #3796f5;
+	--selection-outline-width: 1px;
+	--selection-outline-color: #000000;
+	--selection-handle-size: 5px;
+	--selection-handle-interaction-inset: -5px;
+	--selection-handle-color: #a0c5f5;
+	--selection-border: var(--selection-border-width) solid var(--selection-border-color);
+	--selection-outline: var(--selection-outline-width) solid var(--selection-outline-color);
 
 	--x: 0px;
 	--y: 0px;
 	left: calc((var(--x) - var(--viewport-x)) * var(--viewport-scale) + 50%);
 	top: calc((var(--y) - var(--viewport-y)) * var(--viewport-scale) + 50%);
+
+	border: var(--selection-border);
+	outline: var(--selection-outline);
+
+	user-select: none;
 }
 .rect {
 	--w: 0px;
@@ -21,4 +32,67 @@
 	height: calc(2 * var(--r) * var(--viewport-scale));
 	translate: -50% -50%;
 	border-radius: 50%;
+}
+
+.handle {
+	position: absolute;
+	width: var(--selection-handle-size);
+	height: var(--selection-handle-size);
+	background-color: var(--selection-handle-color);
+	outline: var(--selection-outline);
+
+	&.dragging {
+		--selection-handle-interaction-inset: -1000vw;
+	}
+	&::after {
+		content: "";
+		position: absolute;
+		inset: var(--selection-handle-interaction-inset);
+	}
+
+	&.left {
+		right: 100%;
+		top: 50%;
+		translate: 0 -50%;
+		cursor: ew-resize;
+	}
+	&.right {
+		left: 100%;
+		top: 50%;
+		translate: 0 -50%;
+		cursor: ew-resize;
+	}
+	&.top {
+		left: 50%;
+		bottom: 100%;
+		translate: -50% 0;
+		cursor: ns-resize;
+	}
+	&.bottom {
+		left: 50%;
+		top: 100%;
+		translate: -50% 0;
+		cursor: ns-resize;
+	}
+	
+	&.top-left {
+		right: 100%;
+		bottom: 100%;
+		cursor: nwse-resize;
+	}
+	&.top-right {
+		left: 100%;
+		bottom: 100%;
+		cursor: nesw-resize;
+	}
+	&.bottom-left {
+		right: 100%;
+		top: 100%;
+		cursor: nesw-resize;
+	}
+	&.bottom-right {
+		left: 100%;
+		top: 100%;
+		cursor: nwse-resize;
+	}
 }

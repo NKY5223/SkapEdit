@@ -21,7 +21,7 @@ export const useDrag = (
 	 * If passed, will normalize pointer position to between `⟨0, 0⟩` and `⟨1, 1⟩`.
 	 */
 	normalize?: RefObject<Element | null> | null,
-	onDrag?: (current: Vec2, previous: Vec2, beforeDrag: Vec2) => void,
+	onDrag?: (current: Vec2, previous: Vec2, beforeDrag: Vec2, event: PointerEvent) => void,
 	/** If set to true, will flip the x direction when `document.dir === "rtl"`. Will not work without normalize. Defaults to true. */
 	normalizeDir: boolean = true,
 ): {
@@ -48,7 +48,7 @@ export const useDrag = (
 			if (!normalize) {
 				// Do not normalize
 				const newPos = pointer;
-				if (onDrag) onDrag(newPos, previous.current, beforeDrag);
+				if (onDrag) onDrag(newPos, previous.current, beforeDrag, event);
 				setCurrent(newPos);
 				previous.current = newPos;
 				return;
@@ -68,7 +68,7 @@ export const useDrag = (
 				? vec2(1 - newPos[0], newPos[1])
 				: newPos;
 
-			if (onDrag) onDrag(normedNewPos, previous.current, beforeDrag);
+			if (onDrag) onDrag(normedNewPos, previous.current, beforeDrag, event);
 			setCurrent(normedNewPos);
 			previous.current = normedNewPos;
 		};

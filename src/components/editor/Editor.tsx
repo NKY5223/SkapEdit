@@ -6,7 +6,7 @@ import { SkapMapProvider } from "@editor/map.ts";
 import { FC } from "react";
 import { ThemeProvider } from "../../theme/theme.tsx";
 import { views } from "../layout/views.tsx";
-import { defaultLayoutTree, defaultMap, obj1 } from "./default.tsx";
+import { defaultLayoutTree, defaultMap } from "./default.tsx";
 import { SelectionProvider } from "./selection.ts";
 import { LayoutRoot } from "@components/layout/Layout.tsx";
 
@@ -22,7 +22,7 @@ export const Editor: FC<EditorProps> = ({
 				<DefaultTranslationProvider>
 					<ContextMenuProvider>
 						<SkapMapProvider initialValue={defaultMap}>
-							<SelectionProvider initialValue={obj1.id}>
+							<SelectionProvider initialValue={null}>
 								<LayoutRoot layout={defaultLayoutTree} viewProviders={toMap(views)} />
 							</SelectionProvider>
 						</SkapMapProvider>

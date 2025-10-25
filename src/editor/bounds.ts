@@ -32,7 +32,7 @@ type Partials<T> = Realize<ToInter<Values<{
 }>>>;
 type NotFull<T> = Exclude<Partials<T>, T>;
 // union of 49 types lmaoooooo
-type BoundsUpdateLRTBWH = Realize<
+export type BoundsUpdateLRTBWH = Realize<
 	NotFull<{
 		left: number,
 		right: number,
@@ -56,6 +56,7 @@ export type BoundsInit = (
 		bottomRight: Vec2;
 	}
 );
+export type BoundsClampBehavior = "none" | "prefer-new" | "prefer-old";
 const undefBounds: Readonly<Record<BoundsLRTBWHKeys, undefined>> = {
 	left: undefined,
 	right: undefined,
@@ -118,7 +119,7 @@ export class Bounds {
 	setRight(right: number) { return new Bounds({ ...this, right }); }
 	setTop(top: number) { return new Bounds({ ...this, top }); }
 	setBottom(bottom: number) { return new Bounds({ ...this, bottom }); }
-	set(bounds: BoundsUpdateLRTBWH, clamp: boolean = true): Bounds {
+	set(bounds: BoundsUpdateLRTBWH, clampBehavior: BoundsClampBehavior = "prefer-new"): Bounds {
 		const partial = { ...undefBounds, ...bounds };
 		const [left, right] = updateBounds(
 			partial.left,
@@ -126,7 +127,7 @@ export class Bounds {
 			partial.width,
 			this.left,
 			this.right,
-			clamp,
+			clampBehavior,
 		);
 		const [top, bottom] = updateBounds(
 			partial.top,
@@ -134,7 +135,7 @@ export class Bounds {
 			partial.height,
 			this.top,
 			this.bottom,
-			clamp,
+			clampBehavior,
 		);
 		return new Bounds({
 			left, right,
@@ -179,9 +180,6 @@ const updateBoundsUnclamped = (
 	if (newStart !== undefined && newEnd !== undefined) {
 		return [newStart, newEnd];
 	}
-	if (newStart !== undefined && newEnd !== undefined) {
-		return [newStart, newEnd];
-	}
 	if (newStart !== undefined && newLength !== undefined) {
 		return [newStart, newStart + newLength];
 	}
@@ -205,16 +203,30 @@ const updateBounds = (
 	newStart: number | undefined,
 	newEnd: number | undefined,
 	newLength: number | undefined,
-	start: number,
-	end: number,
-	clamp: boolean = true,
+	oldStart: number,
+	oldEnd: number,
+	clamp: BoundsClampBehavior = "prefer-new",
 ): [start: number, end: number] => {
-	const [oldStart, oldEnd] = updateBoundsUnclamped(newStart, newEnd, newLength, start, end);
-	if (clamp && oldStart > oldEnd) {
+	const [updStart, updEnd] = updateBoundsUnclamped(newStart, newEnd, newLength, oldStart, oldEnd);
+	if (clamp === "none") return [updStart, updEnd];
+	if (updStart <= updEnd) return [updStart, updEnd];
+	if (clamp === "prefer-new") {
 		if (newStart !== undefined) {
-			return [oldStart, oldStart];
+			return [updStart, updStart];
 		} else if (newEnd !== undefined) {
+			return [updEnd, updEnd];
+		} else if (newLength !== undefined) {
+			// Only length defined, fallback to start
+			return [updStart, updStart];
+		} else {
+			console.error(`Could not update clamped bounds with start-end-length: ${newStart}, ${newEnd}, ${newLength}`);
+		}
+	}
+	if (clamp === "prefer-old") {
+		if (newStart !== undefined) {
 			return [oldEnd, oldEnd];
+		} else if (newEnd !== undefined) {
+			return [oldStart, oldStart];
 		} else if (newLength !== undefined) {
 			// Only length defined, fallback to start
 			return [oldStart, oldStart];
@@ -222,6 +234,6 @@ const updateBounds = (
 			console.error(`Could not update clamped bounds with start-end-length: ${newStart}, ${newEnd}, ${newLength}`);
 		}
 	}
-	return [oldStart, oldEnd];
+	return [updStart, updEnd];
 }
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { BoundsInit, Bounds } from "../editor/bounds.ts";
+import { BoundsInit, Bounds, BoundsClampBehavior } from "../editor/bounds.ts";
 
-export function boundsSetters(set: React.Dispatch<React.SetStateAction<Bounds>>, clamp: boolean = true) {
+export function boundsSetters(set: React.Dispatch<React.SetStateAction<Bounds>>, clamp: BoundsClampBehavior = "prefer-new") {
 	return {
 		setLeft: (left: number) => set(b => b.set({ left }, clamp)),
 		setTop: (top: number) => set(b => b.set({ top }, clamp)),
@@ -13,7 +13,7 @@ export function boundsSetters(set: React.Dispatch<React.SetStateAction<Bounds>>,
 	};
 }
 
-export function useBounds(initial: BoundsInit, clamp: boolean = true): [bounds: Bounds, setters: {
+export function useBounds(initial: BoundsInit, clamp: BoundsClampBehavior = "prefer-new"): [bounds: Bounds, setters: {
 	setLeft: (left: number) => void;
 	setTop: (top: number) => void;
 	setRight: (right: number) => void;

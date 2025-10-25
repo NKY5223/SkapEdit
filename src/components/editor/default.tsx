@@ -23,14 +23,13 @@ const defaultLayout: Layout.Node = true ? testLayout : actualLayout;
 export const defaultLayoutTree: Layout.Tree = {
 	node: defaultLayout
 };
-export const obj1 = makeObstacle(0, 0, 10, 10);
 const defaultRoom: SkapRoom = makeRoom(
 	"Default",
 	{ left: 0, top: 0, right: 50, bottom: 25 },
 	Color.hex(0x000a57, 0.8),
 	Color.hex(0xe6e6e6),
 	[
-		obj1,
+		makeObstacle(0, 0, 10, 10),
 		makeObstacle(10, 10, 20, 20),
 		makeLava(15, 15, 25, 50),
 		makeLava(-10, 15, 40, 25),
