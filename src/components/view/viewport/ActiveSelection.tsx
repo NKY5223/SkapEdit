@@ -22,19 +22,24 @@ export const ActiveSelection: FC<ActiveSelectionProps> = ({
 	switch (selectedObject.type) {
 		case "obstacle":
 		case "lava": {
-			const [left, top] = mapToViewport(viewportInfo, selectedObject.bounds.topLeft);
-			const [width, height] = selectedObject.bounds.size.mul(viewportInfo.camera.scale);
+			const [x, y] = selectedObject.bounds.topLeft;
+			const [w, h] = selectedObject.bounds.size;
 			return (
 				<div className={toClassName(css["selection"], css["rect"])} style={{
-					left, top, width, height,
+					"--x": `${x}px`, 
+					"--y": `${y}px`,
+					"--w": `${w}px`,
+					"--h": `${h}px`,
 				}}></div>
 			);
 		}
 		case "text": {
-			const [left, top] = mapToViewport(viewportInfo, selectedObject.pos);
+			const [x, y] = selectedObject.pos;
 			return (
 				<div className={toClassName(css["selection"], css["circle"])} style={{
-					left, top, "--r": `${5 * viewportInfo.camera.scale}px`
+					"--x": `${x}px`, 
+					"--y": `${y}px`,
+					"--r": `5px`,
 				}}></div>
 			);
 		}

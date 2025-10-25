@@ -17,7 +17,7 @@ export type WebGLLayerRendererParams = [
 ];
 export abstract class WebGLLayerRenderer extends WebGlRenderer<WebGLLayerRendererParams> { };
 
-const resizeInterval = 100;
+const resizeInterval = 1000;
 
 export const WebGLLayer = (...renderers: WebGLLayerRenderer[]): ViewportLayerFC => {
 	const WebGLLayer: ViewportLayerFC = ({

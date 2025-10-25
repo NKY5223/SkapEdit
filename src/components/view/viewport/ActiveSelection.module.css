@@ -3,11 +3,22 @@
 	--selected-outline-width: 2px;
 	--selected-outline-color: #0080ff;
 	outline: var(--selected-outline-width) solid var(--selected-outline-color);
+
+	--x: 0px;
+	--y: 0px;
+	left: calc((var(--x) - var(--viewport-x)) * var(--viewport-scale) + 50%);
+	top: calc((var(--y) - var(--viewport-y)) * var(--viewport-scale) + 50%);
+}
+.rect {
+	--w: 0px;
+	--h: 0px;
+	width: calc(var(--w) * var(--viewport-scale));
+	height: calc(var(--h) * var(--viewport-scale));
 }
 .circle {
 	--r: 25px;
-	width: calc(2 * var(--r));
-	height: calc(2 * var(--r));
+	width: calc(2 * var(--r) * var(--viewport-scale));
+	height: calc(2 * var(--r) * var(--viewport-scale));
 	translate: -50% -50%;
 	border-radius: 50%;
 }

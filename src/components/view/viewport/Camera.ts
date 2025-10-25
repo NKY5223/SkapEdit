@@ -53,6 +53,9 @@ export class Camera {
 			bottomRight,
 		});
 	}
+
+	get x(): number { return this.pos[0]; }
+	get y(): number { return this.pos[1]; }
 }
 
 export const useCamera = (initial: InitCamera): [

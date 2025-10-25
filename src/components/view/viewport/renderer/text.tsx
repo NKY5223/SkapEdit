@@ -15,11 +15,10 @@ export const TextLayer: ViewportLayerFC = ({ viewportInfo }) => {
 		css["bg"],
 	);
 	const bg = objs.map(obj => {
-		const pos = mapToViewportCenter(viewportInfo, obj.pos);
 		return (
 			<span key={obj.id} className={bgClass} aria-hidden style={{
-				"--text-x": `${pos[0]}px`,
-				"--text-y": `${pos[1]}px`,
+				"--text-x": `${obj.pos[0]}px`,
+				"--text-y": `${obj.pos[1]}px`,
 			}}>{obj.text}</span>
 		);
 	});
@@ -28,11 +27,10 @@ export const TextLayer: ViewportLayerFC = ({ viewportInfo }) => {
 		css["fg"],
 	);
 	const fg = objs.map(obj => {
-		const pos = mapToViewportCenter(viewportInfo, obj.pos);
 		return (
 			<span key={obj.id} className={fgClass} style={{
-				"--text-x": `${pos[0]}px`,
-				"--text-y": `${pos[1]}px`,
+				"--text-x": `${obj.pos[0]}px`,
+				"--text-y": `${obj.pos[1]}px`,
 			}}>{obj.text}</span>
 		);
 	});

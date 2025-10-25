@@ -179,10 +179,16 @@ export const Viewport: Layout.ViewComponent = ({
 		});
 	}
 
+	console.log(camera.pos, camera.x, camera.y, camera.scale);
+
 	return (
 		<div ref={elRef} className={css["viewport"]}
-			onPointerDown={handlePointerDown} onWheel={handleWheel}
-			onClick={handleClick}>
+			onPointerDown={handlePointerDown} onWheel={handleWheel} onClick={handleClick}
+			style={{
+				"--viewport-x": `${camera.x}px`,
+				"--viewport-y": `${camera.y}px`,
+				"--viewport-scale": `${camera.scale}`,
+			}}>
 			<ViewportCanvas viewportInfo={viewportInfo} layers={layers}
 				{...contextMenu} />
 

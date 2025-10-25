@@ -2,7 +2,7 @@
 
 .text-container {
 	position: absolute;
-	inset: 50%;
+	inset: 0;
 	user-select: none;
 	--text-size: 5px;
 	font-size: var(--text-size);
@@ -14,8 +14,8 @@
 	--text-x: 0px;
 	--text-y: 0px;
 	
-	left: var(--text-x);
-	top: var(--text-y);
+	left: calc((var(--text-x) - var(--viewport-x)) * var(--viewport-scale) + 50%);
+	top: calc((var(--text-y) - var(--viewport-y)) * var(--viewport-scale) + 50%);
 	transform: translate(-50%, -50%);
 	
 	width: max-content;
