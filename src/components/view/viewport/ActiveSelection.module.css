@@ -1,19 +1,19 @@
 .selection {
 	position: absolute;
 	--selection-border-width: 2px;
-	--selection-border-color: #3796f5;
+	--selection-border-color: #68aef4;
 	--selection-outline-width: 1px;
 	--selection-outline-color: #000000;
 	--selection-handle-size: 5px;
 	--selection-handle-interaction-inset: -5px;
-	--selection-handle-color: #a0c5f5;
+	--selection-handle-color: #d7e7ff;
 	--selection-border: var(--selection-border-width) solid var(--selection-border-color);
 	--selection-outline: var(--selection-outline-width) solid var(--selection-outline-color);
 
 	--x: 0px;
 	--y: 0px;
-	left: calc((var(--x) - var(--viewport-x)) * var(--viewport-scale) + 50%);
-	top: calc((var(--y) - var(--viewport-y)) * var(--viewport-scale) + 50%);
+	left: calc(50% + (var(--x) - var(--viewport-x)) * var(--viewport-scale) - var(--selection-border-width));
+	top: calc(50% + (var(--y) - var(--viewport-y)) * var(--viewport-scale) - var(--selection-border-width));
 
 	border: var(--selection-border);
 	outline: var(--selection-outline);
@@ -27,8 +27,8 @@
 .rect {
 	--w: 0px;
 	--h: 0px;
-	width: calc(var(--w) * var(--viewport-scale));
-	height: calc(var(--h) * var(--viewport-scale));
+	width: calc(var(--w) * var(--viewport-scale) + 2 * var(--selection-border-width));
+	height: calc(var(--h) * var(--viewport-scale) + 2 * var(--selection-border-width));
 }
 .circle {
 	--r: 25px;
