@@ -1,6 +1,6 @@
 import { PropsWithChildren } from "react";
 import { Icon } from "../icon/Icon.tsx";
-import { IconName } from "@components/icon/IconName.ts";
+import { IconName } from "@components/icon/icons.ts";
 import { toClassName, ExtensibleFC } from "../utils.tsx";
 import css from "./Button.module.css";
 

@@ -1,5 +1,5 @@
 import { createId, ID } from "@common/uuid.ts";
-import { IconName } from "@components/icon/IconName.ts";
+import { IconName } from "@components/icon/icons";
 import { createMapContext } from "@hooks/createMapContext.tsx";
 import { createReducerContext } from "@hooks/createReducerContext.tsx";
 import { FC, ReactNode, Reducer } from "react";

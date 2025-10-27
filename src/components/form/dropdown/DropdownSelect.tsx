@@ -1,5 +1,5 @@
 import { Icon } from "@components/icon/Icon.tsx";
-import { IconName } from "@components/icon/IconName.ts";
+import { IconName } from "@components/icon/icons.ts";
 import { toClassName } from "@components/utils.tsx";
 import { FC, ReactNode, useId, useState } from "react";
 import { Option, OptionSection } from "./Dropdown.ts";

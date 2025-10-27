@@ -1,6 +1,6 @@
 import { Vec2 } from "../../common/vec2.ts";
 import { createId } from "@common/uuid.ts";
-import { IconName } from "@components/icon/IconName.ts";
+import { IconName } from "@components/icon/icons.ts";
 import { createReducerContext } from "@hooks/createReducerContext.tsx";
 import { Reducer, createContext, useContext } from "react";
 

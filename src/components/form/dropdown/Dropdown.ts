@@ -1,5 +1,5 @@
 import { MaybeConst } from "@common/maybeConst.ts";
-import { IconName } from "@components/icon/IconName.ts";
+import { IconName } from "@components/icon/icons";
 import { ReactNode } from "react";
 
 export type Option<T> = {
