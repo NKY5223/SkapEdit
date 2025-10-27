@@ -1,7 +1,7 @@
 import { Color } from "@common/color.ts";
 import { vec2 } from "@common/vec2.ts";
 import { Layout } from "@components/layout/layout";
-import { makeSplitX, makeSplitY } from "@components/layout/LayoutSplit.tsx";
+import { makeSplitX, makeSplitY } from "@components/layout/layout";
 import { makeView } from "@components/layout/LayoutView.tsx";
 import { makeObstacle, SkapRoom, makeRoom, makeLava, makeText, SkapMap, objectWithIdArrayToMap } from "@editor/map.ts";
 

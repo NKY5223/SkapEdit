@@ -83,7 +83,7 @@ const BoundsActiveSelection: FC<BoundsActiveSelectionProps> = ({
 	const onUpdate = (update: BoundsUpdateLRTBWH) => {
 		setBounds(b => b.set(update, "prefer-old"));
 	}
-	const { handlePointerDown, dragging } = useDrag(MouseButtons.Left, null, (curr, _, orig) => {
+	const { onPointerDown, dragging } = useDrag(MouseButtons.Left, null, (curr, _, orig) => {
 		const diff = curr.sub(orig).div(viewportInfo.camera.scale);
 		const rounded = vec2(
 			Math.round(diff[0] / rounding) * rounding,
@@ -108,7 +108,7 @@ const BoundsActiveSelection: FC<BoundsActiveSelectionProps> = ({
 			"--y": `${y}px`,
 			"--w": `${w}px`,
 			"--h": `${h}px`,
-		}} onPointerDown={handlePointerDown}>
+		}} onPointerDown={onPointerDown}>
 			<ResizeHandle x={-1} y={-1} {...props} />
 			<ResizeHandle x={+1} y={-1} {...props} />
 			<ResizeHandle x={-1} y={+1} {...props} />
@@ -131,7 +131,7 @@ const CircleActiveSelection: FC<CircleActiveSelectionProps> = ({
 }) => {
 
 	const dispatchMap = useDispatchSkapMap();
-	const { handlePointerDown, dragging } = useDrag(MouseButtons.Left, null, (curr, _, orig) => {
+	const { onPointerDown, dragging } = useDrag(MouseButtons.Left, null, (curr, _, orig) => {
 		const diff = curr.sub(orig).div(viewportInfo.camera.scale);
 		const rounded = vec2(
 			Math.round(diff[0] / rounding) * rounding,
@@ -160,6 +160,6 @@ const CircleActiveSelection: FC<CircleActiveSelectionProps> = ({
 			"--x": `${x}px`,
 			"--y": `${y}px`,
 			"--r": `5px`,
-		}} onPointerDown={handlePointerDown}></div>
+		}} onPointerDown={onPointerDown}></div>
 	);
 }

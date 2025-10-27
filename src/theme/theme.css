@@ -15,19 +15,19 @@
 	
 	/* oklch(0.62 0.21 257.83) */
 	/* #2080ff */
-	--theme-primary-bg-0: oklch(0.62 0.21 257.83);
+	--theme-primary-bg-0: oklch(0.55 0.21 257.83);
 	--theme-primary-fg-0: oklch(0.95 0.05 257.83);
 	--theme-primary-bd-0: oklch(0.75 0.21 257.83);
 	--theme-primary-bg-1: oklch(0.40 0.21 257.83);
 	--theme-primary-fg-1: oklch(0.95 0.05 257.83);
 	--theme-primary-bd-1: oklch(0.50 0.21 257.83);
 	
-	--theme-secondary-bg-0: oklch(0.60 0.25 298.86);
-	--theme-secondary-fg-0: oklch(0.95 0.05 298.86);
-	--theme-secondary-bd-0: oklch(0.75 0.25 298.86);
-	--theme-secondary-bg-1: oklch(0.40 0.25 298.86);
-	--theme-secondary-fg-1: oklch(0.90 0.10 298.86);
-	--theme-secondary-bd-1: oklch(0.50 0.25 298.86);
+	--theme-secondary-bg-0: oklch(0.50 0.02 257.83);
+	--theme-secondary-fg-0: oklch(0.95 0.02 257.83);
+	--theme-secondary-bd-0: oklch(0.65 0.02 257.83);
+	--theme-secondary-bg-1: oklch(0.40 0.02 257.83);
+	--theme-secondary-fg-1: oklch(0.90 0.02 257.83);
+	--theme-secondary-bd-1: oklch(0.50 0.02 257.83);
 
 	--theme-disabled-bg: #505050;
 	--theme-disabled-fg: #a0a0a0;

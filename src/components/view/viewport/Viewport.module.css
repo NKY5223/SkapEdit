@@ -5,6 +5,10 @@
 	--viewport-x: 0px;
 	--viewport-y: 0px;
 	--viewport-scale: 5;
+
+	&.dragging {
+		cursor: move;
+	}
 }
 .viewport-canvas {
 	position: absolute;
@@ -26,7 +30,8 @@
 		/* Still the most consistent way to center stuff when they overflow */
 		top: 50%;
 		left: 50%;
-		transform: translate(-50%, -50%);
+		translate: round(-50%, 1px) round(-50%, 1px);
+		/* sharp image (no antialiasing) */
 		image-rendering: pixelated;
 	}
 }

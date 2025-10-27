@@ -3,13 +3,18 @@ import { Vec2, vec2, zero } from "../common/vec2.ts";
 import { elementIsRtl } from "./elementIsRtl.ts";
 
 export type MouseButtons = number;
-export const MouseButtons = {
+export const MouseButtons: {
+    readonly Left: MouseButtons;
+    readonly Middle: MouseButtons;
+    readonly Right: MouseButtons;
+    readonly All: MouseButtons;
+} = {
 	Left: 1 << 0,
 	Middle: 1 << 1,
 	Right: 1 << 2,
 
 	All: ~0,
-} as const;
+};
 
 const mouseButtonMatches = (button: number, buttons: MouseButtons) => !!(1 << button & buttons);
 
@@ -30,13 +35,13 @@ export const useDrag = (
 	/** Pointer position *before* dragging. */
 	beforeDrag: Vec2;
 	dragging: boolean;
-	/**	Call this to start dragging. */
-	handlePointerDown: PointerEventHandler;
-	setCurrent: Dispatch<SetStateAction<Vec2>>;
+	/**	Attach to element to start dragging. */
+	onPointerDown: PointerEventHandler;
+	setCurrentPos: Dispatch<SetStateAction<Vec2>>;
 } => {
 	const [dragging, setDragging] = useState(false);
 	const [beforeDrag, setBeforeDrag] = useState(zero);
-	const [current, setCurrent] = useState(zero);
+	const [currentPos, setCurrentPos] = useState(zero);
 	const previous = useRef(zero);
 
 	// Drag
@@ -49,7 +54,7 @@ export const useDrag = (
 				// Do not normalize
 				const newPos = pointer;
 				if (onDrag) onDrag(newPos, previous.current, beforeDrag, event);
-				setCurrent(newPos);
+				setCurrentPos(newPos);
 				previous.current = newPos;
 				return;
 			}
@@ -69,7 +74,7 @@ export const useDrag = (
 				: newPos;
 
 			if (onDrag) onDrag(normedNewPos, previous.current, beforeDrag, event);
-			setCurrent(normedNewPos);
+			setCurrentPos(normedNewPos);
 			previous.current = normedNewPos;
 		};
 		window.addEventListener("pointermove", handleMove);
@@ -92,7 +97,7 @@ export const useDrag = (
 		}
 	});
 
-	const handlePointerDown: PointerEventHandler = event => {
+	const onPointerDown: PointerEventHandler = event => {
 		if (mouseButtonMatches(event.button, buttons)) {
 			setDragging(true);
 			const pointer = vec2(event.clientX, event.clientY);
@@ -121,9 +126,9 @@ export const useDrag = (
 	};
 
 	return {
-		current, setCurrent,
+		current: currentPos, setCurrentPos: setCurrentPos,
 		beforeDrag,
 		dragging,
-		handlePointerDown,
+		onPointerDown,
 	};
 }

@@ -16,11 +16,12 @@ import css from "./Viewport.module.css";
 import { WebGLLayer } from "./webgl/WebGLLayer.tsx";
 import { useContextMenu } from "@components/contextmenu/ContextMenu.ts";
 import { makeSection, Sections, makeSingle } from "@components/contextmenu/ContextMenu.ts";
-import { viewportToMap } from "./utils.tsx";
+import { viewportToMap } from "./mapping.ts";
 import { useDispatchSelection, useEditorSelection } from "@components/editor/selection.ts";
 import { clickbox, zIndex } from "./objectProperties.ts";
 import { sortBy } from "@common/array.ts";
 import { ActiveSelection } from "./ActiveSelection.tsx";
+import { toClassName } from "@components/utils.tsx";
 
 export type ViewportInfo = {
 	camera: Camera;
@@ -110,7 +111,7 @@ export const Viewport: Layout.ViewComponent = ({
 	const map = useSkapMap();
 	const [scaleIndex, setScaleIndex] = useState(0);
 	const [camera, setCamera] = useCamera({ pos: zero, scale: scaleBase });
-	const { handlePointerDown } = useDrag(MouseButtons.Middle, null, (curr, prev) => {
+	const { dragging, onPointerDown } = useDrag(MouseButtons.Middle, null, (curr, prev) => {
 		setCamera(camera => {
 			const diff = curr.sub(prev).div(camera.scale);
 			return {
@@ -199,9 +200,13 @@ export const Viewport: Layout.ViewComponent = ({
 		});
 	}
 
+	const className = toClassName(
+		css["viewport"],
+		dragging && css["dragging"],
+	);
 	return (
-		<div ref={elRef} className={css["viewport"]}
-			onPointerDown={handlePointerDown} onWheel={handleWheel} onClick={handleClick} {...contextMenu}
+		<div ref={elRef} className={className}
+			onPointerDown={onPointerDown} onWheel={handleWheel} onClick={handleClick} {...contextMenu}
 			style={{
 				"--viewport-x": `${camera.x}px`,
 				"--viewport-y": `${camera.y}px`,

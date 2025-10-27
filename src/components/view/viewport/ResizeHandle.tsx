@@ -4,7 +4,7 @@ import { BoundsUpdateLRTBWH } from "@editor/bounds.ts";
 import { MouseButtons, useDrag } from "@hooks/useDrag.ts";
 import { FC } from "react";
 import css from "./ActiveSelection.module.css";
-import { viewportToMap } from "./utils.tsx";
+import { viewportToMap } from "./mapping.ts";
 import { ViewportInfo } from "./Viewport.tsx";
 
 const rounding = 1;
@@ -39,7 +39,7 @@ export const ResizeHandle: FC<ResizeHandleProps> = ({
 	// Uses || for the case where x === y === 0
 	const name = [yn, xn].filter(x => x !== null).join("-") || "middle";
 
-	const { handlePointerDown, dragging } = useDrag(MouseButtons.Left, null, (curr) => {
+	const { onPointerDown, dragging } = useDrag(MouseButtons.Left, null, (curr) => {
 		const sub = curr.sub(viewportInfo.viewportPos);
 		const normed = viewportToMap(viewportInfo, sub);
 		const rounded = vec2(
@@ -66,7 +66,7 @@ export const ResizeHandle: FC<ResizeHandleProps> = ({
 	return (
 		<div className={className} onPointerDown={e => {
 			e.stopPropagation();
-			handlePointerDown(e);
+			onPointerDown(e);
 		}}></div>
 	);
 }

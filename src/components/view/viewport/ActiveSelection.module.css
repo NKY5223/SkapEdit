@@ -6,7 +6,7 @@
 	--selection-outline-color: #000000;
 	--selection-handle-size: 5px;
 	--selection-handle-interaction-inset: -5px;
-	--selection-handle-color: #d7e7ff;
+	--selection-handle-color: #fbfcff;
 	--selection-border: var(--selection-border-width) solid var(--selection-border-color);
 	--selection-outline: var(--selection-outline-width) solid var(--selection-outline-color);
 

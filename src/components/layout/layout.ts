@@ -1,4 +1,4 @@
-import { ID } from "@common/uuid.ts";
+import { createId, ID } from "@common/uuid.ts";
 import { IconName } from "@components/icon/IconName.ts";
 import { createMapContext } from "@hooks/createMapContext.tsx";
 import { createReducerContext } from "@hooks/createReducerContext.tsx";
@@ -152,3 +152,17 @@ const layoutReducer: Reducer<Layout.Tree, LayoutAction> = (layout, action) => {
 export const [useViewProviders, useViewProvider, ViewProvidersProvider,] = createMapContext<Layout.ViewProvider>("ViewProvider");
 export const [useViewStates, useViewState, ViewInfoStatesProvider,] = createMapContext<unknown>("??");
 export const [useLayoutTree, useDispatchLayout, LayoutProvider] = createReducerContext<Layout.Tree, LayoutAction>("Layout", layoutReducer);
+
+// #region constructors
+export const makeSplit = (axis: "x" | "y", ratio: number, first: Layout.Node, second: Layout.Node): Layout.SplitNode => ({
+	type: "split",
+	id: createId("layout.split"),
+	axis,
+	first,
+	second,
+	ratio,
+});
+export const makeSplitX = (ratio: number, left: Layout.Node, right: Layout.Node) => makeSplit("x", ratio, left, right);
+export const makeSplitY = (ratio: number, top: Layout.Node, bottom: Layout.Node) => makeSplit("y", ratio, top, bottom);
+
+// #endregion

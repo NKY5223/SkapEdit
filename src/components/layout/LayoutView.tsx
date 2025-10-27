@@ -6,7 +6,7 @@ import { ErrorBoundary } from "../error/ErrorBoundary.tsx";
 import { Translate } from "../translate/Translate.tsx";
 import { toClassName } from "../utils.tsx";
 import { Layout, LayoutFC, useDispatchLayout, useViewProvider } from "./layout.ts";
-import { makeSplitX, makeSplitY } from "./LayoutSplit.tsx";
+import { makeSplitX, makeSplitY } from "./layout.ts";
 import css from "./LayoutView.module.css";
 import { ViewSelector } from "./LayoutViewToolbar.tsx";
 

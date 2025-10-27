@@ -1,5 +1,4 @@
 import { clamp } from "@common/number.ts";
-import { createId } from "@common/uuid.ts";
 import { makeSection, makeSingle, Sections, useContextMenu } from "@components/contextmenu/ContextMenu.ts";
 import { toClassName } from "@components/utils.tsx";
 import { elementIsRtl } from "@hooks/elementIsRtl.ts";
@@ -29,7 +28,7 @@ export const LayoutSplit: LayoutFC<Layout.SplitNode, LayoutSplitProps> = ({
 	});
 	const splitRef = useRef<HTMLDivElement>(null);
 
-	const { handlePointerDown: startDrag, dragging: resizing } = useDrag(MouseButtons.Left, splitRef, curr => {
+	const { onPointerDown: startDrag, dragging: resizing } = useDrag(MouseButtons.Left, splitRef, curr => {
 		setRatio(axis === "x" ? curr[0] : curr[1]);
 	});
 
@@ -99,7 +98,10 @@ export const LayoutSplit: LayoutFC<Layout.SplitNode, LayoutSplitProps> = ({
 			<div className={handleClassName} {...contextMenu}
 				onPointerDown={startDrag}
 				onKeyDown={handleKeyDown}
-				tabIndex={0}>
+				tabIndex={0}
+				role="separator"
+				aria-orientation={axis === "x" ? "horizontal" : "vertical"}
+			>
 				<div className={css.interaction}></div>
 				<div className={css.visual}></div>
 			</div>
@@ -107,16 +109,3 @@ export const LayoutSplit: LayoutFC<Layout.SplitNode, LayoutSplitProps> = ({
 		</div>
 	);
 }
-
-export const makeSplit = (axis: "x" | "y", ratio: number, first: Layout.Node, second: Layout.Node): Layout.SplitNode => ({
-	type: "split",
-	id: createId("layout.split"),
-	axis,
-	first,
-	second,
-	ratio,
-});
-export const makeSplitX = (ratio: number, left: Layout.Node, right: Layout.Node) =>
-	makeSplit("x", ratio, left, right);
-export const makeSplitY = (ratio: number, top: Layout.Node, bottom: Layout.Node) =>
-	makeSplit("y", ratio, top, bottom);
