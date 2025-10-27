@@ -10,7 +10,7 @@ import { SelectionProvider } from "./selection.ts";
 import { LayoutRoot } from "@components/layout/Layout.tsx";
 import { TranslationProvider } from "@components/translate/TranslationProvider.tsx";
 import { translator_en_US } from "@components/translate/translation/en_US.ts";
-import { translator_zh_Hans } from "@components/translate/translation/zh_Hans.ts";
+// import { translator_zh_Hans } from "@components/translate/translation/zh_Hans.ts";
 
 type EditorProps = {
 
