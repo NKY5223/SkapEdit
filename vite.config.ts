@@ -3,8 +3,9 @@ import react from "@vitejs/plugin-react-swc";
 import path from "node:path";
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(env => ({
 	plugins: [react()],
+	base: env.mode === "PRODUCTION" ? "/SkapEdit/" : "/",
 	resolve: {
 		alias: {
 			"@common": path.join(__dirname, "./src/common"),
@@ -14,4 +15,4 @@ export default defineConfig({
 			"@editor": path.join(__dirname, "./src/editor"),
 		}
 	}
-});
+}));
