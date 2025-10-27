@@ -6,7 +6,7 @@ import path from "node:path";
 export default defineConfig(({mode}) => {
 	const env = loadEnv(mode, "./");
 	console.log("env:", env);
-	console.log("GITHUB:", env.VITE_IS_GITHUB);
+	console.log("VITE_GITHUB_REPO_NAME:", env.VITE_GITHUB_REPO_NAME);
 
 	const base = env.VITE_GITHUB_REPO_NAME !== undefined
 		? `/${env.VITE_GITHUB_REPO_NAME}/` 
