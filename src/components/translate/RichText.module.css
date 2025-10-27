@@ -1,0 +1,12 @@
+.italic-true {
+	font-style: italic;
+}
+.italic-false {
+	font-style: normal;
+}
+.code-true {
+	font-family: monospace;
+}
+.code-false {
+	font-family: var(--theme-font);
+}

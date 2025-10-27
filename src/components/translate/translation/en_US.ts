@@ -3,7 +3,7 @@ import { delegateOn, makeTranslator } from "../translate.ts";
 import { TranslationArgs } from "../translationArgs.ts";
 
 // so beautifully type "perfect"
-const delegate = delegateOn<TranslationArgs>();
+const delegate = delegateOn<TranslationArgs>(".");
 export const translator_en_US = makeTranslator<TranslationArgs>({
 	"error.layout.view.unknown": ({ viewProviderName }) => ["Unknown view provider: ", viewProviderName],
 
