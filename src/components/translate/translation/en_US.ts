@@ -1,8 +1,11 @@
-import { createTranslations, delegate, Infer } from "@components/translate/constructors.tsx";
-import { Translate } from "./Translate.tsx";
 
-export const translations = createTranslations({
-	"error.layout.view.unknown": ["Unknown view provider: ", ({ viewProviderName }: { viewProviderName: string }) => viewProviderName],
+import { delegateOn, makeTranslator } from "../translate.ts";
+import { TranslationArgs } from "../translationArgs.ts";
+
+// so beautifully type "perfect"
+const delegate = delegateOn<TranslationArgs>();
+export const translator_en_US = makeTranslator<TranslationArgs>({
+	"error.layout.view.unknown": ({ viewProviderName }) => ["Unknown view provider: ", viewProviderName],
 
 	"layout.split.dissolve-left": "Dissolve Left",
 	"layout.split.dissolve-right": "Dissolve Right",
@@ -22,7 +25,7 @@ export const translations = createTranslations({
 	"layout.view.category.name.test": "Testing",
 	"layout.view.name.test.swatch": "Theme Test",
 	"layout.view.name.test.error": "Error Test (will error this view)",
-	"layout.view.name.test.translate.lorem": () => <Translate k="lorem" />,
+	"layout.view.name.test.translate.lorem": (_, translate) => translate("lorem", {}),
 	"layout.view.name.test.empty": "Empty",
 
 	"layout.view.category.name.map": "Map",
@@ -51,10 +54,3 @@ export const translations = createTranslations({
 			"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quam, libero magnam quia fuga est tempore autem reprehenderit id culpa nesciunt praesentium necessitatibus saepe veritatis in similique, impedit, iure corporis! Sint!"
 		),
 });
-type Inferred = Infer<typeof translations>;
-declare global {
-	namespace Registry {
-		export interface Translation extends Inferred {
-		}
-	}
-}
