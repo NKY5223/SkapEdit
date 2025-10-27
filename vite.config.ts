@@ -4,16 +4,15 @@ import path from "node:path";
 
 declare global {
 	interface ImportMeta {
-	env: {
-		GITHUB: string;
-	}
+	env: undefined | Record<`VITE_${string}`, string | undefined>;
 }
 }
 // https://vitejs.dev/config/
 export default defineConfig(() => {
-	console.log("GITHUB:", import.meta.env?.GITHUB);
-	
-	const base = import.meta.env?.GITHUB !== undefined 
+	console.log("env:", import.meta.env);
+	console.log("GITHUB:", import.meta.env?.VITE_IS_GITHUB);
+
+	const base = import.meta.env?.VITE_IS_GITHUB === "true" 
 		? "/SkapEdit/" 
 		: "/";
 	console.log("Base:", base);
