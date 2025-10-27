@@ -4,11 +4,16 @@
 	--selection-border-color: #68aef4;
 	--selection-outline-width: 1px;
 	--selection-outline-color: #000000;
+
 	--selection-handle-size: 5px;
 	--selection-handle-interaction-inset: -5px;
 	--selection-handle-color: #fbfcff;
+	--selection-handle-outline-width: 1px;
+	--selection-handle-outline-color: #000000;
+
 	--selection-border: var(--selection-border-width) solid var(--selection-border-color);
 	--selection-outline: var(--selection-outline-width) solid var(--selection-outline-color);
+	--selection-handle-outline: var(--selection-handle-outline-width) solid var(--selection-handle-outline-color);
 
 	--x: 0px;
 	--y: 0px;
@@ -43,7 +48,7 @@
 	width: var(--selection-handle-size);
 	height: var(--selection-handle-size);
 	background-color: var(--selection-handle-color);
-	outline: var(--selection-outline);
+	outline: var(--selection-handle-outline);
 
 	&.dragging {
 		--selection-handle-interaction-inset: -1000vw;
