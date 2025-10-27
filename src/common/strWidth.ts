@@ -1,5 +1,3 @@
-import { unique } from "./array.ts";
-
 const canvas = new OffscreenCanvas(100, 100);
 const ctx = canvas.getContext("2d");
 const cache = new Map<string, Map<string, number>>();
@@ -24,18 +22,18 @@ export const strWidth = (str: string, font: string = "monospace") => {
 	return width;
 }
 
-const descChar = (char: string) => `U+${char.charCodeAt(0).toString(16).padStart(4, "0")}`;
-const desc = (str: string) => [...str].map(c => descChar(c)).join(" ");
+// const descChar = (char: string) => `U+${char.charCodeAt(0).toString(16).padStart(4, "0")}`;
+// const desc = (str: string) => [...str].map(c => descChar(c)).join(" ");
 
-const font = '"Russo One"';
-const chars = [
-	" ", "\u28ff", "\u2800",
-	"\u2000", "\u2001", "\u2002", "\u2003",
-	"\u2004", "\u2005", "\u2006", "\u2007",
-	"\u2008", "\u2009", "\u200a",
-	"\u28ff\u2006\u2006\u28ff\u2006\u2006",
-	"\u28ff\u2006\u2006",
-];
+// const font = '"Russo One"';
+// const chars = [
+// 	" ", "\u28ff", "\u2800",
+// 	"\u2000", "\u2001", "\u2002", "\u2003",
+// 	"\u2004", "\u2005", "\u2006", "\u2007",
+// 	"\u2008", "\u2009", "\u200a",
+// 	"\u28ff\u2006\u2006\u28ff\u2006\u2006",
+// 	"\u28ff\u2006\u2006",
+// ];
 // console.table(chars.map(s => ({
 // 	desc: desc(s),
 // 	s,

@@ -1,5 +1,4 @@
-import React, { FC, useId, useState } from "react";
-import css from "./Slider.module.css";
+import { FC } from "react";
 
 type SliderProps = {
 	value: number;

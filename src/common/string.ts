@@ -1,5 +1,5 @@
 import { analyseStack } from "./error.ts";
-import { interleave, transpose } from "./array.ts";
+import { transpose } from "./array.ts";
 import { Matrix, Vector } from "./vector.ts";
 
 export const indent = (str: string, char = "\t") => str.split("\n").map(s => char + s).join("\n");

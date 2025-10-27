@@ -1,9 +1,8 @@
-// If O is a function, it should be wrapped in `() =>`. 
-
-import { MaybeConst } from "./maybeConst.ts";
-
+/** If O is a function, it should be wrapped in `() =>`. */
 export type MaybeConst<I, O> = ((value: I) => O) |
-	Exclude<O, Function>;export function maybeConst<I, O>(f: MaybeConst<I, O>, value: I): O;
+	Exclude<O, Function>;
+	
+export function maybeConst<I, O>(f: MaybeConst<I, O>, value: I): O;
 export function maybeConst<I, O>(f: MaybeConst<I, O> | undefined, value: I): O | undefined;
 export function maybeConst<I, O>(f: MaybeConst<I, O> | undefined, value: I): O | undefined {
 	if (f === undefined) return undefined;
@@ -13,5 +12,3 @@ export function maybeConst<I, O>(f: MaybeConst<I, O> | undefined, value: I): O |
 	if (typeof f === "function") return f(value);
 	return f;
 }
-;
-

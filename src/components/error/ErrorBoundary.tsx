@@ -1,4 +1,4 @@
-import { Component, ErrorInfo, PropsWithChildren, ReactNode, useMemo } from "react";
+import { Component, ErrorInfo, PropsWithChildren, ReactNode } from "react";
 import css from "./ErrorBoundary.module.css";
 import { t } from "../../common/string.ts";
 
