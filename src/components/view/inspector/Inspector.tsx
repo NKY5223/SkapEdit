@@ -128,6 +128,10 @@ export const Inspector: Layout.ViewComponent = ({
 			</ViewToolbar>
 			<div className={css["inspector-content"]}>
 				<FormSection>
+					<p>
+						<code>{import.meta.env.MODE} @ {import.meta.env.VITE_GIT_COMMIT}</code>
+						<br />
+					</p>
 					<FormTitle>Selection</FormTitle>
 					<span>
 						<Icon icon="select" title="Current Selection" />
