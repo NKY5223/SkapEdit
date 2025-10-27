@@ -4,18 +4,8 @@ export type TranslationArgs = {
 	// #region Layout
 	"error.layout.view.unknown": { viewProviderName: string; };
 
-	"layout.split.dissolve-left": {};
-	"layout.split.dissolve-right": {};
-	"layout.split.dissolve-up": {};
-	"layout.split.dissolve-down": {};
-	"layout.split.swap-x": {};
-	"layout.split.swap-y": {};
-
 	"layout": {};
 	"layout.view.fallback": {};
-	"layout.view.empty": {};
-	"layout.view.split-x": {};
-	"layout.view.split-y": {};
 	"layout.view.name": { "view": string; };
 	"layout.view.category.name": { "category": string; };
 

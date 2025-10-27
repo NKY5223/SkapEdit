@@ -12,7 +12,7 @@ export const views = {
 		name: "test.translate.lorem",
 		Component: ({ viewSwitch }) => (<div style={{ padding: "0.5em" }}>
 			{viewSwitch}
-			<Translate k="lorem" />
+			<Translate k="generic.lorem" />
 		</div>),
 		icon: "text_snippet",
 	},

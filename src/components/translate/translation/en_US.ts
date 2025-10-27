@@ -1,4 +1,3 @@
-
 import { delegateOn, makeTranslator } from "../translate.ts";
 import { TranslationArgs } from "../translationArgs.ts";
 
@@ -7,31 +6,25 @@ const delegate = delegateOn<TranslationArgs>(".");
 export const translator_en_US = makeTranslator<TranslationArgs>({
 	"error.layout.view.unknown": ({ viewProviderName }) => ["Unknown view provider: ", viewProviderName],
 
-	"layout.split.dissolve-left": "Dissolve Left",
-	"layout.split.dissolve-right": "Dissolve Right",
-	"layout.split.dissolve-up": "Dissolve Up",
-	"layout.split.dissolve-down": "Dissolve Down",
-	"layout.split.swap-x": "Swap",
-	"layout.split.swap-y": "Swap",
-
+	// #region Layout
 	"layout": "Layout",
 	"layout.view.fallback": "Unknown View",
-	"layout.view.empty": "Empty",
-	"layout.view.split-x": "Split Horizontally",
-	"layout.view.split-y": "Split Vertically",
-	"layout.view.name": delegate("layout.view.name", "view"),
+	
 	"layout.view.category.name": delegate("layout.view.category.name", "category"),
-
+	"layout.view.name": delegate("layout.view.name", "view"),
+	
 	"layout.view.category.name.test": "Testing",
 	"layout.view.name.test.swatch": "Theme Test",
 	"layout.view.name.test.error": "Error Test (will error this view)",
 	"layout.view.name.test.translate.lorem": (_, translate) => translate("generic.lorem", {}),
 	"layout.view.name.test.empty": "Empty",
-
+	
 	"layout.view.category.name.map": "Map",
 	"layout.view.name.map.inspector": "Inspector",
 	"layout.view.name.map.viewport": "Viewport",
+	// #endregion
 
+	// #region Context Menu
 	"contextmenu.item.name": delegate("contextmenu.item.name", "name"),
 	"contextmenu.item.name.layout": "Layout",
 	"contextmenu.item.name.layout.split-x": "Split Horizontally",
@@ -46,6 +39,7 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"contextmenu.item.name.layout.swap-y": "Swap",
 	"contextmenu.item.name.viewport": "Viewport",
 	"contextmenu.item.name.viewport.reset_camera": "Reset Camera",
+	// #endregion
 
 	"generic.position.x": "X Position",
 	"generic.position.y": "Y Position",
@@ -55,7 +49,7 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"generic.position.bottom": "Bottom",
 	"generic.position.width": "Width",
 	"generic.position.height": "Height",
-	
+
 	"generic.text": "Text",
 
 	"generic.lorem": true
