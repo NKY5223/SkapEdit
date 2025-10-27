@@ -1,4 +1,7 @@
+import { useBaseTranslationString } from "./translate.ts";
+
 export type TranslationArgs = {
+	// #region Layout
 	"error.layout.view.unknown": { viewProviderName: string; };
 
 	"layout.split.dissolve-left": {};
@@ -25,7 +28,9 @@ export type TranslationArgs = {
 	"layout.view.category.name.map": {};
 	"layout.view.name.map.inspector": {};
 	"layout.view.name.map.viewport": {};
+	// #endregion
 
+	// #region Context Menu
 	"contextmenu.item.name": { "name": string; };
 	"contextmenu.item.name.layout": {};
 	"contextmenu.item.name.layout.split-x": {};
@@ -40,6 +45,33 @@ export type TranslationArgs = {
 	"contextmenu.item.name.layout.swap-y": {};
 	"contextmenu.item.name.viewport": {};
 	"contextmenu.item.name.viewport.reset_camera": {};
+	// #endregion
 
-	"lorem": {};
+	"generic.position.x": {};
+	"generic.position.y": {};
+	"generic.position.left": {};
+	"generic.position.top": {};
+	"generic.position.right": {};
+	"generic.position.bottom": {};
+	"generic.position.width": {};
+	"generic.position.height": {};
+	"generic.text": {};
+	"generic.lorem": {};
 };
+
+type EmptyKeys<T, K extends keyof T = keyof T> = K extends K 
+	? T[K] extends {} ? K : never
+	: never;
+
+export const useTranslation = () => {
+	const base = useBaseTranslationString<TranslationArgs>();
+	function translate<K extends EmptyKeys<TranslationArgs>>(key: K): string;
+	function translate<K extends keyof TranslationArgs>(key: K, args: TranslationArgs[K]): string;
+	function translate<K extends keyof TranslationArgs>(key: K, args?: TranslationArgs[K]): string {
+		if (args === undefined) {
+			return base(key, {} as never);
+		}
+		return base(key, args);
+	}
+	return translate;
+}

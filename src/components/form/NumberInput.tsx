@@ -20,21 +20,25 @@ export type NumberInputProps = {
 	/** Fires when the value is committed (Enter, blur) */
 	onChange?: (value: number) => void;
 
-	inputClass?: string;
+	classList?: string[];
 };
 
 export const NumberInput: FC<NumberInputProps> = ({
 	name, label, disabled,
 	value, min, max, step,
 	onInput, onChange,
-	inputClass,
+	classList,
 }) => {
 	const id = useId();
 
 	const [internal, setInternal] = useState(String(value));
 	const [editing, setEditing] = useState(false);
 
-	const className = toClassName(css["input"], css["number"], inputClass);
+	const className = toClassName(
+		css["input"], 
+		css["number"], 
+		classList
+	);
 	return (
 		<Label for={id}>
 			{label}

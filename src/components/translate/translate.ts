@@ -139,3 +139,7 @@ export const translatorContext = createContext<<R extends Record<string, {}>>() 
 export const useBaseTranslator = <R extends Record<string, {}>>() => {
 	return useContext(translatorContext)<R>();
 }
+export const useBaseTranslationString = <R extends Record<string, {}>>() => {
+	const translator = useContext(translatorContext)<R>();
+	return <K extends keyof R>(key: K, args: R[K]) => richTextToString(translator(key, args));
+}

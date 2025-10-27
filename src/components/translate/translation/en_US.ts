@@ -25,7 +25,7 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"layout.view.category.name.test": "Testing",
 	"layout.view.name.test.swatch": "Theme Test",
 	"layout.view.name.test.error": "Error Test (will error this view)",
-	"layout.view.name.test.translate.lorem": (_, translate) => translate("lorem", {}),
+	"layout.view.name.test.translate.lorem": (_, translate) => translate("generic.lorem", {}),
 	"layout.view.name.test.empty": "Empty",
 
 	"layout.view.category.name.map": "Map",
@@ -47,7 +47,18 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"contextmenu.item.name.viewport": "Viewport",
 	"contextmenu.item.name.viewport.reset_camera": "Reset Camera",
 
-	"lorem": true
+	"generic.position.x": "X Position",
+	"generic.position.y": "Y Position",
+	"generic.position.left": "Left",
+	"generic.position.top": "Top",
+	"generic.position.right": "Right",
+	"generic.position.bottom": "Bottom",
+	"generic.position.width": "Width",
+	"generic.position.height": "Height",
+	
+	"generic.text": "Text",
+
+	"generic.lorem": true
 		? "Lorem ipsum dolor sit amet"
 		: (
 			"Lorem ipsum dolor, sit amet consectetur adipisicing elit. Esse, culpa possimus fuga, veritatis harum autem dolore ipsam provident, id praesentium distinctio ullam similique! Earum praesentium repudiandae magnam ipsum et nihil! " +

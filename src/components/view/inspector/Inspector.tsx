@@ -11,6 +11,7 @@ import { TextInput } from "@components/form/TextInput.tsx";
 import { BoundsInput } from "@editor/BoundsInput.tsx";
 import { Vec2Input } from "@editor/Vec2Input.tsx";
 import { FormTitle } from "@components/form/FormTitle.tsx";
+import { useTranslation } from "@components/translate/translationArgs.ts";
 
 export const Inspector: Layout.ViewComponent = ({
 	viewSwitch,
@@ -18,6 +19,7 @@ export const Inspector: Layout.ViewComponent = ({
 	const selection = useEditorSelection();
 	const map = useSkapMap();
 	const dispatchMap = useDispatchSkapMap();
+	const translate = useTranslation();
 
 	const contextMenu = useContextMenu([
 		makeSubmenu("test", "zoom_in", [
@@ -93,7 +95,7 @@ export const Inspector: Layout.ViewComponent = ({
 						return (
 							<>
 								<FormSection row>
-									<TextInput value={text} label={<Icon icon="text_fields" title="Text" />}
+									<TextInput value={text} label={<Icon icon="text_fields" title={translate("generic.text")} />}
 										onInput={text => dispatchMap({
 											type: "replace_object",
 											target: id,
@@ -110,7 +112,7 @@ export const Inspector: Layout.ViewComponent = ({
 										...obj,
 										pos,
 									}),
-								})} />
+								})}	/>
 							</>
 						);
 					}

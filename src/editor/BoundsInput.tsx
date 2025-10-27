@@ -5,21 +5,43 @@ import { FormSection } from "@components/form/FormSection.tsx";
 import { NumberInput } from "@components/form/NumberInput.tsx";
 import { Icon } from "@components/icon/Icon.tsx";
 import { boundsSetters } from "@hooks/useBounds.ts";
+import { IconName } from "@components/icon/icons.ts";
+import { useTranslation } from "@components/translate/translationArgs.ts";
 
 type BoundsInputProps = {
 	bounds: Bounds;
 	setBounds: Dispatch<Bounds>;
 	clamp?: BoundsClampBehavior;
+
+	leftTitle?: string;
+	leftIcon?: IconName | null;
+	topTitle?: string;
+	topIcon?: IconName | null;
+	rightTitle?: string;
+	rightIcon?: IconName | null;
+	bottomTitle?: string;
+	bottomIcon?: IconName | null;
+	widthTitle?: string;
+	widthIcon?: IconName | null;
+	heightTitle?: string;
+	heightIcon?: IconName | null;
 };
 
 /** Despite the name, does not return an `<input />`; Returns `<><FormSection row>...</>`. */
 export const BoundsInput: FC<BoundsInputProps> = ({
 	bounds, setBounds, clamp = "prefer-new",
+	leftTitle, leftIcon = "position_left",
+	topTitle, topIcon = "vertical_align_bottom",
+	rightTitle, rightIcon = "position_right",
+	bottomTitle, bottomIcon = "vertical_align_top",
+	widthTitle, widthIcon = "width",
+	heightTitle, heightIcon = "height",
 }) => {
 	const {
 		setLeft, setTop, setRight, setBottom,
 		setWidth, setHeight,
 	} = boundsSetters(toDispatchSetStateAction(setBounds, bounds), clamp);
+	const translate = useTranslation();
 
 	const {
 		left, top, right, bottom,
@@ -28,26 +50,26 @@ export const BoundsInput: FC<BoundsInputProps> = ({
 	return (<>
 		<FormSection row>
 			<NumberInput name="left" value={left} onInput={setLeft} label={
-				<Icon icon="position_left" title="Left" />
+				leftIcon && <Icon icon={leftIcon} title={leftTitle ?? translate("generic.position.left")} />
 			} />
 			<NumberInput name="top" value={top} onInput={setTop} label={
-				<Icon icon="vertical_align_bottom" title="Top" />
+				topIcon && <Icon icon={topIcon} title={topTitle ?? translate("generic.position.top")} />
 			} />
 		</FormSection>
 		<FormSection row>
 			<NumberInput name="right" value={right} onInput={setRight} label={
-				<Icon icon="position_right" title="Right" />
+				rightIcon && <Icon icon={rightIcon} title={rightTitle ?? translate("generic.position.right")} />
 			} />
 			<NumberInput name="bottom" value={bottom} onInput={setBottom} label={
-				<Icon icon="vertical_align_top" title="Bottom" />
+				bottomIcon && <Icon icon={bottomIcon} title={bottomTitle ?? translate("generic.position.bottom")} />
 			} />
 		</FormSection>
 		<FormSection row>
 			<NumberInput name="width" value={width} onInput={setWidth} min={0} label={
-				<Icon icon="width" title="Width" />
+				widthIcon && <Icon icon={widthIcon} title={widthTitle ?? translate("generic.position.width")} />
 			} />
 			<NumberInput name="height" value={height} onInput={setHeight} min={0} label={
-				<Icon icon="height" title="Height" />
+				heightIcon && <Icon icon={heightIcon} title={heightTitle ?? translate("generic.position.height")} />
 			} />
 		</FormSection>
 	</>);
