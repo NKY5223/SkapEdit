@@ -17,7 +17,7 @@ import { WebGLLayer } from "./webgl/WebGLLayer.tsx";
 import { useContextMenu } from "@components/contextmenu/ContextMenu.ts";
 import { makeSection, Sections, makeSingle } from "@components/contextmenu/ContextMenu.ts";
 import { viewportToMap } from "./mapping.ts";
-import { useDispatchSelection, useEditorSelection } from "@components/editor/selection.ts";
+import { useDispatchSelection } from "@components/editor/selection.ts";
 import { clickbox, zIndex } from "./objectProperties.ts";
 import { sortBy } from "@common/array.ts";
 import { ActiveSelection } from "./ActiveSelection.tsx";

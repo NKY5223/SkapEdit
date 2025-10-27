@@ -7,7 +7,7 @@ type WebGLValueType = {
 	type: WebGL2RenderingContext["BYTE" | "SHORT" | "UNSIGNED_BYTE" | "UNSIGNED_SHORT" | "FLOAT" | "INT"];
 };
 const GL_FLOAT = 5126;
-const GL_INT = 5124;
+// const GL_INT = 5124;
 
 export abstract class WebGlRenderer<T extends unknown[]> {
 	info?: {

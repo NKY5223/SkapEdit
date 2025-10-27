@@ -9,7 +9,7 @@ export function useElementSize(ref: RefObject<HTMLElement | null>) {
 		if (!el) {
 			return;
 		}
-		const handleWindowResize = (e: UIEvent | ResizeObserverEntry[]) => {
+		const handleWindowResize = (_: UIEvent | ResizeObserverEntry[]) => {
 			const newSize = vec2(
 				el.offsetWidth,
 				el.offsetHeight,

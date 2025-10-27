@@ -1,6 +1,5 @@
 import { toClassName } from "@components/utils.tsx";
 import { ViewportLayerFC } from "../Viewport.tsx";
-import { mapToViewportCenter } from "../mapping.ts";
 import css from "./text.module.css";
 
 export const TextLayer: ViewportLayerFC = ({ viewportInfo }) => {

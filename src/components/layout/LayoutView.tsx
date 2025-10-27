@@ -1,6 +1,6 @@
 import { useContextMenu } from "@components/contextmenu/ContextMenu.ts";
 import { makeSection, Sections, makeSingle } from "@components/contextmenu/ContextMenu.ts";
-import { FC, memo, ReactNode } from "react";
+import { memo } from "react";
 import { createId } from "../../common/uuid.ts";
 import { ErrorBoundary } from "../error/ErrorBoundary.tsx";
 import { Translate } from "../translate/Translate.tsx";
