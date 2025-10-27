@@ -1,19 +1,16 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "node:path";
 
-declare global {
-	interface ImportMeta {
-	env: undefined | Record<`VITE_${string}`, string | undefined>;
-}
-}
 // https://vitejs.dev/config/
-export default defineConfig(() => {
-	console.log("env:", import.meta.env);
-	console.log("GITHUB:", import.meta.env?.VITE_IS_GITHUB);
+export default defineConfig(({mode}) => {
 
-	const base = import.meta.env?.VITE_IS_GITHUB === "true" 
-		? "/SkapEdit/" 
+	const env = loadEnv(mode, 'environment');
+	console.log("env:", env);
+	console.log("GITHUB:", env.VITE_IS_GITHUB);
+
+	const base = env.VITE_GITHUB_REPO_NAME !== undefined
+		? `/${env.VITE_GITHUB_REPO_NAME}/` 
 		: "/";
 	console.log("Base:", base);
 
