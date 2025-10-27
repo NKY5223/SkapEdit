@@ -2,10 +2,22 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "node:path";
 
+declare global {
+	interface ImportMeta {
+	env: {
+		GITHUB: string;
+	}
+}
+}
 // https://vitejs.dev/config/
-export default defineConfig(env => {
-	const base = env.mode === "PRODUCTION" ? "/SkapEdit/" : "/";
+export default defineConfig(() => {
+	console.log("GITHUB:", import.meta.env?.GITHUB);
+	
+	const base = import.meta.env?.GITHUB !== undefined 
+		? "/SkapEdit/" 
+		: "/";
 	console.log("Base:", base);
+
 	return {
 		plugins: [react()],
 		base,
