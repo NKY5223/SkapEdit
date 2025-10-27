@@ -21,7 +21,7 @@ export const Editor: FC<EditorProps> = ({
 	return (
 		<ErrorBoundary location="Editor">
 			<ThemeProvider>
-				<TranslationProvider value={translator_en_US}>
+				<TranslationProvider value={translator_zh_Hans}>
 					<ContextMenuProvider>
 						<SkapMapProvider initialValue={defaultMap}>
 							<SelectionProvider initialValue={null}>
