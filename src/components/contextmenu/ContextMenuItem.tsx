@@ -97,10 +97,12 @@ const ContextMenuSubmenu: FC<ContextMenuSubmenuProps> = ({
 			css["item"],
 			css["submenu"]
 		)} tabIndex={0}>
-			{icon && <Icon icon={icon} />}
-			<Translate k="contextmenu.item.name" name={name} />
+			<div className={css["submenu-content"]}>
+				{icon && <Icon icon={icon} />}
+				<Translate k="contextmenu.item.name" name={name} />
+			</div>
 			<Icon icon="arrow_right" size={1} classList={[
-				css["icon"]
+				css["submenu-arrow"]
 			]} />
 			<AnchoredContextMenu contextMenu={{
 				type: "anchored",
