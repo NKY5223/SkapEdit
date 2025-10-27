@@ -23,10 +23,10 @@ export const Vec2Input: FC<BoundsInputProps> = ({
 	return (<>
 		<FormSection row>
 			<NumberInput name="x" value={x} onInput={setX} label={
-				<Icon icon="keyboard_tab" title="X" />
+				<Icon icon="position_x" title="X" />
 			} />
 			<NumberInput name="y" value={y} onInput={setY} label={
-				<Icon icon="vertical_align_bottom" title="Y" />
+				<Icon icon="position_y" title="Y" />
 			} />
 		</FormSection>
 	</>);

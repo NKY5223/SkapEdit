@@ -49,13 +49,13 @@ export const LayoutSplit: LayoutFC<Layout.SplitNode, LayoutSplitProps> = ({
 	});
 	const layoutItems = axis === "x"
 		? [
-			makeSingle("layout.dissolve-left", "keyboard_tab_rtl",
+			makeSingle("layout.dissolve-left", "position_right",
 				() => dispatch({
 					type: "replace",
 					targetNode: node.id,
 					replacement: node.second,
 				})),
-			makeSingle("layout.dissolve-right", "keyboard_tab",
+			makeSingle("layout.dissolve-right", "position_left",
 				() => dispatch({
 					type: "replace",
 					targetNode: node.id,

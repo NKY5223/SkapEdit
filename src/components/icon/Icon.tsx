@@ -1,7 +1,7 @@
 import { toClassName } from "@components/utils.tsx";
 import { FC } from "react";
-import "./Icon.css";
-import { IconName } from "./icons.ts";
+import css from "./Icon.module.css";
+import { IconName, getCustomIconUrl } from "./icons.ts";
 
 type IconProps = {
 	icon: IconName;
@@ -12,6 +12,20 @@ type IconProps = {
 export const Icon: FC<IconProps> = ({
 	icon, size, title, classList,
 }) => {
+	const customIconUrl = getCustomIconUrl(icon);
+	if (customIconUrl) {
+		const className = toClassName(
+			css["custom-icon"],
+			classList,
+		);
+		const style = {
+			"--size": size,
+			"--icon": `url("${customIconUrl}")`,
+		};
+		return (
+			<span role="img" {...{ className, title, style }} />
+		);
+	}
 	const className = toClassName(
 		"material-symbols-outlined",
 		classList,

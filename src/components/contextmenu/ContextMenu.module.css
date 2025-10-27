@@ -57,7 +57,9 @@
 	anchor-name: --contextmenu-anchor;
 	padding-inline-end: .5em;
 
-	&:not(:hover, :focus, :focus-within) > .context-menu {
+	/* holy selector spam */
+	/* will show context menu when hovered unless another sibling is focused */
+	&:not(:not(:has(:focus)) > &:hover, :focus, :focus-within) > .context-menu {
 		display: none;
 	}
 

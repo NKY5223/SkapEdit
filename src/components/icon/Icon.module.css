@@ -1,5 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block");
-.material-symbols-outlined {
+:global(.material-symbols-outlined) {
 	/* To get it to align in the middle of text */
 	vertical-align: middle;
 
@@ -15,4 +15,17 @@
 		'wght' 350,
 		'GRAD' 0,
 		'opsz' 24;
+}
+
+.custom-icon {
+	display: inline-block;
+	user-select: none;
+	cursor: default;
+
+	--size: 1.5;
+	--icon: url("");
+	width: calc(var(--size) * 1em);
+	height: calc(var(--size) * 1em);
+	background-color: currentColor;
+	mask-image: var(--icon);
 }

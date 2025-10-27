@@ -30,6 +30,16 @@ export const Inspector: Layout.ViewComponent = ({
 			]),
 			makeSingle("inspector.test.error", "error", () => { throw new Error("uwu") })
 		]),
+		makeSubmenu("test2", "zoom_in", [
+			makeSection({ name: "inspector.test2", icon: null }, [
+				makeSingle("inspector.test2.0", "hd"),
+				makeSingle("inspector.test2.1", "2k"),
+				makeSingle("inspector.test2.2", "4k"),
+				makeSingle("inspector.test2.3", "8k"),
+				makeSingle("inspector.test2.4", "10k"),
+			]),
+			makeSingle("inspector.test2.error", "error", () => { throw new Error("uwu") })
+		]),
 	]);
 
 	const selectedRoom = selection && selection.type === "room" && map.rooms.get(selection.id);

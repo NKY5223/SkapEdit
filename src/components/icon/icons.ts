@@ -1,5 +1,10 @@
-// current_versions.json contains all the icon names
+import position_left from "./icons/position_left.svg";
+import position_right from "./icons/position_right.svg";
+import position_x from "./icons/position_x.svg";
+import position_y from "./icons/position_y.svg";
 
+// #region Material Icons
+// current_versions.json contains all the material icon names
 declare const copy: (str: string) => void;
 async () => {
 	const data = await fetch("src/components/icon/current_versions.json").then(r => r.json());
@@ -54,7 +59,26 @@ export const MaterialIcons = [
 ] as const;
 
 export type MaterialIconName = typeof MaterialIcons[number];
+// #endregion
+
+// #region Custom Icons
+const CustomIcons = [
+	["position_left", position_left],
+	["position_right", position_right],
+	["position_x", position_x],
+	["position_y", position_y],
+] as const;
+export const CustomIconsMap = new Map(CustomIcons);
+
+export type CustomIconName = typeof CustomIcons[number][0];
+// #endregion
 
 export type IconName = (
 	| MaterialIconName
+	| CustomIconName
 );
+
+// #region 
+export const getCustomIconUrl = (icon: IconName): string | undefined => 
+	(CustomIconsMap as Map<IconName, string>).get(icon);
+// #endregion

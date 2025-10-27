@@ -28,7 +28,7 @@ export const BoundsInput: FC<BoundsInputProps> = ({
 	return (<>
 		<FormSection row>
 			<NumberInput name="left" value={left} onInput={setLeft} label={
-				<Icon icon="keyboard_tab" title="Left" />
+				<Icon icon="position_left" title="Left" />
 			} />
 			<NumberInput name="top" value={top} onInput={setTop} label={
 				<Icon icon="vertical_align_bottom" title="Top" />
@@ -36,7 +36,7 @@ export const BoundsInput: FC<BoundsInputProps> = ({
 		</FormSection>
 		<FormSection row>
 			<NumberInput name="right" value={right} onInput={setRight} label={
-				<Icon icon="keyboard_tab_rtl" title="Right" />
+				<Icon icon="position_right" title="Right" />
 			} />
 			<NumberInput name="bottom" value={bottom} onInput={setBottom} label={
 				<Icon icon="vertical_align_top" title="Bottom" />
