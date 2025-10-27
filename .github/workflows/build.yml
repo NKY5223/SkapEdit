@@ -38,7 +38,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Setup .env.production
-        run: echo "VITE_GITHUB_REPO_NAME=${{ github.event.repository.name }}" >> env/.env.production
+        run: echo "VITE_GITHUB_REPO_NAME=${{ github.event.repository.name }}" >> .env.production
+      - name: Test .env.production
+        run: cat .env.production
       - name: Build
         run: npm run build
       - name: Setup Pages

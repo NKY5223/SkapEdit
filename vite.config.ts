@@ -4,7 +4,6 @@ import path from "node:path";
 
 // https://vitejs.dev/config/
 export default defineConfig(({mode}) => {
-
 	const env = loadEnv(mode, "env");
 	console.log("env:", env);
 	console.log("GITHUB:", env.VITE_IS_GITHUB);
