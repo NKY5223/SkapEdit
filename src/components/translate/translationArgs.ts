@@ -47,6 +47,11 @@ export type TranslationArgs = {
 	"contextmenu.item.name.topbar.file.export_skap": {};
 	// #endregion
 
+	// #region Changelog
+	"changelog": {};
+	"changelog.version-name-time": { version: string; time?: Date; };
+	// #endregion
+
 	"generic.position.x": {};
 	"generic.position.y": {};
 	"generic.position.left": {};
@@ -55,6 +60,10 @@ export type TranslationArgs = {
 	"generic.position.bottom": {};
 	"generic.position.width": {};
 	"generic.position.height": {};
+
+	"generic.action.open": {};
+	"generic.action.close": {};
+
 	"generic.text": {};
 	"generic.lorem": {};
 };
@@ -63,7 +72,7 @@ type EmptyKeys<T, K extends keyof T = keyof T> = K extends K
 	? T[K] extends {} ? K : never
 	: never;
 
-export const useTranslation = () => {
+export const useTranslate = () => {
 	const base = useBaseTranslationString<TranslationArgs>();
 	function translate<K extends EmptyKeys<TranslationArgs>>(key: K): string;
 	function translate<K extends keyof TranslationArgs>(key: K, args: TranslationArgs[K]): string;

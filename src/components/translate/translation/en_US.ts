@@ -1,24 +1,26 @@
-import { delegateOn, makeTranslator } from "../translate.ts";
+import { delegateOn, makeTranslator, Translator } from "../translate.ts";
 import { TranslationArgs } from "../translationArgs.ts";
 
 // so beautifully type "perfect"
 const delegate = delegateOn<TranslationArgs>(".");
+const use = (k: keyof TranslationArgs) => (_: {}, translate: Translator<TranslationArgs>) => translate(k, {});
+
 export const translator_en_US = makeTranslator<TranslationArgs>({
 	"error.layout.view.unknown": ({ viewProviderName }) => ["Unknown view provider: ", viewProviderName],
 
 	// #region Layout
 	"layout": "Layout",
 	"layout.view.fallback": "Unknown View",
-	
+
 	"layout.view.category.name": delegate("layout.view.category.name", "category"),
 	"layout.view.name": delegate("layout.view.name", "view"),
-	
+
 	"layout.view.category.name.test": "Testing",
 	"layout.view.name.test.swatch": "Theme Test",
 	"layout.view.name.test.error": "Error Test (will error this view)",
-	"layout.view.name.test.translate.lorem": (_, translate) => translate("generic.lorem", {}),
+	"layout.view.name.test.translate.lorem": use("generic.lorem"),
 	"layout.view.name.test.empty": "Empty",
-	
+
 	"layout.view.category.name.map": "Map",
 	"layout.view.name.map.inspector": "Inspector",
 	"layout.view.name.map.viewport": "Viewport",
@@ -41,15 +43,20 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"contextmenu.item.name.viewport.reset_camera": "Reset Camera",
 
 	// #endregion
-	
+
 	// #region Topbar
 	"topbar.app": "App",
 	"contextmenu.item.name.topbar.app.settings": "Settings",
-	"contextmenu.item.name.topbar.app.changelog": "Changelog",
+	"contextmenu.item.name.topbar.app.changelog": use("changelog"),
 	"topbar.file": "File",
 	"contextmenu.item.name.topbar.file.save": "Save",
 	"contextmenu.item.name.topbar.file.export_skap": "Export to skap",
 	// #endregion
+
+	"changelog": "Changelog",
+	"changelog.version-name-time": ({ version, time }) => [
+		`Version `, version, `, `, time ? time.toLocaleDateString("en-US") : `XXX`,
+	],
 
 	"generic.position.x": "X Position",
 	"generic.position.y": "Y Position",
@@ -59,6 +66,9 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"generic.position.bottom": "Bottom",
 	"generic.position.width": "Width",
 	"generic.position.height": "Height",
+
+	"generic.action.open": "Open",
+	"generic.action.close": "Close",
 
 	"generic.text": "Text",
 

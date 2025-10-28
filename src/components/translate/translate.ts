@@ -1,35 +1,5 @@
 import { createContext, useContext } from "react";
-
-export type RichText = (
-	| string
-	| number
-	| readonly RichText[]
-	| {	
-		italic?: boolean;
-		code?: boolean;
-		text: RichText; }
-);
-export const isReadonlyArray: (value: unknown) => value is readonly unknown[] = Array.isArray;
-
-// #region constructors
-export const makeItalic = (text: RichText): RichText => ({	italic: true, text });
-// #endregion
-
-export const richTextToString = (text: RichText): string => {
-	if (typeof text === "string" || typeof text === "number") {
-		return String(text);
-	}
-	if (isReadonlyArray(text)) {
-		return text.map(richTextToString).join("");
-	}
-	if ("text" in text) {
-		return richTextToString(text.text);
-	}
-	text satisfies never;
-	throw new TypeError("Could not convert rich text to string", {
-		cause: text,
-	});
-}
+import { RichText, richTextToString } from "./richtext.ts";
 
 type TranslatorFunc<R extends Record<string, {}>> = 
 	<K extends keyof R>(key: K, args: R[K]) => RichText;

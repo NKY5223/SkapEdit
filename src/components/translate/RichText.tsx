@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { isReadonlyArray, RichText } from "./translate.ts";
+import { isReadonlyArray, RichText } from "./richtext.ts";
 import { toClassName } from "@components/utils.tsx";
 import css from "./RichText.module.css";
 
@@ -27,6 +27,28 @@ export const RichTextComponent: FC<{ text: RichText }> = ({
 				<RichTextComponent text={text.text} />
 			</span>
 		);
+	}
+	if ("list" in text) {
+		switch (text.type ?? "bullet") {
+			case "numbered": {
+				return (
+					<ol className={css["list-numbered"]}>
+						{text.list.map(t => (
+							<li><RichTextComponent text={t} /></li>
+						))}
+					</ol>
+				);
+			}
+			case "bullet": {
+				return (
+					<ul className={css["list-bullet"]}>
+						{text.list.map(t => (
+							<li><RichTextComponent text={t} /></li>
+						))}
+					</ul>
+				);
+			}
+		}
 	}
 	text satisfies never;
 	throw new TypeError("Could not convert rich text to component", {

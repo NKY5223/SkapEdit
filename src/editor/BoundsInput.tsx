@@ -6,7 +6,7 @@ import { NumberInput } from "@components/form/NumberInput.tsx";
 import { Icon } from "@components/icon/Icon.tsx";
 import { boundsSetters } from "@hooks/useBounds.ts";
 import { IconName } from "@components/icon/icons.ts";
-import { useTranslation } from "@components/translate/translationArgs.ts";
+import { useTranslate } from "@components/translate/translationArgs.ts";
 
 type BoundsInputProps = {
 	bounds: Bounds;
@@ -41,7 +41,7 @@ export const BoundsInput: FC<BoundsInputProps> = ({
 		setLeft, setTop, setRight, setBottom,
 		setWidth, setHeight,
 	} = boundsSetters(toDispatchSetStateAction(setBounds, bounds), clamp);
-	const translate = useTranslation();
+	const translate = useTranslate();
 
 	const {
 		left, top, right, bottom,

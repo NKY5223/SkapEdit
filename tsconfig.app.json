@@ -19,7 +19,6 @@
     // WHY WERE THESE TRUE
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-		"noUncheckedIndexedAccess": true,
     "noFallthroughCasesInSwitch": true,
 
     "types": [],

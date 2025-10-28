@@ -11,7 +11,7 @@ import { TextInput } from "@components/form/TextInput.tsx";
 import { BoundsInput } from "@editor/BoundsInput.tsx";
 import { Vec2Input } from "@editor/Vec2Input.tsx";
 import { FormTitle } from "@components/form/FormTitle.tsx";
-import { useTranslation } from "@components/translate/translationArgs.ts";
+import { useTranslate } from "@components/translate/translationArgs.ts";
 import { currentBuild } from "@common/currentBuild.ts";
 
 export const Inspector: Layout.ViewComponent = ({
@@ -20,7 +20,7 @@ export const Inspector: Layout.ViewComponent = ({
 	const selection = useEditorSelection();
 	const map = useSkapMap();
 	const dispatchMap = useDispatchSkapMap();
-	const translate = useTranslation();
+	const translate = useTranslate();
 
 	const contextMenu = useContextMenu([
 		makeSubmenu("test", "zoom_in", [

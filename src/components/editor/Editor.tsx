@@ -3,22 +3,24 @@ import { ContextMenuProvider } from "@components/contextmenu/ContextMenuProvider
 import { ErrorBoundary } from "@components/error/ErrorBoundary.tsx";
 import { LayoutProvider, ViewInfoStatesProvider, ViewProvidersProvider } from "@components/layout/layout.ts";
 import { LayoutRoot } from "@components/layout/Layout.tsx";
-import { Topbar } from "@components/Topbar.tsx";
+import { Topbar } from "@components/editor/topbar/Topbar.tsx";
 import { translator_en_US } from "@components/translate/translation/en_US.ts";
 import { translator_zh_Hans } from "@components/translate/translation/zh_Hans.ts";
 import { TranslationProvider } from "@components/translate/TranslationProvider.tsx";
 import { SkapMapProvider } from "@editor/map.ts";
-import { FC } from "react";
+import { FC, useState } from "react";
 import { ThemeProvider } from "../../theme/theme.tsx";
 import { views } from "../layout/views.tsx";
 import { defaultLayoutTree, defaultMap } from "./default.tsx";
 import css from "./Editor.module.css";
 import { SelectionProvider } from "./selection.ts";
+import { Changelog } from "./changelog/Changelog.tsx";
+import { changelog } from "./changelog/changelog.ts";
 
 // use chinese on dev (for testing!!)
 // if anything shows up in english it is probably untranslated.
 // except inspector i couldn't find a translation for that
-const translator = import.meta.env.DEV 
+const translator = import.meta.env.DEV
 	? translator_zh_Hans 
 	: translator_en_US;
 
@@ -28,6 +30,8 @@ type EditorProps = {
 export const Editor: FC<EditorProps> = ({
 
 }) => {
+	const [openChangelog, setOpenChangelog] = useState(() => () => console.error("Did not set open changelog"));
+
 	return (
 		<ErrorBoundary location="Editor">
 			<ThemeProvider>
@@ -40,8 +44,9 @@ export const Editor: FC<EditorProps> = ({
 									<ViewProvidersProvider value={toMap(views)}>
 										<LayoutProvider initialValue={defaultLayoutTree}>
 											<div className={css["editor"]}>
-												<Topbar />
+												<Topbar openChangelog={openChangelog} />
 												<LayoutRoot />
+												<Changelog changelog={changelog} setOpen={setOpenChangelog} />
 											</div>
 										</LayoutProvider>
 									</ViewProvidersProvider>

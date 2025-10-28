@@ -3,7 +3,7 @@ import { FormSection } from "@components/form/FormSection.tsx";
 import { NumberInput } from "@components/form/NumberInput.tsx";
 import { Icon } from "@components/icon/Icon.tsx";
 import { IconName } from "@components/icon/icons.ts";
-import { useTranslation } from "@components/translate/translationArgs.ts";
+import { useTranslate } from "@components/translate/translationArgs.ts";
 import { toDispatchSetStateAction } from "@components/utils.tsx";
 import { vec2Setters } from "@hooks/useVec2.ts";
 import { Dispatch, FC } from "react";
@@ -27,7 +27,7 @@ export const Vec2Input: FC<BoundsInputProps> = ({
 	const {
 		setX, setY,
 	} = vec2Setters(toDispatchSetStateAction(setVec, vec));
-	const translate = useTranslation();
+	const translate = useTranslate();
 
 	const [x, y] = vec;
 	return (<>

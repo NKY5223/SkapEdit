@@ -3,8 +3,11 @@
 	/* To get it to align in the middle of text */
 	vertical-align: middle;
 
-	user-select: none;
 	cursor: default;
+	button & {
+		cursor: pointer;
+	}
+	user-select: none;
 
 	--size: 1.5;
 	font-size: calc(var(--size) * 1em);
@@ -21,6 +24,9 @@
 	display: inline-block;
 	user-select: none;
 	cursor: default;
+	button & {
+		cursor: pointer;
+	}
 
 	--size: 1.5;
 	--icon: url("");

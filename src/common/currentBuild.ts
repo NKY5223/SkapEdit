@@ -1,4 +1,4 @@
-import { currentVersion } from "../changelog.ts";
+import { currentVersion } from "../components/editor/changelog/changelog.ts";
 
 const check = (v: unknown): string | undefined => {
 	if (typeof v === "string") return v;

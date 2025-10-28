@@ -16,6 +16,9 @@
 		font: inherit;
 		color: inherit;
 	}
+	button {
+		cursor: pointer;
+	}
 }
 @layer default {
 	body {

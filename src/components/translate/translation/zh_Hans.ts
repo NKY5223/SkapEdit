@@ -1,9 +1,10 @@
-import { delegateOn, makeTranslator } from "../translate.ts";
+import { delegateOn, makeTranslator, Translator } from "../translate.ts";
 import { TranslationArgs } from "../translationArgs.ts";
 
 // the translations are terrible im just testing the system
 
 const delegate = delegateOn<TranslationArgs>(".");
+const use = (k: keyof TranslationArgs) => (_: {}, translate: Translator<TranslationArgs>) => translate(k, {});
 export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"error.layout.view.unknown": ({ viewProviderName }) => ["没有此ViewProvider：", viewProviderName],
 
@@ -17,7 +18,7 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"layout.view.category.name.test": "测试",
 	"layout.view.name.test.swatch": "主题测试",
 	"layout.view.name.test.error": "错误测试",
-	"layout.view.name.test.translate.lorem": (_, translate) => translate("generic.lorem", {}),
+	"layout.view.name.test.translate.lorem": use("generic.lorem"),
 	"layout.view.name.test.empty": "空",
 
 	"layout.view.category.name.map": "地图",
@@ -46,11 +47,16 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	// #region Topbar
 	"topbar.app": "APP",
 	"contextmenu.item.name.topbar.app.settings": "设置",
-	"contextmenu.item.name.topbar.app.changelog": "变更",
+	"contextmenu.item.name.topbar.app.changelog": use("changelog"),
 	"topbar.file": "文件",
 	"contextmenu.item.name.topbar.file.save": "保存",
 	"contextmenu.item.name.topbar.file.export_skap": "输出（skap）",
 	// #endregion
+
+	"changelog": "变更",
+	"changelog.version-name-time": ({ version, time }) => [
+		version, ` 版本，`, time ? time.toLocaleDateString("zh-Hans") : `XXX`,
+	],
 
 	"generic.position.x": "X位置",
 	"generic.position.y": "Y位置",
@@ -60,6 +66,9 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"generic.position.bottom": "底",
 	"generic.position.width": "宽",
 	"generic.position.height": "高",
+	
+	"generic.action.open": "开",
+	"generic.action.close": "关",
 
 	"generic.text": "文本",
 

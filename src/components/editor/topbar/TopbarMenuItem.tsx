@@ -1,9 +1,9 @@
 import cmenuCss from "@components/contextmenu/ContextMenu.module.css";
 import { FC, PropsWithChildren, useId } from "react";
-import { AnchoredContextMenu } from "./contextmenu/AnchoredContextMenu.tsx";
-import { ContextMenu } from "./contextmenu/ContextMenu.ts";
+import { AnchoredContextMenu } from "../../contextmenu/AnchoredContextMenu.tsx";
+import { ContextMenu } from "../../contextmenu/ContextMenu.ts";
 import css from "./Topbar.module.css";
-import { toClassName } from "./utils.tsx";
+import { toClassName } from "../../utils.tsx";
 
 type TopbarMenuItemProps = {
 	items: readonly ContextMenu.Item[];
