@@ -24,6 +24,8 @@ type DropdownSelectProps<T> = {
 
 	/** Disable options wrapping to next column. Can be desirable for list-type dropdowns. */
 	nowrap?: boolean;
+	/** Disable the arrow on the currently-selected-chip. */
+	noarrow?: boolean;
 };
 export const DropdownSelect = <T,>({
 	options, initialValue,
@@ -31,24 +33,26 @@ export const DropdownSelect = <T,>({
 	onSelect,
 	classList, optionsClassList, optionClassList,
 
-	nowrap = false,
+	nowrap = false, noarrow = false,
 }: DropdownSelectProps<T>): ReactNode => {
 	const optionsId = `options-${useId()}`;
 	const [selectedValue, setSelectedValue] = useState(initialValue);
 
 	const optionNodes = options.map(opt => "options" in opt
-		? (<DropdownSection key={opt.name} section={opt} {...{ onSelect, selectedValue: selectedValue, setSelectedValue: setSelectedValue, optionClassList }} />)
-		: (<DropdownOption key={opt.name} option={opt} classList={optionClassList} {...{ onSelect, selectedValue: selectedValue, setSelectedValue: setSelectedValue }} />)
+		? (<DropdownSection key={opt.name} section={opt}
+			{...{ onSelect, selectedValue, setSelectedValue, optionClassList }} />)
+		: (<DropdownOption key={opt.name} option={opt} classList={optionClassList}
+			{...{ onSelect, selectedValue, setSelectedValue }} />)
 	);
 
 	const optionsFlat = options.flatMap(opt => "options" in opt ? opt.options : opt);
 
 	const selectedOption = optionsFlat.find(opt => Object.is(opt.value, selectedValue));
-	const currentSelectionLabel = 
-		maybeConst(selectedOption?.label, true) ?? 
+	const currentSelectionLabel =
+		maybeConst(selectedOption?.label, true) ??
 		maybeConst(fallbackLabel, selectedValue);
-	const currentSelectionIcon = 
-		maybeConst(selectedOption?.icon, true) ?? 
+	const currentSelectionIcon =
+		maybeConst(selectedOption?.icon, true) ??
 		maybeConst(fallbackIcon, selectedValue);
 
 	return (
@@ -62,8 +66,10 @@ export const DropdownSelect = <T,>({
 			)}>
 				{currentSelectionIcon && <Icon icon={currentSelectionIcon} />}
 				<span className={css["label"]}>{currentSelectionLabel}</span>
-				<Icon classList={[css["arrow"], css["arrow-opened"]]} icon="arrow_drop_down" />
-				<Icon classList={[css["arrow"], css["arrow-closed"]]} icon="arrow_right" />
+				{!noarrow && <>
+					<Icon classList={[css["arrow"], css["arrow-opened"]]} icon="arrow_drop_down" />
+					<Icon classList={[css["arrow"], css["arrow-closed"]]} icon="arrow_right" />
+				</>}
 			</button>
 			<menu id={optionsId} popover="auto" className={toClassName(
 				css["options"],

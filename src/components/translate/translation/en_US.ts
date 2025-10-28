@@ -39,7 +39,11 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"contextmenu.item.name.layout.swap-y": "Swap",
 	"contextmenu.item.name.viewport": "Viewport",
 	"contextmenu.item.name.viewport.reset_camera": "Reset Camera",
+
 	// #endregion
+	
+	"topbar.file": "File",
+	"contextmenu.item.name.topbar.file.save": "Save",
 
 	"generic.position.x": "X Position",
 	"generic.position.y": "Y Position",

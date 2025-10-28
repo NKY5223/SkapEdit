@@ -35,7 +35,11 @@ export type TranslationArgs = {
 	"contextmenu.item.name.layout.swap-y": {};
 	"contextmenu.item.name.viewport": {};
 	"contextmenu.item.name.viewport.reset_camera": {};
+
 	// #endregion
+	
+	"topbar.file": {};
+	"contextmenu.item.name.topbar.file.save": {};
 
 	"generic.position.x": {};
 	"generic.position.y": {};

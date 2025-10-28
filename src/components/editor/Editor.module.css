@@ -1,0 +1,7 @@
+.editor {
+	display: grid;
+	position: absolute;
+	inset: 0;
+	grid-template-areas: "topbar" "layout";
+	grid-template-rows: min-content auto;
+}

@@ -1,0 +1,32 @@
+.topbar {
+	display: flex;
+	flex-direction: row;
+	border-block-end: var(--theme-border-width) solid var(--theme-bd-0);
+	padding-inline: .25em;
+	list-style: none;
+}
+.topbar-item {
+	padding-block: .25em;
+	&:focus-within {
+		z-index: 3;
+	}
+}
+.topbar-icon {
+	padding: 0;
+	background-image: url("/logo-transparency.svg");
+	background-size: 1.25em 1.25em;
+	background-repeat: no-repeat;
+	background-position: center;
+	height: 100%;
+	width: 2em;	
+}
+.topbar-item-button {
+	padding-inline: .75em;
+	padding-block: .25em;
+	background-color: var(--theme-bg-0);
+	border-radius: var(--theme-border-radius);
+
+	&:hover, &:focus-visible {
+		background-color: var(--theme-bg-1);
+	}
+}

@@ -24,6 +24,7 @@ export namespace ContextMenu {
 	} & P;
 	export type SingleItem = ItemBase<"single", {
 		click?: () => void;
+		closesMenu?: boolean;
 	}>;
 	export type Section = ItemBase<"section", {
 		items: readonly (SingleItem | Submenu)[];
@@ -61,13 +62,15 @@ export const makeSingle = (
 	/** The item will display ``<Translate k={`contextmenu.item.${name}`} />``*/
 	name: string,
 	icon?: IconName | null,
-	click?: () => void
+	click?: () => void,
+	closesMenu?: boolean,
 ): ContextMenu.SingleItem => ({
 	type: "single",
 	id: createId("cmenu-single"),
 	name,
 	icon: icon ?? null,
 	click,
+	closesMenu,
 });
 
 type SectionPref = {

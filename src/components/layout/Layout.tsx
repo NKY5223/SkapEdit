@@ -1,27 +1,18 @@
 import { FC } from "react";
 import { LayoutSplit } from "./LayoutSplit.tsx";
 import { LayoutViewMemo } from "./LayoutView.tsx";
-import { Layout, LayoutProvider, ViewInfoStatesProvider, ViewProvidersProvider } from "./layout.ts";
+import { Layout, useLayoutTree } from "./layout.ts";
 import css from "./Layout.module.css";
 
 type LayoutProps = {
-	layout: Layout.Tree;
-	viewProviders: ReadonlyMap<string, Layout.ViewProvider>;
 };
 export const LayoutRoot: FC<LayoutProps> = ({
-	layout: initialLayout,
-	viewProviders,
 }) => {
+	const layout = useLayoutTree();
 	return (
-		<ViewInfoStatesProvider value={new Map()}>
-			<ViewProvidersProvider value={viewProviders}>
-				<LayoutProvider initialValue={initialLayout}>
-					{([tree]) => (<div className={css["layout"]}>
-						<LayoutNode node={tree.node} />
-					</div>)}
-				</LayoutProvider>
-			</ViewProvidersProvider>
-		</ViewInfoStatesProvider>
+		<div className={css["layout"]}>
+			<LayoutNode node={layout.node} />
+		</div>
 	);
 }
 

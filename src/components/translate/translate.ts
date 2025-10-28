@@ -42,6 +42,26 @@ export type Translation<T extends {}, R extends Record<string, {}>> = (
 ) => RichText;
 
 const warnedTranslations = new Set<string>();
+const exportWarnedTranslations = () => ({
+	"export": "",
+	get CLICK_TO_EXPORT() {
+		console.log(warnedTranslations.values()
+			.toArray()
+			.sort()
+			.map(s => `${JSON.stringify(s)}: {};`)
+			.join("\n")
+		);
+		console.log(warnedTranslations.values()
+			.toArray()
+			.sort()
+			.map(s => `${JSON.stringify(s)}: "",`)
+			.join("\n")
+		);
+		warnedTranslations.clear();
+		return `Copy console log`;
+	},
+});
+
 export const makeTranslator = <const R extends Record<string, {}>>(
 	translations: {
 		[K in keyof R]:
@@ -56,7 +76,7 @@ export const makeTranslator = <const R extends Record<string, {}>>(
 		if (!translation) {
 			if (!warnedTranslations.has(String(key))) {
 				warnedTranslations.add(String(key));
-				console.warn("Missing translation:", key, args);
+				console.warn("Missing translation:", key, args, "\n", exportWarnedTranslations());
 			}
 			return {
 				italic: true,

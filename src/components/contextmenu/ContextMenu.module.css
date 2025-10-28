@@ -1,3 +1,5 @@
+@layer component {
+
 .context-menu {
 }
 
@@ -24,18 +26,33 @@
 		position: fixed;
 		inset: unset;
 
-		position-anchor: --contextmenu-anchor;
-		inset-inline-start: anchor(end);
-		inset-block-start: anchor(start);
 		position-try-fallbacks: 
 			flip-inline,
 			flip-block,
 			flip-inline flip-block
 		;
 
+		&:not(.anchored.root) {
+			position-anchor: --contextmenu-anchor;
+		}
+
+		&.floating {
+			inset-inline-start: anchor(end);
+			inset-block-start: anchor(start);
+		}
+
 		&.anchored {
-			inset-inline-start: calc(anchor(end) + 0.5em + var(--theme-border-width));
-			inset-block-start: calc(anchor(start) - 0.5em - var(--theme-border-width));
+			inset-inline-start: calc(anchor(end) + var(--anchor-offset-x, 0px));
+			inset-block-start: calc(anchor(start) + var(--anchor-offset-y, 0px));
+		}
+
+		.submenu > &.anchored {
+			--anchor-offset-x: calc(0.5em + var(--theme-border-width));
+			--anchor-offset-y: calc(-0.5em - var(--theme-border-width));
+		}
+		.anchor-bottom > &.anchored {
+			inset-inline-start: calc(anchor(start) + var(--anchor-offset-x, 0px));
+			inset-block-start: calc(anchor(end) + var(--anchor-offset-y, 0px));
 		}
 	}
 }
@@ -51,6 +68,11 @@
 }
 
 /* #region items */
+
+.contextmenu-anchor {
+	position: relative;
+	anchor-name: --contextmenu-anchor;
+}
 
 .submenu {
 	position: relative;
@@ -92,4 +114,6 @@
 
 	border: var(--theme-border-width) solid var(--theme-error-bd);
 	resize: both;
+}
+
 }

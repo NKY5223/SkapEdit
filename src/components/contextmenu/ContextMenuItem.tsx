@@ -64,12 +64,12 @@ type ContextMenuSingleItemProps = {
 	item: ContextMenu.SingleItem;
 };
 const ContextMenuSingleItem: FC<ContextMenuSingleItemProps> = ({
-	item: { name, icon, click }
+	item: { name, icon, click, closesMenu }
 }) => {
 	const clear = useClearContextMenu();
 	const handleClick = () => {
 		click?.();
-		clear();
+		if (closesMenu ?? true) clear();
 	}
 	return (
 		<li className={toClassName(
@@ -104,10 +104,7 @@ const ContextMenuSubmenu: FC<ContextMenuSubmenuProps> = ({
 			<Icon icon="arrow_right" size={1} classList={[
 				css["submenu-arrow"]
 			]} />
-			<AnchoredContextMenu contextMenu={{
-				type: "anchored",
-				items,
-			}} dismissable={false} />
+			<AnchoredContextMenu items={items} notRoot />
 		</li>
 	);
 }

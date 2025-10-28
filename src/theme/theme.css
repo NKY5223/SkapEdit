@@ -3,9 +3,10 @@
 	--theme-bg-0: oklch(0.25 0.01 257.83);
 	--theme-fg-0: oklch(1.00 0.01 257.83);
 	--theme-bd-0: oklch(0.37 0.01 257.83);
-	--theme-bg-1: oklch(0.18 0.01 257.83);
+	--theme-bg-1: oklch(0.35 0.01 257.83);
 	--theme-fg-1: oklch(1.00 0.01 257.83);
-	--theme-bd-1: oklch(0.37 0.01 257.83);
+	--theme-bd-1: oklch(0.45 0.01 257.83);
+
 	--theme-selection-bg: oklch(0.62 0.21 257.83);
 	--theme-selection-fg: oklch(0.05 0.05 257.83);
 	--theme-selection-bd: oklch(0.75 0.21 257.83);

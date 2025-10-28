@@ -1,49 +1,46 @@
 import { ErrorBoundary } from "@components/error/ErrorBoundary.tsx";
 import { toClassName } from "@components/utils.tsx";
-import { useClickOutside } from "@hooks/useClickOutside.ts";
-import { useKeydown } from "@hooks/useKeydown.ts";
 import { FC, useRef } from "react";
 import css from "./ContextMenu.module.css";
-import { ContextMenu } from "./ContextMenu.ts";
+import { clearContextMenuContext, ContextMenu } from "./ContextMenu.ts";
 import { ContextMenuItem } from "./ContextMenuItem.tsx";
-import { useClearContextMenu } from "./ContextMenu.ts";
 import menuCss from "../menu.module.css";
 
 type AnchoredContextMenuProps = {
-	contextMenu: ContextMenu.Anchored;
-	open?: boolean;
-	dismissable?: boolean;
+	items: ContextMenu.Anchored["items"];
+	/** If is root, will use a popover for the context menu. */
+	notRoot?: boolean;
+	/** If is root, use this id for triggering it. */
+	id?: string;
 };
 export const AnchoredContextMenu: FC<AnchoredContextMenuProps> = ({
-	contextMenu,
-	open = true,
-	dismissable = true,
+	items,
+	id,
+	notRoot = false,
 }) => {
-	const { items } = contextMenu;
 
 	const menuRef = useRef<HTMLElement>(null);
-	const clear = useClearContextMenu();
 
 	const className = toClassName(
 		menuCss["menu"],
 		css["context-menu"],
 		css["anchored"],
-		open && css["open"],
+		!notRoot && css["root"],
 	);
 
-	if (dismissable) {
-		useClickOutside(menuRef, open, clear);
-		useKeydown(["Escape"], clear);
-	}
-
+	// if (items.length === 0) {
+	// 	return null;
+	// }
 	return (
-		<menu ref={menuRef} className={className}>
+		<menu ref={menuRef} id={id} className={className} popover={notRoot ? undefined : "auto"}>
 			<ErrorBoundary location={`AnchoredContextMenu`} fallback={(_, orig) => (
 				<div className={css["error"]}>{orig}</div>
 			)}>
+				<clearContextMenuContext.Provider value={() => menuRef.current?.hidePopover()}>
 				{items.map(item => (
 					<ContextMenuItem key={item.id} item={item} />
 				))}
+				</clearContextMenuContext.Provider>
 			</ErrorBoundary>
 		</menu>
 	);

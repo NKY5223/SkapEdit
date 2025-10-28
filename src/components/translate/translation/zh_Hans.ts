@@ -40,7 +40,11 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"contextmenu.item.name.layout.swap-y": "交换",
 	"contextmenu.item.name.viewport": "视口",
 	"contextmenu.item.name.viewport.reset_camera": "重置相机",
+
 	// #endregion
+	
+	"topbar.file": "文件",
+	"contextmenu.item.name.topbar.file.save": "保存",
 
 	"generic.position.x": "X位置",
 	"generic.position.y": "Y位置",

@@ -1,4 +1,4 @@
-@layer reset, default, basic, misc;
+@layer reset, default, basic, component, misc;
 
 @layer reset {
 	*, *::before, *::after {
@@ -11,6 +11,8 @@
 		overflow: hidden;
 	}
 	button, input, a {
+		background: unset;
+		border: unset;
 		font: inherit;
 		color: inherit;
 	}
