@@ -8,5 +8,8 @@
 		"types": ["vite/client"],
 		"lib": ["ES2022"],
 		"baseUrl": "./",
+		"noUnusedLocals": false,
+		"noUnusedParameters": false,
+		"noUncheckedIndexedAccess": true,
 	}
 }

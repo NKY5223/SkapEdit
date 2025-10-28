@@ -25,6 +25,7 @@ export const Editor: FC<EditorProps> = ({
 					<ContextMenuProvider>
 						<SkapMapProvider initialValue={defaultMap}>
 							<SelectionProvider initialValue={null}>
+								
 								<LayoutRoot layout={defaultLayoutTree} viewProviders={toMap(views)} />
 							</SelectionProvider>
 						</SkapMapProvider>
