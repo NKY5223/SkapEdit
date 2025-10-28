@@ -21,7 +21,7 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"layout.view.name.test.empty": "空",
 
 	"layout.view.category.name.map": "地图",
-	"layout.view.name.map.inspector": "Inspector",
+	"layout.view.name.map.inspector": "Inspector ？",
 	"layout.view.name.map.viewport": "视口",
 	// #endregion
 
@@ -42,9 +42,13 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"contextmenu.item.name.viewport.reset_camera": "重置相机",
 
 	// #endregion
-	
+
+	// #region Topbar
 	"topbar.file": "文件",
 	"contextmenu.item.name.topbar.file.save": "保存",
+	"contextmenu.item.name.topbar.file.export_skap": "输出（skap）",
+
+	// #endregion
 
 	"generic.position.x": "X位置",
 	"generic.position.y": "Y位置",

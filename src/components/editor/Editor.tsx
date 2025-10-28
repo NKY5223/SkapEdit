@@ -15,7 +15,12 @@ import { defaultLayoutTree, defaultMap } from "./default.tsx";
 import css from "./Editor.module.css";
 import { SelectionProvider } from "./selection.ts";
 
-const translator = true ? translator_zh_Hans : translator_en_US;
+// use chinese on dev (for testing!!)
+// if anything shows up in english it is probably untranslated.
+// except inspector i couldn't find a translation for that
+const translator = import.meta.env.DEV 
+	? translator_zh_Hans 
+	: translator_en_US;
 
 type EditorProps = {
 

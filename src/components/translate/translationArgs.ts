@@ -38,8 +38,11 @@ export type TranslationArgs = {
 
 	// #endregion
 	
+	// #region Topbar
 	"topbar.file": {};
 	"contextmenu.item.name.topbar.file.save": {};
+	"contextmenu.item.name.topbar.file.export_skap": {};
+	// #endregion
 
 	"generic.position.x": {};
 	"generic.position.y": {};

@@ -42,8 +42,12 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 
 	// #endregion
 	
+	// #region Topbar
 	"topbar.file": "File",
 	"contextmenu.item.name.topbar.file.save": "Save",
+	"contextmenu.item.name.topbar.file.export_skap": "Export to skap",
+
+	// #endregion
 
 	"generic.position.x": "X Position",
 	"generic.position.y": "Y Position",
