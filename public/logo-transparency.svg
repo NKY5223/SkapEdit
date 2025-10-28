@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48">
+	<!-- <rect x="0" y="0" width="48" height="48" fill="none" stroke="#f0f" /> -->
+	<!-- <circle cx="24" cy="24" r="13" fill="#fff" />
+	<rect x="4" y="4" width="40" height="40" fill="none" stroke="#fff" stroke-width="6"
+		  stroke-dashoffset="7" stroke-dasharray="14,2,10,2,10,2" /> -->
+	<rect x="4" y="4" width="36" height="36"
+		  fill="#2080ff40" stroke="#2080ff" stroke-width="2" />
+	<g transform="translate(22 22)">
+		<circle cx="0" cy="0" r="12" fill="#000" />
+		<path fill="#f00" d="
+			M-10 0
+			a10 10 0 0 0 20 0
+			Z
+		" />
+	</g>
+	<g transform="translate(40 40)" stroke-linecap="square">
+		<line x1="0" y1="-6" x2="0" y2="6"
+			  stroke="#000000" stroke-width="3" />
+		<line y1="0" x1="-6" y2="0" x2="6"
+			  stroke="#000000" stroke-width="3" />
+		<line x1="0" y1="-6" x2="0" y2="6"
+			  stroke="#ffffff" stroke-width="2" />
+		<line y1="0" x1="-6" y2="0" x2="6"
+			  stroke="#ffffff" stroke-width="2" />
+	</g>
+	<!-- <rect x="4" y="4" width="40" height="40" fill="none" stroke="#000" stroke-width="4"
+		  stroke-dashoffset="6" stroke-dasharray="12,4,8,4,8,4" /> -->
+</svg>
