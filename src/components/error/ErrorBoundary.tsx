@@ -76,7 +76,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 					<h1><span className={css.face}>{this.state.face}</span> {heading}</h1>
 					<h2>You can copy error info below and <a 
 						href="https://github.com/NKY5223/SkapEdit/issues" target="_blank"
-					>create a bug report here</a> by selecting "New issue" &gt; "Bug report":</h2>
+					>create a bug report here</a> by selecting "New issue", then "Bug report":</h2>
 					<button onClick={copy}>{this.state.copyText}</button>
 					<pre>{errorStr}</pre>
 				</div>

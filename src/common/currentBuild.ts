@@ -6,8 +6,8 @@ const check = (v: unknown): string | undefined => {
 }
 
 const commitSha = check(import.meta.env.VITE_GIT_COMMIT_SHA);
+const repoOwner = check(import.meta.env.VITE_GITHUB_REPO_OWNER);
 const repoName = check(import.meta.env.VITE_GITHUB_REPO_NAME);
-const repoOwner = check(`NKY5223`);
 
 const github = commitSha !== undefined && repoName !== undefined && repoOwner !== undefined;
 
@@ -16,7 +16,6 @@ export const currentBuild = {
 		import.meta.env.PROD ? "PROD" : `MODE(${import.meta.env.MODE})`,
 	github: github ? {
 		repoName,
-		// hardcoded as NKY5223? kinda cringe
 		repoUrl: `https://github.com/${repoOwner}/${repoName}/`,
 		commitSha,
 		commitUrl: `https://github.com/${repoOwner}/${repoName}/commit/${commitSha}`,
