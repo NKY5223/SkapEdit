@@ -39,6 +39,9 @@ export type TranslationArgs = {
 	// #endregion
 	
 	// #region Topbar
+	"topbar.app": {};
+	"contextmenu.item.name.topbar.app.settings": {};
+	"contextmenu.item.name.topbar.app.changelog": {};
 	"topbar.file": {};
 	"contextmenu.item.name.topbar.file.save": {};
 	"contextmenu.item.name.topbar.file.export_skap": {};

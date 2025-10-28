@@ -1,26 +1,29 @@
 .topbar {
 	display: flex;
 	flex-direction: row;
-	border-block-end: var(--theme-border-width) solid var(--theme-bd-0);
-	padding-inline: .25em;
+	place-items: center;
 	list-style: none;
+	border-block-end: var(--theme-border-width) solid var(--theme-bd-0);
 }
 .topbar-item {
 	padding-block: .25em;
+	height: 100%;
 	&:focus-within {
 		z-index: 3;
 	}
 }
 .topbar-icon {
-	padding: 0;
+	height: 100%;
+	aspect-ratio: 1;
+	max-width: 3em;
 	background-image: url("/logo-transparency.svg");
 	background-size: 1.25em 1.25em;
 	background-repeat: no-repeat;
 	background-position: center;
-	height: 100%;
-	width: 2em;	
 }
 .topbar-item-button {
+	display: block;
+	height: 100%;
 	padding-inline: .75em;
 	padding-block: .25em;
 	background-color: var(--theme-bg-0);

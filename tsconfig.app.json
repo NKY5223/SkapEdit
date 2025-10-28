@@ -16,8 +16,10 @@
 
     /* Linting */
     "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    // WHY WERE THESE TRUE
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+		"noUncheckedIndexedAccess": true,
     "noFallthroughCasesInSwitch": true,
 
     "types": [],

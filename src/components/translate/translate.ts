@@ -31,9 +31,14 @@ export const richTextToString = (text: RichText): string => {
 	});
 }
 
-/** `Translator<R>` is *contravariant* in `R`. */
-export type Translator<in R extends Record<string, {}>> =
+type TranslatorFunc<R extends Record<string, {}>> = 
 	<K extends keyof R>(key: K, args: R[K]) => RichText;
+type TranslatorAttrs = {
+	readonly warnings: Set<string>;
+};
+
+/** `Translator<R>` is *contravariant* in `R`. */
+export type Translator<R extends Record<string, {}>> = TranslatorFunc<R> & TranslatorAttrs;
 
 export type Translation<T extends {}, R extends Record<string, {}>> = (
 	args: T,
@@ -41,23 +46,21 @@ export type Translation<T extends {}, R extends Record<string, {}>> = (
 	translate: Translator<R>,
 ) => RichText;
 
-const warnedTranslations = new Set<string>();
-const exportWarnedTranslations = () => ({
+const exportWarnedTranslations = (warnings: Set<string>) => ({
 	"export": "",
 	get CLICK_TO_EXPORT() {
-		console.log(warnedTranslations.values()
+		console.log(warnings.values()
 			.toArray()
 			.sort()
 			.map(s => `${JSON.stringify(s)}: {};`)
 			.join("\n")
 		);
-		console.log(warnedTranslations.values()
+		console.log(warnings.values()
 			.toArray()
 			.sort()
 			.map(s => `${JSON.stringify(s)}: "",`)
 			.join("\n")
 		);
-		warnedTranslations.clear();
 		return `Copy console log`;
 	},
 });
@@ -71,12 +74,14 @@ export const makeTranslator = <const R extends Record<string, {}>>(
 			: never)
 	}
 ): Translator<R> => {
-	const translator: Translator<R> = (key, args) => {
+	const translator: Translator<R> = Object.assign<TranslatorFunc<R>, TranslatorAttrs>((key, args) => {
 		const translation = translations[key];
-		if (!translation) {
-			if (!warnedTranslations.has(String(key))) {
-				warnedTranslations.add(String(key));
-				console.warn("Missing translation:", key, args, "\n", exportWarnedTranslations());
+		if (translation === undefined) {
+			const warnings = translator.warnings;
+			if (!warnings.has(String(key))) {
+				warnings.add(String(key));
+				console.warn("Missing translation:", key, args, "\n", 
+					exportWarnedTranslations(warnings));
 			}
 			return {
 				italic: true,
@@ -88,7 +93,9 @@ export const makeTranslator = <const R extends Record<string, {}>>(
 			return translation(args, translator);
 		}
 		return translation;
-	};
+	}, {
+		warnings: new Set<string>(),
+	});
 	return translator;
 }
 

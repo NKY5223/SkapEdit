@@ -1,3 +1,5 @@
+import { currentVersion } from "../changelog.ts";
+
 const check = (v: unknown): string | undefined => {
 	if (typeof v === "string") return v;
 	if (v === undefined) return v;
@@ -14,6 +16,7 @@ const github = commitSha !== undefined && repoName !== undefined && repoOwner !=
 export const currentBuild = {
 	mode: import.meta.env.DEV ? "DEV" :
 		import.meta.env.PROD ? "PROD" : `MODE(${import.meta.env.MODE})`,
+	version: currentVersion,
 	github: github ? {
 		repoName,
 		repoUrl: `https://github.com/${repoOwner}/${repoName}/`,

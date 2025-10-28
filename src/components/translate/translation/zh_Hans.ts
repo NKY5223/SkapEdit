@@ -44,10 +44,12 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	// #endregion
 
 	// #region Topbar
+	"topbar.app": "APP",
+	"contextmenu.item.name.topbar.app.settings": "设置",
+	"contextmenu.item.name.topbar.app.changelog": "变更",
 	"topbar.file": "文件",
 	"contextmenu.item.name.topbar.file.save": "保存",
 	"contextmenu.item.name.topbar.file.export_skap": "输出（skap）",
-
 	// #endregion
 
 	"generic.position.x": "X位置",
