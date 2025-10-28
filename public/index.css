@@ -10,7 +10,7 @@
 		height: 100dvh;
 		overflow: hidden;
 	}
-	button, input {
+	button, input, a {
 		font: inherit;
 		color: inherit;
 	}
@@ -29,6 +29,14 @@
 	* {
 		scrollbar-width: thin;
 		scrollbar-color: var(--theme-scrollbar-fg) var(--theme-scrollbar-bg);
+	}
+	a[target="_blank"]::after {
+		content: "\e89e";
+		font-family: "Material Symbols Outlined";
+		font-size: 0.75em;
+		display: inline-block;
+		vertical-align: middle;
+		margin-inline-start: 0.25em;
 	}
 }
 @layer misc {

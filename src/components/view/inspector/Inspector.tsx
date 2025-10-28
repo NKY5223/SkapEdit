@@ -12,6 +12,7 @@ import { BoundsInput } from "@editor/BoundsInput.tsx";
 import { Vec2Input } from "@editor/Vec2Input.tsx";
 import { FormTitle } from "@components/form/FormTitle.tsx";
 import { useTranslation } from "@components/translate/translationArgs.ts";
+import { currentBuild } from "@common/currentBuild.ts";
 
 export const Inspector: Layout.ViewComponent = ({
 	viewSwitch,
@@ -112,7 +113,7 @@ export const Inspector: Layout.ViewComponent = ({
 										...obj,
 										pos,
 									}),
-								})}	/>
+								})} />
 							</>
 						);
 					}
@@ -129,8 +130,12 @@ export const Inspector: Layout.ViewComponent = ({
 			<div className={css["inspector-content"]}>
 				<FormSection>
 					<p>
-						<code>{import.meta.env.MODE} @ {import.meta.env.VITE_GIT_COMMIT_SHA}</code>
-						<br />
+						<code>{currentBuild.mode}{currentBuild.github && <>
+							{` `}
+							<a href={currentBuild.github.commitUrl} target="_blank">{currentBuild.github.commitSha.slice(0, 7)}</a>
+							{` @ `}
+							<a href={currentBuild.github.repoUrl} target="_blank">{currentBuild.github.repoName}</a>
+						</>}</code>
 					</p>
 					<FormTitle>Selection</FormTitle>
 					<span>
