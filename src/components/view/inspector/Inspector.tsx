@@ -129,7 +129,7 @@ export const Inspector: Layout.ViewComponent = ({
 			<div className={css["inspector-content"]}>
 				<FormSection>
 					<p>
-						<code>{import.meta.env.MODE} @ {import.meta.env.VITE_GIT_COMMIT}</code>
+						<code>{import.meta.env.MODE} @ {import.meta.env.VITE_GIT_COMMIT_SHA}</code>
 						<br />
 					</p>
 					<FormTitle>Selection</FormTitle>

@@ -40,7 +40,7 @@ jobs:
       - name: Setup .env.production
         run: 
           echo "VITE_GITHUB_REPO_NAME=${{ github.event.repository.name }}" >> .env.production &&
-          echo "VITE_GIT_COMMIT=${{ github.sha }}" >> .env.production
+          echo "VITE_GIT_COMMIT_SHA=${{ github.sha }}" >> .env.production
       - name: Test .env.production
         run: cat .env.production
       - name: Build
