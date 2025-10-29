@@ -17,12 +17,14 @@ import { SelectionProvider } from "./selection.ts";
 import { Changelog } from "./changelog/Changelog.tsx";
 import { changelog } from "./changelog/changelog.ts";
 
+const chinese = import.meta.env.DEV;
 // use chinese on dev (for testing!!)
 // if anything shows up in english it is probably untranslated.
 // except inspector i couldn't find a translation for that
-const translator = import.meta.env.DEV
+const translator = chinese
 	? translator_zh_Hans 
 	: translator_en_US;
+if (chinese) document.documentElement.lang = "zh-Hans";
 
 type EditorProps = {
 

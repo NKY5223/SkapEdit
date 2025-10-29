@@ -153,12 +153,15 @@ export class Bounds {
 		);
 	}
 	translate(by: Vec2): Bounds {
-		const [x, y] = by;
-		return new Bounds({
-			left: this.left + x,
-			right: this.right + x,
-			top: this.top + y,
-			bottom: this.bottom + y,
+		return new Bounds({ 
+			topLeft: this.topLeft.add(by),
+			bottomRight: this.bottomRight.add(by),
+		});
+	}
+	scale(center: Vec2, scale: Vec2): Bounds {
+		return new Bounds({ 
+			topLeft: this.topLeft.sub(center).mul(scale).add(center),
+			bottomRight: this.bottomRight.sub(center).mul(scale).add(center),
 		});
 	}
 }

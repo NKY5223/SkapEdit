@@ -11,7 +11,7 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 
 	// #region Layout
 	"layout": "布局",
-	"layout.view.fallback": "不明",
+	"layout.view.fallback": "？？？",
 
 	"layout.view.category.name": delegate("layout.view.category.name", "category"),
 	"layout.view.name": delegate("layout.view.name", "view"),

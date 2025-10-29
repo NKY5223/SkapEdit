@@ -31,10 +31,6 @@ export type SkapMap = {
 
 // #region constructors
 
-export const makeObjectProperties = <const T extends string, O extends BaseObject<T, {}>>(
-	type: T, properties: Omit<SkapObjectProperties<T, O>, "type">): SkapObjectProperties<T, O> =>
-	({ type, ...properties });
-
 export const makeObstacle = (left: number, top: number, right: number, bottom: number): SkapObstacle => ({
 	type: "obstacle",
 	id: createId(),

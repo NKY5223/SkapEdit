@@ -7,7 +7,7 @@ export const getZIndex = (
 ): number => {
 	switch (sel.type) {
 		case "object": {
-			return getProperties(sel.object).zIndex(sel.object);
+			return getProperties(sel.object).selection.zIndex(sel.object);
 		}
 		case "room": {
 			return -Infinity;
@@ -19,7 +19,7 @@ export const getClickbox = (
 ): boolean => {
 	switch (sel.type) {
 		case "object": {
-			return getProperties(sel.object).clickbox(sel.object, pos);
+			return getProperties(sel.object).selection.clickbox(sel.object, pos);
 		}
 		case "room": {
 			return sel.room.bounds.contains(pos);

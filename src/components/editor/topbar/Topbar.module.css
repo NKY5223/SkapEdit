@@ -9,6 +9,8 @@
 .topbar-item {
 	padding-block: .25em;
 	height: 100%;
+	--anchor-offset-y: 0.25em;
+
 	&:focus-within {
 		z-index: 3;
 	}

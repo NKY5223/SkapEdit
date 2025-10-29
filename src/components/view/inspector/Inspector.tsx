@@ -6,7 +6,7 @@ import { Layout } from "@components/layout/layout.ts";
 import { getObject, useDispatchSkapMap, useSkapMap } from "@editor/reducer";
 import css from "./Inspector.module.css";
 import { ViewToolbar } from "@components/layout/LayoutViewToolbar.tsx";
-import { ReactNode } from "react";
+import { Fragment, ReactNode } from "react";
 import { TextInput } from "@components/form/TextInput.tsx";
 import { BoundsInput } from "@components/form/BoundsInput";
 import { Vec2Input } from "@components/form/Vec2Input";
@@ -45,17 +45,22 @@ export const Inspector: Layout.ViewComponent = ({
 		]),
 	]);
 
-	const sel = selection[0];
-	const selectedRoom = sel && sel.type === "room" && map.rooms.get(sel.id);
-	const selectedObject = sel && sel.type === "object" && getObject(map, sel.id);
+
 	const selectionForm = ((): Exclude<ReactNode, undefined> => {
-		if (!sel) return (
-			<p>
-				No object selected
-			</p>
-		);
+		if (selection.length < 1) {
+			return (
+				<p>No object selected</p>
+			);
+		}
+		if (selection.length > 1) {
+			return (
+				<p>Multiselect</p>
+			);
+		}
+		const sel = selection[0];
 		switch (sel.type) {
 			case "room": {
+				const selectedRoom = map.rooms.get(sel.id);
 				if (!selectedRoom) return (
 					<p>
 						Could not find room selection, id: <code>{sel.id}</code>
@@ -65,14 +70,15 @@ export const Inspector: Layout.ViewComponent = ({
 				return (
 					<>
 						<BoundsInput bounds={bounds} setBounds={bounds => dispatchMap({
-							type: "replace_object",
+							type: "replace_room",
 							target: sel.id,
-							replacement: obj => ({ ...obj, bounds })
+							replacement: room => ({ ...room, bounds })
 						})} />
 					</>
 				);
 			}
 			case "object": {
+				const selectedObject = getObject(map, sel.id);
 				if (!selectedObject) return (
 					<p>
 						Could not find object selection, id: <code>{sel.id}</code>
@@ -134,11 +140,11 @@ export const Inspector: Layout.ViewComponent = ({
 					<span>
 						<Icon icon="select" title="Current Selection" />
 						&nbsp;
-						{selectedObject
-							? (<code>{selectedObject.type} {sel.id}</code>)
-							: selectedRoom
-								? (<code>{sel.id}</code>)
-								: (<code>(none)</code>)}
+						{selection.map((item) => (
+							<Fragment key={item.id}>
+								<code>{item.id},</code>
+							</Fragment>
+						))}
 					</span>
 					{selectionForm}
 				</FormSection>
