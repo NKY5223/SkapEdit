@@ -28,6 +28,13 @@
 	&.dragging {
 		cursor: move;
 	}
+	&.inactive{
+		outline: none;
+
+		& > .handle {
+			display: none;
+		}
+	}
 }
 .rect {
 	--w: 0px;

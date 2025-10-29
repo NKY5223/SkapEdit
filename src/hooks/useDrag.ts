@@ -29,6 +29,7 @@ export const useDrag = (
 	onDrag?: (current: Vec2, previous: Vec2, beforeDrag: Vec2, event: PointerEvent) => void,
 	/** If set to true, will flip the x direction when `document.dir === "rtl"`. Will not work without normalize. Defaults to true. */
 	normalizeDir: boolean = true,
+	enabled: boolean = true,
 ): {
 	/** Current pointer position. */
 	current: Vec2;
@@ -47,6 +48,7 @@ export const useDrag = (
 	// Drag
 	useEffect(() => {
 		if (!dragging) return;
+		if (!enabled) return;
 		const handleMove = (event: PointerEvent): void => {
 			event.preventDefault();
 			const pointer = vec2(event.clientX, event.clientY);
@@ -79,7 +81,7 @@ export const useDrag = (
 		};
 		window.addEventListener("pointermove", handleMove);
 		return () => window.removeEventListener("pointermove", handleMove);
-	}, [dragging]);
+	}, [dragging, enabled]);
 	// Stop dragging
 	useEffect(() => {
 		const handleBlur = () => setDragging(false);
@@ -98,7 +100,7 @@ export const useDrag = (
 	});
 
 	const onPointerDown: PointerEventHandler = event => {
-		if (mouseButtonMatches(event.button, buttons)) {
+		if (enabled && mouseButtonMatches(event.button, buttons)) {
 			setDragging(true);
 			const pointer = vec2(event.clientX, event.clientY);
 

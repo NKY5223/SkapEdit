@@ -25,12 +25,19 @@ export type SelectableItem = (
 );
 
 export type EditorSelection = 
-	| SelectionItem[];
+	| readonly SelectionItem[];
 
 type SelectionAction = (
 	| {
 		type: "set_selection";
 		selection: EditorSelection;
+	}
+	| {
+		type: "clear_selection";
+	}
+	| {
+		type: "add_selection_item";
+		item: SelectionItem;
 	}
 );
 
@@ -61,7 +68,14 @@ const selectionReducer: Reducer<EditorSelection, SelectionAction> = (selection, 
 		case "set_selection": {
 			return action.selection;
 		}
+		case "clear_selection": {
+			return [];
+		}
+		case "add_selection_item": {
+			return [...selection, action.item];
+		}
 	}
+	action satisfies never;
 	return selection;
 };
 export const [useEditorSelection, useDispatchSelection, SelectionProvider] =

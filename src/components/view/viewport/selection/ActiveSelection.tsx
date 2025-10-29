@@ -1,14 +1,14 @@
 import { Vec2, vec2 } from "@common/vec2.ts";
-import { useEditorSelection } from "@components/editor/selection.ts";
+import { SelectionItem, useEditorSelection } from "@components/editor/selection.ts";
 import { toClassName } from "@components/utils.tsx";
 import { Bounds, BoundsUpdateLRTBWH } from "@editor/bounds.ts";
-import { SkapObject } from "@editor/map.ts";
 import { getObject, useDispatchSkapMap, useSkapMap } from "@editor/reducer.ts";
 import { MouseButtons, useDrag } from "@hooks/useDrag.ts";
 import { Dispatch, FC, SetStateAction } from "react";
 import css from "./ActiveSelection.module.css";
 import { ResizeHandle } from "./ResizeHandle.tsx";
-import { ViewportInfo } from "./Viewport.tsx";
+import { ViewportInfo } from "../Viewport.tsx";
+import { maybeConst } from "@common/maybeConst.ts";
 
 const rounding = 1;
 
@@ -19,15 +19,29 @@ export const ActiveSelection: FC<ActiveSelectionProps> = ({
 	viewportInfo,
 }) => {
 	const selection = useEditorSelection();
+	// const map = useSkapMap();
+	// const dispatchMap = useDispatchSkapMap();
+	const active = selection.length === 1;
+
+	return selection.map(item => (
+		<ActiveSelectionItem key={item.id} {...{ item, viewportInfo, active }} />
+	));
+}
+
+type ActiveSelectionItemProps = {
+	item: SelectionItem;
+	viewportInfo: ViewportInfo;
+	active: boolean;
+};
+const ActiveSelectionItem: FC<ActiveSelectionItemProps> = ({
+	item, viewportInfo,
+	active,
+}) => {
 	const map = useSkapMap();
 	const dispatchMap = useDispatchSkapMap();
 
-	if (selection.length !== 1) return null;
-
-	const [selection1] = selection;
-
-	if (selection1.type === "room") {
-		const room = map.rooms.get(selection1.id);
+	if (item.type === "room") {
+		const room = map.rooms.get(item.id);
 		if (!room) return null;
 
 		const { bounds } = room;
@@ -43,10 +57,10 @@ export const ActiveSelection: FC<ActiveSelectionProps> = ({
 				})
 			});
 		}
-		return <BoundsActiveSelection {...{ viewportInfo, bounds, setBounds }} />;
+		return <BoundsSelection {...{ viewportInfo, active, bounds, setBounds }} />;
 	}
 
-	const object = getObject(map, selection1.id);
+	const object = getObject(map, item.id);
 	if (!object) return null;
 
 	switch (object.type) {
@@ -59,27 +73,36 @@ export const ActiveSelection: FC<ActiveSelectionProps> = ({
 					target: object.id,
 					replacement: obj => "bounds" in obj ? {
 						...obj,
-						bounds: update instanceof Bounds
-							? update
-							: update(obj.bounds),
+						bounds: maybeConst(update, obj.bounds),
 					} : obj
 				});
 			}
-			return <BoundsActiveSelection {...{ viewportInfo, bounds, setBounds }} />;
+			return <BoundsSelection {...{ viewportInfo, active, bounds, setBounds }} />;
 		}
 		case "text": {
-			return <CircleActiveSelection {...{ viewportInfo, object }} />;
+			const { pos } = object;
+			const setPos: Dispatch<SetStateAction<Vec2>> = pos => dispatchMap({
+				type: "replace_object",
+				target: object.id,
+				replacement: obj => "pos" in obj ? {
+					...obj,
+					pos: maybeConst(pos, obj.pos)
+				} : obj
+			});
+			return <CircleSelection radius={5} {...{ viewportInfo, active, pos, setPos }} />;
 		}
 	}
 }
 
-type BoundsActiveSelectionProps = {
+type BoundsSelectionProps = {
 	viewportInfo: ViewportInfo;
+	active?: boolean;
 	bounds: Bounds;
 	setBounds: Dispatch<SetStateAction<Bounds>>;
 };
-const BoundsActiveSelection: FC<BoundsActiveSelectionProps> = ({
-	viewportInfo, bounds, setBounds
+const BoundsSelection: FC<BoundsSelectionProps> = ({
+	viewportInfo, bounds, setBounds,
+	active = true,
 }) => {
 	const [x, y] = bounds.topLeft;
 	const [w, h] = bounds.size;
@@ -87,6 +110,7 @@ const BoundsActiveSelection: FC<BoundsActiveSelectionProps> = ({
 		setBounds(b => b.set(update, "prefer-old"));
 	}
 	const { onPointerDown, dragging } = useDrag(MouseButtons.Left, null, (curr, _, orig) => {
+		if (!active) return;
 		const diff = curr.sub(orig).div(viewportInfo.camera.scale);
 		const rounded = vec2(
 			Math.round(diff[0] / rounding) * rounding,
@@ -95,7 +119,7 @@ const BoundsActiveSelection: FC<BoundsActiveSelectionProps> = ({
 		// bounds is the ORIGINAL bounds
 		// because closures
 		setBounds(bounds.translate(rounded));
-	});
+	}, false, active);
 	const props = {
 		viewportInfo,
 		onUpdate
@@ -103,7 +127,8 @@ const BoundsActiveSelection: FC<BoundsActiveSelectionProps> = ({
 	const className = toClassName(
 		css["selection"],
 		css["rect"],
-		dragging && css["dragging"]
+		dragging && css["dragging"],
+		!active && css["inactive"],
 	);
 	return (
 		<div className={className} style={{
@@ -125,44 +150,41 @@ const BoundsActiveSelection: FC<BoundsActiveSelectionProps> = ({
 	);
 }
 
-type CircleActiveSelectionProps = {
+type CircleSelectionProps = {
 	viewportInfo: ViewportInfo;
-	object: SkapObject & { pos: Vec2 };
+	active?: boolean;
+	pos: Vec2;
+	setPos: Dispatch<SetStateAction<Vec2>>;
+	radius: number;
 }
-const CircleActiveSelection: FC<CircleActiveSelectionProps> = ({
-	viewportInfo, object
+const CircleSelection: FC<CircleSelectionProps> = ({
+	viewportInfo,
+	pos, setPos,
+	radius,
+	active = true,
 }) => {
-
-	const dispatchMap = useDispatchSkapMap();
 	const { onPointerDown, dragging } = useDrag(MouseButtons.Left, null, (curr, _, orig) => {
+		if (!active) return;
 		const diff = curr.sub(orig).div(viewportInfo.camera.scale);
 		const rounded = vec2(
 			Math.round(diff[0] / rounding) * rounding,
 			Math.round(diff[1] / rounding) * rounding,
 		);
-		dispatchMap({
-			type: "replace_object",
-			target: object.id,
-			replacement: obj => ({
-				...obj,
-				// object.pos is the ORIGINAL pos
-				// because closures
-				pos: object.pos.add(rounded)
-			})
-		});
-	});
-
-	const [x, y] = object.pos;
+		// pos is original pos due to closure
+		setPos(pos.add(rounded));
+	}, false, active);
+	const [x, y] = pos;
 	const className = toClassName(
 		css["selection"],
 		css["circle"],
 		dragging && css["dragging"],
+		!active && css["inactive"],
 	);
 	return (
 		<div className={className} style={{
 			"--x": `${x}px`,
 			"--y": `${y}px`,
-			"--r": `5px`,
+			"--r": `${radius}px`,
 		}} onPointerDown={onPointerDown}></div>
 	);
 }

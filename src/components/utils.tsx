@@ -1,5 +1,5 @@
 import { ID } from "@common/uuid.ts";
-import { Dispatch, FC, KeyboardEventHandler, SetStateAction } from "react";
+import { Dispatch, DOMAttributes, FC, KeyboardEventHandler, SetStateAction } from "react";
 
 export const toClassName = (...list: (string | undefined | null | false | string[])[]) =>
 	list.filter((s): s is string | string[] => !!s).flat().join(" ");
@@ -40,4 +40,10 @@ export function filterKeys(f: KeyboardEventHandler, keys = ["Enter", "Space"]): 
 // Should this just check if `document.direction === "rtl"`?
 export function elementIsRtl(target: Element) {
 	return window.getComputedStyle(target).direction === "rtl";
+}
+
+export type ListenerAttributeNames = keyof DOMAttributes<Element> & `on${string}`;
+export type ListenerAttributes<T = unknown> = Pick<DOMAttributes<T>, ListenerAttributeNames>;
+export const mergeListeners = <T = unknown>(...listeners: ListenerAttributes<T>[]): ListenerAttributes<T> => {
+	return Object.fromEntries(Map.groupBy(listeners.flatMap(l => Object.entries(l)), ([k]) => k).entries().map(([k, [, l]]) => [k, l]));
 }

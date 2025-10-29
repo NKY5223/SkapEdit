@@ -141,14 +141,6 @@ export const Inspector: Layout.ViewComponent = ({
 								: (<code>(none)</code>)}
 					</span>
 					{selectionForm}
-					<p>
-						<code>{currentBuild.version} {currentBuild.mode}{currentBuild.github && <>
-							{` `}
-							<a href={currentBuild.github.commitUrl} target="_blank">{currentBuild.github.commitSha.slice(0, 7)}</a>
-							{` @ `}
-							<a href={currentBuild.github.repoUrl} target="_blank">{currentBuild.github.repoName}</a>
-						</>}</code>
-					</p>
 				</FormSection>
 			</div>
 		</div>

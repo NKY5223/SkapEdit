@@ -12,10 +12,10 @@ import React, { FC, useMemo, useRef, useState } from "react";
 import { SkapRoom } from "../../../editor/map.ts";
 import { useSkapMap } from "@editor/reducer.ts";
 import { ViewToolbar } from "../../layout/LayoutViewToolbar.tsx";
-import { ActiveSelection } from "./ActiveSelection.tsx";
+import { ActiveSelection } from "./selection/ActiveSelection.tsx";
 import { Camera, useCamera } from "./camera.ts";
 import { viewportToMap } from "./mapping.ts";
-import { getClickbox, getZIndex } from "./selectableProperties.ts";
+import { getClickbox, getZIndex } from "./selection/selectableProperties.ts";
 import { BackgroundObstacleWebGLRenderer, BackgroundWebGLRenderer } from "./renderer/background.ts";
 import { LavaWebGLRenderer } from "./renderer/lava.ts";
 import { ObstacleWebGLRenderer } from "./renderer/obstacle.ts";
@@ -119,7 +119,7 @@ export const Viewport: Layout.ViewComponent = ({
 			};
 		});
 	});
-	const handleWheel: React.WheelEventHandler<HTMLElement> = e => {
+	const onWheel: React.WheelEventHandler<HTMLElement> = e => {
 		const d = e.deltaY * wheelMult(e.deltaMode);
 		const newIndex = scaleIndex + d;
 		const newScale = calcScale(newIndex);
@@ -138,12 +138,6 @@ export const Viewport: Layout.ViewComponent = ({
 					x: 0, y: 0, scale: 5,
 				});
 			}),
-			// submenu("viewport.do_stuff", null, [
-			// 	single("viewport.do_stuff.0"),
-			// 	single("viewport.do_stuff.1"),
-			// 	single("viewport.do_stuff.2"),
-			// 	single("viewport.do_stuff.3"),
-			// ]),
 		]),
 	]);
 
@@ -166,7 +160,7 @@ export const Viewport: Layout.ViewComponent = ({
 
 	const dispatchSelection = useDispatchSelection();
 
-	const handleClick: React.MouseEventHandler = e => {
+	const onClick: React.MouseEventHandler = e => {
 		// Must be a click originating in this element
 		if (e.target !== e.currentTarget) return;
 
@@ -175,7 +169,7 @@ export const Viewport: Layout.ViewComponent = ({
 
 		const clickedItems = sortBy(
 			[
-				...room.objects.values().map(makeObjectSelectableItem), 
+				...room.objects.values().map(makeObjectSelectableItem),
 				makeRoomSelectableItem(room),
 			].filter(obj => getClickbox(obj, clickPos)),
 			getZIndex,
@@ -186,14 +180,17 @@ export const Viewport: Layout.ViewComponent = ({
 		const item = clickedItems[0];
 		if (!item) {
 			dispatchSelection({
-				type: "set_selection",
-				selection: [],
+				type: "clear_selection",
 			});
 			return;
 		}
+		// dispatchSelection({
+		// 	type: "set_selection",
+		// 	selection: [convertSelectableToSelection(item)]
+		// });
 		dispatchSelection({
-			type: "set_selection",
-			selection: [convertSelectableToSelection(item)]
+			type: "add_selection_item",
+			item: convertSelectableToSelection(item)
 		});
 	}
 
@@ -203,7 +200,16 @@ export const Viewport: Layout.ViewComponent = ({
 	);
 	return (
 		<div ref={elRef} className={className}
-			onPointerDown={onPointerDown} onWheel={handleWheel} onClick={handleClick} {...contextMenu}
+			onPointerDown={onPointerDown} onWheel={onWheel} onClick={onClick}
+			// onKeyDown={e => {
+			// 	console.log(e);
+			// 	if (e.code === "Escape") {
+			// 		dispatchSelection({
+			// 			type: "clear_selection",
+			// 		});
+			// 	}
+			// }}
+			{...contextMenu}
 			style={{
 				"--viewport-x": `${camera.x}px`,
 				"--viewport-y": `${camera.y}px`,

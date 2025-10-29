@@ -1,6 +1,5 @@
 import { Vec2 } from "@common/vec2.ts";
 import { SelectableItem } from "@components/editor/selection.ts";
-import { SkapObject } from "@editor/map.ts";
 import { getProperties } from "@editor/object/Properties.ts";
 
 export const getZIndex = (

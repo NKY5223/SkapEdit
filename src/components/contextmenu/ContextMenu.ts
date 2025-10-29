@@ -1,6 +1,7 @@
 import { Vec2 } from "../../common/vec2.ts";
 import { createId } from "@common/uuid.ts";
 import { IconName } from "@components/icon/icons.ts";
+import { ListenerAttributes } from "@components/utils.tsx";
 import { createReducerContext } from "@hooks/createReducerContext.tsx";
 import { Reducer, createContext, useContext } from "react";
 
@@ -198,7 +199,7 @@ export {
  * <div {...contextMenu}>
  */
 
-export const useContextMenu = (items: readonly ContextMenu.Item[]) => {
+export const useContextMenu = (items: readonly ContextMenu.Item[]): ListenerAttributes => {
 	const dispatch = useContextMenuDispatch();
 	return {
 		onContextMenuCapture: () => {

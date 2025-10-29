@@ -4,8 +4,8 @@ import { BoundsUpdateLRTBWH } from "@editor/bounds.ts";
 import { MouseButtons, useDrag } from "@hooks/useDrag.ts";
 import { FC } from "react";
 import css from "./ActiveSelection.module.css";
-import { viewportToMap } from "./mapping.ts";
-import { ViewportInfo } from "./Viewport.tsx";
+import { viewportToMap } from "../mapping.ts";
+import { ViewportInfo } from "../Viewport.tsx";
 
 const rounding = 1;
 
