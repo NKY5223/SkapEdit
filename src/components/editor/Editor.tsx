@@ -7,7 +7,7 @@ import { Topbar } from "@components/editor/topbar/Topbar.tsx";
 import { translator_en_US } from "@components/translate/translation/en_US.ts";
 import { translator_zh_Hans } from "@components/translate/translation/zh_Hans.ts";
 import { TranslationProvider } from "@components/translate/TranslationProvider.tsx";
-import { SkapMapProvider } from "@editor/map.ts";
+import { SkapMapProvider } from "@editor/reducer.ts";
 import { FC, useState } from "react";
 import { ThemeProvider } from "../../theme/theme.tsx";
 import { views } from "../layout/views.tsx";
@@ -38,7 +38,7 @@ export const Editor: FC<EditorProps> = ({
 				<TranslationProvider value={translator}>
 					<ContextMenuProvider>
 						<SkapMapProvider initialValue={defaultMap}>
-							<SelectionProvider initialValue={null}>
+							<SelectionProvider initialValue={[]}>
 
 								<ViewInfoStatesProvider value={new Map()}>
 									<ViewProvidersProvider value={toMap(views)}>

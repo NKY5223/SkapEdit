@@ -1,5 +1,4 @@
 import { Bounds } from "@editor/bounds.ts";
-import { SkapObstacle } from "@editor/map.ts";
 import { ViewportInfo } from "../Viewport.tsx";
 import { RectWebGLRenderer } from "./rect.ts";
 import frag from "./shader/obstacle.frag?raw";
@@ -10,7 +9,7 @@ export class ObstacleWebGLRenderer extends RectWebGLRenderer {
 	}
 	rects(viewportInfo: ViewportInfo): Bounds[] {
 		return viewportInfo.room.objects.values()
-			.filter((obj): obj is SkapObstacle => obj.type === "obstacle")
+			.filter(obj => obj.type === "obstacle")
 			.map(o => o.bounds)
 			.toArray();
 	}

@@ -2,7 +2,8 @@ import { Vec2, vec2 } from "@common/vec2.ts";
 import { useEditorSelection } from "@components/editor/selection.ts";
 import { toClassName } from "@components/utils.tsx";
 import { Bounds, BoundsUpdateLRTBWH } from "@editor/bounds.ts";
-import { getObject, SkapObject, useDispatchSkapMap, useSkapMap } from "@editor/map.ts";
+import { SkapObject } from "@editor/map.ts";
+import { getObject, useDispatchSkapMap, useSkapMap } from "@editor/reducer.ts";
 import { MouseButtons, useDrag } from "@hooks/useDrag.ts";
 import { Dispatch, FC, SetStateAction } from "react";
 import css from "./ActiveSelection.module.css";
@@ -21,10 +22,12 @@ export const ActiveSelection: FC<ActiveSelectionProps> = ({
 	const map = useSkapMap();
 	const dispatchMap = useDispatchSkapMap();
 
-	if (!selection) return null;
+	if (selection.length !== 1) return null;
 
-	if (selection.type === "room") {
-		const room = map.rooms.get(selection.id);
+	const [selection1] = selection;
+
+	if (selection1.type === "room") {
+		const room = map.rooms.get(selection1.id);
 		if (!room) return null;
 
 		const { bounds } = room;
@@ -43,7 +46,7 @@ export const ActiveSelection: FC<ActiveSelectionProps> = ({
 		return <BoundsActiveSelection {...{ viewportInfo, bounds, setBounds }} />;
 	}
 
-	const object = getObject(map, selection.id);
+	const object = getObject(map, selection1.id);
 	if (!object) return null;
 
 	switch (object.type) {

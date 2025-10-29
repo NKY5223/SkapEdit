@@ -2,19 +2,20 @@ import { sortBy } from "@common/array.ts";
 import { vec2, Vec2, zero } from "@common/vec2.ts";
 import "@common/vector.ts";
 import { makeSection, makeSingle, Sections, useContextMenu } from "@components/contextmenu/ContextMenu.ts";
-import { useDispatchSelection } from "@components/editor/selection.ts";
+import { convertSelectableToSelection, makeObjectSelectableItem, makeRoomSelectableItem, useDispatchSelection } from "@components/editor/selection.ts";
 import { Layout } from "@components/layout/layout.ts";
 import { toClassName } from "@components/utils.tsx";
 import { Bounds } from "@editor/bounds.ts";
 import { MouseButtons, useDrag } from "@hooks/useDrag.ts";
 import { useElementSize } from "@hooks/useElementSize.ts";
 import React, { FC, useMemo, useRef, useState } from "react";
-import { SkapRoom, useSkapMap } from "../../../editor/map.ts";
+import { SkapRoom } from "../../../editor/map.ts";
+import { useSkapMap } from "@editor/reducer.ts";
 import { ViewToolbar } from "../../layout/LayoutViewToolbar.tsx";
 import { ActiveSelection } from "./ActiveSelection.tsx";
 import { Camera, useCamera } from "./camera.ts";
 import { viewportToMap } from "./mapping.ts";
-import { clickbox, zIndex } from "./objectProperties.ts";
+import { getClickbox, getZIndex } from "./selectableProperties.ts";
 import { BackgroundObstacleWebGLRenderer, BackgroundWebGLRenderer } from "./renderer/background.ts";
 import { LavaWebGLRenderer } from "./renderer/lava.ts";
 import { ObstacleWebGLRenderer } from "./renderer/obstacle.ts";
@@ -172,30 +173,27 @@ export const Viewport: Layout.ViewComponent = ({
 		const { left, top } = e.currentTarget.getBoundingClientRect();
 		const clickPos = viewportToMap(viewportInfo, vec2(e.clientX - left, e.clientY - top));
 
-		const clickedObjects = sortBy(
-			[...room.objects.values(), room]
-				.filter(obj => clickbox(obj, clickPos)),
-			zIndex,
+		const clickedItems = sortBy(
+			[
+				...room.objects.values().map(makeObjectSelectableItem), 
+				makeRoomSelectableItem(room),
+			].filter(obj => getClickbox(obj, clickPos)),
+			getZIndex,
 			// Descending order of z-index
 			(a, b) => b - a
 		);
 
-		const obj = clickedObjects[0];
-		if (!obj) {
+		const item = clickedItems[0];
+		if (!item) {
 			dispatchSelection({
 				type: "set_selection",
-				selection: null,
+				selection: [],
 			});
 			return;
 		}
-		const id = obj.id;
-		const type = "type" in obj ? "object" : "room";
-
 		dispatchSelection({
 			type: "set_selection",
-			selection: {
-				type, id,
-			}
+			selection: [convertSelectableToSelection(item)]
 		});
 	}
 

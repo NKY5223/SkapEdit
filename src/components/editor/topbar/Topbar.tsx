@@ -1,7 +1,7 @@
 import { FC } from "react";
 import css from "./Topbar.module.css";
 import { makeSingle } from "../../contextmenu/ContextMenu.ts";
-import { useSkapMap } from "@editor/map.ts";
+import { useSkapMap } from "@editor/reducer.ts";
 import { Translate } from "../../translate/Translate.tsx";
 import { TopbarMenuItem } from "./TopbarMenuItem.tsx";
 

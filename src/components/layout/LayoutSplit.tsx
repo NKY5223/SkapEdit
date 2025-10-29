@@ -1,7 +1,7 @@
 import { clamp } from "@common/number.ts";
 import { makeSection, makeSingle, Sections, useContextMenu } from "@components/contextmenu/ContextMenu.ts";
 import { toClassName } from "@components/utils.tsx";
-import { elementIsRtl } from "@hooks/elementIsRtl.ts";
+import { elementIsRtl } from "@components/utils.tsx";
 import { MouseButtons, useDrag } from "@hooks/useDrag.ts";
 import { KeyboardEventHandler, ReactNode, useRef } from "react";
 import { Layout, LayoutFC, useDispatchLayout } from "./layout.ts";

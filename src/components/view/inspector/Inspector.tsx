@@ -3,13 +3,13 @@ import { useEditorSelection } from "@components/editor/selection.ts";
 import { FormSection } from "@components/form/FormSection.tsx";
 import { Icon } from "@components/icon/Icon.tsx";
 import { Layout } from "@components/layout/layout.ts";
-import { getObject, useDispatchSkapMap, useSkapMap } from "@editor/map.ts";
+import { getObject, useDispatchSkapMap, useSkapMap } from "@editor/reducer";
 import css from "./Inspector.module.css";
 import { ViewToolbar } from "@components/layout/LayoutViewToolbar.tsx";
 import { ReactNode } from "react";
 import { TextInput } from "@components/form/TextInput.tsx";
-import { BoundsInput } from "@editor/BoundsInput.tsx";
-import { Vec2Input } from "@editor/Vec2Input.tsx";
+import { BoundsInput } from "@components/form/BoundsInput";
+import { Vec2Input } from "@components/form/Vec2Input";
 import { FormTitle } from "@components/form/FormTitle.tsx";
 import { useTranslate } from "@components/translate/translationArgs.ts";
 import { currentBuild } from "@common/currentBuild.ts";
@@ -45,19 +45,20 @@ export const Inspector: Layout.ViewComponent = ({
 		]),
 	]);
 
-	const selectedRoom = selection && selection.type === "room" && map.rooms.get(selection.id);
-	const selectedObject = selection && selection.type === "object" && getObject(map, selection.id);
+	const sel = selection[0];
+	const selectedRoom = sel && sel.type === "room" && map.rooms.get(sel.id);
+	const selectedObject = sel && sel.type === "object" && getObject(map, sel.id);
 	const selectionForm = ((): Exclude<ReactNode, undefined> => {
-		if (!selection) return (
+		if (!sel) return (
 			<p>
 				No object selected
 			</p>
 		);
-		switch (selection.type) {
+		switch (sel.type) {
 			case "room": {
 				if (!selectedRoom) return (
 					<p>
-						Could not find room selection, id: <code>{selection.id}</code>
+						Could not find room selection, id: <code>{sel.id}</code>
 					</p>
 				);
 				const bounds = selectedRoom.bounds;
@@ -65,7 +66,7 @@ export const Inspector: Layout.ViewComponent = ({
 					<>
 						<BoundsInput bounds={bounds} setBounds={bounds => dispatchMap({
 							type: "replace_object",
-							target: selection.id,
+							target: sel.id,
 							replacement: obj => ({ ...obj, bounds })
 						})} />
 					</>
@@ -74,7 +75,7 @@ export const Inspector: Layout.ViewComponent = ({
 			case "object": {
 				if (!selectedObject) return (
 					<p>
-						Could not find object selection, id: <code>{selection.id}</code>
+						Could not find object selection, id: <code>{sel.id}</code>
 					</p>
 				);
 				switch (selectedObject.type) {
@@ -85,7 +86,7 @@ export const Inspector: Layout.ViewComponent = ({
 							<>
 								<BoundsInput bounds={bounds} setBounds={bounds => dispatchMap({
 									type: "replace_object",
-									target: selection.id,
+									target: sel.id,
 									replacement: obj => ({ ...obj, bounds })
 								})} />
 							</>
@@ -134,9 +135,9 @@ export const Inspector: Layout.ViewComponent = ({
 						<Icon icon="select" title="Current Selection" />
 						&nbsp;
 						{selectedObject
-							? (<code>{selectedObject.type} {selection.id}</code>)
+							? (<code>{selectedObject.type} {sel.id}</code>)
 							: selectedRoom
-								? (<code>{selection.id}</code>)
+								? (<code>{sel.id}</code>)
 								: (<code>(none)</code>)}
 					</span>
 					{selectionForm}

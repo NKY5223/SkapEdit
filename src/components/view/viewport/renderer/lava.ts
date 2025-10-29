@@ -1,9 +1,9 @@
 import { Color } from "@common/color.ts";
 import { Bounds } from "@editor/bounds.ts";
-import { SkapLava } from "@editor/map.ts";
 import { ViewportInfo } from "../Viewport.tsx";
 import { RectWebGLRenderer } from "./rect.ts";
 import frag from "./shader/solid.frag?raw";
+import { SkapLava } from "@editor/object/lava.ts";
 
 export class LavaWebGLRenderer extends RectWebGLRenderer {
 	constructor() {
@@ -11,7 +11,7 @@ export class LavaWebGLRenderer extends RectWebGLRenderer {
 	}
 	rects(viewportInfo: ViewportInfo): Bounds[] {
 		return viewportInfo.room.objects.values()
-			.filter((obj): obj is SkapLava => obj.type === "lava")
+			.filter(obj => obj.type === "lava")
 			.map(o => o.bounds)
 			.toArray();
 	}

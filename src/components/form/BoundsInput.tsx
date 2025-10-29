@@ -1,5 +1,5 @@
 import { Dispatch, FC } from "react";
-import { Bounds, BoundsClampBehavior } from "./bounds.ts";
+import { Bounds, BoundsClampBehavior } from "../../editor/bounds.ts";
 import { toDispatchSetStateAction } from "@components/utils.tsx";
 import { FormSection } from "@components/form/FormSection.tsx";
 import { NumberInput } from "@components/form/NumberInput.tsx";

@@ -1,6 +1,6 @@
 import { useState, useEffect, RefObject, PointerEventHandler, Dispatch, SetStateAction, useRef } from "react";
 import { Vec2, vec2, zero } from "../common/vec2.ts";
-import { elementIsRtl } from "./elementIsRtl.ts";
+import { elementIsRtl } from "@components/utils.tsx";
 
 export type MouseButtons = number;
 export const MouseButtons: {

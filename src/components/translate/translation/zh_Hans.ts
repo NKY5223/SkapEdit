@@ -59,7 +59,7 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 		version, ` 版本，`, time ? time.toLocaleDateString("zh-Hans") : `XXXX/XX/XX`,
 	],
 	"changelog.current-build": ({ version, mode, github }) => {
-		if (!github) return makeCode([`版本：`, mode, ` `, version]);
+		if (!github) return makeCode([mode, ` `, version, ` 版本`]);
 		const { repoOwner, repoName, commitSha, repoUrl, commitUrl } = github;
 		return makeCode([
 			mode, ` `, version, ` 版本，从 `, 
