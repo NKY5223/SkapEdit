@@ -49,7 +49,18 @@ export type TranslationArgs = {
 
 	// #region Changelog
 	"changelog": {};
-	"changelog.version-name-time": { version: string; time?: Date; };
+	"changelog.version-title": { version: string; time?: Date; };
+	"changelog.current-build": { 
+		mode: string;
+		version: string;
+		github: {
+			repoOwner: string;
+			repoName: string;
+			repoUrl: string;
+			commitSha: string;
+			commitUrl: string;
+		} | null;
+	};
 	// #endregion
 
 	"generic.position.x": {};

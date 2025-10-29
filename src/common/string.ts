@@ -491,7 +491,6 @@ export const t = typeset({
 	stringifiers: [
 		// number
 		x => {
-			if (1) return;
 			if (typeof x !== "number") return;
 			if (Object.is(x, Infinity)) return `∞`;
 			if (Object.is(x, -Infinity)) return `-∞`;
@@ -502,6 +501,11 @@ export const t = typeset({
 			const [a, b] = str.split(".");
 			if (!b) return str;
 			return `${a}.${b.slice(0, 5)}`;
+		},
+		// string
+		x => {
+			if (typeof x !== "string") return;
+			return JSON.stringify(x);
 		},
 		x => x instanceof Vector && x.toText(),
 		x => x instanceof Matrix && x.toText(),

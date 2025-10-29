@@ -5,6 +5,7 @@ import { RichTextComponent } from "@components/translate/RichText.tsx";
 import { Translate } from "@components/translate/Translate.tsx";
 import { useTranslate } from "@components/translate/translationArgs.ts";
 import { Icon } from "@components/icon/Icon.tsx";
+import { currentBuild } from "@common/currentBuild.ts";
 
 type ChangelogProps = {
 	changelog: ChangelogEntry[];
@@ -30,10 +31,11 @@ export const Changelog: FC<ChangelogProps> = ({
 				<Icon icon="close" />
 			</button>
 			<h2><Translate k="changelog" /></h2>
+			<Translate k="changelog.current-build" {...currentBuild} />
 			{changelog.map((entry, i) => (
 				<div key={i}>
-					<h3><Translate k="changelog.version-name-time" version={entry.version} time={entry.time} /></h3>
-					<p><RichTextComponent text={entry.message} /></p>
+					<h3><Translate k="changelog.version-title" version={entry.version} time={entry.time} /></h3>
+					<RichTextComponent text={entry.message} />
 				</div>
 			))}
 		</div>

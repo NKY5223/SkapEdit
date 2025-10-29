@@ -4,6 +4,7 @@
 	place-items: center;
 	list-style: none;
 	border-block-end: var(--theme-border-width) solid var(--theme-bd-0);
+	min-height: 2.5em;
 }
 .topbar-item {
 	padding-block: .25em;

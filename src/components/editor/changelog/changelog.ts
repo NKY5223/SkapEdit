@@ -11,16 +11,18 @@ export type ChangelogEntry = {
  */
 export const changelog: ChangelogEntry[] = [
 	{
+		version: "0.1.1",
+		message: [
+			`message goes here`,
+		],
+	},
+	{
 		version: "0.1.0",
 		message: [
 			"Initial version. Added changelog and version.",
-			makeNumberedList(
-				"test 1",
-				"test 2",
-			),
 		],
 		time: new Date(`2025-10-28`),
-	}
+	},
 ];
 
 export const currentVersion = changelog[0]?.version ?? "X.X.X";

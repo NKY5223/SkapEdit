@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { RichText, richTextToString } from "./richtext.ts";
+import { makeBold, makeCode, makeItalic, RichText, richTextToString } from "./richtext.ts";
 
 type TranslatorFunc<R extends Record<string, {}>> = 
 	<K extends keyof R>(key: K, args: R[K]) => RichText;
@@ -53,11 +53,7 @@ export const makeTranslator = <const R extends Record<string, {}>>(
 				console.warn("Missing translation:", key, args, "\n", 
 					exportWarnedTranslations(warnings));
 			}
-			return {
-				italic: true,
-				code: true,
-				text: String(key),
-			};
+			return makeItalic(makeCode(String(key)));
 		}
 		if (typeof translation === "function") {
 			return translation(args, translator);

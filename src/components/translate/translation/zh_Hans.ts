@@ -1,3 +1,4 @@
+import { makeCode, makeLink } from "../richtext.ts";
 import { delegateOn, makeTranslator, Translator } from "../translate.ts";
 import { TranslationArgs } from "../translationArgs.ts";
 
@@ -53,10 +54,19 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"contextmenu.item.name.topbar.file.export_skap": "输出（skap）",
 	// #endregion
 
-	"changelog": "变更",
-	"changelog.version-name-time": ({ version, time }) => [
-		version, ` 版本，`, time ? time.toLocaleDateString("zh-Hans") : `XXX`,
+	"changelog": "Changelog",
+	"changelog.version-title": ({ version, time }) => [
+		version, ` 版本，`, time ? time.toLocaleDateString("zh-Hans") : `XXXX/XX/XX`,
 	],
+	"changelog.current-build": ({ version, mode, github }) => {
+		if (!github) return makeCode([`版本：`, mode, ` `, version]);
+		const { repoOwner, repoName, commitSha, repoUrl, commitUrl } = github;
+		return makeCode([
+			mode, ` `, version, ` 版本，从 `, 
+			makeLink(repoUrl, [repoOwner, `/`, repoName]), ` commit `,
+			makeLink(commitUrl, commitSha.slice(0, 7)),
+		]);
+	},
 
 	"generic.position.x": "X位置",
 	"generic.position.y": "Y位置",

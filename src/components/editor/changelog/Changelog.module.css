@@ -9,6 +9,8 @@
 	width: 75%;
 	height: auto;
 	margin-block: 1em;
+	min-width: 30em;
+	max-width: 60em;
 
 	padding-inline: 3em;
 	padding-block: 2em;

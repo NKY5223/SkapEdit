@@ -3,19 +3,67 @@ export type RichText = (
 	| number
 	| readonly RichText[]
 	| {
+		type: "markup";
+		bold?: boolean;
 		italic?: boolean;
 		code?: boolean;
 		text: RichText;
 	}
 	| {
-		list: readonly RichText[];
-		type?: "numbered" | "bullet";
-	});
+		type: "list";
+		listType?: "numbered" | "bullet";
+		entries: readonly RichText[];
+	}
+	| {
+		type: "link";
+		url: string;
+		target?: React.HTMLAttributeAnchorTarget;
+		text: RichText;
+	}
+);
 export const isReadonlyArray: (value: unknown) => value is readonly unknown[] = Array.isArray;
 // #region constructors
 
-export const makeItalic = (text: RichText): RichText => ({ italic: true, text });
-export const makeNumberedList = (...list: RichText[]): RichText => ({ list, type: "numbered" });
+const isMarkup = (text: RichText) => typeof text === "object" && "type" in text && text.type === "markup";
+
+export const makeBold = (text: RichText): RichText => (
+	isMarkup(text)
+		? { ...text, bold: true }
+		: {
+			type: "markup",
+			bold: true,
+			text,
+		}
+);
+export const makeItalic = (text: RichText): RichText => (
+	isMarkup(text)
+		? { ...text, italic: true }
+		: {
+			type: "markup",
+			italic: true,
+			text,
+		}
+);
+export const makeCode = (text: RichText): RichText => (
+	isMarkup(text)
+		? { ...text, code: true }
+		: {
+			type: "markup",
+			code: true,
+			text,
+		}
+);
+export const makeLink = (url: string, text: RichText, target?: React.HTMLAttributeAnchorTarget): RichText => ({
+	type: "link",
+	url,
+	text,
+	target,
+});
+export const makeNumberedList = (...entries: RichText[]): RichText => ({
+	type: "list",
+	listType: "numbered",
+	entries,
+});
 // #endregion
 export const richTextToString = (text: RichText): string => {
 	if (typeof text === "string" || typeof text === "number") {
@@ -24,19 +72,24 @@ export const richTextToString = (text: RichText): string => {
 	if (isReadonlyArray(text)) {
 		return text.map(richTextToString).join("");
 	}
-	if ("text" in text) {
-		return richTextToString(text.text);
-	}
-	if ("list" in text) {
-		switch (text.type ?? "bullet") {
-			case "numbered": {
-				const lines = text.list.map((t, i) => [`${i}.`, t] as const);
-				const max = Math.max(...lines.map(([i]) => i.length));
-				return lines.map(([i, t]) => `${i.padEnd(max, " ")} ${t}`).join("\n");
+	switch (text.type) {
+		case "markup": {
+			return richTextToString(text.text);
+		}
+		case "list": {
+			switch (text.listType ?? "bullet") {
+				case "numbered": {
+					const lines = text.entries.map((t, i) => [`${i}.`, t] as const);
+					const max = Math.max(...lines.map(([i]) => i.length));
+					return lines.map(([i, t]) => `${i.padEnd(max, " ")} ${t}`).join("\n");
+				}
+				case "bullet": {
+					return text.entries.map((t) => `• ${t}`).join("\n");
+				}
 			}
-			case "bullet": {
-				return text.list.map((t) => `• ${t}`).join("\n");
-			}
+		}
+		case "link": {
+			return richTextToString(text.text);
 		}
 	}
 	text satisfies never;

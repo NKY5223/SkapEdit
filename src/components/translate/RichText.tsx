@@ -14,40 +14,50 @@ export const RichTextComponent: FC<{ text: RichText }> = ({
 			<RichTextComponent key={i} text={t} />
 		));
 	}
-	if ("text" in text) {
-		const { italic, code } = text;
-		const className = toClassName(
-			italic === true && css["italic-true"],
-			italic === false && css["italic-false"],
-			code === true && css["code-true"],
-			code === false && css["code-false"],
-		);
-		return (
-			<span className={className}>
-				<RichTextComponent text={text.text} />
-			</span>
-		);
-	}
-	if ("list" in text) {
-		switch (text.type ?? "bullet") {
-			case "numbered": {
-				return (
-					<ol className={css["list-numbered"]}>
-						{text.list.map(t => (
-							<li><RichTextComponent text={t} /></li>
-						))}
-					</ol>
-				);
+	switch (text.type) {
+		case "markup": {
+			const { italic, code } = text;
+			const className = toClassName(
+				italic === true && css["italic-true"],
+				italic === false && css["italic-false"],
+				code === true && css["code-true"],
+				code === false && css["code-false"],
+			);
+			return (
+				<span className={className}>
+					<RichTextComponent text={text.text} />
+				</span>
+			);
+		}
+		case "list": {
+			switch (text.listType ?? "bullet") {
+				case "numbered": {
+					return (
+						<ol className={css["list-numbered"]}>
+							{text.entries.map(t => (
+								<li><RichTextComponent text={t} /></li>
+							))}
+						</ol>
+					);
+				}
+				case "bullet": {
+					return (
+						<ul className={css["list-bullet"]}>
+							{text.entries.map((t, i) => (
+								<li key={i}><RichTextComponent text={t} /></li>
+							))}
+						</ul>
+					);
+				}
 			}
-			case "bullet": {
-				return (
-					<ul className={css["list-bullet"]}>
-						{text.list.map(t => (
-							<li><RichTextComponent text={t} /></li>
-						))}
-					</ul>
-				);
-			}
+		}
+		case "link": {
+			const { url, target } = text;
+			return (
+				<a href={url} target={target ?? "_blank"}>
+					<RichTextComponent text={text.text} />
+				</a>
+			);
 		}
 	}
 	text satisfies never;

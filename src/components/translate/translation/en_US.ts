@@ -1,3 +1,4 @@
+import { makeCode, makeLink } from "../richtext.ts";
 import { delegateOn, makeTranslator, Translator } from "../translate.ts";
 import { TranslationArgs } from "../translationArgs.ts";
 
@@ -54,9 +55,18 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	// #endregion
 
 	"changelog": "Changelog",
-	"changelog.version-name-time": ({ version, time }) => [
-		`Version `, version, `, `, time ? time.toLocaleDateString("en-US") : `XXX`,
+	"changelog.version-title": ({ version, time }) => [
+		`Version `, version, `, `, time ? time.toLocaleDateString("en-US") : `XX/XX/XXXX`,
 	],
+	"changelog.current-build": ({ version, mode, github }) => {
+		if (!github) return makeCode([`Current build: `, mode, ` `, version]);
+		const { repoOwner, repoName, commitSha, repoUrl, commitUrl } = github;
+		return makeCode([
+			`Current build: `, mode, ` `, version, ` from `, 
+			makeLink(repoUrl, [repoOwner, `/`, repoName]), ` commit `,
+			makeLink(commitUrl, commitSha.slice(0, 7)),
+		]);
+	},
 
 	"generic.position.x": "X Position",
 	"generic.position.y": "Y Position",
