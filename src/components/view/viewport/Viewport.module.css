@@ -44,3 +44,12 @@
 	display: flex;
 	gap: .25em;
 }
+.selection {
+	position: absolute;
+	left: calc((var(--selection-start-x) - var(--viewport-x)) * var(--viewport-scale) + 50%);
+	top: calc((var(--selection-start-y) - var(--viewport-y)) * var(--viewport-scale) + 50%);
+	width: calc((var(--selection-end-x) - var(--selection-start-x)) * var(--viewport-scale));
+	height: calc((var(--selection-end-y) - var(--selection-start-y)) * var(--viewport-scale));
+	background: #2080ff20;
+	pointer-events: none;
+}

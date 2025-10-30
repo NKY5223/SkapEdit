@@ -20,21 +20,21 @@ const mouseButtonMatches = (button: number, buttons: MouseButtons) => !!(1 << bu
 
 type DragParams = {
 	/** Bitflags: mouse buttons to use for dragging. Use `MouseButton.All` for any button. */
-	buttons: MouseButtons,
+	buttons: MouseButtons;
 	/** 
 	 * Element to measure pointer position against.  
 	 * If passed, will normalize pointer position to between `⟨0, 0⟩` and `⟨1, 1⟩`.
 	 */
-	normalize?: RefObject<Element | null> | null,
-	onDrag?: (current: Vec2, previous: Vec2, beforeDrag: Vec2, event: PointerEvent) => void,
-	onEndDrag?: (event: PointerEvent) => void,
+	normalizeToUnit?: RefObject<Element | null> | null;
+	onDrag?: (current: Vec2, previous: Vec2, beforeDrag: Vec2, event: PointerEvent) => void;
+	onEndDrag?: (event: PointerEvent) => void;
 	/** If set to true, will flip the x direction when `document.dir === "rtl"`. Will not work without normalize. Defaults to true. */
-	normalizeDir?: boolean,
-	enabled?: boolean,
+	normalizeDir?: boolean;
+	enabled?: boolean;
 };
 export const useDrag = ({
 	buttons,
-	normalize = null,
+	normalizeToUnit: normalize = null,
 	onDrag, onEndDrag,
 	normalizeDir = true,
 	enabled = true,
@@ -116,32 +116,35 @@ export const useDrag = ({
 		if (enabled && mouseButtonMatches(event.button, buttons)) {
 			setDragging(true);
 			const pointer = vec2(event.clientX, event.clientY);
-
+			
 			if (!normalize) {
 				previous.current = pointer;
 				setBeforeDrag(pointer);
+				setCurrentPos(pointer);
 				return;
 			}
-
+			
 			const target = normalize.current;
 			if (!target) {
 				console.warn(`Could not calculate previous norm pointer position.`);
 				previous.current = pointer;
 				setBeforeDrag(pointer);
+				setCurrentPos(pointer);
 				return;
 			}
-
+			
 			const bounds = target.getBoundingClientRect();
 			const targetPos = vec2(bounds.left, bounds.top);
 			const targetSize = vec2(bounds.width, bounds.height);
 			const curr = pointer.sub(targetPos).div(targetSize);
 			previous.current = curr;
 			setBeforeDrag(curr);
+			setCurrentPos(curr);
 		}
 	};
 
 	return {
-		currentPos: currentPos, setCurrentPos: setCurrentPos,
+		currentPos, setCurrentPos,
 		beforeDrag,
 		dragging,
 		listeners: {

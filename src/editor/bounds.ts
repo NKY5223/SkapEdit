@@ -160,6 +160,15 @@ export class Bounds {
 		}), first);
 	}
 
+	static fromCorners(a: Vec2, b: Vec2): Bounds {
+		return new Bounds({
+			left: Math.min(a[0], b[0]),
+			top: Math.min(a[1], b[1]),
+			right: Math.max(a[0], b[0]),
+			bottom: Math.max(a[1], b[1]),
+		});
+	}
+
 	/** Returns true if point is within bounds OR is on the boundary. */
 	contains(point: Vec2): boolean {
 		return (
@@ -186,6 +195,10 @@ export class Bounds {
 			topLeft: this.topLeft.mul(scale).add(translate),
 			bottomRight: this.bottomRight.mul(scale).add(translate),
 		});
+	}
+	/** Pick point within bounds, within unit square ↦ within bounds */
+	lerp(pos: Vec2): Vec2 {
+		return pos.mul(this.size).add(this.topLeft);
 	}
 }
 

@@ -30,7 +30,7 @@ export const LayoutSplit: LayoutFC<Layout.SplitNode, LayoutSplitProps> = ({
 
 	const { listeners, dragging: resizing } = useDrag({
 		buttons: MouseButtons.Left,
-		normalize: splitRef,
+		normalizeToUnit: splitRef,
 		onDrag: curr => {
 			setRatio(axis === "x" ? curr[0] : curr[1]);
 		}

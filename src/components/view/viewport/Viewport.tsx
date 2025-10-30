@@ -212,14 +212,21 @@ export const Viewport: Layout.ViewComponent = ({
 		currentPos: selectDragCurrent,
 	} = useDrag({
 		buttons: MouseButtons.Left,
+		normalizeToUnit: elRef,
 		onEndDrag: e => {
 			console.log("select stuff now");
 		}
 	});
+	const selectBounds = Bounds.fromCorners(
+		viewportBounds.lerp(selectDragInitial), 
+		viewportBounds.lerp(selectDragCurrent),
+	);
+	console.log(selectBounds);
 
 	const listeners = mergeListeners(
 		contextMenu,
 		moveDragListeners,
+		selectDragListeners,
 		{
 			onWheel, onClick,
 		},
@@ -238,10 +245,11 @@ export const Viewport: Layout.ViewComponent = ({
 
 			<ActiveSelection viewportInfo={viewportInfo} />
 
-			{selectDragging && <div style={{
-				pointerEvents: "none",
-				background: "#2080ff20",
-				
+			{selectDragging && <div className={css["selection"]} style={{
+				"--selection-start-x": `${selectBounds.left}px`,
+				"--selection-start-y": `${selectBounds.top}px`,
+				"--selection-end-x": `${selectBounds.right}px`,
+				"--selection-end-y": `${selectBounds.bottom}px`,
 			}} />}
 
 			<ViewToolbar>
