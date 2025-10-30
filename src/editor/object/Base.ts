@@ -7,16 +7,21 @@ export type BaseObject<T extends string, P> = {
 } & P;
 export type SkapObjectProperties<T extends string, O extends BaseObject<T, {}>> = {
 	type: T;
+	bounds: (obj: O) => Bounds;
 	selection: {
 		zIndex: (obj: O) => number;
 		/** Iff a click at pos would click on the object, return true */
 		clickbox: (obj: O, pos: Vec2) => boolean;
 	};
 	transform: {
-		/** Translate an object by `diff` */
-		translate: (obj: O, diff: Vec2) => O;
-		/** Scale an object on both axes, centered on `center` by `scaleFactor` */
-		scale: (obj: O, center: Vec2, scaleFactor: Vec2) => O;
+		/** 
+		 * Apply an affine transformation onto an object:  
+		 * Scale the object by `scale` centered on the origin, then
+		 * translate the object by `translate`.
+		 * 
+		 * A point on the object should undergo `x ↦ x * s + t`.
+		 */
+		affine: (obj: O, scale: Vec2, translate: Vec2) => O;
 	};
 };
 
@@ -25,22 +30,19 @@ export const makeObjectProperties = <O extends BaseObject<string, {}>>(
 	({ type, ...properties });
 
 /** ObjectProperties for simple bounds-type object */
-export const boundsObjectProperties = <O extends BaseObject<string, { bounds: Bounds }>>(
+export const makeSimpleBoundsObjectProperties = <O extends BaseObject<string, { bounds: Bounds }>>(
 	type: O["type"],
-	zIndex: number
+	zIndex: number,
 ) => makeObjectProperties<O>(type, {
+	bounds: obj => obj.bounds,
 	selection: {
 		zIndex: () => zIndex,
 		clickbox: (obj, pos) => obj.bounds.contains(pos),
 	},
 	transform: {
-		translate: (obj, diff) => ({
+		affine: (obj, scale, translate) => ({
 			...obj,
-			bounds: obj.bounds.translate(diff)
-		}),
-		scale: (obj, center, scale) => ({
-			...obj,
-			bounds: obj.bounds.scale(center, scale),
+			bounds: obj.bounds.affine(scale, translate)
 		}),
 	},
 });

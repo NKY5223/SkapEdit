@@ -42,8 +42,21 @@ export function elementIsRtl(target: Element) {
 	return window.getComputedStyle(target).direction === "rtl";
 }
 
+const log = <T,>(a: T) => (console.log(a), a);
+
 export type ListenerAttributeNames = keyof DOMAttributes<Element> & `on${string}`;
 export type ListenerAttributes<T = unknown> = Pick<DOMAttributes<T>, ListenerAttributeNames>;
-export const mergeListeners = <T = unknown>(...listeners: ListenerAttributes<T>[]): ListenerAttributes<T> => {
-	return Object.fromEntries(Map.groupBy(listeners.flatMap(l => Object.entries(l)), ([k]) => k).entries().map(([k, [, l]]) => [k, l]));
-}
+export const mergeListeners = <T = unknown>(...listeners: ListenerAttributes<T>[]): ListenerAttributes<T> => (
+	Object.fromEntries(
+		Map.groupBy(
+			listeners.flatMap(l => Object.entries(l)),
+			([k]) => k
+		)
+			.entries()
+			.map(([k, listeners]) => [k, listeners.reduce((f, [, l]) => (e: Event) => {
+				f(e);
+				l(e as never);
+			}, (_: Event) => { })])
+			.toArray()
+	)
+);

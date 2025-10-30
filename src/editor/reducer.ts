@@ -4,6 +4,12 @@ import { createReducerContext } from "@hooks/createReducerContext.tsx";
 import { Reducer } from "react";
 import { SkapMap, SkapObject, SkapRoom } from "./map.ts";
 
+export const getRoom = (
+	map: SkapMap,
+	targetRoom: ID,
+): SkapRoom | null => {
+	return map.rooms.get(targetRoom) ?? null;
+}
 export const getObject = (
 	map: SkapMap,
 	targetObject: ID
@@ -44,25 +50,27 @@ const matches = (obj: SkapObject, target: TargetObject) => {
 	if (typeof target === "string") return obj.id === target;
 	return target(obj);
 };
-type SkapMapAction = ({
-	type: "replace_room";
-	/** Room ID. */
-	target: ID;
-	/** Replacement function that returns new room, given old room. */
-	replacement: (prevRoom: SkapRoom) => SkapRoom;
-} |
-{
-	type: "replace_object";
-	/** Either an `ID` or a filter function. */
-	target: TargetObject;
-	/** Replacement function that returns new object, given old object. */
-	replacement: (prevObject: SkapObject) => SkapObject;
-} |
-{
-	type: "remove_object";
-	/** Either an `ID` or a filter function. */
-	target: TargetObject;
-});
+type SkapMapAction = (
+	| {
+		type: "replace_room";
+		/** Room ID. */
+		target: ID;
+		/** Replacement function that returns new room, given old room. */
+		replacement: (prevRoom: SkapRoom) => SkapRoom;
+	}
+	| {
+		type: "replace_object";
+		/** Either an `ID` or a filter function. */
+		target: TargetObject;
+		/** Replacement function that returns new object, given old object. */
+		replacement: (prevObject: SkapObject) => SkapObject;
+	}
+	| {
+		type: "remove_object";
+		/** Either an `ID` or a filter function. */
+		target: TargetObject;
+	}
+);
 const skapMapReducer: Reducer<SkapMap, SkapMapAction> = (map, action) => {
 	switch (action.type) {
 		case "replace_room": {

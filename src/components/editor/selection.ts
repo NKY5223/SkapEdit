@@ -1,5 +1,6 @@
 import { ID } from "@common/uuid.ts";
-import { SkapObject, SkapRoom } from "@editor/map.ts";
+import { SkapMap, SkapObject, SkapRoom } from "@editor/map.ts";
+import { getObject, getRoom } from "@editor/reducer.ts";
 import { createReducerContext } from "@hooks/createReducerContext.tsx";
 import { Reducer } from "react";
 
@@ -45,7 +46,7 @@ type SelectionAction = (
 export const makeObjectSelectableItem = (object: SkapObject): SelectableItem => ({ type: "object", object });
 export const makeRoomSelectableItem = (room: SkapRoom): SelectableItem => ({ type: "room", room });
 
-export const convertSelectableToSelection = (selectable: SelectableItem): SelectionItem => {
+export const selectableToSelection = (selectable: SelectableItem): SelectionItem => {
 	switch (selectable.type) {
 		case "object": {
 			return {
@@ -57,6 +58,26 @@ export const convertSelectableToSelection = (selectable: SelectableItem): Select
 			return {
 				type: selectable.type,
 				id: selectable.room.id,
+			};
+		}
+	}
+}
+export const selectionToSelectable = (selection: SelectionItem, map: SkapMap): SelectableItem => {
+	switch (selection.type) {
+		case "object": {
+			const object = getObject(map, selection.id);
+			if (!object) throw new Error(`No object with id ${selection.id}`);
+			return {
+				type: selection.type,
+				object,
+			};
+		}
+		case "room": {
+			const room = getRoom(map, selection.id);
+			if (!room) throw new Error(`No room with id ${selection.id}`);
+			return {
+				type: selection.type,
+				room,
 			};
 		}
 	}

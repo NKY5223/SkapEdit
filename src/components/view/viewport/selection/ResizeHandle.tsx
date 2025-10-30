@@ -1,5 +1,5 @@
 import { vec2 } from "@common/vec2.ts";
-import { toClassName } from "@components/utils.tsx";
+import { mergeListeners, toClassName } from "@components/utils.tsx";
 import { BoundsUpdateLRTBWH } from "@editor/bounds.ts";
 import { MouseButtons, useDrag } from "@hooks/useDrag.ts";
 import { FC } from "react";
@@ -39,23 +39,22 @@ export const ResizeHandle: FC<ResizeHandleProps> = ({
 	// Uses || for the case where x === y === 0
 	const name = [yn, xn].filter(x => x !== null).join("-") || "middle";
 
-	const { onPointerDown, dragging } = useDrag(MouseButtons.Left, null, (curr) => {
-		const sub = curr.sub(viewportInfo.viewportPos);
-		const normed = viewportToMap(viewportInfo, sub);
-		const rounded = vec2(
-			Math.round(normed[0] / rounding) * rounding,
-			Math.round(normed[1] / rounding) * rounding,
-		);
+	const { listeners, dragging } = useDrag({
+		buttons: MouseButtons.Left,
+		onDrag: (curr) => {
+			const sub = curr.sub(viewportInfo.viewportPos);
+			const normed = viewportToMap(viewportInfo, sub);
+			const rounded = vec2(
+				Math.round(normed[0] / rounding) * rounding,
+				Math.round(normed[1] / rounding) * rounding,
+			);
 
-		if (xn) {
-			onUpdate({
-				[xn]: rounded[0]
-			});
-		}
-		if (yn) {
-			onUpdate({
-				[yn]: rounded[1]
-			});
+			if (xn || yn) {
+				onUpdate({
+					...xn ? { [xn]: rounded[0] } : {},
+					...yn ? { [yn]: rounded[1] } : {},
+				});
+			}
 		}
 	});
 	const className = toClassName(
@@ -64,9 +63,10 @@ export const ResizeHandle: FC<ResizeHandleProps> = ({
 		dragging && css["dragging"],
 	);
 	return (
-		<div className={className} onPointerDown={e => {
-			e.stopPropagation();
-			onPointerDown(e);
-		}}></div>
+		<div className={className} {...mergeListeners({
+			onPointerDown: e => {
+				e.stopPropagation();
+			}
+		}, listeners)}></div>
 	);
 }

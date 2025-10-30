@@ -1,13 +1,13 @@
-import { useState, useEffect, RefObject, PointerEventHandler, Dispatch, SetStateAction, useRef } from "react";
+import { useState, useEffect, RefObject, PointerEventHandler, Dispatch, SetStateAction, useRef, useEffectEvent } from "react";
 import { Vec2, vec2, zero } from "../common/vec2.ts";
 import { elementIsRtl } from "@components/utils.tsx";
 
 export type MouseButtons = number;
 export const MouseButtons: {
-    readonly Left: MouseButtons;
-    readonly Middle: MouseButtons;
-    readonly Right: MouseButtons;
-    readonly All: MouseButtons;
+	readonly Left: MouseButtons;
+	readonly Middle: MouseButtons;
+	readonly Right: MouseButtons;
+	readonly All: MouseButtons;
 } = {
 	Left: 1 << 0,
 	Middle: 1 << 1,
@@ -18,7 +18,7 @@ export const MouseButtons: {
 
 const mouseButtonMatches = (button: number, buttons: MouseButtons) => !!(1 << button & buttons);
 
-export const useDrag = (
+type DragParams = {
 	/** Bitflags: mouse buttons to use for dragging. Use `MouseButton.All` for any button. */
 	buttons: MouseButtons,
 	/** 
@@ -27,18 +27,30 @@ export const useDrag = (
 	 */
 	normalize?: RefObject<Element | null> | null,
 	onDrag?: (current: Vec2, previous: Vec2, beforeDrag: Vec2, event: PointerEvent) => void,
+	onEndDrag?: (event: PointerEvent) => void,
 	/** If set to true, will flip the x direction when `document.dir === "rtl"`. Will not work without normalize. Defaults to true. */
-	normalizeDir: boolean = true,
-	enabled: boolean = true,
-): {
+	normalizeDir?: boolean,
+	enabled?: boolean,
+};
+export const useDrag = ({
+	buttons,
+	normalize = null,
+	onDrag, onEndDrag,
+	normalizeDir = true,
+	enabled = true,
+}: DragParams): {
+	dragging: boolean;
 	/** Current pointer position. */
-	current: Vec2;
+	currentPos: Vec2;
+	setCurrentPos: Dispatch<SetStateAction<Vec2>>;
+
 	/** Pointer position *before* dragging. */
 	beforeDrag: Vec2;
-	dragging: boolean;
-	/**	Attach to element to start dragging. */
-	onPointerDown: PointerEventHandler;
-	setCurrentPos: Dispatch<SetStateAction<Vec2>>;
+
+	/**	Attach these listeners to element. */
+	listeners: {
+		onPointerDown: PointerEventHandler;
+	};
 } => {
 	const [dragging, setDragging] = useState(false);
 	const [beforeDrag, setBeforeDrag] = useState(zero);
@@ -82,12 +94,13 @@ export const useDrag = (
 		window.addEventListener("pointermove", handleMove);
 		return () => window.removeEventListener("pointermove", handleMove);
 	}, [dragging, enabled]);
-	// Stop dragging
+	// End dragging
 	useEffect(() => {
 		const handleBlur = () => setDragging(false);
 		const handlePointerUp = (event: PointerEvent) => {
 			if (mouseButtonMatches(event.button, buttons)) {
 				setDragging(false);
+				onEndDrag?.(event);
 			}
 		}
 		window.addEventListener("pointerup", handlePointerUp);
@@ -128,9 +141,11 @@ export const useDrag = (
 	};
 
 	return {
-		current: currentPos, setCurrentPos: setCurrentPos,
+		currentPos: currentPos, setCurrentPos: setCurrentPos,
 		beforeDrag,
 		dragging,
-		onPointerDown,
+		listeners: {
+			onPointerDown,
+		},
 	};
 }

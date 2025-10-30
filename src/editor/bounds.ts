@@ -143,6 +143,23 @@ export class Bounds {
 		});
 	}
 
+	/** 
+	 * @returns a `Bounds` that contains all passed `Bounds`es.
+	 * If passed [], returns {0, 0, 0, 0}.
+	 */
+	static merge(boundses: Bounds[]): Bounds {
+		if (boundses.length === 0) {
+			return new Bounds({ left: 0, right: 0, top: 0, bottom: 0 });
+		}
+		const [first, ...rest] = boundses;
+		return rest.reduce((a, b) => new Bounds({
+			left: Math.min(a.left, b.left),
+			top: Math.min(a.top, b.top),
+			right: Math.max(a.right, b.right),
+			bottom: Math.max(a.bottom, b.bottom),
+		}), first);
+	}
+
 	/** Returns true if point is within bounds OR is on the boundary. */
 	contains(point: Vec2): boolean {
 		return (
@@ -162,6 +179,12 @@ export class Bounds {
 		return new Bounds({ 
 			topLeft: this.topLeft.sub(center).mul(scale).add(center),
 			bottomRight: this.bottomRight.sub(center).mul(scale).add(center),
+		});
+	}
+	affine(scale: Vec2, translate: Vec2): Bounds {
+		return new Bounds({ 
+			topLeft: this.topLeft.mul(scale).add(translate),
+			bottomRight: this.bottomRight.mul(scale).add(translate),
 		});
 	}
 }

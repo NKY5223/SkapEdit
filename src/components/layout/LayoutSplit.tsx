@@ -28,8 +28,12 @@ export const LayoutSplit: LayoutFC<Layout.SplitNode, LayoutSplitProps> = ({
 	});
 	const splitRef = useRef<HTMLDivElement>(null);
 
-	const { onPointerDown: startDrag, dragging: resizing } = useDrag(MouseButtons.Left, splitRef, curr => {
-		setRatio(axis === "x" ? curr[0] : curr[1]);
+	const { listeners, dragging: resizing } = useDrag({
+		buttons: MouseButtons.Left,
+		normalize: splitRef,
+		onDrag: curr => {
+			setRatio(axis === "x" ? curr[0] : curr[1]);
+		}
 	});
 
 	const handleClassName = toClassName(
@@ -86,7 +90,7 @@ export const LayoutSplit: LayoutFC<Layout.SplitNode, LayoutSplitProps> = ({
 		const dir =
 			(e.code === less ? -1 : e.code === more ? 1 : 0)
 			* (axis === "x" && splitRef.current && elementIsRtl(splitRef.current) ? -1 : 1);
-		
+
 		setRatio(ratio + 0.025 * dir);
 	}
 
@@ -95,8 +99,9 @@ export const LayoutSplit: LayoutFC<Layout.SplitNode, LayoutSplitProps> = ({
 			style={{ "--ratio": `${ratio * 100}%` }}
 		>
 			<div className={css["split-child"]}>{first}</div>
-			<div className={handleClassName} {...contextMenu}
-				onPointerDown={startDrag}
+			<div className={handleClassName} 
+				{...contextMenu}
+				{...listeners}
 				onKeyDown={handleKeyDown}
 				tabIndex={0}
 				role="separator"

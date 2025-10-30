@@ -2,9 +2,9 @@ import { sortBy } from "@common/array.ts";
 import { vec2, Vec2, zero } from "@common/vec2.ts";
 import "@common/vector.ts";
 import { makeSection, makeSingle, Sections, useContextMenu } from "@components/contextmenu/ContextMenu.ts";
-import { convertSelectableToSelection, makeObjectSelectableItem, makeRoomSelectableItem, useDispatchSelection } from "@components/editor/selection.ts";
+import { selectableToSelection, makeObjectSelectableItem, makeRoomSelectableItem, useDispatchSelection } from "@components/editor/selection.ts";
 import { Layout } from "@components/layout/layout.ts";
-import { toClassName } from "@components/utils.tsx";
+import { mergeListeners, toClassName } from "@components/utils.tsx";
 import { Bounds } from "@editor/bounds.ts";
 import { MouseButtons, useDrag } from "@hooks/useDrag.ts";
 import { useElementSize } from "@hooks/useElementSize.ts";
@@ -15,7 +15,7 @@ import { ViewToolbar } from "../../layout/LayoutViewToolbar.tsx";
 import { ActiveSelection } from "./selection/ActiveSelection.tsx";
 import { Camera, useCamera } from "./camera.ts";
 import { viewportToMap } from "./mapping.ts";
-import { getClickbox, getZIndex } from "./selection/selectableProperties.ts";
+import { getClickbox, getZIndex } from "./selection/getObjectProperties.ts";
 import { BackgroundObstacleWebGLRenderer, BackgroundWebGLRenderer } from "./renderer/background.ts";
 import { LavaWebGLRenderer } from "./renderer/lava.ts";
 import { ObstacleWebGLRenderer } from "./renderer/obstacle.ts";
@@ -111,13 +111,16 @@ export const Viewport: Layout.ViewComponent = ({
 	const map = useSkapMap();
 	const [scaleIndex, setScaleIndex] = useState(0);
 	const [camera, setCamera] = useCamera({ pos: zero, scale: scaleBase });
-	const { dragging, onPointerDown } = useDrag(MouseButtons.Middle, null, (curr, prev) => {
-		setCamera(camera => {
-			const diff = curr.sub(prev).div(camera.scale);
-			return {
-				pos: camera.pos.sub(diff),
-			};
-		});
+	const { dragging, listeners: moveDragListeners } = useDrag({
+		buttons: MouseButtons.Middle,
+		onDrag: (curr, prev) => {
+			setCamera(camera => {
+				const diff = curr.sub(prev).div(camera.scale);
+				return {
+					pos: camera.pos.sub(diff),
+				};
+			});
+		}
 	});
 	const onWheel: React.WheelEventHandler<HTMLElement> = e => {
 		const d = e.deltaY * wheelMult(e.deltaMode);
@@ -184,32 +187,48 @@ export const Viewport: Layout.ViewComponent = ({
 			});
 			return;
 		}
-		// dispatchSelection({
-		// 	type: "set_selection",
-		// 	selection: [convertSelectableToSelection(item)]
-		// });
-		dispatchSelection({
-			type: "add_selection_item",
-			item: convertSelectableToSelection(item)
-		});
+		if (e.shiftKey) {
+			dispatchSelection({
+				type: "add_selection_item",
+				item: selectableToSelection(item)
+			});
+		} else {
+			dispatchSelection({
+				type: "set_selection",
+				selection: [selectableToSelection(item)]
+			});
+		}
 	}
 
 	const className = toClassName(
 		css["viewport"],
 		dragging && css["dragging"],
 	);
+
+	const { 
+		dragging: selectDragging, 
+		listeners: selectDragListeners, 
+		beforeDrag: selectDragInitial,
+		currentPos: selectDragCurrent,
+	} = useDrag({
+		buttons: MouseButtons.Left,
+		onEndDrag: e => {
+			console.log("select stuff now");
+		}
+	});
+
+	const listeners = mergeListeners(
+		contextMenu,
+		moveDragListeners,
+		{
+			onWheel, onClick,
+		},
+	);
 	return (
 		<div ref={elRef} className={className}
-			onPointerDown={onPointerDown} onWheel={onWheel} onClick={onClick}
-			// onKeyDown={e => {
-			// 	console.log(e);
-			// 	if (e.code === "Escape") {
-			// 		dispatchSelection({
-			// 			type: "clear_selection",
-			// 		});
-			// 	}
-			// }}
-			{...contextMenu}
+			tabIndex={0}
+			{...listeners}
+
 			style={{
 				"--viewport-x": `${camera.x}px`,
 				"--viewport-y": `${camera.y}px`,
@@ -218,6 +237,12 @@ export const Viewport: Layout.ViewComponent = ({
 			<ViewportCanvas viewportInfo={viewportInfo} layers={layers} />
 
 			<ActiveSelection viewportInfo={viewportInfo} />
+
+			{selectDragging && <div style={{
+				pointerEvents: "none",
+				background: "#2080ff20",
+				
+			}} />}
 
 			<ViewToolbar>
 				{viewSwitch}
