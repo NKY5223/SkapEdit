@@ -43,6 +43,9 @@
 		vertical-align: middle;
 		margin-inline-start: 0.25em;
 	}
+	code {
+		font-family: var(--theme-font-monospace);
+	}
 }
 @layer misc {
 	#app_root {

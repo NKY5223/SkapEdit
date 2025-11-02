@@ -141,7 +141,7 @@ export const Inspector: Layout.ViewComponent = ({
 					<span>
 						<Icon icon="select" title="Current Selection" />
 						&nbsp;
-						<code>
+						<code style={{ fontSize: ".75em" }}>
 							<Translate k="generic.list_string" strings={selection.map((item) => item.id)} />
 						</code>
 					</span>

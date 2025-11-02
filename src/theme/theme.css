@@ -60,6 +60,7 @@
 	--theme-error-bd: oklch(.30 .50 10);
 
 	--theme-font: "Inter", system-ui, sans-serif;
+	--theme-font-monospace: "NKYJuliaMonoExtension", "JuliaMono", "Consolas", monospace;
 
 	--theme-border-width: 1px;
 	--theme-border-radius: .25rem;
