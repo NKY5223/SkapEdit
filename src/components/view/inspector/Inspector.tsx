@@ -54,7 +54,7 @@ export const Inspector: Layout.ViewComponent = ({
 		}
 		if (selection.length > 1) {
 			return (
-				<p>Multiselect</p>
+				<p>Currently selected: {selection.length} items</p>
 			);
 		}
 		const sel = selection[0];

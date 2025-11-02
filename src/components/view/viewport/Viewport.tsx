@@ -1,25 +1,25 @@
 import { sortBy } from "@common/array.ts";
 import { vec2, Vec2, zero } from "@common/vec2.ts";
 import "@common/vector.ts";
-import { makeSection, makeSingle, Sections, useContextMenu } from "@components/contextmenu/ContextMenu.ts";
-import { selectableToSelection, makeObjectSelectableItem, makeRoomSelectableItem, useDispatchSelection } from "@components/editor/selection.ts";
+import { makeSection, makeSingle, makeSubmenu, Sections, useContextMenu } from "@components/contextmenu/ContextMenu.ts";
+import { makeObjectSelectableItem, makeObjectSelectionItem, makeRoomSelectableItem, selectableToSelection, useDispatchSelection, useEditorSelection } from "@components/editor/selection.ts";
 import { Layout } from "@components/layout/layout.ts";
 import { mergeListeners, toClassName } from "@components/utils.tsx";
 import { Bounds } from "@editor/bounds.ts";
+import { useDispatchSkapMap, useSkapMap } from "@editor/reducer.ts";
 import { MouseButtons, useDrag } from "@hooks/useDrag.ts";
 import { useElementSize } from "@hooks/useElementSize.ts";
 import React, { FC, useMemo, useRef, useState } from "react";
-import { SkapRoom } from "../../../editor/map.ts";
-import { useSkapMap } from "@editor/reducer.ts";
+import { makeObstacle, SkapRoom } from "../../../editor/map.ts";
 import { ViewToolbar } from "../../layout/LayoutViewToolbar.tsx";
-import { ActiveSelection } from "./selection/ActiveSelection.tsx";
 import { Camera, useCamera } from "./camera.ts";
 import { viewportToMap } from "./mapping.ts";
-import { getClickbox, getZIndex } from "./selection/getObjectProperties.ts";
 import { BackgroundObstacleWebGLRenderer, BackgroundWebGLRenderer } from "./renderer/background.ts";
 import { LavaWebGLRenderer } from "./renderer/lava.ts";
 import { ObstacleWebGLRenderer } from "./renderer/obstacle.ts";
 import { TextLayer } from "./renderer/text.tsx";
+import { ActiveSelection } from "./selection/ActiveSelection.tsx";
+import { getClickbox, getSelectableBounds, getZIndex } from "./selection/getObjectProperties.ts";
 import css from "./Viewport.module.css";
 import { WebGLLayer } from "./webgl/WebGLLayer.tsx";
 
@@ -109,6 +109,17 @@ export const Viewport: Layout.ViewComponent = ({
 
 	const elRef = useRef<HTMLDivElement>(null);
 	const map = useSkapMap();
+	const dispatchMap = useDispatchSkapMap();
+
+	const selection = useEditorSelection();
+	const dispatchSelection = useDispatchSelection();
+
+	const room = map.rooms.values().next().value;
+	if (!room) {
+		throw new Error("Map has no rooms");
+	}
+
+	// #region Camera
 	const [scaleIndex, setScaleIndex] = useState(0);
 	const [camera, setCamera] = useCamera({ pos: zero, scale: scaleBase });
 	const { dragging, listeners: moveDragListeners } = useDrag({
@@ -132,6 +143,7 @@ export const Viewport: Layout.ViewComponent = ({
 			scale: newScale
 		});
 	}
+	// #endregion
 
 	const contextMenu = useContextMenu([
 		makeSection(Sections.viewport, [
@@ -141,6 +153,20 @@ export const Viewport: Layout.ViewComponent = ({
 					x: 0, y: 0, scale: 5,
 				});
 			}),
+			makeSubmenu("viewport.add_object", "add", [
+				makeSingle("viewport.add_object.obstacle", null, () => {
+					const object = makeObstacle(0, 0, 10, 10);
+					dispatchMap({
+						type: "add_object",
+						roomId: room.id,
+						object,
+					});
+					dispatchSelection({
+						type: "set_selection",
+						selection: [makeObjectSelectionItem(object)]
+					});
+				})
+			])
 		]),
 	]);
 
@@ -149,10 +175,6 @@ export const Viewport: Layout.ViewComponent = ({
 	const viewportPos = vec2(rect?.left ?? 0, rect?.top ?? 0);
 	const viewportBounds = camera.getBounds(viewportSize);
 
-	const room = map.rooms.values().next().value;
-	if (!room) {
-		throw new Error("Map has no rooms");
-	}
 	const viewportInfo: ViewportInfo = {
 		camera,
 		viewportSize,
@@ -161,20 +183,27 @@ export const Viewport: Layout.ViewComponent = ({
 		viewportBounds,
 	};
 
-	const dispatchSelection = useDispatchSelection();
 
+	const selectables = [
+		...room.objects.values().map(makeObjectSelectableItem),
+		makeRoomSelectableItem(room),
+	];
+
+	// #region Single-item selection
 	const onClick: React.MouseEventHandler = e => {
 		// Must be a click originating in this element
 		if (e.target !== e.currentTarget) return;
+
+		// Mouse position diff (pixels)
+		const diff = selectDragInitial.sub(selectDragCurrent).mul(viewportSize);
+		// Must be within 2px (i.e. not dragging to select)
+		if (diff.mag() > 2) return;
 
 		const { left, top } = e.currentTarget.getBoundingClientRect();
 		const clickPos = viewportToMap(viewportInfo, vec2(e.clientX - left, e.clientY - top));
 
 		const clickedItems = sortBy(
-			[
-				...room.objects.values().map(makeObjectSelectableItem),
-				makeRoomSelectableItem(room),
-			].filter(obj => getClickbox(obj, clickPos)),
+			selectables.filter(obj => getClickbox(obj, clickPos)),
 			getZIndex,
 			// Descending order of z-index
 			(a, b) => b - a
@@ -189,7 +218,7 @@ export const Viewport: Layout.ViewComponent = ({
 		}
 		if (e.shiftKey) {
 			dispatchSelection({
-				type: "add_selection_item",
+				type: "add_item",
 				item: selectableToSelection(item)
 			});
 		} else {
@@ -199,38 +228,80 @@ export const Viewport: Layout.ViewComponent = ({
 			});
 		}
 	}
+	// #endregion
 
 	const className = toClassName(
 		css["viewport"],
 		dragging && css["dragging"],
 	);
 
-	const { 
-		dragging: selectDragging, 
-		listeners: selectDragListeners, 
+	// #region Multi-item selection
+	const {
+		dragging: selectDragging,
+		listeners: selectDragListeners,
 		beforeDrag: selectDragInitial,
 		currentPos: selectDragCurrent,
 	} = useDrag({
 		buttons: MouseButtons.Left,
 		normalizeToUnit: elRef,
 		onEndDrag: e => {
-			console.log("select stuff now");
+			const newselect = selectables.filter(s => selectBounds.containsBounds(getSelectableBounds(s)));
+			dispatchSelection({
+				type: "set_selection",
+				selection: newselect.map(selectableToSelection)
+			});
 		}
 	});
 	const selectBounds = Bounds.fromCorners(
-		viewportBounds.lerp(selectDragInitial), 
+		viewportBounds.lerp(selectDragInitial),
 		viewportBounds.lerp(selectDragCurrent),
 	);
-	console.log(selectBounds);
+	// #endregion
+
+	const onKeyDown: React.KeyboardEventHandler = e => {
+		if (e.code === "Delete" || e.code === "Backspace") {
+			selection.forEach(s => {
+				switch (s.type) {
+					case "room": {
+						console.warn("Cannot delete room bounds (???)");
+						return;
+					}
+					case "object": {
+						dispatchMap({
+							type: "remove_object",
+							target: s.id
+						});
+						dispatchSelection({
+							type: "remove_item",
+							itemId: s.id,
+						});
+					}
+				}
+			});
+		}
+		if (e.code === "KeyA" && e.ctrlKey) {
+			e.preventDefault();
+			dispatchSelection({
+				type: "set_selection",
+				selection: selectables.map(selectableToSelection)
+			});
+		}
+		if (e.code === "Escape") {
+			dispatchSelection({
+				type: "clear_selection"
+			});
+		}
+	}
 
 	const listeners = mergeListeners(
 		contextMenu,
 		moveDragListeners,
 		selectDragListeners,
 		{
-			onWheel, onClick,
+			onWheel, onClick, onKeyDown
 		},
 	);
+
 	return (
 		<div ref={elRef} className={className}
 			tabIndex={0}

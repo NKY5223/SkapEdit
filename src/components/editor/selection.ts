@@ -37,14 +37,21 @@ type SelectionAction = (
 		type: "clear_selection";
 	}
 	| {
-		type: "add_selection_item";
+		type: "add_item";
 		item: SelectionItem;
+	}
+	| {
+		type: "remove_item";
+		itemId: ID;
 	}
 );
 
 // #region constructors
 export const makeObjectSelectableItem = (object: SkapObject): SelectableItem => ({ type: "object", object });
 export const makeRoomSelectableItem = (room: SkapRoom): SelectableItem => ({ type: "room", room });
+
+export const makeObjectSelectionItem = (object: SkapObject): SelectionItem => ({ type: "object", id: object.id });
+export const makeRoomSelectionItem = (room: SkapRoom): SelectionItem => ({ type: "room", id: room.id });
 
 export const selectableToSelection = (selectable: SelectableItem): SelectionItem => {
 	switch (selectable.type) {
@@ -92,8 +99,11 @@ const selectionReducer: Reducer<EditorSelection, SelectionAction> = (selection, 
 		case "clear_selection": {
 			return [];
 		}
-		case "add_selection_item": {
+		case "add_item": {
 			return [...selection, action.item];
+		}
+		case "remove_item": {
+			return selection.filter(s => s.id !== action.itemId);
 		}
 	}
 	action satisfies never;

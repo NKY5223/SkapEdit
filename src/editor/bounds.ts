@@ -178,20 +178,37 @@ export class Bounds {
 			point[1] <= this.bottom
 		);
 	}
+	containsBounds(bounds: Bounds): boolean {
+// 		console.log(`%cbounds.left >= this.left
+// %cbounds.right <= this.right
+// %cbounds.top >= this.top
+// %cbounds.bottom <= this.bottom`,
+// 			`color: ` + (bounds.left >= this.left ? "lime" : "red"),
+// 			`color: ` + (bounds.right <= this.right ? "lime" : "red"),
+// 			`color: ` + (bounds.top >= this.top ? "lime" : "red"),
+// 			`color: ` + (bounds.right <= this.bottom ? "lime" : "red"),
+// 		);
+		return (
+			bounds.left >= this.left &&
+			bounds.right <= this.right &&
+			bounds.top >= this.top &&
+			bounds.bottom <= this.bottom
+		);
+	}
 	translate(by: Vec2): Bounds {
-		return new Bounds({ 
+		return new Bounds({
 			topLeft: this.topLeft.add(by),
 			bottomRight: this.bottomRight.add(by),
 		});
 	}
 	scale(center: Vec2, scale: Vec2): Bounds {
-		return new Bounds({ 
+		return new Bounds({
 			topLeft: this.topLeft.sub(center).mul(scale).add(center),
 			bottomRight: this.bottomRight.sub(center).mul(scale).add(center),
 		});
 	}
 	affine(scale: Vec2, translate: Vec2): Bounds {
-		return new Bounds({ 
+		return new Bounds({
 			topLeft: this.topLeft.mul(scale).add(translate),
 			bottomRight: this.bottomRight.mul(scale).add(translate),
 		});

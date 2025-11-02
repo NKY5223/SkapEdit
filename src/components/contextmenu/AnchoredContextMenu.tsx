@@ -28,20 +28,39 @@ export const AnchoredContextMenu: FC<AnchoredContextMenuProps> = ({
 		!notRoot && css["root"],
 	);
 
-	// if (items.length === 0) {
-	// 	return null;
-	// }
+	if (!notRoot) {
+		return (
+			<menu ref={menuRef} id={id} className={className} popover="auto">
+				<ErrorBoundary location={`AnchoredContextMenu`} fallback={(_, orig) => (
+					<div className={css["error"]}>{orig}</div>
+				)}>
+					<clearContextMenuContext.Provider value={() => {
+						try {
+							menuRef.current?.hidePopover();
+						} catch (err) {
+							console.error("Error hiding anchoredcontextmenu popover: ", err);
+						}
+					}}>
+						{items.map(item => (
+							<ContextMenuItem key={item.id} item={item} />
+						))}
+					</clearContextMenuContext.Provider>
+				</ErrorBoundary>
+			</menu>
+		);
+	}
 	return (
-		<menu ref={menuRef} id={id} className={className} popover={notRoot ? undefined : "auto"}>
+		<menu ref={menuRef} id={id} className={className}>
 			<ErrorBoundary location={`AnchoredContextMenu`} fallback={(_, orig) => (
 				<div className={css["error"]}>{orig}</div>
 			)}>
-				<clearContextMenuContext.Provider value={() => menuRef.current?.hidePopover()}>
 				{items.map(item => (
 					<ContextMenuItem key={item.id} item={item} />
 				))}
-				</clearContextMenuContext.Provider>
 			</ErrorBoundary>
 		</menu>
 	);
+	// if (items.length === 0) {
+	// 	return null;
+	// }
 }

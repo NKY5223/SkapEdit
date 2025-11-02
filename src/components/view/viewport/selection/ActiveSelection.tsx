@@ -201,6 +201,7 @@ const BoundsSelection = <O,>({
 		buttons: MouseButtons.Left,
 		enabled: active,
 		normalizeDir: false,
+		stopPropagation: true,
 		onDrag: (curr, _, orig) => {
 			if (!active) return;
 			const diff = curr.sub(orig).div(viewportInfo.camera.scale);
@@ -260,6 +261,7 @@ const CircleSelection: FC<CircleSelectionProps> = ({
 		buttons: MouseButtons.Left,
 		normalizeDir: false,
 		enabled: active,
+		stopPropagation: true,
 		onDrag: (curr, _, orig) => {
 			if (!active) return;
 			const diff = curr.sub(orig).div(viewportInfo.camera.scale);

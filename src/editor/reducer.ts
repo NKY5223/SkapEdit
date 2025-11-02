@@ -70,6 +70,11 @@ type SkapMapAction = (
 		/** Either an `ID` or a filter function. */
 		target: TargetObject;
 	}
+	| {
+		type: "add_object";
+		roomId: ID;
+		object: SkapObject;
+	}
 );
 const skapMapReducer: Reducer<SkapMap, SkapMapAction> = (map, action) => {
 	switch (action.type) {
@@ -112,6 +117,19 @@ const skapMapReducer: Reducer<SkapMap, SkapMapAction> = (map, action) => {
 				};
 			}
 			return map;
+		}
+		case "add_object": {
+			const { roomId: roomId, object } = action;
+			const room = map.rooms.get(roomId);
+			if (!room) return map;
+			const newRoom: SkapRoom = {
+				...room,
+				objects: idMapWith(room.objects, object),
+			};
+			return {
+				...map,
+				rooms: idMapWith(map.rooms, newRoom),
+			};
 		}
 	}
 	return map;

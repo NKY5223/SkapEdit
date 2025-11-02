@@ -1,6 +1,7 @@
 .viewport {
 	position: absolute;
 	inset: 0;
+	user-select: none;
 
 	--viewport-x: 0px;
 	--viewport-y: 0px;
@@ -9,6 +10,14 @@
 	&.dragging {
 		cursor: move;
 	}
+	&:focus-visible::after {
+		content: "";
+		pointer-events: none;
+
+		position: absolute;
+		inset: 0;
+		box-shadow: inset 0 0 .125em .25em var(--theme-primary-bg-0);
+	}
 }
 .viewport-canvas {
 	position: absolute;
@@ -16,7 +25,6 @@
 	/* grid-area: 1 / 1 / -1 / -1; */
 	overflow: hidden;
 	pointer-events: none;
-	user-select: none;
 
 	& > * {
 		position: absolute;

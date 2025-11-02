@@ -31,13 +31,16 @@ type DragParams = {
 	/** If set to true, will flip the x direction when `document.dir === "rtl"`. Will not work without normalize. Defaults to true. */
 	normalizeDir?: boolean;
 	enabled?: boolean;
+	/** If set to true, will call `.stopPropagtion` on pointerdown events. */
+	stopPropagation?: boolean;
 };
 export const useDrag = ({
 	buttons,
 	normalizeToUnit: normalize = null,
 	onDrag, onEndDrag,
 	normalizeDir = true,
-	enabled = true,
+	enabled = true, 
+	stopPropagation = false,
 }: DragParams): {
 	dragging: boolean;
 	/** Current pointer position. */
@@ -114,6 +117,7 @@ export const useDrag = ({
 
 	const onPointerDown: PointerEventHandler = event => {
 		if (enabled && mouseButtonMatches(event.button, buttons)) {
+			if (stopPropagation) event.stopPropagation();
 			setDragging(true);
 			const pointer = vec2(event.clientX, event.clientY);
 			
