@@ -101,6 +101,9 @@ export const useDrag = ({
 	useEffect(() => {
 		const handleBlur = () => setDragging(false);
 		const handlePointerUp = (event: PointerEvent) => {
+			// Only call endDrag when not dragging
+			// This lets stopPropagation actually work on onEndDrag users
+			if (!dragging) return;
 			if (mouseButtonMatches(event.button, buttons)) {
 				setDragging(false);
 				onEndDrag?.(event);
@@ -118,6 +121,7 @@ export const useDrag = ({
 	const onPointerDown: PointerEventHandler = event => {
 		if (enabled && mouseButtonMatches(event.button, buttons)) {
 			if (stopPropagation) event.stopPropagation();
+			console.log("pointerdown", event.currentTarget);
 			setDragging(true);
 			const pointer = vec2(event.clientX, event.clientY);
 			

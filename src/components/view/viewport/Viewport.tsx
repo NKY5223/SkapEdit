@@ -246,6 +246,7 @@ export const Viewport: Layout.ViewComponent = ({
 		normalizeToUnit: elRef,
 		onEndDrag: e => {
 			const newselect = selectables.filter(s => selectBounds.containsBounds(getSelectableBounds(s)));
+			console.log("a");
 			dispatchSelection({
 				type: "set_selection",
 				selection: newselect.map(selectableToSelection)

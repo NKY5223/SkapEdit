@@ -41,6 +41,7 @@ export const ResizeHandle: FC<ResizeHandleProps> = ({
 
 	const { listeners, dragging } = useDrag({
 		buttons: MouseButtons.Left,
+		stopPropagation: true,
 		onDrag: (curr) => {
 			const sub = curr.sub(viewportInfo.viewportPos);
 			const normed = viewportToMap(viewportInfo, sub);
