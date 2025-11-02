@@ -38,6 +38,7 @@ export type TranslationArgs = {
 	"contextmenu.item.name.viewport.reset_camera": {};
 	"contextmenu.item.name.viewport.add_object": {};
 	"contextmenu.item.name.viewport.add_object.obstacle": {};
+	"contextmenu.item.name.viewport.add_object.lava": {};
 	// #endregion
 	
 	// #region Topbar
@@ -76,6 +77,8 @@ export type TranslationArgs = {
 
 	"generic.action.open": {};
 	"generic.action.close": {};
+
+	"generic.list_string": { strings: string[]; };
 
 	"generic.text": {};
 	"generic.lorem": {};

@@ -13,6 +13,7 @@ import { Vec2Input } from "@components/form/Vec2Input";
 import { FormTitle } from "@components/form/FormTitle.tsx";
 import { useTranslate } from "@components/translate/translationArgs.ts";
 import { currentBuild } from "@common/currentBuild.ts";
+import { Translate } from "@components/translate/Translate.tsx";
 
 export const Inspector: Layout.ViewComponent = ({
 	viewSwitch,
@@ -140,11 +141,9 @@ export const Inspector: Layout.ViewComponent = ({
 					<span>
 						<Icon icon="select" title="Current Selection" />
 						&nbsp;
-						{selection.map((item) => (
-							<Fragment key={item.id}>
-								<code>{item.id},</code>
-							</Fragment>
-						))}
+						<code>
+							<Translate k="generic.list_string" strings={selection.map((item) => item.id)} />
+						</code>
 					</span>
 					{selectionForm}
 				</FormSection>

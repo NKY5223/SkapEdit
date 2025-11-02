@@ -121,7 +121,6 @@ export const useDrag = ({
 	const onPointerDown: PointerEventHandler = event => {
 		if (enabled && mouseButtonMatches(event.button, buttons)) {
 			if (stopPropagation) event.stopPropagation();
-			console.log("pointerdown", event.currentTarget);
 			setDragging(true);
 			const pointer = vec2(event.clientX, event.clientY);
 			

@@ -45,6 +45,7 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"contextmenu.item.name.viewport.reset_camera": "Reset Camera",
 	"contextmenu.item.name.viewport.add_object": "Add Object",
 	"contextmenu.item.name.viewport.add_object.obstacle": "Obstacle",
+	"contextmenu.item.name.viewport.add_object.lava": "Lava",
 	// #endregion
 
 	// #region Topbar
@@ -64,7 +65,7 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 		if (!github) return makeCode([`Current build: `, mode, ` `, version]);
 		const { repoOwner, repoName, commitSha, repoUrl, commitUrl } = github;
 		return makeCode([
-			`Current build: `, mode, ` `, version, ` from `, 
+			`Current build: `, mode, ` `, version, ` from `,
 			makeLink(repoUrl, [repoOwner, `/`, repoName]), ` commit `,
 			makeLink(commitUrl, commitSha.slice(0, 7)),
 		]);
@@ -81,6 +82,8 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 
 	"generic.action.open": "Open",
 	"generic.action.close": "Close",
+
+	"generic.list_string": ({ strings }) => strings.join(", "),
 
 	"generic.text": "Text",
 

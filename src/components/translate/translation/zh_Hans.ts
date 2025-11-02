@@ -44,7 +44,8 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"contextmenu.item.name.viewport": "视口",
 	"contextmenu.item.name.viewport.reset_camera": "重置相机",
 	"contextmenu.item.name.viewport.add_object": "添加",
-	"contextmenu.item.name.viewport.add_object.obstacle": "Obstacle",
+	"contextmenu.item.name.viewport.add_object.obstacle": "障碍",
+	"contextmenu.item.name.viewport.add_object.lava": "岩浆",
 	// #endregion
 
 	// #region Topbar
@@ -79,6 +80,8 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"generic.position.width": "宽",
 	"generic.position.height": "高",
 	
+	"generic.list_string": ({ strings }) => strings.join("、"),
+
 	"generic.action.open": "开",
 	"generic.action.close": "关",
 
