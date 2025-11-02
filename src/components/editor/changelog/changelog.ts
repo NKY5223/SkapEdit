@@ -13,8 +13,9 @@ export const changelog: ChangelogEntry[] = [
 	{
 		version: "0.1.1",
 		message: [
-			`message goes here`,
+			`Added multi-select.`,
 		],
+		time: new Date(`2025-11-02`),
 	},
 	{
 		version: "0.1.0",
