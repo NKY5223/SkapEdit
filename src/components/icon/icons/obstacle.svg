@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+	<path d="
+		M02 02 h4 L02 06 v-4 Z
+		M12 02 h4 L02 16 v-4 Z
+		M22 02 v4 L06 22 h-4 Z
+		M22 12 v4 L16 22 h-4 Z
+		M22 21 v1 L22 22 h-1 Z
+	" />
+</svg>

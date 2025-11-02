@@ -154,7 +154,7 @@ export const Viewport: Layout.ViewComponent = ({
 				});
 			}),
 			makeSubmenu("viewport.add_object", "add", [
-				makeSingle("viewport.add_object.obstacle", null, () => {
+				makeSingle("viewport.add_object.obstacle", "obstacle", () => {
 					const object = makeObstacle(0, 0, 10, 10);
 					dispatchMap({
 						type: "add_object",

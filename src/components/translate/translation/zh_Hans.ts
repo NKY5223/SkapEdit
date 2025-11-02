@@ -40,9 +40,11 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 
 	"contextmenu.item.name.layout.swap-x": "交换",
 	"contextmenu.item.name.layout.swap-y": "交换",
+
 	"contextmenu.item.name.viewport": "视口",
 	"contextmenu.item.name.viewport.reset_camera": "重置相机",
-
+	"contextmenu.item.name.viewport.add_object": "添加",
+	"contextmenu.item.name.viewport.add_object.obstacle": "Obstacle",
 	// #endregion
 
 	// #region Topbar

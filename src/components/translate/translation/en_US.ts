@@ -40,9 +40,11 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 
 	"contextmenu.item.name.layout.swap-x": "Swap",
 	"contextmenu.item.name.layout.swap-y": "Swap",
+
 	"contextmenu.item.name.viewport": "Viewport",
 	"contextmenu.item.name.viewport.reset_camera": "Reset Camera",
-
+	"contextmenu.item.name.viewport.add_object": "Add Object",
+	"contextmenu.item.name.viewport.add_object.obstacle": "Obstacle",
 	// #endregion
 
 	// #region Topbar

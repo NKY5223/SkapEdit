@@ -2,6 +2,7 @@ import position_left from "./icons/position_left.svg";
 import position_right from "./icons/position_right.svg";
 import position_x from "./icons/position_x.svg";
 import position_y from "./icons/position_y.svg";
+import obstacle from "./icons/obstacle.svg";
 
 // #region Material Icons
 // current_versions.json contains all the material icon names
@@ -67,6 +68,7 @@ const CustomIcons = [
 	["position_right", position_right],
 	["position_x", position_x],
 	["position_y", position_y],
+	["obstacle", obstacle],
 ] as const;
 export const CustomIconsMap = new Map(CustomIcons);
 
