@@ -1,9 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">
 	<path d="
-		M02 02 h4 L02 06 v-4 Z
-		M12 02 h4 L02 16 v-4 Z
-		M22 02 v4 L06 22 h-4 Z
-		M22 12 v4 L16 22 h-4 Z
-		M22 21 v1 L22 22 h-1 Z
+		M06 04
+		h12
+		a2 2 0 0 1 2 2
+		v12
+		a2 2 0 0 1 -2 2
+		h-12
+		a2 2 0 0 1 -2 -2
+		v-12
+		a2 2 0 0 1 2 -2
+		Z
+
+		M06 10 v2 l06 -06 h-2 Z
+		M06 16 v2 l12 -12 h-2 Z
+		M10 18 h2 l06 -06 v-2 Z
+		M16 18 h2 l00 -00 v-2 Z
 	" />
 </svg>
