@@ -22,7 +22,7 @@ export type SkapRoom = {
 };
 export type SkapMap = {
 	spawn: {
-		room: string;
+		room: ID;
 		position: Vec2;
 	};
 	rooms: ReadonlyMap<ID, SkapRoom>;

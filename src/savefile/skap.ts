@@ -6,10 +6,10 @@ import * as z from "zod";
 const typedParseFloat = <T extends number>(input: `${T}` | T): T => +input;
 
 const NonNaN = z.number().or(z.literal([Infinity, -Infinity]));
-const Vec2 = z.tuple([NonNaN, NonNaN]);
+const Vec2 = z.tuple([NonNaN, NonNaN]).readonly();
 const SkapId = z.number().or(z.string());
-const RgbColor = z.tuple([z.number(), z.number(), z.number()]);
-const RgbaColor = z.tuple([z.number(), z.number(), z.number(), z.number()]);
+const RgbColor = z.tuple([z.number(), z.number(), z.number()]).readonly();
+const RgbaColor = z.tuple([z.number(), z.number(), z.number(), z.number()]).readonly();
 
 // #region objects
 const rectObject = <T extends string>(type: T) => z.object({
@@ -248,7 +248,7 @@ const SkapMap = z.object({
 	maps: Room.array(),
 });
 
-if (import.meta.env.DEV) {
+if (false && import.meta.env.DEV) {
 	fetch(`./maps/test.json`)
 		.then(res => res.json())
 		.then(map => console.log(SkapMap.parse(map)))
@@ -271,4 +271,6 @@ export namespace SkapFile {
 	export type Object = z.infer<typeof SkapObject>;
 
 	export type Vec2 = z.infer<typeof Vec2>;
+	export type Rgb = z.infer<typeof RgbColor>;
+	export type Rgba = z.infer<typeof RgbaColor>;
 }

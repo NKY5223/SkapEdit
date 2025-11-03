@@ -5,6 +5,7 @@ import { useSkapMap } from "@editor/reducer.ts";
 import { Translate } from "../../translate/Translate.tsx";
 import { TopbarMenuItem } from "./TopbarMenuItem.tsx";
 import {} from "../../../savefile/skap.ts";
+import { mapToSkapJson } from "../../../savefile/skapExport.ts";
 
 type TopbarProps = {
 	openChangelog: () => void;
@@ -26,13 +27,16 @@ export const Topbar: FC<TopbarProps> = ({
 				}),
 			]}><Translate k="topbar.app" /></TopbarMenuItem>
 			<TopbarMenuItem items={[
-				makeSingle("topbar.file.save", "download", () => {
+				makeSingle("topbar.file.save", "save", () => {
 					alert("Not implemented yet");
 					console.log("Save map", map);
 				}),
 				makeSingle("topbar.file.export_skap", "file_export", () => {
-					alert("Not implemented yet");
-					console.log("Export map to skap", map);
+					const json = mapToSkapJson(map);
+					// if (window.showSaveFilePicker) {
+
+					// }
+					// const url = `data:application/json`
 				}),
 			]}><Translate k="topbar.file" /></TopbarMenuItem>
 		</menu>
