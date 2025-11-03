@@ -16,11 +16,9 @@
 	display: grid;
 	grid-template-areas: "content close";
 	grid-template-columns: auto min-content;
+	gap: 1em;
 
 	pointer-events: all;
-	width: fit-content;
-	min-width: 10em;
-	max-width: min(75dvw, 30em);
 
 	--color: #e0e0e0;
 	background-color: var(--theme-bg-0);
@@ -29,14 +27,28 @@
 	border-start-start-radius: var(--theme-border-radius);
 	border-end-start-radius: var(--theme-border-radius);
 
+	@media not (prefers-reduced-motion: reduce) {
+		translate: 0 0;
+		transition: translate .2s;
+		@starting-style {
+			translate: 100% 0;
+		}
+	}
+
 	&.info { --color: var(--theme-primary-bg-0); }
 	&.error { --color: var(--theme-negative-bg-0); }
 	&.warn { --color: var(--theme-warn-bg-0); }
 	&.success { --color: var(--theme-positive-bg-0); }
 }
 .content {
-	padding-inline: 1.5em;
+	padding-inline-start: 1.5em;
 	padding-block: 1em;
+	
+	width: fit-content;
+	min-width: 10em;
+	max-width: min(75dvw, 30em);
+
+	overflow-x: auto;
 }
 .close {
 	font-size: 0.75em;

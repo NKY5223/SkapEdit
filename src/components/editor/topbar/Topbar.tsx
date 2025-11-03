@@ -66,6 +66,20 @@ export const Topbar: FC<TopbarProps> = ({
 				makeSingle("topbar.app.changelog", "history_edu", () => {
 					openChangelog();
 				}),
+				makeSingle("topbar.file.test_toast", "breakfast_dining", () => {
+					toast.info("a");
+					toast.error("b");
+					toast.warn("c");
+					toast.success("d");
+					toast.info("aaaaaaaaaaa");
+					toast.error("bbbbbbbbbbb");
+					toast.warn("ccccccccccc");
+					toast.success("ddddddddddd");
+					toast.info("aaaaaaaaaaaeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+					toast.error("bbbbbbbbbbbeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+					toast.warn("ccccccccccceeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+					toast.success("dddddddddddeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+				}),
 			]}><Translate k="topbar.app" /></TopbarMenuItem>
 			<TopbarMenuItem items={[
 				makeSingle("topbar.file.save", "save", () => {
@@ -114,10 +128,6 @@ export const Topbar: FC<TopbarProps> = ({
 						URL.revokeObjectURL(url);
 					}
 				}),
-				// makeSingle("topbar.file.test_toast", "breakfast_dining", () => {
-				// 	toast.warn("small");
-				// 	toast.info(".");
-				// }),
 			]}><Translate k="topbar.file" /></TopbarMenuItem>
 		</menu>
 	)

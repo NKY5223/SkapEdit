@@ -1,5 +1,8 @@
-declare const ID_BRAND: unique symbol;
-export type ID = string & { [ID_BRAND]: typeof ID_BRAND };
+declare const __ID_BRAND_NOT_REAL: unique symbol;
+export type ID = string & { 
+	/** Does not actually exist. */
+	[__ID_BRAND_NOT_REAL]: typeof __ID_BRAND_NOT_REAL 
+};
 
 export const createId = (prefix = ""): ID => {
 	const p = prefix ? `${prefix}_` : "";
