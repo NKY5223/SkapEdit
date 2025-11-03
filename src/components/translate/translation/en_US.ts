@@ -44,19 +44,24 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"contextmenu.item.name.viewport": "Viewport",
 	"contextmenu.item.name.viewport.reset_camera": "Reset Camera",
 	"contextmenu.item.name.viewport.add_object": "Add Object",
-	"contextmenu.item.name.viewport.add_object.obstacle": "Obstacle",
-	"contextmenu.item.name.viewport.add_object.lava": "Lava",
+	"contextmenu.item.name.viewport.add_object.obstacle": use("object.obstacle"),
+	"contextmenu.item.name.viewport.add_object.lava": use("object.lava"),
+	"contextmenu.item.name.viewport.add_object.slime": use("object.slime"),
+	"contextmenu.item.name.viewport.add_object.ice": use("object.ice"),
+	"contextmenu.item.name.viewport.add_object.text": use("object.text"),
 	// #endregion
 
 	// #region Topbar
 	"topbar.app": "App",
 	"contextmenu.item.name.topbar.app.settings": "Settings",
 	"contextmenu.item.name.topbar.app.changelog": use("changelog"),
+	"contextmenu.item.name.topbar.app.test_toast": "Test Toasts",
 	"topbar.file": "File",
 	"contextmenu.item.name.topbar.file.save": "Save",
 	"contextmenu.item.name.topbar.file.export_skap": "Export to skap",
 	// #endregion
 
+	// #region Changelog
 	"changelog": "Changelog",
 	"changelog.version-title": ({ version, time }) => [
 		`Version `, version, `, `, time ? time.toLocaleDateString("en-US") : `XX/XX/XXXX`,
@@ -70,6 +75,15 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 			makeLink(commitUrl, commitSha.slice(0, 7)),
 		]);
 	},
+	// #endregion
+
+	// #region Objects
+	"object.obstacle": "Obstacle",
+	"object.lava": "Lava",
+	"object.slime": "Slime",
+	"object.ice": "Ice",
+	"object.text": "Text",
+	// #endregion
 
 	"generic.position.x": "X Position",
 	"generic.position.y": "Y Position",

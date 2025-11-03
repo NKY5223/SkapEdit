@@ -39,12 +39,16 @@ export type TranslationArgs = {
 	"contextmenu.item.name.viewport.add_object": {};
 	"contextmenu.item.name.viewport.add_object.obstacle": {};
 	"contextmenu.item.name.viewport.add_object.lava": {};
+	"contextmenu.item.name.viewport.add_object.slime": {};
+	"contextmenu.item.name.viewport.add_object.ice": {};
+	"contextmenu.item.name.viewport.add_object.text": {};
 	// #endregion
 	
 	// #region Topbar
 	"topbar.app": {};
 	"contextmenu.item.name.topbar.app.settings": {};
 	"contextmenu.item.name.topbar.app.changelog": {};
+	"contextmenu.item.name.topbar.app.test_toast": {};
 	"topbar.file": {};
 	"contextmenu.item.name.topbar.file.save": {};
 	"contextmenu.item.name.topbar.file.export_skap": {};
@@ -64,6 +68,14 @@ export type TranslationArgs = {
 			commitUrl: string;
 		} | null;
 	};
+	// #endregion
+
+	// #region Objects
+	"object.obstacle": {};
+	"object.lava": {};
+	"object.slime": {};
+	"object.ice": {};
+	"object.text": {};
 	// #endregion
 
 	"generic.position.x": {};

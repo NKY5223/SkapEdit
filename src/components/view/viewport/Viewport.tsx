@@ -10,7 +10,7 @@ import { useDispatchSkapMap, useSkapMap } from "@editor/reducer.ts";
 import { MouseButtons, useDrag } from "@hooks/useDrag.ts";
 import { useElementSize } from "@hooks/useElementSize.ts";
 import React, { FC, useMemo, useRef, useState } from "react";
-import { makeLava, makeObstacle, SkapRoom } from "../../../editor/map.ts";
+import { makeLava, makeObstacle, makeText, SkapRoom } from "../../../editor/map.ts";
 import { ViewToolbar } from "../../layout/LayoutViewToolbar.tsx";
 import { Camera, useCamera } from "./camera.ts";
 import { viewportToMap } from "./mapping.ts";
@@ -168,6 +168,18 @@ export const Viewport: Layout.ViewComponent = ({
 				}),
 				makeSingle("viewport.add_object.lava", "square", () => {
 					const object = makeLava(0, 0, 10, 10);
+					dispatchMap({
+						type: "add_object",
+						roomId: room.id,
+						object,
+					});
+					dispatchSelection({
+						type: "set_selection",
+						selection: [makeObjectSelectionItem(object)]
+					});
+				}),
+				makeSingle("viewport.add_object.text", "text_fields", () => {
+					const object = makeText(0, 0, "|");
 					dispatchMap({
 						type: "add_object",
 						roomId: room.id,

@@ -66,7 +66,7 @@ export const Topbar: FC<TopbarProps> = ({
 				makeSingle("topbar.app.changelog", "history_edu", () => {
 					openChangelog();
 				}),
-				makeSingle("topbar.file.test_toast", "breakfast_dining", () => {
+				makeSingle("topbar.app.test_toast", "breakfast_dining", () => {
 					toast.info("a");
 					toast.error("b");
 					toast.warn("c");
