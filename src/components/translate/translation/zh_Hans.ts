@@ -82,8 +82,8 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"object.text": "文字",
 	// #endregion
 
-	"generic.position.x": "X位置",
-	"generic.position.y": "Y位置",
+	"generic.position.x": "X坐标",
+	"generic.position.y": "Y坐标",
 	"generic.position.left": "左",
 	"generic.position.top": "顶",
 	"generic.position.right": "右",
