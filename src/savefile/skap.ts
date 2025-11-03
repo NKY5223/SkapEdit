@@ -260,7 +260,15 @@ if (import.meta.env.DEV) {
 	}
 }
 
-/** Types for skap .json files. */
+/** 
+ * Types for skap .json files. 
+ * Do not import * from, it contains naming conflicts. 
+ */
 export namespace SkapFile {
 	export type Map = z.infer<typeof SkapMap>;
+	export type Settings = z.infer<typeof Settings>;
+	export type Room = z.infer<typeof Room>;
+	export type Object = z.infer<typeof SkapObject>;
+
+	export type Vec2 = z.infer<typeof Vec2>;
 }
