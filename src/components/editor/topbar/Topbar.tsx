@@ -6,6 +6,7 @@ import { Translate } from "../../translate/Translate.tsx";
 import { TopbarMenuItem } from "./TopbarMenuItem.tsx";
 import { } from "../../../savefile/skap.ts";
 import { mapToSkapJson } from "../../../savefile/skapExport.ts";
+import { useToast } from "@components/toast/context.ts";
 
 declare global {
 	interface Window {
@@ -53,6 +54,7 @@ export const Topbar: FC<TopbarProps> = ({
 	openChangelog,
 }) => {
 	const map = useSkapMap();
+	const toast = useToast();
 	return (
 		<menu className={css["topbar"]}>
 			<li className={css["topbar-icon"]}></li>
@@ -75,17 +77,29 @@ export const Topbar: FC<TopbarProps> = ({
 					const blob = new Blob([json], { type: "application/json" });
 
 					if (window.showSaveFilePicker) {
-						const handle = await window.showSaveFilePicker({
-							id: "skapedit-export",
-							suggestedName: `map.skap.json`,
-							types: [
-								{ accept: { "application/json": [".json"] } }
-							]
-						});
-						const writable = await handle.createWritable();
-						await writable.write(blob);
-						await writable.close();
-						console.log("Written to and closed file", handle.name, "content:", json);
+						try {
+							const handle = await window.showSaveFilePicker({
+								id: "skapedit-export",
+								suggestedName: `map.skap.json`,
+								types: [
+									{ accept: { "application/json": [".json"] } }
+								]
+							});
+							const writable = await handle.createWritable();
+							await writable.write(blob);
+							await writable.close();
+							toast.success(<>
+								Exported map!
+							</>);
+						} catch (err) {
+							if (err instanceof Error) {
+								toast.error(<>
+									Failed to export map: <br />
+									{err.message}
+								</>);
+							}
+							console.error("Failed to export map:", err);
+						}
 					} else {
 						// Fallback to <a download> clicking
 						const url = URL.createObjectURL(blob);
@@ -100,6 +114,10 @@ export const Topbar: FC<TopbarProps> = ({
 						URL.revokeObjectURL(url);
 					}
 				}),
+				// makeSingle("topbar.file.test_toast", "breakfast_dining", () => {
+				// 	toast.warn("small");
+				// 	toast.info(".");
+				// }),
 			]}><Translate k="topbar.file" /></TopbarMenuItem>
 		</menu>
 	)

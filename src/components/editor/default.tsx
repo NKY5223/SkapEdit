@@ -19,7 +19,7 @@ const testLayout = makeSplitY(0.1,
 		)
 	)
 );
-const defaultLayout: Layout.Node = import.meta.env.DEV ? testLayout : actualLayout;
+const defaultLayout: Layout.Node = /* import.meta.env.DEV ? testLayout :  */actualLayout;
 export const defaultLayoutTree: Layout.Tree = {
 	node: defaultLayout
 };

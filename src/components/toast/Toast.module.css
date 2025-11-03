@@ -1,0 +1,50 @@
+.toasts {
+	position: absolute;
+	display: flex;
+	flex-direction: column;
+	align-items: end;
+	gap: 1em;
+	
+	pointer-events: none;
+	inset-inline-end: 0;
+	inset-block-end: 0;
+
+	padding-block-end: 1em;
+}
+
+.toast {
+	display: grid;
+	grid-template-areas: "content close";
+	grid-template-columns: auto min-content;
+
+	pointer-events: all;
+	width: fit-content;
+	min-width: 10em;
+	max-width: min(75dvw, 30em);
+
+	--color: #e0e0e0;
+	background-color: var(--theme-bg-0);
+	box-shadow: var(--theme-shadow);
+	border-inline-start: .5em solid var(--color);
+	border-start-start-radius: var(--theme-border-radius);
+	border-end-start-radius: var(--theme-border-radius);
+
+	&.info { --color: var(--theme-primary-bg-0); }
+	&.error { --color: var(--theme-negative-bg-0); }
+	&.warn { --color: var(--theme-warn-bg-0); }
+	&.success { --color: var(--theme-positive-bg-0); }
+}
+.content {
+	padding-inline: 1.5em;
+	padding-block: 1em;
+}
+.close {
+	font-size: 0.75em;
+	opacity: 0.75;
+	place-self: start;
+	padding: 0.5em;
+
+	&:hover, &:focus-visible {
+		opacity: 1;
+	}
+}

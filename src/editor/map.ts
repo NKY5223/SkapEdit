@@ -13,7 +13,7 @@ export type SkapObject = (
 	| SkapText
 );
 export type SkapRoom = {
-	id: string;
+	id: ID;
 	name: string;
 	bounds: Bounds;
 	obstacleColor: Color;

@@ -1,9 +1,10 @@
+import { ID } from "@common/uuid.ts";
 import { Vec2 } from "@common/vec2.ts";
 import { Bounds } from "@editor/bounds.ts";
 
 export type BaseObject<T extends string, P> = {
 	type: T;
-	id: string;
+	id: ID;
 } & P;
 export type SkapObjectProperties<T extends string, O extends BaseObject<T, {}>> = {
 	type: T;

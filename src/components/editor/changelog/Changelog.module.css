@@ -6,11 +6,11 @@
 	grid-column: 1 / -1;
 	grid-row: 1 / -1;
 
-	width: 75%;
+	width: clamp(min(30em, calc(100% - 2em)), 75%, 60em);
 	height: auto;
 	margin-block: 1em;
-	min-width: 30em;
-	max-width: 60em;
+	/* min-width: 30em;
+	max-width: 60em; */
 
 	padding-inline: 3em;
 	padding-block: 2em;
