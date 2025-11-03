@@ -9,6 +9,7 @@ const NonNaN = z.number().or(z.literal([Infinity, -Infinity]));
 const Vec2 = z.tuple([NonNaN, NonNaN]);
 const SkapId = z.number().or(z.string());
 const RgbColor = z.tuple([z.number(), z.number(), z.number()]);
+const RgbaColor = z.tuple([z.number(), z.number(), z.number(), z.number()]);
 
 // #region objects
 const rectObject = <T extends string>(type: T) => z.object({
@@ -21,6 +22,10 @@ const circleObject = <T extends string>(type: T) => z.object({
 	position: Vec2,
 	radius: NonNaN,
 });
+const positionObject = <T extends string>(type: T) => z.object({
+	type: z.literal(type),
+	position: Vec2,
+})
 
 // #region basic
 const Obstacle = rectObject("obstacle");
@@ -48,9 +53,7 @@ const Block = rectObject("block").extend({
 // #endregion
 
 // #region text
-const Text = z.object({
-	type: z.literal("text"),
-	position: Vec2,
+const Text = positionObject("text").extend({
 	text: z.string()
 });
 // #endregion
@@ -186,6 +189,15 @@ const Spawner = rectObject("spawner").extend({
 });
 // #endregion
 
+// #region reward
+const Reward = positionObject("reward").extend({
+	reward: z.string(),
+})
+const HatReward = positionObject("hatReward").extend({
+	reward: z.string(),
+})
+// #endregion
+
 const SkapObject = z.discriminatedUnion("type", [
 	Obstacle,
 	Lava,
@@ -209,6 +221,8 @@ const SkapObject = z.discriminatedUnion("type", [
 	Button,
 	Switch,
 	Spawner,
+	Reward,
+	HatReward,
 ]);
 
 // #endregion
@@ -216,6 +230,8 @@ const SkapObject = z.discriminatedUnion("type", [
 const Room = z.object({
 	name: z.string(),
 	size: Vec2,
+	backgroundColor: RgbaColor.optional(),
+	areaColor: RgbColor.optional(),
 	objects: SkapObject.array(),
 });
 
@@ -232,11 +248,19 @@ const SkapMap = z.object({
 	maps: Room.array(),
 });
 
-fetch(`./maps/test.json`)
-	.then(res => res.json())
-	.then(map => console.log(SkapMap.parse(map)))
-	.catch(err => console.error("Could not fetch test map:", err));
+if (import.meta.env.DEV) {
+	fetch(`./maps/test.json`)
+		.then(res => res.json())
+		.then(map => console.log(SkapMap.parse(map)))
+		.catch(err => console.error("Could not fetch test map:", err));
+	try {
+		console.log(`Skap map $schema:`, z.toJSONSchema(SkapMap));
+	} catch (err) {
+		console.error("could not generate skap map $schema", err);
+	}
+}
 
 /** Types for skap .json files. */
 export namespace SkapFile {
+	export type Map = z.infer<typeof SkapMap>;
 }
