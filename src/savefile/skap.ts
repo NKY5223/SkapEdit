@@ -244,6 +244,7 @@ const Settings = z.object({
 });
 
 const SkapMap = z.object({
+	$schema: z.literal("https://nky5223.github.io/SkapEdit/schema/skap/0.1.2.json").optional(),
 	settings: Settings,
 	maps: Room.array(),
 });
