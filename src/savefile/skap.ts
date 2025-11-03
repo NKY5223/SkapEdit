@@ -249,17 +249,9 @@ const SkapMap = z.object({
 	maps: Room.array(),
 });
 
-if (false && import.meta.env.DEV) {
-	fetch(`./maps/test.json`)
-		.then(res => res.json())
-		.then(map => console.log(SkapMap.parse(map)))
-		.catch(err => console.error("Could not fetch test map:", err));
-	try {
-		console.log(`Skap map $schema:`, z.toJSONSchema(SkapMap));
-	} catch (err) {
-		console.error("could not generate skap map $schema", err);
-	}
-}
+Object.assign(window, {
+	generateSkap$schema: () => z.toJSONSchema(SkapMap)
+});
 
 /** 
  * Types for skap .json files. 
