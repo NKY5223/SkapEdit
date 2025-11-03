@@ -115,7 +115,8 @@ export const delegateOn =
 	//     & {}
 	// = {}
 	// ???
-> => (args, translate) => translate(`${key}${seperator}${args[name]}`, {} as never);
+	// @ts-expect-error type arithmetic is weird...
+> => (args, translate) => translate(`${key}${seperator}${args[name]}`, {});
 
 // type Equal<A, B> = 
 // 	[(a: A) => A] extends [(b: B) => B] 

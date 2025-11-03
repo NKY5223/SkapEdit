@@ -94,7 +94,8 @@ export const useTranslate = () => {
 	function translate<K extends keyof TranslationArgs>(key: K, args: TranslationArgs[K]): string;
 	function translate<K extends keyof TranslationArgs>(key: K, args?: TranslationArgs[K]): string {
 		if (args === undefined) {
-			return base(key, {} as never);
+			// @ts-expect-error satisfies overload so it's fine
+			return base(key, {});
 		}
 		return base(key, args);
 	}

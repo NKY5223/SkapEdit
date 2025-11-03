@@ -866,8 +866,10 @@ export class Matrix<M extends number, N extends number> {
 
 		if (endsWithVector(values)) {
 			const [rest, final] = end(values);
-			if (rest.length < 1) return final as never;
-			return Matrix.mulMatVec(Matrix.mul(...rest), final as never) as never;
+			// @ts-expect-error cannot make typesafe
+			if (rest.length < 1) return final;
+			// @ts-expect-error cannot make typesafe
+			return Matrix.mulMatVec(Matrix.mul(...rest), final);
 		}
 
 		const numbers = (values as unknown[]).filter(isNumber);
@@ -878,7 +880,8 @@ export class Matrix<M extends number, N extends number> {
 			Matrix.matMul(acc, curr)
 		), matrices[0]);
 		const scalar = numbers.reduce((a, b) => a * b, 1);
-		return Matrix.compMul(mat, scalar) as never;
+		// @ts-expect-error cannot make typesafe
+		return Matrix.compMul(mat, scalar);
 	}
 	/**
 	 * Multiplication of matrices and numbers
@@ -911,8 +914,8 @@ export class Matrix<M extends number, N extends number> {
 	mul<NTail extends number[] = []>(
 		...values: MulableMatricesNoFirst<M, NTail> | [...MulableMatricesNoFirst<M, NTail>, Vector<MatMulResultDim<M, NTail>>]
 	): MulMatResult<N, M, NTail> | Vector<M> {
-		// trust me bro
-		return Matrix.mul(this, ...values as never[]) as never;
+		// @ts-expect-error trust me bro
+		return Matrix.mul(this, ...values);
 	}
 	mulVec(vec: Vector<M>): Vector<N> {
 		return Matrix.mulMatVec(this, vec);

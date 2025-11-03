@@ -55,7 +55,8 @@ export const mergeListeners = <T = unknown>(...listeners: ListenerAttributes<T>[
 			.entries()
 			.map(([k, listeners]) => [k, listeners.reduce((f, [, l]) => (e: Event) => {
 				f(e);
-				l(e as never);
+				// @ts-expect-error cannot make typesafe
+				l(e);
 			}, (_: Event) => { })])
 			.toArray()
 	)
