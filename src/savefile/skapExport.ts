@@ -13,13 +13,14 @@ const objectToSkap = (object: SkapObject, room: SkapRoom, map: SkapMap): SkapFil
 	const topLeft = room.bounds.topLeft;
 	switch (object.type) {
 		case "obstacle":
-		case "lava": {
+		case "lava":
+		case "slime":
+		case "ice":
 			return [{
 				type: object.type,
 				position: vec2ToSkap(object.bounds.topLeft.sub(topLeft)),
 				size: vec2ToSkap(object.bounds.size),
 			}];
-		}
 		case "text": {
 			return [{
 				type: object.type,

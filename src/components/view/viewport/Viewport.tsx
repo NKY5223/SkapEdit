@@ -22,6 +22,8 @@ import { ActiveSelection } from "./selection/ActiveSelection.tsx";
 import { getClickbox, getSelectableBounds, getZIndex } from "./selection/getObjectProperties.ts";
 import css from "./Viewport.module.css";
 import { WebGLLayer } from "./webgl/WebGLLayer.tsx";
+import { SlimeWebGLRenderer } from "./renderer/slime.ts";
+import { IceWebGLRenderer } from "./renderer/ice.ts";
 
 export type ViewportInfo = {
 	camera: Camera;
@@ -106,6 +108,8 @@ export const Viewport: Layout.ViewComponent = ({
 			new BackgroundWebGLRenderer(),
 			new ObstacleWebGLRenderer(),
 			new LavaWebGLRenderer(),
+			new SlimeWebGLRenderer(),
+			new IceWebGLRenderer(),
 		),
 		TextLayer
 	], []);
@@ -225,7 +229,7 @@ export const Viewport: Layout.ViewComponent = ({
 		// Mouse position diff (pixels)
 		const diff = selectBounds.size.mul(viewportSize);
 		// Must be within 2px (i.e. not dragging to select)
-		if (diff.mag() > 2) return;
+		if (diff.mag() > clickMaxDistance) return;
 
 		const { left, top } = e.currentTarget.getBoundingClientRect();
 		const clickPos = viewportToMap(viewportInfo, vec2(e.clientX - left, e.clientY - top));
@@ -277,7 +281,7 @@ export const Viewport: Layout.ViewComponent = ({
 			// Mouse position diff (pixels)
 			const diff = selectBounds.size.mul(viewportSize);
 			// Must be > 2px (i.e. dragging to select)
-			if (diff.mag() <= 2) return;
+			if (diff.mag() <= clickMaxDistance) return;
 			const newselect = selectables.filter(s => selectBounds.containsBounds(getSelectableBounds(s)));
 			dispatchSelection({
 				type: "set_selection",

@@ -4,15 +4,15 @@ import { ViewportInfo } from "../Viewport.tsx";
 import { RectWebGLRenderer } from "./rect.ts";
 import frag from "./shader/solid.frag?raw";
 
-const rgba = Color.LAVA.rgba();
+const rgba = Color.SLIME.rgba();
 
-export class LavaWebGLRenderer extends RectWebGLRenderer {
+export class SlimeWebGLRenderer extends RectWebGLRenderer {
 	constructor() {
 		super(frag);
 	}
 	rects(viewportInfo: ViewportInfo): Bounds[] {
 		return viewportInfo.room.objects.values()
-			.filter(obj => obj.type === "lava")
+			.filter(obj => obj.type === "slime")
 			.map(o => o.bounds)
 			.toArray();
 	}

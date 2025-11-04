@@ -1,7 +1,8 @@
 import { Vector } from "./vector.ts";
 
 export type ColorData = (
-	| { type: "rgba";
+	| {
+		type: "rgba";
 		r: number;
 		g: number;
 		b: number;
@@ -22,8 +23,9 @@ export class Color {
 		const r = (rgb >> 16 & 0xff) / 0xff;
 		const g = (rgb >> 8. & 0xff) / 0xff;
 		const b = (rgb >> 0. & 0xff) / 0xff;
-		return new this({ type: "rgba",
-			r, g, b, 
+		return new this({
+			type: "rgba",
+			r, g, b,
 			a
 		});
 	}
@@ -75,5 +77,14 @@ export class Color {
 			}
 		}
 	}
+	// #endregion
+
+	// #region Colors
+	static readonly DEFAULT_OBSTACLE = Color.hex(0x000a57, 0.8);
+	static readonly DEFAULT_BACKGROUND = Color.hex(0xe6e6e6);
+
+	static readonly LAVA = Color.hex(0xb74038);
+	static readonly SLIME = Color.hex(0x00ca00);
+	static readonly ICE = Color.hex(0x7cabd2);
 	// #endregion
 }

@@ -1,19 +1,18 @@
 import { makeSection, makeSingle, makeSubmenu, useContextMenu } from "@components/contextmenu/ContextMenu.ts";
 import { useEditorSelection } from "@components/editor/selection.ts";
+import { BoundsInput } from "@components/form/BoundsInput";
 import { FormSection } from "@components/form/FormSection.tsx";
+import { FormTitle } from "@components/form/FormTitle.tsx";
+import { TextInput } from "@components/form/TextInput.tsx";
+import { Vec2Input } from "@components/form/Vec2Input";
 import { Icon } from "@components/icon/Icon.tsx";
 import { Layout } from "@components/layout/layout.ts";
-import { getObject, useDispatchSkapMap, useSkapMap } from "@editor/reducer";
-import css from "./Inspector.module.css";
 import { ViewToolbar } from "@components/layout/LayoutViewToolbar.tsx";
-import { Fragment, ReactNode } from "react";
-import { TextInput } from "@components/form/TextInput.tsx";
-import { BoundsInput } from "@components/form/BoundsInput";
-import { Vec2Input } from "@components/form/Vec2Input";
-import { FormTitle } from "@components/form/FormTitle.tsx";
-import { useTranslate } from "@components/translate/translationArgs.ts";
-import { currentBuild } from "@common/currentBuild.ts";
 import { Translate } from "@components/translate/Translate.tsx";
+import { useTranslate } from "@components/translate/translationArgs.ts";
+import { getObject, useDispatchSkapMap, useSkapMap } from "@editor/reducer";
+import { ReactNode } from "react";
+import css from "./Inspector.module.css";
 
 export const Inspector: Layout.ViewComponent = ({
 	viewSwitch,
@@ -87,18 +86,21 @@ export const Inspector: Layout.ViewComponent = ({
 				);
 				switch (selectedObject.type) {
 					case "obstacle":
-					case "lava": {
-						const bounds = selectedObject.bounds;
-						return (
-							<>
-								<BoundsInput bounds={bounds} setBounds={bounds => dispatchMap({
-									type: "replace_object",
-									target: sel.id,
-									replacement: obj => ({ ...obj, bounds })
-								})} />
-							</>
-						);
-					}
+					case "lava":
+					case "slime":
+					case "ice":
+						{
+							const bounds = selectedObject.bounds;
+							return (
+								<>
+									<BoundsInput bounds={bounds} setBounds={bounds => dispatchMap({
+										type: "replace_object",
+										target: sel.id,
+										replacement: obj => ({ ...obj, bounds })
+									})} />
+								</>
+							);
+						}
 					case "text": {
 						const { id, text, pos } = selectedObject;
 						return (

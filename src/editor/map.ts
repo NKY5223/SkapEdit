@@ -2,13 +2,14 @@ import { Color } from "@common/color.ts";
 import { createId, ID } from "@common/uuid.ts";
 import { vec2, Vec2 } from "../common/vec2.ts";
 import { Bounds, BoundsInit } from "./bounds.ts";
-import { SkapLava } from "./object/lava.ts";
-import { SkapObstacle } from "./object/obstacle.ts";
+import { SkapIce, SkapLava, SkapObstacle, SkapSlime } from "./object/basic.ts";
 import { SkapText } from "./object/text.ts";
 
 export type SkapObject = (
 	| SkapObstacle
 	| SkapLava
+	| SkapSlime
+	| SkapIce
 	| SkapText
 );
 export type SkapRoom = {
@@ -41,6 +42,16 @@ export const makeObstacle = (left: number, top: number, right: number, bottom: n
 export const makeLava = (left: number, top: number, right: number, bottom: number): SkapLava => ({
 	type: "lava",
 	id: createId("obj-lava"),
+	bounds: new Bounds({ left, top, right, bottom }),
+});
+export const makeSlime = (left: number, top: number, right: number, bottom: number): SkapSlime => ({
+	type: "slime",
+	id: createId("obj-slime"),
+	bounds: new Bounds({ left, top, right, bottom }),
+});
+export const makeIce = (left: number, top: number, right: number, bottom: number): SkapIce => ({
+	type: "ice",
+	id: createId("obj-ice"),
 	bounds: new Bounds({ left, top, right, bottom }),
 });
 export const makeText = (x: number, y: number, text: string): SkapText => ({

@@ -1,11 +1,12 @@
 import { BaseObject, SkapObjectProperties } from "./Base.ts";
-import { obstacleProperties } from "./obstacle.ts";
-import { lavaProperties } from "./lava.ts";
+import { iceProperties, lavaProperties, obstacleProperties, slimeProperties } from "./basic.ts";
 import { textProperties } from "./text.ts";
 
 const properties = [
 	obstacleProperties,
 	lavaProperties,
+	slimeProperties,
+	iceProperties,
 	textProperties,
 ];
 
