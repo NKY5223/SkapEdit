@@ -93,6 +93,9 @@ const scaleMul = -1 / 100;
 const scaleExp = 1.25;
 const calcScale = (i: number) => scaleBase * scaleExp ** (scaleMul * i);
 
+/** Maximum distance for something to count as a click */
+const clickMaxDistance = 2;
+
 export const Viewport: Layout.ViewComponent = ({
 	viewSwitch,
 }) => {
@@ -220,7 +223,7 @@ export const Viewport: Layout.ViewComponent = ({
 		if (e.target !== e.currentTarget) return;
 
 		// Mouse position diff (pixels)
-		const diff = selectDragInitial.sub(selectDragCurrent).mul(viewportSize);
+		const diff = selectBounds.size.mul(viewportSize);
 		// Must be within 2px (i.e. not dragging to select)
 		if (diff.mag() > 2) return;
 
@@ -235,18 +238,19 @@ export const Viewport: Layout.ViewComponent = ({
 		);
 
 		const item = clickedItems[0];
-		if (!item) {
-			dispatchSelection({
-				type: "clear_selection",
-			});
-			return;
-		}
 		if (e.shiftKey) {
+			if (!item) return;
 			dispatchSelection({
 				type: "add_item",
 				item: selectableToSelection(item)
 			});
 		} else {
+			if (!item) {
+				dispatchSelection({
+					type: "clear_selection",
+				});
+				return;
+			}
 			dispatchSelection({
 				type: "set_selection",
 				selection: [selectableToSelection(item)]
@@ -270,6 +274,10 @@ export const Viewport: Layout.ViewComponent = ({
 		buttons: MouseButtons.Left,
 		normalizeToUnit: elRef,
 		onEndDrag: e => {
+			// Mouse position diff (pixels)
+			const diff = selectBounds.size.mul(viewportSize);
+			// Must be > 2px (i.e. dragging to select)
+			if (diff.mag() <= 2) return;
 			const newselect = selectables.filter(s => selectBounds.containsBounds(getSelectableBounds(s)));
 			dispatchSelection({
 				type: "set_selection",
@@ -309,7 +317,7 @@ export const Viewport: Layout.ViewComponent = ({
 			const newSelection = objectSelectables.map(selectableToSelection);
 			dispatchSelection({
 				type: "set_selection",
-				selection: newSelection
+				selection: newSelection,
 			});
 		}
 		if (e.code === "Escape") {

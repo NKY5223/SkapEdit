@@ -92,7 +92,6 @@ export const selectionToSelectable = (selection: SelectionItem, map: SkapMap): S
 // #endregion
 
 const selectionReducer: Reducer<EditorSelection, SelectionAction> = (selection, action) => {
-	console.log(selection, action);
 	switch (action.type) {
 		case "set_selection": {
 			return action.selection;
