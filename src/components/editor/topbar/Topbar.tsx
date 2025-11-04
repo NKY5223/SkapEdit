@@ -76,6 +76,8 @@ export const Topbar: FC<TopbarProps> = ({
 				}),
 				makeSingle("topbar.file.import_skap", "file_open", async () => {
 					try {
+						if (!confirm("Are you sure? This will overwrite any unsaved progress.")) return;
+						
 						const [method, file] = await openFile({
 							id: "skapedit-import",
 							types: [
@@ -92,10 +94,10 @@ export const Topbar: FC<TopbarProps> = ({
 						</>, 10)
 						console.log("Imported map", method, map);
 						
-						// dispatchMap({
-						// 	type: ""
-						// })
-
+						dispatchMap({
+							type: "replace_map",
+							map,
+						});
 					} catch (err) {
 						toast.error(<>
 							Failed to import map.

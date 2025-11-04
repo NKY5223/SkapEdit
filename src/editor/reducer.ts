@@ -52,6 +52,10 @@ const matches = (obj: SkapObject, target: TargetObject) => {
 };
 type SkapMapAction = (
 	| {
+		type: "replace_map";
+		map: SkapMap;
+	}
+	| {
 		type: "replace_room";
 		/** Room ID. */
 		target: ID;
@@ -78,6 +82,9 @@ type SkapMapAction = (
 );
 const skapMapReducer: Reducer<SkapMap, SkapMapAction> = (map, action) => {
 	switch (action.type) {
+		case "replace_map": {
+			return action.map;
+		}
 		case "replace_room": {
 			const { target, replacement } = action;
 			const room = map.rooms.get(target);
