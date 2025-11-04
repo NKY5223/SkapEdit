@@ -208,8 +208,9 @@ export const Viewport: Layout.ViewComponent = ({
 	};
 
 
+	const objectSelectables = room.objects.values().map(makeObjectSelectableItem);
 	const selectables = [
-		...room.objects.values().map(makeObjectSelectableItem),
+		...objectSelectables,
 		makeRoomSelectableItem(room),
 	];
 
@@ -307,7 +308,7 @@ export const Viewport: Layout.ViewComponent = ({
 			e.preventDefault();
 			dispatchSelection({
 				type: "set_selection",
-				selection: selectables.map(selectableToSelection)
+				selection: objectSelectables.map(selectableToSelection).toArray()
 			});
 		}
 		if (e.code === "Escape") {
