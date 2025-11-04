@@ -7,6 +7,7 @@ export type ToastInfo = {
 	type: ToastType;
 	id: ID;
 	content: ReactNode;
+	duration?: number;
 }
 type ToastsAction = (
 	| {
@@ -35,12 +36,13 @@ export const [useToasts, useDispatchToast, BaseToastsProvider, useToastsWithDisp
 /** Hook for creating toasts. */
 export const useToast = () => {
 	const dispatch = useDispatchToast();
-	const createWithType = (type: ToastType) => (content: ReactNode) => dispatch({
+	const createWithType = (type: ToastType) => (content: ReactNode, duration?: number) => dispatch({
 		type: "add_toast",
 		toast: {
 			type, 
 			id: createId("toast"),
 			content,
+			duration,
 		}
 	});
 	return {

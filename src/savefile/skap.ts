@@ -246,7 +246,7 @@ const Settings = z.object({
 /** This is just `show T from x` */
 const id = <T>(x: T) => x;
 
-const SkapMap = z.object({
+export const SkapMapSchema = z.object({
 	$schema: 
 		z.enum([
 			"https://nky5223.github.io/SkapEdit/schema/skap/0.1.2.json"
@@ -256,7 +256,7 @@ const SkapMap = z.object({
 });
 
 Object.assign(window, {
-	generateSkap$schema: () => z.toJSONSchema(SkapMap)
+	generateSkap$schema: () => z.toJSONSchema(SkapMapSchema)
 });
 
 /** 
@@ -264,7 +264,7 @@ Object.assign(window, {
  * Do not import * from, it contains naming conflicts. 
  */
 export namespace SkapFile {
-	export type Map = z.infer<typeof SkapMap>;
+	export type Map = z.infer<typeof SkapMapSchema>;
 	export type Settings = z.infer<typeof Settings>;
 	export type Room = z.infer<typeof Room>;
 	export type Object = z.infer<typeof SkapObject>;
