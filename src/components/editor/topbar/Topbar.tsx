@@ -10,6 +10,7 @@ import { TopbarMenuItem } from "./TopbarMenuItem.tsx";
 import { saveFile } from "@common/save.ts";
 import { openFile } from "@common/open.ts";
 import { skapToMap } from "../../../savefile/skapImport.ts";
+import { useDispatchSelection } from "../selection.ts";
 
 type TopbarProps = {
 	openChangelog: () => void;
@@ -20,6 +21,7 @@ export const Topbar: FC<TopbarProps> = ({
 	const toast = useToast();
 	const map = useSkapMap();
 	const dispatchMap = useDispatchSkapMap();
+	const dispatchSelection = useDispatchSelection();
 	return (
 		<menu className={css["topbar"]}>
 			<li className={css["topbar-icon"]}></li>
@@ -77,7 +79,7 @@ export const Topbar: FC<TopbarProps> = ({
 				makeSingle("topbar.file.import_skap", "file_open", async () => {
 					try {
 						if (!confirm("Are you sure? This will overwrite any unsaved progress.")) return;
-						
+
 						const [method, file] = await openFile({
 							id: "skapedit-import",
 							types: [
@@ -98,6 +100,7 @@ export const Topbar: FC<TopbarProps> = ({
 							type: "replace_map",
 							map,
 						});
+						dispatchSelection({ type: "clear_selection" });
 					} catch (err) {
 						toast.error(<>
 							Failed to import map.
