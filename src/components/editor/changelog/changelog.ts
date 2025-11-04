@@ -1,4 +1,4 @@
-import { makeNumberedList, RichText } from "@components/translate/richtext";
+import { RichText } from "@components/translate/richtext";
 
 export type ChangelogEntry = {
 	version: string;
@@ -10,6 +10,13 @@ export type ChangelogEntry = {
  * (most recent first)
  */
 export const changelog: ChangelogEntry[] = [
+	{
+		version: "0.1.2",
+		message: [
+			`Added importing and exporting.`,
+		],
+		time: new Date(`2025-11-04`),
+	},
 	{
 		version: "0.1.1",
 		message: [

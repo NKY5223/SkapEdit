@@ -28,7 +28,8 @@
 	&.dragging {
 		cursor: move;
 	}
-	&.inactive{
+	&.inactive {
+		--selection-border-width: 1px;
 		outline: none;
 
 		& > .handle {

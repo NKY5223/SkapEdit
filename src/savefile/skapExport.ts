@@ -53,7 +53,7 @@ export const mapToSkap = (map: SkapMap): SkapFile.Map => {
 		settings: {
 			name: "test skap export",
 			creator: "SkapEdit",
-			version: 0,
+			version: map.version + 1,
 			spawnArea: spawnRoomName,
 			spawnPosition: vec2ToSkap(spawnPosition),
 		},
