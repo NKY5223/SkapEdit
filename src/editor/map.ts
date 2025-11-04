@@ -1,11 +1,10 @@
-import { Bounds, BoundsInit } from "./bounds.ts";
-import { vec2, Vec2 } from "../common/vec2.ts";
-import { createId, ID } from "@common/uuid.ts";
 import { Color } from "@common/color.ts";
-import { SkapObstacle } from "./object/obstacle.ts";
+import { createId, ID } from "@common/uuid.ts";
+import { vec2, Vec2 } from "../common/vec2.ts";
+import { Bounds, BoundsInit } from "./bounds.ts";
 import { SkapLava } from "./object/lava.ts";
+import { SkapObstacle } from "./object/obstacle.ts";
 import { SkapText } from "./object/text.ts";
-import { BaseObject, SkapObjectProperties } from "./object/Base.ts";
 
 export type SkapObject = (
 	| SkapObstacle
@@ -21,6 +20,9 @@ export type SkapRoom = {
 	objects: ReadonlyMap<ID, SkapObject>;
 };
 export type SkapMap = {
+	author: string;
+	name: string;
+	version: number;
 	spawn: {
 		room: ID;
 		position: Vec2;
@@ -33,21 +35,21 @@ export type SkapMap = {
 
 export const makeObstacle = (left: number, top: number, right: number, bottom: number): SkapObstacle => ({
 	type: "obstacle",
-	id: createId(),
+	id: createId("obj-obstacle"),
 	bounds: new Bounds({ left, top, right, bottom }),
 });
 export const makeLava = (left: number, top: number, right: number, bottom: number): SkapLava => ({
 	type: "lava",
-	id: createId(),
+	id: createId("obj-lava"),
 	bounds: new Bounds({ left, top, right, bottom }),
 });
 export const makeText = (x: number, y: number, text: string): SkapText => ({
 	type: "text",
-	id: createId(),
+	id: createId("obj-text"),
 	pos: vec2(x, y),
 	text,
 });
-export const objectWithIdArrayToMap = <T extends { id: ID; }>(objs: T[]): Map<ID, T> =>
+export const toIdMap = <T extends { id: ID; }>(objs: T[]): Map<ID, T> =>
 	new Map(objs.map(o => [o.id, o]));
 
 export const makeRoom = (
@@ -59,7 +61,7 @@ export const makeRoom = (
 	bounds: new Bounds(bounds),
 	obstacleColor,
 	backgroundColor,
-	objects: objectWithIdArrayToMap(objects)
+	objects: toIdMap(objects)
 });
 
 // #endregion

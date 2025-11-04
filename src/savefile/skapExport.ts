@@ -9,46 +9,47 @@ const rgbToSkap = (color: Color): SkapFile.Rgb => color.rgb().mul(255).component
 const rgbaMult = new Vector<4>([255, 255, 255, 1]);
 const rgbaToSkap = (color: Color): SkapFile.Rgba => color.rgba().mul(rgbaMult).components;
 
-const objectToSkap = (object: SkapObject, room: SkapRoom): SkapFile.Object => {
+const objectToSkap = (object: SkapObject, room: SkapRoom, map: SkapMap): SkapFile.Object[] => {
 	const topLeft = room.bounds.topLeft;
 	switch (object.type) {
 		case "obstacle":
 		case "lava": {
-			return {
+			return [{
 				type: object.type,
 				position: vec2ToSkap(object.bounds.topLeft.sub(topLeft)),
 				size: vec2ToSkap(object.bounds.size),
-			};
+			}];
 		}
-		case "text":{
-			return {
+		case "text": {
+			return [{
 				type: object.type,
 				position: vec2ToSkap(object.pos.sub(topLeft)),
 				text: object.text,
-			};
+			}];
 		}
 	}
 	object satisfies never;
 }
 
-const roomToSkap = (room: SkapRoom): SkapFile.Room => {
+const roomToSkap = (room: SkapRoom, map: SkapMap): SkapFile.Room => {
 	return {
 		name: room.name,
 		size: vec2ToSkap(room.bounds.size),
 		areaColor: rgbToSkap(room.backgroundColor),
 		backgroundColor: rgbaToSkap(room.obstacleColor),
-		objects: room.objects.values().map(obj => objectToSkap(obj, room)).toArray(),
+		objects: room.objects.values().flatMap(obj => objectToSkap(obj, room, map)).toArray(),
 	}
 }
 
-const mapToSkap = (map: SkapMap): SkapFile.Map => {
+export const mapToSkap = (map: SkapMap): SkapFile.Map => {
 	const spawnRoom = map.rooms.get(map.spawn.room);
 	if (!spawnRoom) throw new Error("Could not find spawn room");
 	const spawnRoomName = spawnRoom.name;
 	// Reposition spawn relative to room
 	const spawnPosition = map.spawn.position.sub(spawnRoom.bounds.topLeft);
 	return {
-		$schema: "https://nky5223.github.io/SkapEdit/schema/skap/0.1.2.json",
+		$schema: "https",
+		// $schema: "https://nky5223.github.io/SkapEdit/schema/skap/0.1.2.json",
 		settings: {
 			name: "test skap export",
 			creator: "SkapEdit",
@@ -56,7 +57,7 @@ const mapToSkap = (map: SkapMap): SkapFile.Map => {
 			spawnArea: spawnRoomName,
 			spawnPosition: vec2ToSkap(spawnPosition),
 		},
-		maps: map.rooms.values().map(roomToSkap).toArray(),
+		maps: map.rooms.values().map(room => roomToSkap(room, map)).toArray(),
 	}
 }
 

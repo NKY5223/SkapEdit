@@ -12,6 +12,7 @@ export class Color {
 	protected constructor(protected readonly data: ColorData) {
 	}
 
+	// #region Constructors
 	/**
 	 * Construct a Color from rgb hex format
 	 * @example
@@ -26,7 +27,23 @@ export class Color {
 			a
 		});
 	}
+	/**
+	 * Construct a Color from rgb 0-255 format
+	 * @example
+	 * Color.rgb255(32, 128, 255, 0.8);
+	 */
+	static rgb255(r: number, g: number, b: number, a: number = 1) {
+		return new this({
+			type: "rgba",
+			r: r / 0xff,
+			g: g / 0xff,
+			b: b / 0xff,
+			a
+		});
+	}
+	// #endregion
 
+	// #region Output
 	/**
 	 * @returns A Vec4 with components `∈ [0, 1]`.
 	 * @example
@@ -58,4 +75,5 @@ export class Color {
 			}
 		}
 	}
+	// #endregion
 }

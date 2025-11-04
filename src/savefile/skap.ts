@@ -243,8 +243,14 @@ const Settings = z.object({
 	version: z.union([z.null(), z.int()]),
 });
 
+/** This is just `show T from x` */
+const id = <T>(x: T) => x;
+
 const SkapMap = z.object({
-	$schema: z.literal("https://nky5223.github.io/SkapEdit/schema/skap/0.1.2.json").optional(),
+	$schema: 
+		z.enum([
+			"https://nky5223.github.io/SkapEdit/schema/skap/0.1.2.json"
+		]).or(id<z.ZodType<string & {}>>(z.string())).optional(),
 	settings: Settings,
 	maps: Room.array(),
 });
@@ -266,4 +272,5 @@ export namespace SkapFile {
 	export type Vec2 = z.infer<typeof Vec2>;
 	export type Rgb = z.infer<typeof RgbColor>;
 	export type Rgba = z.infer<typeof RgbaColor>;
+	export type Id = z.infer<typeof SkapId>;
 }

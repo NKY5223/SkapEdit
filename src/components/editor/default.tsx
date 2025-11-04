@@ -3,7 +3,7 @@ import { vec2 } from "@common/vec2.ts";
 import { Layout } from "@components/layout/layout";
 import { makeSplitX, makeSplitY } from "@components/layout/layout";
 import { makeView } from "@components/layout/LayoutView.tsx";
-import { makeObstacle, SkapRoom, makeRoom, makeLava, makeText, SkapMap, objectWithIdArrayToMap } from "@editor/map.ts";
+import { makeObstacle, SkapRoom, makeRoom, makeLava, makeText, SkapMap, toIdMap } from "@editor/map.ts";
 
 const actualLayout = makeSplitX(0.75,
 	makeView("map.viewport"),
@@ -38,11 +38,14 @@ const defaultRoom: SkapRoom = makeRoom(
 	]
 );
 export const defaultMap: SkapMap = {
+	author: "SkapEdit",
+	name: "Default",
+	version: 1,
 	spawn: {
 		room: defaultRoom.id,
 		position: vec2(5, 5),
 	},
-	rooms: objectWithIdArrayToMap([
+	rooms: toIdMap([
 		defaultRoom,
 	])
 };

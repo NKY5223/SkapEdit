@@ -1,0 +1,42 @@
+{
+	"$schema": "../schema/skap/0.1.2.json",
+	"settings": {
+		"name": "test",
+		"creator": "nky",
+		"spawnArea": "Home",
+		"spawnPosition": [
+			100,
+			50
+		],
+		"version": 0
+	},
+	"maps": [
+		{
+			"name": "Home",
+			"size": [
+				200,
+				100
+			],
+			"objects": [
+				{
+					"type": "teleporter",
+					"id": "TEST_0",
+					"position": [-10, 40],
+					"size": [10, 20],
+					"dir": 1,
+					"targetArea": "Home",
+					"targetId": "TEST_1"
+				},
+				{
+					"type": "teleporter",
+					"id": "TEST_1",
+					"position": [100, 40],
+					"size": [10, 20],
+					"dir": 3,
+					"targetArea": "Home",
+					"targetId": "TEST_0"
+				}
+			]
+		}
+	]
+}
