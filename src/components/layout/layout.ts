@@ -1,69 +1,26 @@
 import { createId, ID } from "@common/uuid.ts";
 import { IconName } from "@components/icon/icons";
 import { createMapContext } from "@hooks/createMapContext.tsx";
+import { createMapStateContext } from "@hooks/createMapStateContext";
 import { createReducerContext } from "@hooks/createReducerContext.tsx";
-import { FC, ReactNode, Reducer } from "react";
+import { createContext, Dispatch, FC, ReactNode, Reducer } from "react";
 
-/*
-2025-02-xx
-Goal:
-Be able to edit some arbitrary data with multiple views
-tagged data?
-
-2025-03-24
-what the fuck does "tagged data" mean wtf nky
-i don't know if we need floating views
-
-2025-04-03
-floating views would be nice :3
-spiky `:3` :(
-
-data
-| Layout
-|	> split
-|		> view
-|-----------> viewport (map)
-|		> view
-|-----------> inspector (map)
-|	> floating
-|		> view
-|-----------> stats (all)
-|	> floating
-|	 	> view
-|-----------> ??? (some other field in data)
-*/
-
-// #region Types
-
-export type LayoutAction = (
-	| {
-		type: "replace";
-		/** Target node uuid */
-		targetNode: ID;
-		replacement: Layout.Node;
-	}
-	| {
-		type: "set_ratio";
-		/** Target split node uuid */
-		targetNode: ID;
-		ratio: number;
-	}
-);
-export type LayoutFC<T extends Layout.Node, Props> = FC<{
-	node: T;
-} & Props>;
 
 export namespace Layout {
-	export type ViewComponent = FC<{
+	export type ViewComponent<S = null, A = never> = FC<{
 		/** View Switcher component. Should be included in the view. */
 		viewSwitch: ReactNode;
+		state: S;
+		dispatchView: Dispatch<A>;
 	}>;
 
-	export type ViewProvider = {
+	export type ViewProvider<S = null, A = never> = {
 		/** Name for this View (e.g. `"viewport"`) */
 		name: string;
-		Component: ViewComponent;
+		Component: ViewComponent<S, A>;
 		icon?: IconName;
+		reducer: Reducer<S, A>;
+		newState: () => S;
 	};
 
 	export type Tree = {
@@ -74,8 +31,9 @@ export namespace Layout {
 		type: T;
 		id: ID;
 	};
-	export type ViewNode = BaseNode<"view"> & {
+	export type ViewNode<S = unknown, A = never> = BaseNode<"view"> & {
 		providerName: string;
+		state: S;
 	};
 	export type SplitNode = BaseNode<"split"> & {
 		axis: "x" | "y";
@@ -89,7 +47,6 @@ export namespace Layout {
 		| ViewNode
 	);
 }
-// #endregion
 
 /**
  * @returns If node was successfully replaced, returns `[true, newNode]`, else `[false, oldNode]`.
@@ -126,6 +83,21 @@ const setInLayout = (
 		}
 	}
 };
+
+export type LayoutAction = (
+	| {
+		type: "replace";
+		/** Target node uuid */
+		targetNode: ID;
+		replacement: Layout.Node;
+	}
+	| {
+		type: "set_ratio";
+		/** Target split node uuid */
+		targetNode: ID;
+		ratio: number;
+	}
+);
 const layoutReducer: Reducer<Layout.Tree, LayoutAction> = (layout, action) => {
 	const rootNode = layout.node;
 	switch (action.type) {
@@ -149,9 +121,17 @@ const layoutReducer: Reducer<Layout.Tree, LayoutAction> = (layout, action) => {
 	throw new Error(`Layout action not implemented: ${action["type"]}`);
 };
 
-export const [useViewProviders, useViewProvider, ViewProvidersProvider,] = createMapContext<Layout.ViewProvider>("ViewProvider");
-export const [useViewStates, useViewState, ViewInfoStatesProvider,] = createMapContext<unknown>("??");
-export const [useLayoutTree, useDispatchLayout, LayoutProvider] = createReducerContext<Layout.Tree, LayoutAction>("Layout", layoutReducer);
+const [useViewProviders, useViewProviderInternal, ViewProvidersProviderInternal] =
+	createMapContext<Layout.ViewProvider>("ViewProvider");
+export { useViewProviders, ViewProvidersProviderInternal };
+export const useViewProvider = <S, A>(name: string): Layout.ViewProvider<S, A> => {
+	// @ts-expect-error whatever idc about typesafety
+	return useViewProviderInternal(name);
+}
+
+export const [useLayoutTree, useDispatchLayout, LayoutProvider] =
+	createReducerContext<Layout.Tree, LayoutAction>("Layout", layoutReducer);
+
 
 // #region constructors
 export const makeSplit = (axis: "x" | "y", ratio: number, first: Layout.Node, second: Layout.Node): Layout.SplitNode => ({
@@ -164,5 +144,19 @@ export const makeSplit = (axis: "x" | "y", ratio: number, first: Layout.Node, se
 });
 export const makeSplitX = (ratio: number, left: Layout.Node, right: Layout.Node) => makeSplit("x", ratio, left, right);
 export const makeSplitY = (ratio: number, top: Layout.Node, bottom: Layout.Node) => makeSplit("y", ratio, top, bottom);
+export const makeView = <S, A>(provider: Layout.ViewProvider<S, A>): Layout.ViewNode<S> => {
+	return {
+		type: "view",
+		id: createId("layout.view"),
+		providerName: provider.name,
+		state: provider.newState(),
+	};
+};
 
+export const makeStatelessViewProvider = (viewProvider: Pick<Layout.ViewProvider, "name" | "Component" | "icon">): Layout.ViewProvider => ({
+	reducer: s => s,
+	newState: () => null,
+	...viewProvider,
+})
+export const makeViewProvider = <S, A>(viewProvider: Layout.ViewProvider<S, A>) => viewProvider;
 // #endregion

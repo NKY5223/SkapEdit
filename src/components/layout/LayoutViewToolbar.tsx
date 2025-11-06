@@ -7,43 +7,46 @@ import css from "./LayoutViewToolbar.module.css";
 import { Button } from "../form/Button.tsx";
 import { toClassName, ExtensibleFC } from "../utils.tsx";
 import { DropdownSelect } from "@components/form/dropdown/DropdownSelect.tsx";
-import { makeView } from "./LayoutView.tsx";
+import { makeView } from "./layout.ts";
 
 
 type ViewSelectorProps = {
 	view: Layout.ViewNode;
-	dispatch: Dispatch<LayoutAction>;
+	dispatchLayout: Dispatch<LayoutAction>;
 };
 export const ViewSelector: FC<ViewSelectorProps> = ({
-	view, dispatch
+	view, dispatchLayout
 }) => {
 	const views = useViewProviders();
 
+	type T = Layout.ViewProvider;
 	// Holy confusing
-	const options: OptionSection<string>[] = Object.entries(Object.groupBy<string, Option<string>>(
-		views.entries().map(([name, { icon }]) => (
-			{
-				value: name,
+	const options: OptionSection<T>[] = Object.entries(Object.groupBy<string, Option<Layout.ViewProvider>>(
+		views.entries().map(([name, provider]) => {
+			const { icon } = provider;
+			return {
+				value: provider,
 				label: (current) => current && icon
 					? (<></>)
 					: (<Translate k="layout.view.name" view={name} />),
 				icon: icon && (() => icon),
 				name,
-			} satisfies Option<string>
-		)), ({ name }) => name.split(".")[0]
-	)).map<OptionSection<string>>(([name, options]) => ({
+			} satisfies Option<Layout.ViewProvider>;
+		}), ({ name }) => name.split(".")[0]
+	)).map<OptionSection<Layout.ViewProvider>>(([name, options]) => ({
 		name,
 		label: <Translate k="layout.view.category.name" category={name} />,
 		options: options ?? [],
 	}));
+	const initial = views.values().find(provider => provider.name === view.providerName);
 
 	return (
 		<div className={css["selector"]}>
-			<DropdownSelect initialValue={view.providerName} options={options}
+			<DropdownSelect initialValue={initial} options={options}
 				fallbackLabel={<Translate k="layout.view.fallback" />}
 				fallbackIcon="indeterminate_question_box"
 				optionsClassList={[css["selector-options"]]}
-				onSelect={value => dispatch({
+				onSelect={value => value && dispatchLayout({
 					type: "replace",
 					targetNode: view.id,
 					replacement: makeView(value)

@@ -1,25 +1,13 @@
 import { Color } from "@common/color.ts";
 import { vec2 } from "@common/vec2.ts";
-import { Layout } from "@components/layout/layout";
-import { makeSplitX, makeSplitY } from "@components/layout/layout";
-import { makeView } from "@components/layout/LayoutView.tsx";
-import { makeObstacle, SkapRoom, makeRoom, makeLava, makeText, SkapMap, toIdMap } from "@editor/map.ts";
+import { Layout, makeSplitX, makeView } from "@components/layout/layout";
+import { viewProviders } from "@components/layout/views.tsx";
+import { makeLava, makeObstacle, makeRoom, makeText, SkapMap, SkapRoom, toIdMap } from "@editor/map.ts";
 
-const actualLayout = makeSplitX(0.75,
-	makeView("map.viewport"),
-	makeView("map.inspector")
+const defaultLayout = makeSplitX(0.75,
+	makeView(viewProviders["map.viewport"]),
+	makeView(viewProviders["map.inspector"]),
 );
-const testLayout = makeSplitY(0.1,
-	makeView("ILLEGAL"),
-	makeSplitX(0.75,
-		makeView("map.viewport"),
-		makeSplitY(0.8,
-			makeView("map.inspector"),
-			makeView("test.swatch")
-		)
-	)
-);
-const defaultLayout: Layout.Node = /* import.meta.env.DEV ? testLayout :  */actualLayout;
 export const defaultLayoutTree: Layout.Tree = {
 	node: defaultLayout
 };

@@ -1,6 +1,6 @@
-import { Layout } from "@components/layout/layout";
+import { Layout, makeStatelessViewProvider } from "@components/layout/layout";
 
-export const TestError: Layout.ViewComponent = () => {
+const TestError: Layout.ViewComponent = () => {
 	throw new Error("Test error", {
 		cause: [
 			new RangeError("rangeerror"),
@@ -10,8 +10,8 @@ export const TestError: Layout.ViewComponent = () => {
 	return <></>;
 };
 
-export const TestErrorVP: Layout.ViewProvider = {
+export const TestErrorVP: Layout.ViewProvider = makeStatelessViewProvider({
 	name: "test.error",
 	Component: TestError,
 	icon: "error",
-};
+});

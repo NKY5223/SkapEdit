@@ -1,4 +1,4 @@
-import { Layout } from "@components/layout/layout";
+import { Layout, makeStatelessViewProvider } from "@components/layout/layout";
 
 const normalize = (str: string) => str
 	.replaceAll("--", "-")
@@ -70,8 +70,8 @@ export const TestSwatch: Layout.ViewComponent = ({
 	);
 }
 
-export const TestSwatchVP: Layout.ViewProvider = {
+export const TestSwatchVP: Layout.ViewProvider = makeStatelessViewProvider({
 	name: "test.swatch",
 	Component: TestSwatch,
 	icon: "palette",
-};
+});

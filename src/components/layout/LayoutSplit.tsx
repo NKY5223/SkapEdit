@@ -1,10 +1,9 @@
 import { clamp } from "@common/number.ts";
 import { makeSection, makeSingle, Sections, useContextMenu } from "@components/contextmenu/ContextMenu.ts";
-import { toClassName } from "@components/utils.tsx";
-import { elementIsRtl } from "@components/utils.tsx";
+import { elementIsRtl, toClassName } from "@components/utils.tsx";
 import { MouseButtons, useDrag } from "@hooks/useDrag.ts";
-import { KeyboardEventHandler, ReactNode, useRef } from "react";
-import { Layout, LayoutFC, useDispatchLayout } from "./layout.ts";
+import { FC, KeyboardEventHandler, ReactNode, useRef } from "react";
+import { Layout, useDispatchLayout } from "./layout.ts";
 import css from "./LayoutSplit.module.css";
 
 const KeyMap = {
@@ -13,9 +12,10 @@ const KeyMap = {
 } as const;
 
 type LayoutSplitProps = {
+	node: Layout.SplitNode;
 	children: [ReactNode, ReactNode];
 };
-export const LayoutSplit: LayoutFC<Layout.SplitNode, LayoutSplitProps> = ({
+export const LayoutSplit: FC<LayoutSplitProps> = ({
 	node,
 	children: [first, second],
 }) => {

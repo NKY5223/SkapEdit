@@ -3,7 +3,7 @@ import { vec2, Vec2, zero } from "@common/vec2.ts";
 import "@common/vector.ts";
 import { makeSection, makeSingle, makeSubmenu, Sections, useContextMenu } from "@components/contextmenu/ContextMenu.ts";
 import { makeObjectSelectableItem, makeObjectSelectionItem, makeRoomSelectableItem, selectableToSelection, useDispatchSelection, useEditorSelection } from "@components/editor/selection.ts";
-import { Layout } from "@components/layout/layout.ts";
+import { Layout, makeViewProvider } from "@components/layout/layout.ts";
 import { mergeListeners, toClassName } from "@components/utils.tsx";
 import { Bounds } from "@editor/bounds.ts";
 import { useDispatchSkapMap, useSkapMap } from "@editor/reducer.ts";
@@ -24,6 +24,8 @@ import css from "./Viewport.module.css";
 import { WebGLLayer } from "./webgl/WebGLLayer.tsx";
 import { SlimeWebGLRenderer } from "./renderer/slime.ts";
 import { IceWebGLRenderer } from "./renderer/ice.ts";
+import { ViewportCanvas } from "./ViewportCanvas.tsx";
+import { Button } from "@components/form/Button.tsx";
 
 export type ViewportInfo = {
 	camera: Camera;
@@ -38,45 +40,6 @@ export type ViewportInfo = {
 export type ViewportLayerFC = FC<{
 	viewportInfo: ViewportInfo;
 }>;
-
-/* 
-Desired structure:
-layers:
-	webgl {
-		gl
-		renderer { shared gl, shaders, program, buffers etc... }
-		renderer { shared gl, shaders, program, buffers etc... }
-		renderer { shared gl, shaders, program, buffers etc... }
-		renderer { shared gl, shaders, program, buffers etc... }
-		gl and renderers **MUST** persist across renders
-		else contexts will probably be lost all the time idk
-	}
-	text {
-		probably just a regular React.FC
-	}
-	webgl {
-		gl
-		renderer { ... }
-	}
-*/
-type ViewportCanvasProps = {
-	layers: ViewportLayerFC[];
-	viewportInfo: ViewportInfo;
-} & React.HTMLAttributes<HTMLDivElement>;
-const ViewportCanvas: FC<ViewportCanvasProps> = ({
-	layers, viewportInfo,
-	...attrs
-}) => {
-	return (
-		<div className={css["viewport-canvas"]} {...attrs}>
-			{
-				layers.map((Layer, i) => (
-					<Layer key={i} viewportInfo={viewportInfo} />
-				))
-			}
-		</div>
-	);
-}
 
 /** multiplier for wheel event "mode"
  * will almost always be 0
@@ -98,8 +61,17 @@ const calcScale = (i: number) => scaleBase * scaleExp ** (scaleMul * i);
 /** Maximum distance for something to count as a click */
 const clickMaxDistance = 2;
 
-export const Viewport: Layout.ViewComponent = ({
-	viewSwitch,
+type ViewportState = {
+	test: number;
+};
+type ViewportAction = (
+	| {
+		type: "increment_test";
+	}
+);
+
+const Viewport: Layout.ViewComponent<ViewportState, ViewportAction> = ({
+	viewSwitch, state, dispatchView,
 }) => {
 	// useMemo because the webgl canvas should persist
 	const layers = useMemo(() => [
@@ -363,7 +335,28 @@ export const Viewport: Layout.ViewComponent = ({
 
 			<ViewToolbar>
 				{viewSwitch}
+				<span>Test: {state.test}</span>
+				<Button onClick={() => dispatchView({ type: "increment_test" })}>Increment</Button>
 			</ViewToolbar>
 		</div>
 	);
-}
+};
+
+export const ViewportVP = makeViewProvider<ViewportState, ViewportAction>({
+	name: "map.viewport",
+	Component: Viewport,
+	icon: "monitor",
+	reducer: (state, action) => {
+		switch (action.type) {
+			case "increment_test": {
+				return {
+					...state,
+					test: state.test + 1,
+				};
+			}
+		}
+	},
+	newState: () => ({
+		test: 0,
+	}),
+});

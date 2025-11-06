@@ -5,8 +5,9 @@ export function createMapContext<T, K = string>(name: string, defaultValue: Read
 	const useMapContext = () => useContext(context);
 	const useMapContextEntry = (key: K) => useContext(context).get(key);
 
-	const Provider: FC<PropsWithChildren<{ value: ReadonlyMap<K, T>, extend?: boolean }>> = ({
-		value, extend = true,
+	const Provider: FC<PropsWithChildren<{ value?: ReadonlyMap<K, T>, extend?: boolean }>> = ({
+		value = new Map(),
+		extend = true,
 		children
 	}) => {
 		const ctx = useMapContext();
@@ -14,7 +15,7 @@ export function createMapContext<T, K = string>(name: string, defaultValue: Read
 			<context.Provider value={extend
 				? new Map([
 					...ctx,
-					...value.entries(),
+					...value?.entries(),
 				])
 				: value
 			}>
@@ -27,15 +28,6 @@ export function createMapContext<T, K = string>(name: string, defaultValue: Read
 	// But setting displayName does change its displayName (???)
 	Object.assign(context.Provider, { displayName: `${name}Context` });
 
-	const result: [
-		useMapContext: () => ReadonlyMap<K, T>,
-		useMapContextEntry: (key: K) => T | undefined,
-		Provider: FC<PropsWithChildren<{
-			value: ReadonlyMap<K, T>;
-			extend?: boolean;
-		}>>,
-		context: React.Context<ReadonlyMap<K, T>>
-	] = [useMapContext, useMapContextEntry, Provider, context];
 
-	return result;
+	return [useMapContext, useMapContextEntry, Provider, context] as const;
 }

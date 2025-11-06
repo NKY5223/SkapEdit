@@ -6,7 +6,7 @@ import { FormTitle } from "@components/form/FormTitle.tsx";
 import { TextInput } from "@components/form/TextInput.tsx";
 import { Vec2Input } from "@components/form/Vec2Input";
 import { Icon } from "@components/icon/Icon.tsx";
-import { Layout } from "@components/layout/layout.ts";
+import { Layout, makeStatelessViewProvider } from "@components/layout/layout.ts";
 import { ViewToolbar } from "@components/layout/LayoutViewToolbar.tsx";
 import { Translate } from "@components/translate/Translate.tsx";
 import { useTranslate } from "@components/translate/translationArgs.ts";
@@ -14,7 +14,7 @@ import { getObject, useDispatchSkapMap, useSkapMap } from "@editor/reducer";
 import { ReactNode } from "react";
 import css from "./Inspector.module.css";
 
-export const Inspector: Layout.ViewComponent = ({
+const Inspector: Layout.ViewComponent = ({
 	viewSwitch,
 }) => {
 	const selection = useEditorSelection();
@@ -152,4 +152,10 @@ export const Inspector: Layout.ViewComponent = ({
 			</div>
 		</div>
 	);
-}
+};
+
+export const InspectorVP: Layout.ViewProvider = makeStatelessViewProvider({
+	name: "map.inspector",
+	Component: Inspector,
+	icon: "frame_inspect",
+});

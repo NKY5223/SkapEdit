@@ -1,21 +1,21 @@
-import { useContextMenu } from "@components/contextmenu/ContextMenu.ts";
-import { makeSection, Sections, makeSingle } from "@components/contextmenu/ContextMenu.ts";
-import { memo } from "react";
-import { createId } from "../../common/uuid.ts";
+import { makeSection, makeSingle, Sections, useContextMenu } from "@components/contextmenu/ContextMenu.ts";
+import { Dispatch, memo } from "react";
 import { ErrorBoundary } from "../error/ErrorBoundary.tsx";
 import { Translate } from "../translate/Translate.tsx";
 import { toClassName } from "../utils.tsx";
-import { Layout, LayoutFC, useDispatchLayout, useViewProvider } from "./layout.ts";
-import { makeSplitX, makeSplitY } from "./layout.ts";
+import { Layout, makeSplitX, makeSplitY, makeView, useDispatchLayout, useViewProvider } from "./layout.ts";
 import css from "./LayoutView.module.css";
 import { ViewSelector } from "./LayoutViewToolbar.tsx";
 
-type LayoutViewProps = {
+type LayoutViewProps<S, A> = {
+	node: Layout.ViewNode<S, A>;
 };
-export const LayoutView: LayoutFC<Layout.ViewNode, LayoutViewProps> = ({
+export const LayoutView = <S, A>({
 	node,
-}) => {
+}: LayoutViewProps<S, A>) => {
 	const dispatchLayout = useDispatchLayout();
+	const provider = useViewProvider<S, A>(node.providerName);
+
 	const contextMenu = useContextMenu([
 		makeSection(Sections.layout, [
 			makeSingle("layout.split-x", "split_scene_left", () => dispatchLayout({
@@ -23,7 +23,7 @@ export const LayoutView: LayoutFC<Layout.ViewNode, LayoutViewProps> = ({
 				targetNode: node.id,
 				replacement: makeSplitX(0.5,
 					node,
-					makeView(node.providerName),
+					makeView(provider),
 				)
 			})),
 			makeSingle("layout.split-y", "split_scene_up", () => dispatchLayout({
@@ -31,13 +31,12 @@ export const LayoutView: LayoutFC<Layout.ViewNode, LayoutViewProps> = ({
 				targetNode: node.id,
 				replacement: makeSplitY(0.5,
 					node,
-					makeView(node.providerName),
+					makeView(provider),
 				)
 			})),
 		])
 	]);
 
-	const provider = useViewProvider(node.providerName);
 
 	if (!provider) {
 		const className = toClassName(
@@ -46,7 +45,7 @@ export const LayoutView: LayoutFC<Layout.ViewNode, LayoutViewProps> = ({
 		);
 		return (
 			<div className={className} {...contextMenu}>
-				<ViewSelector view={node} dispatch={dispatchLayout} />
+				<ViewSelector view={node} dispatchLayout={dispatchLayout} />
 				<h1>
 					<Translate k="error.layout.view.unknown" viewProviderName={node.providerName} />
 				</h1>
@@ -56,22 +55,28 @@ export const LayoutView: LayoutFC<Layout.ViewNode, LayoutViewProps> = ({
 	const {
 		name,
 		Component: ViewComp,
+		reducer,
 	} = provider;
+
+	const viewSwitch = <ViewSelector view={node} dispatchLayout={dispatchLayout} />;
+
+	const dispatchView: Dispatch<A> = action => {
+		dispatchLayout({
+			type: "replace",
+			targetNode: node.id,
+			replacement: {
+				...node,
+				state: reducer(node.state, action),
+			} satisfies Layout.ViewNode<S, A>,
+		})
+	}
 
 	return (
 		<ErrorBoundary location={`LayoutView(${name})`}>
-			<div className={css.view} {...contextMenu}>
-				<ViewComp viewSwitch={<ViewSelector view={node} dispatch={dispatchLayout} />} />
+			<div className={css["view"]} {...contextMenu}>
+				<ViewComp viewSwitch={viewSwitch} state={node.state} dispatchView={dispatchView} />
 			</div>
 		</ErrorBoundary>
 	);
 }
 export const LayoutViewMemo = memo(LayoutView, ({ node: a }, { node: b }) => (a === b));
-
-export const makeView = (providerName: string): Layout.ViewNode => {
-	return {
-		type: "view",
-		id: createId("layout.view"),
-		providerName,
-	};
-};
