@@ -11,7 +11,7 @@ import { MouseButtons, useDrag } from "@hooks/useDrag.ts";
 import { useElementSize } from "@hooks/useElementSize.ts";
 import React, { FC, useMemo, useRef, useState } from "react";
 import { makeLava, makeObstacle, makeText, SkapRoom } from "../../../editor/map.ts";
-import { ViewToolbar } from "../../layout/LayoutViewToolbar.tsx";
+import { ViewToolbar, ViewToolbarButton } from "../../layout/LayoutViewToolbar.tsx";
 import { Camera, useCamera } from "./camera.ts";
 import { viewportToMap } from "./mapping.ts";
 import { BackgroundObstacleWebGLRenderer, BackgroundWebGLRenderer } from "./renderer/background.ts";
@@ -335,8 +335,7 @@ const Viewport: Layout.ViewComponent<ViewportState, ViewportAction> = ({
 
 			<ViewToolbar>
 				{viewSwitch}
-				<span>Test: {state.test}</span>
-				<Button onClick={() => dispatchView({ type: "increment_test" })}>Increment</Button>
+				<ViewToolbarButton onClick={() => dispatchView({ type: "increment_test" })}>{state.test}</ViewToolbarButton>
 			</ViewToolbar>
 		</div>
 	);

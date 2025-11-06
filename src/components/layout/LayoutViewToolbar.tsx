@@ -19,38 +19,41 @@ export const ViewSelector: FC<ViewSelectorProps> = ({
 }) => {
 	const views = useViewProviders();
 
-	type T = Layout.ViewProvider;
+	type T = string;
 	// Holy confusing
-	const options: OptionSection<T>[] = Object.entries(Object.groupBy<string, Option<Layout.ViewProvider>>(
+	const options: OptionSection<T>[] = Object.entries(Object.groupBy<string, Option<T>>(
 		views.entries().map(([name, provider]) => {
 			const { icon } = provider;
 			return {
-				value: provider,
+				value: name,
 				label: (current) => current && icon
 					? (<></>)
 					: (<Translate k="layout.view.name" view={name} />),
 				icon: icon && (() => icon),
 				name,
-			} satisfies Option<Layout.ViewProvider>;
+			} satisfies Option<T>;
 		}), ({ name }) => name.split(".")[0]
-	)).map<OptionSection<Layout.ViewProvider>>(([name, options]) => ({
+	)).map<OptionSection<T>>(([name, options]) => ({
 		name,
 		label: <Translate k="layout.view.category.name" category={name} />,
 		options: options ?? [],
 	}));
-	const initial = views.values().find(provider => provider.name === view.providerName);
 
 	return (
 		<div className={css["selector"]}>
-			<DropdownSelect initialValue={initial} options={options}
+			<DropdownSelect initialValue={view.providerName} options={options}
 				fallbackLabel={<Translate k="layout.view.fallback" />}
 				fallbackIcon="indeterminate_question_box"
 				optionsClassList={[css["selector-options"]]}
-				onSelect={value => value && dispatchLayout({
-					type: "replace",
-					targetNode: view.id,
-					replacement: makeView(value)
-				})}
+				onSelect={name => {
+					const provider = views.get(name);
+					if (!provider) return;
+					dispatchLayout({
+						type: "replace",
+						targetNode: view.id,
+						replacement: makeView(provider)
+					});
+				}}
 			/>
 		</div>
 	);
