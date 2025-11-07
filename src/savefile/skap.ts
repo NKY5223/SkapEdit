@@ -128,7 +128,7 @@ const Turret = circleObject("turret").extend({
 	// shootingSpeed = interval of bullets in burst, in s
 	shootingSpeed: z.number(),
 	// overHeat = number of bullets in a burst
-	overHeat: z.int().nonnegative(),
+	overHeat: z.number(),
 	// speed = bullet speed, in unit/s
 	speed: z.number(),
 	// coolDownTime = time between bursts 
@@ -153,37 +153,43 @@ const Switch = rectObject("switch").extend({
 // #endregion
 
 // #region spawner
-const EntityType = z.literal([
-	"normal",
-	"reverse",
-	"spike",
-	"bouncer",
-	"rotating",
-	"following",
-	"bomb",
-	"monster",
-	"taker",
-	"contractor",
-	"expander",
-	"immune",
-	"snek",
-	"wavy",
-	"shooter",
-	"stutter",
-	"megaBouncer",
-	"freezer",
-	"disabler",
-	"gravityRight",
-	"gravityUp",
-	"gravityLeft",
-	"drainer",
-	"harmless",
-	"decelerator",
-	"accelerator",
-]);
+const EntityType = z.string();
+
+// List from skap.io/editor.bundle.js
+[
+	'normal', 
+	'reverse', 
+	'spike', 
+	'bouncer', 
+	'rotating', 
+	'following', 
+	'bomb', 
+	'monster', 
+	'taker', 
+	'contractor', 
+	'immune', 
+	'expander', 
+	'wavy', 
+	'snek', 
+	'daddySnek', 
+	'babySnek', 
+	'stutter', 
+	'shooter', 
+	'freezer', 
+	'megaBouncer', 
+	'gravityLeft', 
+	'gravityUp', 
+	'gravityRight', 
+	'disabler', 
+	'accelerator', 
+	'decelerator', 
+	'drainer', 
+	'harmless'
+]
+
 const Spawner = rectObject("spawner").extend({
 	entityType: EntityType,
-	number: z.int().nonnegative(),
+	number: z.number(),
 	speed: NonNaN,
 	radius: NonNaN,
 });
@@ -240,7 +246,7 @@ const Settings = z.object({
 	creator: z.string(),
 	spawnArea: z.string(),
 	spawnPosition: Vec2,
-	version: z.union([z.null(), z.int()]),
+	version: z.union([z.null(), z.number()]),
 });
 
 /** This is just `show T from x` */
@@ -249,7 +255,8 @@ const id = <T>(x: T) => x;
 export const SkapMapSchema = z.object({
 	$schema: 
 		z.enum([
-			"https://nky5223.github.io/SkapEdit/schema/skap/0.1.2.json"
+			"https://nky5223.github.io/SkapEdit/schema/skap/0.1.2.json",
+			"https://nky5223.github.io/SkapEdit/schema/skap/0.1.3.json",
 		]).or(id<z.ZodType<string & {}>>(z.string())).optional(),
 	settings: Settings,
 	maps: Room.array(),

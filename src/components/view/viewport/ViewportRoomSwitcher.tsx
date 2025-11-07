@@ -39,6 +39,7 @@ export const ViewportRoomSwitcher: FC<ViewportRoomSwitcherProps> = ({
 				});
 			}}
 			fallbackLabel={<Translate k="viewport.room_fallback" />}
+			nowrap
 		/>
 	);
 }

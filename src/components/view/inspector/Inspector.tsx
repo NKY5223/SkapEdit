@@ -139,14 +139,14 @@ const Inspector: Layout.ViewComponent = ({
 			</ViewToolbar>
 			<div className={css["inspector-content"]}>
 				<FormSection>
-					<FormTitle>Selection</FormTitle>
+					{/* <FormTitle>Selection</FormTitle>
 					<span>
 						<Icon icon="select" title="Current Selection" />
 						&nbsp;
 						<code style={{ fontSize: ".75em" }}>
 							<Translate k="generic.list_string" strings={selection.map((item) => item.id)} />
 						</code>
-					</span>
+					</span> */}
 					{selectionForm}
 				</FormSection>
 			</div>

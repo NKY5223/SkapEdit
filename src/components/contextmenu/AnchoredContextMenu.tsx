@@ -18,7 +18,6 @@ export const AnchoredContextMenu: FC<AnchoredContextMenuProps> = ({
 	id,
 	notRoot = false,
 }) => {
-
 	const menuRef = useRef<HTMLElement>(null);
 
 	const className = toClassName(

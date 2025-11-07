@@ -21,9 +21,15 @@
 	border-radius: var(--theme-border-radius);
 	box-shadow: var(--theme-shadow);
 
+	&.nowrap {
+		max-height: 40em;
+		overflow-x: clip;
+		overflow-y: auto;
+		overflow-clip-margin: border-box 1em;
+	}
 	&:not(.nowrap) {
-		flex-wrap: wrap;
 		max-height: 20em;
+		flex-wrap: wrap;
 	}
 	&:popover-open {
 		display: flex;

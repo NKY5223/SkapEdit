@@ -25,3 +25,6 @@ dist-ssr
 
 # vite stuff??
 *.tsbuildinfo
+
+# big maps
+public/maps/test_big_skaplaxy.json

@@ -78,14 +78,18 @@ export const Topbar: FC<TopbarProps> = ({
 				}),
 				makeSingle("topbar.file.import_skap", "file_open", async () => {
 					try {
-						const [method, file] = await openFile(() => confirm("Are you sure? This will overwrite any unsaved progress."), {
-							id: "skapedit-import",
-							types: [
-								{ accept: { "application/json": [".json"] } }
-							]
-						})
+						const [method, file] = await openFile(
+							() => confirm("Are you sure? This will overwrite any unsaved progress."),
+							{
+								id: "skapedit-import",
+								types: [
+									{ accept: { "application/json": [".json"] } }
+								]
+							}
+						);
 						const text = await file.text();
 						const json = JSON.parse(text);
+						console.log("file raw json", json);
 						const m = SkapMapSchema.parse(json);
 						const map = skapToMap(m);
 
@@ -93,7 +97,7 @@ export const Topbar: FC<TopbarProps> = ({
 							Successfully parsed map: {map.name} by {map.author}, version {map.version}.
 						</>, 10)
 						console.log("Imported map", method, map);
-						
+
 						dispatchMap({
 							type: "replace_map",
 							map,

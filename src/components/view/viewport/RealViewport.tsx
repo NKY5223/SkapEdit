@@ -215,6 +215,7 @@ export const RealViewport: FC<RealViewportProps> = ({
 		}
 	});
 	const onWheel: React.WheelEventHandler<HTMLElement> = e => {
+		if (e.target !== e.currentTarget) return;
 		const d = e.deltaY * wheelMult(e.deltaMode);
 		const newIndex = scaleIndex + d;
 

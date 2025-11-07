@@ -88,11 +88,12 @@
 	}
 
 	/* Extend hover range */
-	&::before {
+	&:hover::before {
 		content: "";
 		position: absolute;
 		inset: 0;
-		inset-inline: -0.625em;
+		inset-inline: calc(-0.625em);
+		/* outline: 1px solid #f0f; */
 	}
 }
 .submenu-content {
