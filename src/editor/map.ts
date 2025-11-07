@@ -4,6 +4,7 @@ import { vec2, Vec2 } from "../common/vec2.ts";
 import { Bounds, BoundsInit } from "./bounds.ts";
 import { SkapIce, SkapLava, SkapObstacle, SkapSlime } from "./object/basic.ts";
 import { SkapText } from "./object/text.ts";
+import { SkapBlock } from "./object/block.ts";
 
 export type SkapObject = (
 	| SkapObstacle
@@ -11,6 +12,7 @@ export type SkapObject = (
 	| SkapSlime
 	| SkapIce
 	| SkapText
+	| SkapBlock
 );
 export type SkapRoom = {
 	id: ID;
@@ -59,6 +61,14 @@ export const makeText = (x: number, y: number, text: string): SkapText => ({
 	id: createId("obj-text"),
 	pos: vec2(x, y),
 	text,
+});
+export const makeBlock = (left: number, top: number, right: number, bottom: number, color: Color, layer: 0 | 1, solid: boolean): SkapBlock => ({
+	type: "block",
+	id: createId("obj-block"),
+	bounds: new Bounds({ left, top, right, bottom }),
+	color,
+	layer,
+	solid,
 });
 export const toIdMap = <T extends { id: ID; }>(objs: T[]): Map<ID, T> =>
 	new Map(objs.map(o => [o.id, o]));

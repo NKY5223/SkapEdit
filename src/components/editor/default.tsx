@@ -2,7 +2,7 @@ import { Color } from "@common/color.ts";
 import { vec2 } from "@common/vec2.ts";
 import { Layout, makeSplitX, makeView } from "@components/layout/layout";
 import { viewProviders } from "@components/layout/views.tsx";
-import { makeLava, makeObstacle, makeRoom, makeText, SkapMap, SkapRoom, toIdMap } from "@editor/map.ts";
+import { makeBlock, makeLava, makeObstacle, makeRoom, makeText, SkapMap, SkapRoom, toIdMap } from "@editor/map.ts";
 
 const defaultLayout = makeSplitX(0.75,
 	makeView(viewProviders["map.viewport"]),
@@ -32,6 +32,11 @@ const testRoom: SkapRoom = makeRoom(
 	Color.DEFAULT_BACKGROUND,
 	[
 		makeText(50, 50, "test"),
+		makeBlock(0, 0, 75, 50, Color.hex(0x2080ff, 0.5), 0, true),
+		makeBlock(25, 0, 100, 50, Color.hex(0xd01000, 0.5), 0, true),
+
+		makeBlock(25, 50, 100, 100, Color.hex(0xd01000, 0.5), 0, true),
+		makeBlock(0, 50, 75, 100, Color.hex(0x2080ff, 0.5), 0, true),
 	]
 );
 export const defaultMap: SkapMap = {

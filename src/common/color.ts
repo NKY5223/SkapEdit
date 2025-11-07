@@ -77,6 +77,20 @@ export class Color {
 			}
 		}
 	}
+
+	/**
+	 * @returns A number `∈ [0, 1]`.
+	 * @example
+	 * Color.hex(0x2080ff, 0.25).alpha() === 0.25
+	 */
+	alpha(): number {
+		const data = this.data;
+		switch (data.type) {
+			case "rgba": {
+				return data.a;
+			}
+		}
+	}
 	// #endregion
 
 	// #region Colors

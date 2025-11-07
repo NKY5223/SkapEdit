@@ -1,5 +1,6 @@
 import { BaseObject, SkapObjectProperties } from "./Base.ts";
 import { iceProperties, lavaProperties, obstacleProperties, slimeProperties } from "./basic.ts";
+import { blockProperties } from "./block.ts";
 import { textProperties } from "./text.ts";
 
 const properties = [
@@ -8,6 +9,7 @@ const properties = [
 	slimeProperties,
 	iceProperties,
 	textProperties,
+	blockProperties,
 ];
 
 export const getProperties = <T extends string, O extends BaseObject<T, {}>>(obj: O): SkapObjectProperties<T, O> => {

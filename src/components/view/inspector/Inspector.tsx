@@ -127,6 +127,13 @@ const Inspector: Layout.ViewComponent = ({
 							</>
 						);
 					}
+					case "block": {
+						return (
+							<pre>
+								{JSON.stringify(selectedObject, undefined, "\t")}
+							</pre>
+						);
+					}
 				}
 			}
 		}

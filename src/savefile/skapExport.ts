@@ -28,8 +28,18 @@ const objectToSkap = (object: SkapObject, room: SkapRoom, map: SkapMap): SkapFil
 				text: object.text,
 			}];
 		}
+		case "block": {
+			return [{
+				type: object.type,
+				position: vec2ToSkap(object.bounds.topLeft.sub(topLeft)),
+				size: vec2ToSkap(object.bounds.size),
+				color: rgbToSkap(object.color),
+				opacity: object.color.alpha(),
+				layer: object.layer,
+				collide: object.solid,
+			}];
+		}
 	}
-	object satisfies never;
 }
 
 const roomToSkap = (room: SkapRoom, map: SkapMap): SkapFile.Room => {

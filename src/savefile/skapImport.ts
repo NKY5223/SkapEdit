@@ -6,8 +6,8 @@ import { SkapMap, SkapObject, SkapRoom, toIdMap } from "@editor/map.ts";
 import { SkapFile } from "./skap.ts";
 
 const skapToVec2 = (v: SkapFile.Vec2): Vec2 => vec2(...v);
-const rgbToSkap = (c: SkapFile.Rgb): Color => Color.rgb255(...c);
-const rgbaToSkap = (c: SkapFile.Rgba): Color => Color.rgb255(...c);
+const skapToRgb = (c: SkapFile.Rgb): Color => Color.rgb255(...c);
+const skapToRgba = (c: SkapFile.Rgba): Color => Color.rgb255(...c);
 
 type P<T> = T extends never
 	? {
@@ -36,7 +36,14 @@ const skapToObjectsPartial = (object: SkapFile.Object, room: SkapFile.Room, map:
 			pos: skapToVec2(object.position),
 			text: object.text,
 		}
-		case "block":
+		case "block": return {
+			type: "block",
+			id,
+			bounds: new Bounds({ pos: skapToVec2(object.position), size: skapToVec2(object.size) }),
+			color: skapToRgba([...object.color, object.opacity]),
+			layer: object.layer,
+			solid: object.collide,
+		}
 		case "gravityZone":
 		case "teleporter":
 		case "circularObstacle":
@@ -84,10 +91,10 @@ const skapToRoomPartial = (room: SkapFile.Room, map: SkapFile.Map): PartialSkapR
 			bottomRight: skapToVec2(room.size)
 		}),
 		backgroundColor: room.areaColor
-			? rgbToSkap(room.areaColor)
+			? skapToRgb(room.areaColor)
 			: Color.DEFAULT_BACKGROUND,
 		obstacleColor: room.backgroundColor
-			? rgbaToSkap(room.backgroundColor)
+			? skapToRgba(room.backgroundColor)
 			: Color.DEFAULT_OBSTACLE,
 		objects,
 	};
@@ -100,9 +107,9 @@ const completeObject = (object: PartialSkapObject, rooms: PartialSkapRoom[], map
 		case "slime":
 		case "ice":
 		case "text":
+		case "block":
 			{ return object; }
 	}
-	object satisfies never;
 }
 const completeRoom = (room: PartialSkapRoom, rooms: PartialSkapRoom[], map: SkapFile.Map): SkapRoom => {
 	return {

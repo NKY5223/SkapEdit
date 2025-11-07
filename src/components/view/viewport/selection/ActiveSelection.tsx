@@ -141,28 +141,32 @@ const ActiveSelectionItem: FC<ActiveSelectionItemProps> = ({
 
 	switch (object.type) {
 		case "obstacle":
-		case "lava": {
-			const { bounds } = object;
-			const setBounds: Dispatch<SetStateAction<Bounds>> = update => {
-				dispatchMap({
-					type: "replace_object",
-					target: object.id,
-					replacement: obj => "bounds" in obj ? {
-						...obj,
-						bounds: maybeConst(update, obj.bounds),
-					} : obj
-				});
+		case "lava":
+		case "slime":
+		case "ice":
+		case "block":
+			{
+				const { bounds } = object;
+				const setBounds: Dispatch<SetStateAction<Bounds>> = update => {
+					dispatchMap({
+						type: "replace_object",
+						target: object.id,
+						replacement: obj => "bounds" in obj ? {
+							...obj,
+							bounds: maybeConst(update, obj.bounds),
+						} : obj
+					});
+				}
+				const translate = getTranslate(object);
+				const setTranslate = (obj: typeof object, diff: Vec2) => {
+					dispatchMap({
+						type: "replace_object",
+						target: object.id,
+						replacement: () => translate(obj, diff),
+					});
+				}
+				return <BoundsSelection {...{ viewportInfo, object, active, bounds, setBounds, setTranslate }} />;
 			}
-			const translate = getTranslate(object);
-			const setTranslate = (obj: typeof object, diff: Vec2) => {
-				dispatchMap({
-					type: "replace_object",
-					target: object.id,
-					replacement: () => translate(obj, diff),
-				});
-			}
-			return <BoundsSelection {...{ viewportInfo, object, active, bounds, setBounds, setTranslate }} />;
-		}
 		case "text": {
 			const { pos } = object;
 			const setPos: Dispatch<SetStateAction<Vec2>> = pos => dispatchMap({

@@ -1,32 +1,30 @@
 import { sortBy } from "@common/array.ts";
-import { ID } from "@common/uuid.ts";
 import { vec2 } from "@common/vec2.ts";
-import { Vector } from "@common/vector.ts";
-import { EditorSelection, SelectionItem, makeObjectSelectableItem, makeObjectSelectionItem, makeRoomSelectableItem, selectableToSelection, useDispatchSelection, useEditorSelection } from "@components/editor/selection.ts";
+import { Sections, makeSection, makeSingle, makeSubmenu, useContextMenu } from "@components/contextmenu/ContextMenu.ts";
+import { makeObjectSelectableItem, makeObjectSelectionItem, makeRoomSelectableItem, selectableToSelection, useDispatchSelection, useEditorSelection } from "@components/editor/selection.ts";
 import { ViewToolbar } from "@components/layout/LayoutViewToolbar.tsx";
-import { ListenerAttributes, toClassName, mergeListeners } from "@components/utils.tsx";
+import { mergeListeners, toClassName } from "@components/utils.tsx";
 import { Bounds } from "@editor/bounds.ts";
-import { SkapRoom, SkapMap, SkapObject, makeLava, makeObstacle, makeText } from "@editor/map.ts";
-import { useDrag, MouseButtons } from "@hooks/useDrag.ts";
-import { Camera } from "./camera.ts";
-import { viewportToMap } from "./mapping.ts";
-import { ActiveSelection } from "./selection/ActiveSelection.tsx";
-import { getClickbox, getZIndex, getSelectableBounds } from "./selection/getObjectProperties.ts";
-import { ViewportLayerFC, ViewportInfo, ViewportState, ViewportAction, wheelMult } from "./Viewport.tsx";
-import { ViewportCanvas } from "./ViewportCanvas.tsx";
-import css from "./Viewport.module.css";
-import { Dispatch, FC, ReactNode, useMemo, useRef } from "react";
-import { useContextMenu, makeSection, Sections, makeSingle, makeSubmenu } from "@components/contextmenu/ContextMenu.ts";
+import { SkapRoom, makeLava, makeObstacle, makeText } from "@editor/map.ts";
 import { useDispatchSkapMap, useSkapMap } from "@editor/reducer.ts";
+import { MouseButtons, useDrag } from "@hooks/useDrag.ts";
+import { useElementSize } from "@hooks/useElementSize.ts";
+import { Dispatch, FC, ReactNode, useMemo, useRef } from "react";
+import { viewportToMap } from "./mapping.ts";
 import { BackgroundObstacleWebGLRenderer, BackgroundWebGLRenderer } from "./renderer/background.ts";
 import { IceWebGLRenderer } from "./renderer/ice.ts";
 import { LavaWebGLRenderer } from "./renderer/lava.ts";
 import { ObstacleWebGLRenderer } from "./renderer/obstacle.ts";
 import { SlimeWebGLRenderer } from "./renderer/slime.ts";
 import { TextLayer } from "./renderer/text.tsx";
-import { WebGLLayer } from "./webgl/WebGLLayer.tsx";
-import { useElementSize } from "@hooks/useElementSize.ts";
+import { ActiveSelection } from "./selection/ActiveSelection.tsx";
+import { getClickbox, getSelectableBounds, getZIndex } from "./selection/getObjectProperties.ts";
+import css from "./Viewport.module.css";
+import { ViewportAction, ViewportInfo, ViewportState, wheelMult } from "./Viewport.tsx";
+import { ViewportCanvas } from "./ViewportCanvas.tsx";
 import { ViewportRoomSwitcher } from "./ViewportRoomSwitcher.tsx";
+import { WebGLLayer } from "./webgl/WebGLLayer.tsx";
+import { BlockWebGLRenderer } from "./renderer/block.ts";
 
 
 /** Maximum distance for something to count as a click */
@@ -52,6 +50,7 @@ export const RealViewport: FC<RealViewportProps> = ({
 			new LavaWebGLRenderer(),
 			new SlimeWebGLRenderer(),
 			new IceWebGLRenderer(),
+			new BlockWebGLRenderer(),
 		),
 		TextLayer
 	], []);
