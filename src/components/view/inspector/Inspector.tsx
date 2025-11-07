@@ -15,7 +15,7 @@ import { ReactNode } from "react";
 import css from "./Inspector.module.css";
 
 const Inspector: Layout.ViewComponent = ({
-	viewSwitch,
+	viewSwitcher,
 }) => {
 	const selection = useEditorSelection();
 	const map = useSkapMap();
@@ -135,7 +135,7 @@ const Inspector: Layout.ViewComponent = ({
 	return (
 		<div className={css["inspector"]} {...contextMenu}>
 			<ViewToolbar>
-				{viewSwitch}
+				{viewSwitcher}
 			</ViewToolbar>
 			<div className={css["inspector-content"]}>
 				<FormSection>

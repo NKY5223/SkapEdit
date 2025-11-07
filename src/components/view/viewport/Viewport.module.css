@@ -1,5 +1,7 @@
 .viewport {
 	position: absolute;
+	display: grid;
+	align-items: start;
 	inset: 0;
 	user-select: none;
 
@@ -42,6 +44,10 @@
 		/* sharp image (no antialiasing) */
 		image-rendering: pixelated;
 	}
+}
+.viewport-empty {
+	position: absolute;
+	place-self: center;
 }
 .buttons {
 	position: absolute;

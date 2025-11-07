@@ -11,7 +11,7 @@ const getName = (bg: string) => {
 }
 
 export const TestSwatch: Layout.ViewComponent = ({
-	viewSwitch,
+	viewSwitcher,
 }) => {
 	const colors: string[][] = [
 		["theme-bg-0", "theme-bg-1", "theme-selection-bg",],
@@ -30,7 +30,7 @@ export const TestSwatch: Layout.ViewComponent = ({
 			overflow: "auto",
 			padding: ".5em",
 		}}>
-			{viewSwitch}
+			{viewSwitcher}
 			{colors.map((row, i) => (
 				<div key={i} style={{
 					display: "flex",

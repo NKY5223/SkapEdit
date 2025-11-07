@@ -10,10 +10,12 @@ export const viewProviders = {
 	"test.error": TestErrorVP,
 	"test.translate.lorem": makeStatelessViewProvider({
 		name: "test.translate.lorem",
-		Component: ({ viewSwitch }) => (<div style={{ padding: "0.5em" }}>
-			{viewSwitch}
-			<Translate k="generic.lorem" />
-		</div>),
+		Component: ({ viewSwitcher }) => (
+			<div style={{ padding: "0.5em" }}>
+				{viewSwitcher}
+				<Translate k="generic.lorem" />
+			</div>
+		),
 		icon: "text_snippet",
 	}),
 	"map.viewport": ViewportVP,

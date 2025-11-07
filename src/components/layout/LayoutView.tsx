@@ -58,7 +58,7 @@ export const LayoutView = <S, A>({
 		reducer,
 	} = provider;
 
-	const viewSwitch = <ViewSelector view={node} dispatchLayout={dispatchLayout} />;
+	const viewSwitcher = <ViewSelector view={node} dispatchLayout={dispatchLayout} />;
 
 	const isViewNode = (node: Layout.Node): node is Layout.ViewNode<S, A> => {
 		if (node.type !== "view") return false;
@@ -86,7 +86,7 @@ export const LayoutView = <S, A>({
 	return (
 		<ErrorBoundary location={`LayoutView(${name})`}>
 			<div className={css["view"]} {...contextMenu}>
-				<ViewComp viewSwitch={viewSwitch} state={node.state} dispatchView={dispatchView} />
+				<ViewComp viewSwitcher={viewSwitcher} state={node.state} dispatchView={dispatchView} />
 			</div>
 		</ErrorBoundary>
 	);

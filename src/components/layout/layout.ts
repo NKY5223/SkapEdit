@@ -10,7 +10,7 @@ import { createContext, Dispatch, FC, ReactNode, Reducer, SetStateAction } from 
 export namespace Layout {
 	export type ViewComponent<S = null, A = never> = FC<{
 		/** View Switcher component. Should be included in the view. */
-		viewSwitch: ReactNode;
+		viewSwitcher: ReactNode;
 		state: S;
 		dispatchView: Dispatch<A>;
 	}>;
