@@ -352,7 +352,6 @@ export const ViewportVP = makeViewProvider<ViewportState, ViewportAction>({
 	Component: Viewport,
 	icon: "monitor",
 	reducer: (state, action) => {
-		console.log(state, action);
 		switch (action.type) {
 			case "set_camera_pos": {
 				return {
