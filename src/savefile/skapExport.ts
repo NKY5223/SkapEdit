@@ -49,7 +49,7 @@ export const mapToSkap = (map: SkapMap): SkapFile.Map => {
 	// Reposition spawn relative to room
 	const spawnPosition = map.spawn.position.sub(spawnRoom.bounds.topLeft);
 	return {
-		$schema: "https://nky5223.github.io/SkapEdit/schema/skap/0.1.2.json",
+		$schema: "https://nky5223.github.io/SkapEdit/schema/skap/0.1.3.json",
 		settings: {
 			name: "test skap export",
 			creator: "SkapEdit",
