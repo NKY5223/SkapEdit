@@ -1,17 +1,13 @@
-import { toIdMap, SkapMap, SkapObject, SkapRoom } from "@editor/map.ts";
-import { SkapFile } from "./skap.ts";
-import { vec2, Vec2 } from "@common/vec2.ts";
-import { createId, ID } from "@common/uuid.ts";
-import { SkapText } from "@editor/object/text.ts";
-import { Bounds } from "@editor/bounds.ts";
 import { Color } from "@common/color.ts";
+import { createId } from "@common/uuid.ts";
+import { vec2, Vec2 } from "@common/vec2.ts";
+import { Bounds } from "@editor/bounds.ts";
+import { SkapMap, SkapObject, SkapRoom, toIdMap } from "@editor/map.ts";
+import { SkapFile } from "./skap.ts";
 
 const skapToVec2 = (v: SkapFile.Vec2): Vec2 => vec2(...v);
 const rgbToSkap = (c: SkapFile.Rgb): Color => Color.rgb255(...c);
 const rgbaToSkap = (c: SkapFile.Rgba): Color => Color.rgb255(...c);
-
-const defaultObstacleColor: SkapFile.Rgba = Color.DEFAULT_OBSTACLE.rgba().components;
-const defaultBackgroundColor: SkapFile.Rgb = Color.DEFAULT_BACKGROUND.rgb().components;
 
 type P<T> = T extends never
 	? {

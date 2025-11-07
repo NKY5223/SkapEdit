@@ -11,11 +11,11 @@ const defaultLayout = makeSplitX(0.75,
 export const defaultLayoutTree: Layout.Tree = {
 	node: defaultLayout
 };
-const defaultRoom: SkapRoom = makeRoom(
-	"Default",
+const homeRoom: SkapRoom = makeRoom(
+	"Home",
 	{ left: 0, top: 0, right: 50, bottom: 25 },
-	Color.hex(0x000a57, 0.8),
-	Color.hex(0xe6e6e6),
+	Color.DEFAULT_OBSTACLE,
+	Color.DEFAULT_BACKGROUND,
 	[
 		makeObstacle(0, 0, 10, 10),
 		makeObstacle(10, 10, 20, 20),
@@ -25,15 +25,25 @@ const defaultRoom: SkapRoom = makeRoom(
 		makeText(15, 10, "a,    M_²[ℤ𰻞乙a"),
 	]
 );
+const testRoom: SkapRoom = makeRoom(
+	"Test 1",
+	{ left: 0, top: 0, right: 100, bottom: 100, },
+	Color.DEFAULT_OBSTACLE,
+	Color.DEFAULT_BACKGROUND,
+	[
+		makeText(50, 50, "test"),
+	]
+);
 export const defaultMap: SkapMap = {
 	author: "SkapEdit",
-	name: "Default",
+	name: "Default SkapEdit Map",
 	version: 1,
 	spawn: {
-		room: defaultRoom.id,
+		room: homeRoom.id,
 		position: vec2(5, 5),
 	},
 	rooms: toIdMap([
-		defaultRoom,
+		homeRoom,
+		testRoom
 	])
 };

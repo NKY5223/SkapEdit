@@ -77,7 +77,7 @@ const Viewport: Layout.ViewComponent<ViewportState, ViewportAction> = ({
 	const toolbarContents = (
 		<>
 			{viewSwitcher}
-			<ViewportRoomSwitcher selectedRoom={null} {...{ dispatchView, map }} />
+			<ViewportRoomSwitcher selectedRoom={null} {...{ dispatchView }} />
 		</>
 	);
 

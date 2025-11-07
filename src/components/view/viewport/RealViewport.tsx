@@ -299,7 +299,7 @@ export const RealViewport: FC<RealViewportProps> = ({
 
 			<ViewToolbar>
 				{viewSwitcher}
-				<ViewportRoomSwitcher selectedRoom={state.currentRoomId} {...{ dispatchView, map }} />
+				<ViewportRoomSwitcher selectedRoom={state.currentRoomId} {...{ dispatchView }} />
 			</ViewToolbar>
 		</div>
 	);

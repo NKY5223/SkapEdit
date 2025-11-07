@@ -64,7 +64,8 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"contextmenu.item.name.topbar.app.test_toast": "Test Toasts",
 	"topbar.file": "File",
 	"contextmenu.item.name.topbar.file.save": "Save",
-	"contextmenu.item.name.topbar.file.export_skap": "Export to skap",
+	"contextmenu.item.name.topbar.file.export_skap": "Export to skap .json format",
+	"contextmenu.item.name.topbar.file.import_skap": "Import from skap .json format",
 	// #endregion
 
 	// #region Changelog

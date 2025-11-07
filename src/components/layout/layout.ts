@@ -145,12 +145,12 @@ export const makeSplit = (axis: "x" | "y", ratio: number, first: Layout.Node, se
 });
 export const makeSplitX = (ratio: number, left: Layout.Node, right: Layout.Node) => makeSplit("x", ratio, left, right);
 export const makeSplitY = (ratio: number, top: Layout.Node, bottom: Layout.Node) => makeSplit("y", ratio, top, bottom);
-export const makeView = <S, A>(provider: Layout.ViewProvider<S, A>): Layout.ViewNode<S> => {
+export const makeView = <S, A>(provider: Layout.ViewProvider<S, A>, state?: S): Layout.ViewNode<S> => {
 	return {
 		type: "view",
 		id: createId("layout.view"),
 		providerName: provider.name,
-		state: provider.newState(),
+		state: state ?? provider.newState(),
 	};
 };
 

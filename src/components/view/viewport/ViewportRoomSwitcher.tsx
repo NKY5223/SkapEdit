@@ -5,17 +5,19 @@ import { makeOption } from "@components/form/dropdown/Dropdown.ts";
 import { DropdownSelect } from "@components/form/dropdown/DropdownSelect.tsx";
 import { SkapMap } from "@editor/map.ts";
 import { Translate } from "@components/translate/Translate.tsx";
+import { useDispatchSkapMap, useSkapMap } from "@editor/reducer.ts";
+import { useDispatchSelection } from "@components/editor/selection.ts";
 
 type ViewportRoomSwitcherProps = {
 	dispatchView: Dispatch<ViewportAction>;
-	map: SkapMap;
 	selectedRoom: ID | null;
 };
 export const ViewportRoomSwitcher: FC<ViewportRoomSwitcherProps> = ({
 	dispatchView,
-	map,
 	selectedRoom,
 }) => {
+	const map = useSkapMap();
+	const dispatchSelection = useDispatchSelection();
 	return (
 		<DropdownSelect<ID | null>
 			options={
@@ -26,19 +28,17 @@ export const ViewportRoomSwitcher: FC<ViewportRoomSwitcherProps> = ({
 						(room.name),
 					))
 					.toArray()
-					.concat([
-						makeOption(
-							`option-fake`,
-							"TEST ID" as ID,
-							"fake option"
-						)
-					])
 			} initialValue={selectedRoom}
-			onSelect={value => dispatchView({
-				type: "set_current_room_id",
-				currentRoomId: value,
-			})}
-			fallbackLabel={<Translate k="generic.none_selected" />}
+			onSelect={value => {
+				dispatchView({
+					type: "set_current_room_id",
+					currentRoomId: value,
+				});
+				dispatchSelection({
+					type: "clear_selection",
+				});
+			}}
+			fallbackLabel={<Translate k="viewport.room_fallback" />}
 		/>
 	);
 }
