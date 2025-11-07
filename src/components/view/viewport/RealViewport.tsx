@@ -96,46 +96,44 @@ export const RealViewport: FC<RealViewportProps> = ({
 					scaleIndex: 0,
 				});
 			}),
-			...room ? [
-				makeSubmenu("viewport.add_object", "add", [
-					makeSingle("viewport.add_object.obstacle", "obstacle", () => {
-						const object = makeObstacle(0, 0, 10, 10);
-						dispatchMap({
-							type: "add_object",
-							roomId: room.id,
-							object,
-						});
-						dispatchSelection({
-							type: "set_selection",
-							selection: [makeObjectSelectionItem(object)]
-						});
-					}),
-					makeSingle("viewport.add_object.lava", "square", () => {
-						const object = makeLava(0, 0, 10, 10);
-						dispatchMap({
-							type: "add_object",
-							roomId: room.id,
-							object,
-						});
-						dispatchSelection({
-							type: "set_selection",
-							selection: [makeObjectSelectionItem(object)]
-						});
-					}),
-					makeSingle("viewport.add_object.text", "text_fields", () => {
-						const object = makeText(0, 0, "|");
-						dispatchMap({
-							type: "add_object",
-							roomId: room.id,
-							object,
-						});
-						dispatchSelection({
-							type: "set_selection",
-							selection: [makeObjectSelectionItem(object)]
-						});
-					}),
-				]),
-			] : [],
+			makeSubmenu("viewport.add_object", "add", [
+				makeSingle("viewport.add_object.obstacle", "obstacle", () => {
+					const object = makeObstacle(0, 0, 10, 10);
+					dispatchMap({
+						type: "add_object",
+						roomId: room.id,
+						object,
+					});
+					dispatchSelection({
+						type: "set_selection",
+						selection: [makeObjectSelectionItem(object)]
+					});
+				}),
+				makeSingle("viewport.add_object.lava", "square", () => {
+					const object = makeLava(0, 0, 10, 10);
+					dispatchMap({
+						type: "add_object",
+						roomId: room.id,
+						object,
+					});
+					dispatchSelection({
+						type: "set_selection",
+						selection: [makeObjectSelectionItem(object)]
+					});
+				}),
+				makeSingle("viewport.add_object.text", "text_fields", () => {
+					const object = makeText(0, 0, "|");
+					dispatchMap({
+						type: "add_object",
+						roomId: room.id,
+						object,
+					});
+					dispatchSelection({
+						type: "set_selection",
+						selection: [makeObjectSelectionItem(object)]
+					});
+				}),
+			]),
 		]),
 	]);
 

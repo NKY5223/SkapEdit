@@ -51,6 +51,12 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"contextmenu.item.name.viewport.add_object.text": use("object.text"),
 	// #endregion
 
+	// #region Viewport
+	"viewport.no_room_selected": "No room selected",
+	"viewport.no_room_with_id": ({ id }) => ["No room with id: ", makeCode(id)],
+	"viewport.room_fallback": "Unknown room",
+	// #endregion
+
 	// #region Topbar
 	"topbar.app": "App",
 	"contextmenu.item.name.topbar.app.settings": "Settings",
@@ -107,4 +113,6 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 			"Lorem ipsum dolor, sit amet consectetur adipisicing elit. Esse, culpa possimus fuga, veritatis harum autem dolore ipsam provident, id praesentium distinctio ullam similique! Earum praesentium repudiandae magnam ipsum et nihil! " +
 			"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quam, libero magnam quia fuga est tempore autem reprehenderit id culpa nesciunt praesentium necessitatibus saepe veritatis in similique, impedit, iure corporis! Sint!"
 		),
+
+	"generic.none_selected": "(none)",
 });

@@ -6,6 +6,10 @@
 }
 .code-true {
 	font-family: var(--theme-font-monospace);
+	background-color: var(--theme-bg-1);
+	margin-inline: .5ch;
+	padding-inline: .5ch;
+	padding-block: .125em;
 }
 .code-false {
 	font-family: var(--theme-font);

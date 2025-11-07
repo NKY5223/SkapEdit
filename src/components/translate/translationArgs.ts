@@ -1,3 +1,4 @@
+import { ID } from "@common/uuid.ts";
 import { useBaseTranslationString } from "./translate.ts";
 
 export type TranslationArgs = {
@@ -44,6 +45,12 @@ export type TranslationArgs = {
 	"contextmenu.item.name.viewport.add_object.text": {};
 	// #endregion
 	
+	// #region Viewport
+	"viewport.no_room_selected": {};
+	"viewport.no_room_with_id": { id: ID; };
+	"viewport.room_fallback": {};
+	// #endregion
+
 	// #region Topbar
 	"topbar.app": {};
 	"contextmenu.item.name.topbar.app.settings": {};
@@ -94,6 +101,7 @@ export type TranslationArgs = {
 
 	"generic.text": {};
 	"generic.lorem": {};
+	"generic.none_selected": {};
 };
 
 type EmptyKeys<T, K extends keyof T = keyof T> = K extends K 

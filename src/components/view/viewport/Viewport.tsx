@@ -13,6 +13,7 @@ import { Camera } from "./camera.ts";
 import { RealViewport } from "./RealViewport.tsx";
 import css from "./Viewport.module.css";
 import { ViewportRoomSwitcher } from "./ViewportRoomSwitcher.tsx";
+import { Translate } from "@components/translate/Translate.tsx";
 
 export type ViewportInfo = {
 	camera: Camera;
@@ -87,13 +88,14 @@ const Viewport: Layout.ViewComponent<ViewportState, ViewportAction> = ({
 				<ViewToolbar>
 					{toolbarContents}
 				</ViewToolbar>
-				<div className={css["viewport-empty"]}>No room selected for view</div>
+				<div className={css["viewport-empty"]}>
+					<Translate k="viewport.no_room_selected" />
+				</div>
 			</div>
 		);
 	}
 
 	const room = map.rooms.get(state.currentRoomId);
-
 	if (!room) {
 		return (
 			<div ref={elRef} className={css["viewport"]}
@@ -101,7 +103,9 @@ const Viewport: Layout.ViewComponent<ViewportState, ViewportAction> = ({
 				<ViewToolbar>
 					{toolbarContents}
 				</ViewToolbar>
-				<div className={css["viewport-empty"]}>Could not find room</div>
+				<div className={css["viewport-empty"]}>
+					<Translate k="viewport.no_room_with_id" id={state.currentRoomId} />
+				</div>
 			</div>
 		);
 	}

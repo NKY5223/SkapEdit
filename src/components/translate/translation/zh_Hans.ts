@@ -26,6 +26,7 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"layout.view.name.map.inspector": "Inspector ？",
 	"layout.view.name.map.viewport": "视口",
 	// #endregion
+
 	// #region Context Menu	
 	"contextmenu.item.name": delegate("contextmenu.item.name", "name"),
 	"contextmenu.item.name.layout": "布局",
@@ -49,6 +50,13 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"contextmenu.item.name.viewport.add_object.ice": use("object.ice"),
 	"contextmenu.item.name.viewport.add_object.text": use("object.text"),
 	// #endregion
+
+	// #region Viewport
+	"viewport.no_room_selected": "还未选择房间",
+	"viewport.no_room_with_id": ({ id }) => ["没有ID为", makeCode(id), "的房间"],
+	"viewport.room_fallback": "？？？",
+	// #endregion
+
 	// #region Topbar
 	"topbar.app": "APP",
 	"contextmenu.item.name.topbar.app.settings": "设置",
@@ -58,6 +66,7 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"contextmenu.item.name.topbar.file.save": "保存",
 	"contextmenu.item.name.topbar.file.export_skap": "输出（skap）",
 	// #endregion
+
 	// #region Changelog
 	"changelog": "更新日志",
 	"changelog.version-title": ({ version, time }) => [
@@ -102,4 +111,5 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 		? "半刃冒或平原家不合拉穿書背連三呀念鼻細。"
 		: "半刃冒或平原家不合拉穿書背連三呀念鼻細。美坐給休朋南往像男天記哪交。黑聲士、人帶裏穿澡抱長，呢魚起歡在寸樹反旁月清害！目麻才給乾布果位車八半泉乾空主丟音肖。喝羊北。",
 
+	"generic.none_selected": "（无）",
 });
