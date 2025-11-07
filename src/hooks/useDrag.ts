@@ -26,6 +26,7 @@ type DragParams = {
 	 * If passed, will normalize pointer position to between `⟨0, 0⟩` and `⟨1, 1⟩`.
 	 */
 	normalizeToUnit?: RefObject<Element | null> | null;
+	/** This function WILL act as a closure. If you have any values depending on state, wrap it in `useEffectEvent`. */
 	onDrag?: (current: Vec2, previous: Vec2, beforeDrag: Vec2, event: PointerEvent) => void;
 	onEndDrag?: (event: PointerEvent) => void;
 	/** If set to true, will flip the x direction when `document.dir === "rtl"`. Will not work without normalize. Defaults to true. */

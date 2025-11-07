@@ -1,9 +1,10 @@
+import { maybeConst, MaybeConst } from "@common/maybeConst.ts";
 import { createId, ID } from "@common/uuid.ts";
 import { IconName } from "@components/icon/icons";
 import { createMapContext } from "@hooks/createMapContext.tsx";
 import { createMapStateContext } from "@hooks/createMapStateContext";
 import { createReducerContext } from "@hooks/createReducerContext.tsx";
-import { createContext, Dispatch, FC, ReactNode, Reducer } from "react";
+import { createContext, Dispatch, FC, ReactNode, Reducer, SetStateAction } from "react";
 
 
 export namespace Layout {
@@ -55,10 +56,10 @@ const setInLayout = (
 	root: Layout.Node,
 	target: string,
 	/** function that transforms old node into new node */
-	f: (node: Layout.Node) => Layout.Node
+	f: SetStateAction<Layout.Node>,
 ): [success: boolean, newNode: Layout.Node] => {
 	if (root.id === target) {
-		return [true, f(root)];
+		return [true, maybeConst(f, root)];
 	}
 	switch (root.type) {
 		case "view": {
@@ -89,7 +90,7 @@ export type LayoutAction = (
 		type: "replace";
 		/** Target node uuid */
 		targetNode: ID;
-		replacement: Layout.Node;
+		replacement: SetStateAction<Layout.Node>;
 	}
 	| {
 		type: "set_ratio";
@@ -103,7 +104,7 @@ const layoutReducer: Reducer<Layout.Tree, LayoutAction> = (layout, action) => {
 	switch (action.type) {
 		case "replace": {
 			const { targetNode, replacement } = action;
-			const [success, newNode] = setInLayout(rootNode, targetNode, () => replacement);
+			const [success, newNode] = setInLayout(rootNode, targetNode, replacement);
 			if (!success) console.warn("Could not find target node", targetNode, ".");
 			return {
 				node: newNode,

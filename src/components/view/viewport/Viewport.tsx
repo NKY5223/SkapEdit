@@ -62,11 +62,17 @@ const calcScale = (i: number) => scaleBase * scaleExp ** (scaleMul * i);
 const clickMaxDistance = 2;
 
 type ViewportState = {
-	test: number;
+	camera: Camera;
+	scaleIndex: number;
 };
 type ViewportAction = (
 	| {
-		type: "increment_test";
+		type: "set_camera_pos";
+		pos: Vec2;
+	}
+	| {
+		type: "set_camera_scale";
+		scaleIndex: number;
 	}
 );
 
@@ -99,27 +105,24 @@ const Viewport: Layout.ViewComponent<ViewportState, ViewportAction> = ({
 	}
 
 	// #region Camera
-	const [scaleIndex, setScaleIndex] = useState(0);
-	const [camera, setCamera] = useCamera({ pos: zero, scale: scaleBase });
+	const { scaleIndex, camera } = state;
 	const { dragging, listeners: moveDragListeners } = useDrag({
 		buttons: MouseButtons.Middle,
-		onDrag: (curr, prev) => {
-			setCamera(camera => {
-				const diff = curr.sub(prev).div(camera.scale);
-				return {
-					pos: camera.pos.sub(diff),
-				};
+		onDrag: (curr, _, orig) => {
+			const diff = curr.sub(orig).div(camera.scale);
+			dispatchView({
+				type: "set_camera_pos",
+				pos: camera.pos.sub(diff),
 			});
 		}
 	});
 	const onWheel: React.WheelEventHandler<HTMLElement> = e => {
 		const d = e.deltaY * wheelMult(e.deltaMode);
 		const newIndex = scaleIndex + d;
-		const newScale = calcScale(newIndex);
 
-		setScaleIndex(newIndex);
-		setCamera({
-			scale: newScale
+		dispatchView({
+			type: "set_camera_scale",
+			scaleIndex: newIndex,
 		});
 	}
 	// #endregion
@@ -127,9 +130,13 @@ const Viewport: Layout.ViewComponent<ViewportState, ViewportAction> = ({
 	const contextMenu = useContextMenu([
 		makeSection(Sections.viewport, [
 			makeSingle("viewport.reset_camera", "reset_shutter_speed", () => {
-				setScaleIndex(0);
-				setCamera({
-					x: 0, y: 0, scale: 5,
+				dispatchView({
+					type: "set_camera_pos",
+					pos: vec2(0),
+				});
+				dispatchView ({
+					type: "set_camera_scale",
+					scaleIndex: 0,
 				});
 			}),
 			makeSubmenu("viewport.add_object", "add", [
@@ -335,7 +342,6 @@ const Viewport: Layout.ViewComponent<ViewportState, ViewportAction> = ({
 
 			<ViewToolbar>
 				{viewSwitch}
-				<ViewToolbarButton onClick={() => dispatchView({ type: "increment_test" })}>{state.test}</ViewToolbarButton>
 			</ViewToolbar>
 		</div>
 	);
@@ -346,16 +352,25 @@ export const ViewportVP = makeViewProvider<ViewportState, ViewportAction>({
 	Component: Viewport,
 	icon: "monitor",
 	reducer: (state, action) => {
+		console.log(state, action);
 		switch (action.type) {
-			case "increment_test": {
+			case "set_camera_pos": {
 				return {
 					...state,
-					test: state.test + 1,
+					camera: state.camera.set({ pos: action.pos }),
+				};
+			}
+			case "set_camera_scale": {
+				return {
+					...state,
+					scaleIndex: action.scaleIndex,
+					camera: state.camera.set({ scale: calcScale(action.scaleIndex) }),
 				};
 			}
 		}
 	},
 	newState: () => ({
-		test: 0,
+		camera: new Camera({ pos: vec2(0), scale: calcScale(0) }),
+		scaleIndex: 0,
 	}),
 });

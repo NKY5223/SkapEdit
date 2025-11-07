@@ -60,14 +60,26 @@ export const LayoutView = <S, A>({
 
 	const viewSwitch = <ViewSelector view={node} dispatchLayout={dispatchLayout} />;
 
+	const isViewNode = (node: Layout.Node): node is Layout.ViewNode<S, A> => {
+		if (node.type !== "view") return false;
+		if (node.providerName !== name) return false;
+		return true;
+	}
+
 	const dispatchView: Dispatch<A> = action => {
 		dispatchLayout({
 			type: "replace",
 			targetNode: node.id,
-			replacement: {
-				...node,
-				state: reducer(node.state, action),
-			} satisfies Layout.ViewNode<S, A>,
+			replacement: node => {
+				if (!isViewNode(node)) {
+					console.error("Cannot dispatchView; node is not the right type.", node, action);
+					return node;
+				}
+				return {
+					...node,
+					state: reducer(node.state, action),
+				} satisfies Layout.ViewNode<S, A>;
+			},
 		})
 	}
 
