@@ -110,9 +110,9 @@ const skapMapReducer: Reducer<SkapMap, SkapMapAction> = (map, action) => {
 		}
 		case "remove_object": {
 			const { target } = action;
-			for (const room of map.rooms.values()) {
+			for (const [, room] of map.rooms) {
 				const match = findInRoom(room, target);
-				if (!match) return map;
+				if (!match) continue;
 				const [id,] = match;
 				const newRoom = {
 					...room,
