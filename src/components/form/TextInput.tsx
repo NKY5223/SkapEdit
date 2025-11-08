@@ -1,6 +1,6 @@
 import { FC, ReactNode, useId, useState } from "react";
 import css from "./form.module.css";
-import { Label } from "./Label.tsx";
+import { InputLabel } from "./InputLabel.tsx";
 import { toClassName } from "../utils.tsx";
 
 
@@ -37,7 +37,7 @@ export const TextInput: FC<TextInputProps> = ({
 		inputClass
 	);
 	return (
-		<Label for={id}>
+		<InputLabel for={id}>
 			{label}
 			<input id={id} type="text" className={className}
 				value={editing ? internal : value}
@@ -66,6 +66,6 @@ export const TextInput: FC<TextInputProps> = ({
 				}}
 				onContextMenu={e => e.stopPropagation()}
 			/>
-		</Label>
+		</InputLabel>
 	);
 }

@@ -13,6 +13,7 @@ import { useTranslate } from "@components/translate/translationArgs.ts";
 import { getObject, useDispatchSkapMap, useSkapMap } from "@editor/reducer";
 import { ReactNode } from "react";
 import css from "./Inspector.module.css";
+import { ColorInput } from "@components/form/ColorInput.tsx";
 
 const Inspector: Layout.ViewComponent = ({
 	viewSwitcher,
@@ -23,26 +24,26 @@ const Inspector: Layout.ViewComponent = ({
 	const translate = useTranslate();
 
 	const contextMenu = useContextMenu([
-		makeSubmenu("test", "zoom_in", [
-			makeSection({ name: "inspector.test", icon: null }, [
-				makeSingle("inspector.test.0", "hd"),
-				makeSingle("inspector.test.1", "2k"),
-				makeSingle("inspector.test.2", "4k"),
-				makeSingle("inspector.test.3", "8k"),
-				makeSingle("inspector.test.4", "10k"),
-			]),
-			makeSingle("inspector.test.error", "error", () => { throw new Error("uwu") })
-		]),
-		makeSubmenu("test2", "zoom_in", [
-			makeSection({ name: "inspector.test2", icon: null }, [
-				makeSingle("inspector.test2.0", "hd"),
-				makeSingle("inspector.test2.1", "2k"),
-				makeSingle("inspector.test2.2", "4k"),
-				makeSingle("inspector.test2.3", "8k"),
-				makeSingle("inspector.test2.4", "10k"),
-			]),
-			makeSingle("inspector.test2.error", "error", () => { throw new Error("uwu") })
-		]),
+		// makeSubmenu("test", "zoom_in", [
+		// 	makeSection({ name: "inspector.test", icon: null }, [
+		// 		makeSingle("inspector.test.0", "hd"),
+		// 		makeSingle("inspector.test.1", "2k"),
+		// 		makeSingle("inspector.test.2", "4k"),
+		// 		makeSingle("inspector.test.3", "8k"),
+		// 		makeSingle("inspector.test.4", "10k"),
+		// 	]),
+		// 	makeSingle("inspector.test.error", "error", () => { throw new Error("uwu") })
+		// ]),
+		// makeSubmenu("test2", "zoom_in", [
+		// 	makeSection({ name: "inspector.test2", icon: null }, [
+		// 		makeSingle("inspector.test2.0", "hd"),
+		// 		makeSingle("inspector.test2.1", "2k"),
+		// 		makeSingle("inspector.test2.2", "4k"),
+		// 		makeSingle("inspector.test2.3", "8k"),
+		// 		makeSingle("inspector.test2.4", "10k"),
+		// 	]),
+		// 	makeSingle("inspector.test2.error", "error", () => { throw new Error("uwu") })
+		// ]),
 	]);
 
 
@@ -90,14 +91,17 @@ const Inspector: Layout.ViewComponent = ({
 					case "slime":
 					case "ice":
 						{
-							const bounds = selectedObject.bounds;
+							const { bounds } = selectedObject;
 							return (
 								<>
-									<BoundsInput bounds={bounds} setBounds={bounds => dispatchMap({
-										type: "replace_object",
-										target: sel.id,
-										replacement: obj => ({ ...obj, bounds })
-									})} />
+									<FormSection>
+										<FormTitle>Positioning</FormTitle>
+										<BoundsInput bounds={bounds} setBounds={bounds => dispatchMap({
+											type: "replace_object",
+											target: sel.id,
+											replacement: obj => ({ ...obj, bounds })
+										})} />
+									</FormSection>
 								</>
 							);
 						}
@@ -128,10 +132,28 @@ const Inspector: Layout.ViewComponent = ({
 						);
 					}
 					case "block": {
+						const { bounds, color, solid, layer } = selectedObject;
 						return (
-							<pre>
-								{JSON.stringify(selectedObject, undefined, "\t")}
-							</pre>
+							<>
+								<FormSection>
+									<FormTitle>Positioning</FormTitle>
+									<BoundsInput bounds={bounds} setBounds={bounds => dispatchMap({
+										type: "replace_object",
+										target: sel.id,
+										replacement: obj => ({ ...obj, bounds })
+									})} />
+								</FormSection>
+								<FormSection row>
+									<ColorInput value={color}
+										onInput={color => dispatchMap({
+											type: "replace_object",
+											target: sel.id,
+											replacement: obj => ({ ...obj, color })
+										})}
+										label={<Icon icon="colors" title="Color" />}
+									/>
+								</FormSection>
+							</>
 						);
 					}
 				}

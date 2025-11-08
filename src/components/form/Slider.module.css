@@ -1,0 +1,73 @@
+@layer component {
+
+.slider {
+	--size: .5em;
+	--slider-track-color: var(--theme-bg-1);
+	--slider-color: var(--theme-primary-bg-0);
+	--slider-handle-size: .75em;
+	--value: 50%;
+	--left: 50%;
+	--top: 50%;
+
+	position: relative;
+	user-select: none;
+	
+	border-radius: calc(var(--size) / 2);
+	background-image: linear-gradient(to right,
+		var(--slider-color) var(--value),
+		var(--slider-track-color) var(--value)
+	);
+
+	&.horizontal {
+		cursor: ew-resize;
+		height: var(--size);
+		--left: var(--value);
+	}
+	&.vertical {
+		cursor: ns-resize;
+		width: var(--size);
+		--top: var(--value);
+	}
+
+	&:hover {
+		--slider-color: var(--theme-primary-bg-1);
+	}
+}
+
+.slider-2d {
+	--size: 10em;
+	--slider-track-color: var(--theme-bg-1);
+	--slider-color: var(--theme-primary-bg-0);
+	--slider-handle-size: .75em;
+	--left: 50%;
+	--top: 50%;
+
+	width: var(--size);
+	height: var(--size);
+	
+	position: relative;
+	user-select: none;
+	
+	background-color: var(--slider-track-color);
+
+	&:hover {
+		--slider-color: var(--theme-primary-bg-1);
+	}
+}
+
+.handle {
+	position: absolute;
+	left: var(--left);
+	top: var(--top);
+	translate: -50% -50%;
+
+	width: var(--slider-handle-size);
+	height: var(--slider-handle-size);
+
+	border-radius: 50%;
+	background-color: var(--slider-color);
+
+	user-select: none;
+}
+
+}

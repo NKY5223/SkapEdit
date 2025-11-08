@@ -1,25 +1,62 @@
-import { FC } from "react";
+import { toClassName } from "@components/utils.tsx";
+import { FC, useRef } from "react";
+import css from "./Slider.module.css";
+import { useDrag, MouseButtons } from "@hooks/useDrag.ts";
+import { clamp } from "@common/number.ts";
 
 type SliderProps = {
 	value: number;
-	min: number;
-	max: number;
+	/** Can be greater than max, the direction will flip if it is. */
+	min?: number;
+	/** Can be less than min, the direction will flip if it is. */
+	max?: number;
 
-	onChange?: (value: number) => void;
+	onInput?: (value: number) => void;
+	orientation?: "horizontal" | "vertical";
+
+	classList?: string[];
+	handleClassList?: string[];
 };
-
 export const Slider: FC<SliderProps> = ({
-	value,
-	min, max,
-	onChange,
+	value, min = 0, max = 1,
+	orientation = "horizontal",
+	onInput,
+
+	classList, handleClassList,
 }) => {
+	const sliderRef = useRef<HTMLDivElement>(null);
+	const Min = Math.min(min, max);
+	const Max = Math.max(min, max);
+	const val = (value - min) / (max - min);
+
+	const { dragging, listeners } = useDrag({
+		buttons: MouseButtons.Left,
+		normalizeToUnit: sliderRef,
+		clamp: true,
+		stopPropagation: true,
+
+		onDrag: ([x, y]) => {
+			if (!onInput) return;
+			const v = orientation === "horizontal" ? x : y;
+			const scaled = clamp(Min, Max)((1 - v) * min + v * max);
+			onInput(scaled);
+		}
+	});
+	const trackClassName = toClassName(
+		css["slider"],
+		dragging && css["dragging"],
+		css[orientation],
+		classList
+	);
+	const handleClassName = toClassName(
+		css["handle"],
+		handleClassList,
+	);
 	return (
-		<input
-			type="range" value={value}
-			min={min} max={max} step="any"
-			onChange={e => {
-				if (onChange) onChange(Number(e.target.value));
-			}}
-		/>
+		<div ref={sliderRef} className={trackClassName} style={{
+			"--value": `${val * 100}%`,
+		}} {...listeners}>
+			<div tabIndex={0} className={handleClassName}></div>
+		</div>
 	);
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect, RefObject, PointerEventHandler, Dispatch, SetStateAction, useRef, useEffectEvent } from "react";
 import { Vec2, vec2, zero } from "../common/vec2.ts";
 import { elementIsRtl } from "@components/utils.tsx";
+import { clamp } from "@common/number.ts";
 
 export type MouseButtons = number;
 export const MouseButtons: {
@@ -18,6 +19,9 @@ export const MouseButtons: {
 
 const mouseButtonMatches = (button: number, buttons: MouseButtons) => !!(1 << button & buttons);
 
+const cu = clamp(0, 1);
+const clampVec = ([x, y]: Vec2): Vec2 => vec2(cu(x), cu(y));
+
 type DragParams = {
 	/** Bitflags: mouse buttons to use for dragging. Use `MouseButton.All` for any button. */
 	buttons: MouseButtons;
@@ -26,6 +30,8 @@ type DragParams = {
 	 * If passed, will normalize pointer position to between `⟨0, 0⟩` and `⟨1, 1⟩`.
 	 */
 	normalizeToUnit?: RefObject<Element | null> | null;
+	/** Will clamp vectors to unit square if set to true and normalizeToUnit is used. */
+	clamp?: boolean;
 	/** This function WILL act as a closure. If you have any values depending on state, wrap it in `useEffectEvent`. */
 	onDrag?: (current: Vec2, previous: Vec2, beforeDrag: Vec2, event: PointerEvent) => void;
 	onEndDrag?: (event: PointerEvent) => void;
@@ -38,9 +44,10 @@ type DragParams = {
 export const useDrag = ({
 	buttons,
 	normalizeToUnit: normalize = null,
+	clamp = false,
 	onDrag, onEndDrag,
 	normalizeDir = true,
-	enabled = true, 
+	enabled = true,
 	stopPropagation = false,
 }: DragParams): {
 	dragging: boolean;
@@ -90,10 +97,11 @@ export const useDrag = ({
 			const normedNewPos = doDirNorm
 				? vec2(1 - newPos[0], newPos[1])
 				: newPos;
+			const clamped = clamp ? clampVec(normedNewPos) : normedNewPos;
 
-			if (onDrag) onDrag(normedNewPos, previous.current, beforeDrag, event);
-			setCurrentPos(normedNewPos);
-			previous.current = normedNewPos;
+			if (onDrag) onDrag(clamped, previous.current, beforeDrag, event);
+			setCurrentPos(clamped);
+			previous.current = clamped;
 		};
 		window.addEventListener("pointermove", handleMove);
 		return () => window.removeEventListener("pointermove", handleMove);
@@ -124,14 +132,15 @@ export const useDrag = ({
 			if (stopPropagation) event.stopPropagation();
 			setDragging(true);
 			const pointer = vec2(event.clientX, event.clientY);
-			
+
 			if (!normalize) {
 				previous.current = pointer;
 				setBeforeDrag(pointer);
 				setCurrentPos(pointer);
+				onDrag?.(pointer, pointer, pointer, event.nativeEvent);
 				return;
 			}
-			
+
 			const target = normalize.current;
 			if (!target) {
 				console.warn(`Could not calculate previous norm pointer position.`);
@@ -140,14 +149,16 @@ export const useDrag = ({
 				setCurrentPos(pointer);
 				return;
 			}
-			
+
 			const bounds = target.getBoundingClientRect();
 			const targetPos = vec2(bounds.left, bounds.top);
 			const targetSize = vec2(bounds.width, bounds.height);
 			const curr = pointer.sub(targetPos).div(targetSize);
-			previous.current = curr;
-			setBeforeDrag(curr);
-			setCurrentPos(curr);
+			const clamped = clamp ? clampVec(curr) : curr;
+			previous.current = clamped;
+			setBeforeDrag(clamped);
+			setCurrentPos(clamped);
+			onDrag?.(clamped, clamped, clamped, event.nativeEvent);
 		}
 	};
 

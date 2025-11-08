@@ -10,6 +10,7 @@
 .title {
 	font-size: 1.25em;
 	font-weight: 500;
+	margin-bottom: 0.125em;
 }
 .label {
 	display: grid;

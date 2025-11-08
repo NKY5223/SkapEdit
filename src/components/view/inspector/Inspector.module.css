@@ -6,6 +6,7 @@
 }
 .inspector-content {
 	padding-inline: 1em;
+	padding-block-end: 1em;
 	display: flex;
 	flex-direction: column;
 	gap: .5em;
