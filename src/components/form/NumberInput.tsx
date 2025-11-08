@@ -21,13 +21,14 @@ export type NumberInputProps = {
 	onChange?: (value: number) => void;
 
 	classList?: string[];
+	labelClassList?: string[];
 };
 
 export const NumberInput: FC<NumberInputProps> = ({
 	name, label, disabled,
 	value, min, max, step,
 	onInput, onChange,
-	classList,
+	classList, labelClassList,
 }) => {
 	const id = useId();
 
@@ -37,10 +38,10 @@ export const NumberInput: FC<NumberInputProps> = ({
 	const className = toClassName(
 		css["input"], 
 		css["number"], 
-		classList
+		classList,
 	);
 	return (
-		<InputLabel for={id}>
+		<InputLabel for={id} classList={labelClassList}>
 			{label}
 			<input id={id} type="number" className={className}
 				value={editing ? internal : value}

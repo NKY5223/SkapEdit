@@ -9,6 +9,7 @@ import { MouseButtons, useDrag } from "@hooks/useDrag.ts";
 import { Vector } from "@common/vector.ts";
 import { Vec2 } from "@common/vec2.ts";
 import { Slider2d } from "./Slider2D.tsx";
+import { NumberInput } from "./NumberInput.tsx";
 
 type ColorInputProps = {
 	name?: string;
@@ -64,13 +65,16 @@ const HsvInput: FC<HsvInputProps> = ({
 }) => {
 	const [hsva, setHsva] = useState(initialColor.hsva());
 	const [h, s, v, a] = hsva;
+	const inputProps = {
+		classList: [css["input"]],
+		labelClassList: [css["label"]]
+	};
 	return (
 		<div className={css["hsv"]} style={{
 			// Required for degenerate case where s or v = 0
 			"--colorinput-hue": `${h}deg`,
 		}}>
-			<Slider2d
-				x={s} y={1 - v}
+			<Slider2d x={s} y={1 - v}
 				classList={[css["square"], css["sv-square"]]}
 				handleClassList={[css["handle"]]}
 				onInput={([newS, newVInv]) => {
@@ -98,6 +102,12 @@ const HsvInput: FC<HsvInputProps> = ({
 					onInput(Color.hsv(h, s, v, a));
 				}}
 			/>
+			<div className={css["inputs"]}>
+				<NumberInput label="H" value={h} {...inputProps} />
+				<NumberInput label="S" value={s} {...inputProps} />
+				<NumberInput label="V" value={v} {...inputProps} />
+				<NumberInput label="A" value={a} {...inputProps} />
+			</div>
 		</div>
 	);
 }

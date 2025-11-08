@@ -1,3 +1,5 @@
+@layer component {
+
 .form-section {
 	display: flex;
 	/* min-width: fit-content; */
@@ -48,4 +50,6 @@
 .input[type=text] {
 	min-width: 5em;
 	max-width: 15em;
+}
+
 }
