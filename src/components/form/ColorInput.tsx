@@ -14,6 +14,8 @@ import { DropdownSection } from "./dropdown/DropdownSection.tsx";
 import { maybeConst } from "@common/maybeConst.ts";
 import { DropdownSelect } from "./dropdown/DropdownSelect.tsx";
 import { makeOption } from "./dropdown/Dropdown.ts";
+import { TextInput } from "./TextInput.tsx";
+import { Icon } from "@components/icon/Icon.tsx";
 
 type ColorInputProps = {
 	name?: string;
@@ -49,6 +51,8 @@ export const ColorInput: FC<ColorInputProps> = ({
 		}
 	}
 
+	const inputProps = { value, onInput };
+
 	const className = toClassName(
 		formCss["label"],
 		css["color-input"],
@@ -70,17 +74,19 @@ export const ColorInput: FC<ColorInputProps> = ({
 						makeOption("rgb", "rgb", "RGB"),
 					]}
 				/>
-				<HsvInput value={value} onInput={onInput} />
+				{mode === "hsv" ? <HsvInput {...inputProps} /> :
+					mode === "rgb" ? <RgbInput {...inputProps} /> : mode}
 			</div>
 		</div>
 	);
 }
 
-type HsvInputProps = {
+type SpecificInputProps = {
 	value: Color;
 	onInput?: (color: Color) => void;
 };
-const HsvInput: FC<HsvInputProps> = ({
+
+const HsvInput: FC<SpecificInputProps> = ({
 	value, onInput,
 }) => {
 	const [h, s, v, a] = value.hsva();
@@ -127,6 +133,71 @@ const HsvInput: FC<HsvInputProps> = ({
 					onInput={a => update(h, s, v, a)}
 					{...inputProps} />
 			</div>
+		</div>
+	);
+}
+
+const RgbInput: FC<SpecificInputProps> = ({
+	value, onInput
+}) => {
+	const [r, g, b, a] = value.rgba();
+
+	const update = (r: number, g: number, b: number, a: number) => {
+		onInput?.(Color.rgb(r, g, b, a));
+	}
+
+	const inputProps = {
+		classList: [css["input"]],
+		labelClassList: [css["label"]],
+	};
+	return (
+		<div className={css["rgb"]}>
+			<Slider value={r} min={0} max={1} step={0.001}
+				classList={[css["slider"], css["r-slider"]]}
+				handleClassList={[css["handle"]]}
+				onInput={r => update(r, g, b, a)}
+			/>
+			<Slider value={g} min={0} max={1} step={0.001}
+				classList={[css["slider"], css["g-slider"]]}
+				handleClassList={[css["handle"]]}
+				onInput={g => update(r, g, b, a)}
+			/>
+			<Slider value={b} min={0} max={1} step={0.001}
+				classList={[css["slider"], css["b-slider"]]}
+				handleClassList={[css["handle"]]}
+				onInput={b => update(r, g, b, a)}
+			/>
+			<Slider value={a} min={0} max={1} step={0.001}
+				classList={[css["slider"], css["a-slider"]]}
+				handleClassList={[css["handle"]]}
+				onInput={a => update(r, g, b, a)}
+			/>
+			<div className={css["inputs"]}>
+				<NumberInput label="R" value={r} min={0} max={1} step={0.001}
+					onInput={r => update(r, g, b, a)}
+					{...inputProps} />
+				<NumberInput label="G" value={g} min={0} max={1} step={0.001}
+					onInput={g => update(r, g, b, a)}
+					{...inputProps} />
+				<NumberInput label="B" value={b} min={0} max={1} step={0.001}
+					onInput={b => update(r, g, b, a)}
+					{...inputProps} />
+				<NumberInput label="A" value={a} min={0} max={1} step={0.001}
+					onInput={a => update(r, g, b, a)}
+					{...inputProps} />
+			</div>
+			<TextInput label={<Icon icon="tag" title="Hex" />} value={value.toHexString()} onInput={value => {
+				const match = value.match(/^#(?<r>\p{Hex_Digit}{2})(?<g>\p{Hex_Digit}{2})(?<b>\p{Hex_Digit}{2})(?<a>\p{Hex_Digit}{2})?$/u);
+				if (!match) return;
+				if (!match.groups) return;
+				const { r, g, b, a = "ff" } = match.groups;
+				update(
+					parseInt(r, 16) / 0xff,
+					parseInt(g, 16) / 0xff,
+					parseInt(b, 16) / 0xff,
+					parseInt(a, 16) / 0xff,
+				);
+			}} />
 		</div>
 	);
 }

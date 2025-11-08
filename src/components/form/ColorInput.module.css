@@ -131,6 +131,18 @@
 	display: block;
 }
 
+.a-slider {
+	background-color: var(--colorinput-checker-1);
+	background-image: 
+		linear-gradient(to right, transparent, var(--colorinput-color-opaque)), 
+		var(--colorinput-checker-image);
+	background-size: 
+		cover,
+		var(--colorinput-checker-size) var(--colorinput-checker-size)
+	;
+	background-position: 0 0;
+}
+
 .hsv {
 	--colorinput-hue: 0deg;
 
@@ -153,14 +165,27 @@
 		hsl(from var(--colorinput-color-opaque) 360deg s l)
 	);
 }
-.a-slider {
-	background-color: var(--colorinput-checker-1);
-	background-image: 
-		linear-gradient(to right, transparent, var(--colorinput-color-opaque)), 
-		var(--colorinput-checker-image);
-	background-size: 
-		cover,
-		var(--colorinput-checker-size) var(--colorinput-checker-size)
-	;
-	background-position: 0 0;
+
+.rgb {
+	display: grid;
+	gap: .5em;
+}
+
+.r-slider {
+	background-image: linear-gradient(to right,
+		rgb(from var(--colorinput-color-opaque) 0 g b),
+		rgb(from var(--colorinput-color-opaque) 255 g b)
+	);
+}
+.g-slider {
+	background-image: linear-gradient(to right,
+		rgb(from var(--colorinput-color-opaque) r 0 b),
+		rgb(from var(--colorinput-color-opaque) r 255 b)
+	);
+}
+.b-slider {
+	background-image: linear-gradient(to right,
+		rgb(from var(--colorinput-color-opaque) r g 0),
+		rgb(from var(--colorinput-color-opaque) r g 255)
+	);
 }

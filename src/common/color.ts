@@ -49,6 +49,21 @@ export class Color {
 		});
 	}
 	/**
+	 * Construct a Color from rgb 0-1 format
+	 * (`r, g, b`)
+	 * @example
+	 * Color.rgb(0.25, 0.5, 1, 0.8);
+	 */
+	static rgb(r: number, g: number, b: number, a: number = 1) {
+		return new this({
+			type: "rgba",
+			r: clampUnit(r),
+			g: clampUnit(g),
+			b: clampUnit(b),
+			a
+		});
+	}
+	/**
 	 * Construct a Color from rgb 0-255 format
 	 * (`r, g, b`)
 	 * @example
@@ -168,6 +183,20 @@ export class Color {
 				return `hsl(${h}deg ${s * 100}% ${l * 100}% / ${a})`;
 			}
 		}
+	}
+	/**
+	 * @returns A CSS `#rrggbbaa` `'<color>'` string.
+	 * @example
+	 * Color.hex(0x2080ff, 0.25).toHexString() === "#2080ff40"
+	 */
+	toHexString(): string {
+		const [r, g, b, a] = this.rgba();
+		return "#" + [r, g, b, a].map(n =>
+			clamp(0, 0xff)(Math.trunc(n * 0xff))
+				.toString(16)
+				.padStart(2, "0")
+				.toUpperCase()
+		).join("");
 	}
 	// #endregion
 
