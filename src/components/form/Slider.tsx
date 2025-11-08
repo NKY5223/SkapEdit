@@ -2,7 +2,7 @@ import { toClassName } from "@components/utils.tsx";
 import { FC, useRef } from "react";
 import css from "./Slider.module.css";
 import { useDrag, MouseButtons } from "@hooks/useDrag.ts";
-import { clamp } from "@common/number.ts";
+import { clamp, round } from "@common/number.ts";
 
 type SliderProps = {
 	value: number;
@@ -10,6 +10,11 @@ type SliderProps = {
 	min?: number;
 	/** Can be less than min, the direction will flip if it is. */
 	max?: number;
+	/** 
+	 * Values will be rounded to the nearest multiple of step, then clamped.  
+	 * If min and max are not multiples of step, unexpected behaviour may occur.
+	 */
+	step?: number;
 
 	onInput?: (value: number) => void;
 	orientation?: "horizontal" | "vertical";
@@ -18,7 +23,7 @@ type SliderProps = {
 	handleClassList?: string[];
 };
 export const Slider: FC<SliderProps> = ({
-	value, min = 0, max = 1,
+	value, min = 0, max = 1, step = 0,
 	orientation = "horizontal",
 	onInput,
 
@@ -38,7 +43,7 @@ export const Slider: FC<SliderProps> = ({
 		onDrag: ([x, y]) => {
 			if (!onInput) return;
 			const v = orientation === "horizontal" ? x : y;
-			const scaled = clamp(Min, Max)((1 - v) * min + v * max);
+			const scaled = clamp(Min, Max)(round(step, (1 - v) * min + v * max));
 			onInput(scaled);
 		}
 	});

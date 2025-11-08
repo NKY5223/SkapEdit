@@ -1,13 +1,19 @@
-import { FC, useRef } from "react";
-import css from "./Slider.module.css";
+import { round } from "@common/number.ts";
 import { vec2, Vec2 } from "@common/vec2.ts";
 import { toClassName } from "@components/utils.tsx";
-import { useDrag, MouseButtons } from "@hooks/useDrag.ts";
+import { MouseButtons, useDrag } from "@hooks/useDrag.ts";
+import { FC, useRef } from "react";
+import css from "./Slider.module.css";
 
-const clampVec = (min: Vec2, max: Vec2) => (v: Vec2): Vec2 => 
+const clampVec = (min: Vec2, max: Vec2) => (v: Vec2): Vec2 =>
 	vec2(
 		Math.min(Math.max(min[0], v[0]), max[0]),
 		Math.min(Math.max(min[1], v[1]), max[1]),
+	);
+const roundVec = (step: Vec2, val: Vec2): Vec2 =>
+	vec2(
+		round(step[0], val[0]),
+		round(step[1], val[1]),
 	);
 
 type Slider2dProps = {
@@ -15,10 +21,13 @@ type Slider2dProps = {
 	y: number;
 	min?: number;
 	max?: number;
+	step?: number;
 	xMin?: number;
 	xMax?: number;
+	xStep?: number;
 	yMin?: number;
 	yMax?: number;
+	yStep?: number;
 
 	onInput?: (value: Vec2) => void;
 
@@ -27,8 +36,9 @@ type Slider2dProps = {
 };
 export const Slider2d: FC<Slider2dProps> = ({
 	x, y,
-	min = 0, max = 1, 
-	xMin = min, xMax = max, yMin = min, yMax = max,
+	min = 0, max = 1, step = 0,
+	xMin = min, xMax = max, xStep = step,
+	yMin = min, yMax = max, yStep = step,
 	onInput,
 
 	classList, handleClassList,
@@ -36,6 +46,7 @@ export const Slider2d: FC<Slider2dProps> = ({
 	const slider2dRef = useRef<HTMLDivElement>(null);
 	const minV = vec2(xMin, yMin);
 	const maxV = vec2(xMax, yMax);
+	const stepV = vec2(xStep, yStep);
 	const MinV = vec2(
 		Math.min(xMin, xMax),
 		Math.min(yMin, yMax),
@@ -53,7 +64,9 @@ export const Slider2d: FC<Slider2dProps> = ({
 
 		onDrag: v => {
 			if (!onInput) return;
-			const scaled = clampVec(MinV, MaxV)(v);
+			const scaled = clampVec(MinV, MaxV)(roundVec(stepV, 
+				vec2(1).sub(v).mul(minV).add(v.mul(maxV))
+			));
 			onInput(scaled);
 		}
 	});

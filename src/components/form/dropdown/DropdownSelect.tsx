@@ -40,7 +40,7 @@ export const DropdownSelect = <T,>({
 
 	const optionNodes = options.map(opt => "options" in opt
 		? (<DropdownSection key={opt.name} section={opt}
-			{...{ onSelect, selectedValue, setSelectedValue, optionClassList }} />)
+			{...{ onSelect, value: selectedValue, setValue: setSelectedValue, optionClassList }} />)
 		: (<DropdownOption key={opt.name} option={opt} classList={optionClassList}
 			{...{ onSelect, selectedValue, setSelectedValue }} />)
 	);

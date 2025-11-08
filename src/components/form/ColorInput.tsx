@@ -10,6 +10,10 @@ import { Vector } from "@common/vector.ts";
 import { Vec2 } from "@common/vec2.ts";
 import { Slider2d } from "./Slider2D.tsx";
 import { NumberInput } from "./NumberInput.tsx";
+import { DropdownSection } from "./dropdown/DropdownSection.tsx";
+import { maybeConst } from "@common/maybeConst.ts";
+import { DropdownSelect } from "./dropdown/DropdownSelect.tsx";
+import { makeOption } from "./dropdown/Dropdown.ts";
 
 type ColorInputProps = {
 	name?: string;
@@ -26,19 +30,29 @@ type ColorInputProps = {
 	/** Fires when the value is committed (blur) */
 	onChange?: (value: Color) => void;
 
-	// classList?: string[];
+	classList?: string[];
 };
 export const ColorInput: FC<ColorInputProps> = ({
 	name, label, disabled, alpha,
 	value,
 	onInput, onChange,
-	// classList,
+	classList,
 }) => {
 	const popoverId = useId();
+
+	type Mode = "hsv" | "rgb";
+	const [mode, setMode] = useState<Mode>("hsv");
+
+	const onToggle: React.ToggleEventHandler = (e) => {
+		if (e.newState === "closed") {
+			onChange?.(value);
+		}
+	}
 
 	const className = toClassName(
 		formCss["label"],
 		css["color-input"],
+		classList,
 	);
 	return (
 		// not a <label> because we aren't using an <input>
@@ -47,66 +61,71 @@ export const ColorInput: FC<ColorInputProps> = ({
 		}}>
 			{label}
 			<button popoverTarget={popoverId} className={css["color-button"]}></button>
-			<div id={popoverId} className={css["color-popover"]} popover="auto">
-				<HsvInput initialColor={value} onInput={color => {
-					onInput?.(color)
-				}} />
+			<div id={popoverId} className={css["color-popover"]} popover="auto" onToggle={onToggle}>
+				<DropdownSelect<Mode>
+					initialValue={mode}
+					onSelect={setMode}
+					options={[
+						makeOption("hsv", "hsv", "HSV"),
+						makeOption("rgb", "rgb", "RGB"),
+					]}
+				/>
+				<HsvInput value={value} onInput={onInput} />
 			</div>
 		</div>
 	);
 }
 
 type HsvInputProps = {
-	initialColor: Color;
-	onInput: (color: Color) => void;
+	value: Color;
+	onInput?: (color: Color) => void;
 };
 const HsvInput: FC<HsvInputProps> = ({
-	initialColor, onInput,
+	value, onInput,
 }) => {
-	const [hsva, setHsva] = useState(initialColor.hsva());
-	const [h, s, v, a] = hsva;
+	const [h, s, v, a] = value.hsva();
+
+	const update = (h: number, s: number, v: number, a: number) => {
+		onInput?.(Color.hsv(h, s, v, a));
+	}
+
 	const inputProps = {
 		classList: [css["input"]],
-		labelClassList: [css["label"]]
+		labelClassList: [css["label"]],
 	};
 	return (
 		<div className={css["hsv"]} style={{
 			// Required for degenerate case where s or v = 0
 			"--colorinput-hue": `${h}deg`,
 		}}>
-			<Slider2d x={s} y={1 - v}
+			<Slider2d x={s} y={1 - v} step={0.001}
 				classList={[css["square"], css["sv-square"]]}
 				handleClassList={[css["handle"]]}
-				onInput={([newS, newVInv]) => {
-					const s = newS;
-					const v = 1 - newVInv;
-					setHsva(new Vector(h, s, v, a));
-					onInput(Color.hsv(h, s, v, a));
-				}}
+				onInput={([s, vInv]) => update(h, s, (1 - vInv), a)}
 			/>
-			<Slider value={h} min={0} max={360}
+			<Slider value={h} min={0} max={360} step={1}
 				classList={[css["slider"], css["h-slider"]]}
 				handleClassList={[css["handle"]]}
-				onInput={newH => {
-					const h = newH;
-					setHsva(new Vector(h, s, v, a));
-					onInput(Color.hsv(h, s, v, a));
-				}}
+				onInput={h => update(h, s, v, a)}
 			/>
-			<Slider value={a} min={0} max={1}
+			<Slider value={a} min={0} max={1} step={0.001}
 				classList={[css["slider"], css["a-slider"]]}
 				handleClassList={[css["handle"]]}
-				onInput={newA => {
-					const a = newA;
-					setHsva(new Vector(h, s, v, a));
-					onInput(Color.hsv(h, s, v, a));
-				}}
+				onInput={a => update(h, s, v, a)}
 			/>
 			<div className={css["inputs"]}>
-				<NumberInput label="H" value={h} {...inputProps} />
-				<NumberInput label="S" value={s} {...inputProps} />
-				<NumberInput label="V" value={v} {...inputProps} />
-				<NumberInput label="A" value={a} {...inputProps} />
+				<NumberInput label="H" value={h} min={0} max={360} step={1}
+					onInput={h => update(h, s, v, a)}
+					{...inputProps} />
+				<NumberInput label="S" value={s} min={0} max={1} step={0.001}
+					onInput={s => update(h, s, v, a)}
+					{...inputProps} />
+				<NumberInput label="V" value={v} min={0} max={1} step={0.001}
+					onInput={v => update(h, s, v, a)}
+					{...inputProps} />
+				<NumberInput label="A" value={a} min={0} max={1} step={0.001}
+					onInput={a => update(h, s, v, a)}
+					{...inputProps} />
 			</div>
 		</div>
 	);

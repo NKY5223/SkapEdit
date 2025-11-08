@@ -7,3 +7,8 @@ export const clamp = (min: number, max: number) => {
 	if (!(min <= max)) throw new RangeError(`clamp min must be less than or equal to max.`);
 	return (x: number) => Math.min(Math.max(min, x), max);
 };
+
+export const round = (step: number, val: number) => {
+	if (step === 0) return val;
+	return step * Math.round(val / step);
+}
