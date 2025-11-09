@@ -3,6 +3,7 @@ import { SkapFile } from "./skap.ts";
 import { Vec2 } from "@common/vec2.ts";
 import { Color } from "@common/color.ts";
 import { Vector } from "@common/vector.ts";
+import { mod } from "@common/number.ts";
 
 const vec2ToSkap = (vec: Vec2): SkapFile.Vec2 => vec.components;
 const rgbToSkap = (color: Color): SkapFile.Rgb => color.rgb().mul(255).components;
@@ -46,7 +47,7 @@ const objectToSkap = (object: SkapObject, room: SkapRoom, map: SkapMap): SkapFil
 				size: vec2ToSkap(object.bounds.size),
 				dir: object.direction.type === "cardinal"
 					? object.direction.direction
-					: object.direction.direction / 90 + 4
+					: mod(object.direction.direction / 90, 4) - 4
 			}];
 		}
 		case "teleporter": {

@@ -99,15 +99,35 @@ export const makeFreeGravityZone = (left: number, top: number, right: number, bo
 		direction,
 	},
 });
-// export const makeTeleporter = (left: number, top: number, right: number, bottom: number, direction: CardinalDirection): SkapTeleporter => ({
-// 	type: "teleporter",
-// 	id: createId("obj-teleporter"),
-// 	bounds: new Bounds({ left, top, right, bottom }),
-// 	direction,
-// 	target: {
-
-// 	}
-// });
+export const makeTeleporterPair = (
+	left1: number, top1: number, right1: number, bottom1: number, direction1: CardinalDirection,
+	left2: number, top2: number, right2: number, bottom2: number, direction2: CardinalDirection,
+): [SkapTeleporter, SkapTeleporter] => {
+	const id1 = createId("obj-teleporter");
+	const id2 = createId("obj-teleporter");
+	return [
+		{
+			type: "teleporter",
+			id: id1,
+			bounds: new Bounds({ left: left1, top: top1, right: right1, bottom: bottom1 }),
+			direction: direction1,
+			target: {
+				type: "teleporter",
+				teleporterId: id2,
+			}
+		},
+		{
+			type: "teleporter",
+			id: id2,
+			bounds: new Bounds({ left: left2, top: top2, right: right2, bottom: bottom2 }),
+			direction: direction2,
+			target: {
+				type: "teleporter",
+				teleporterId: id1,
+			}
+		},
+	];
+};
 
 export const toIdMap = <T extends { id: ID; }>(objs: T[]): Map<ID, T> =>
 	new Map(objs.map(o => [o.id, o]));

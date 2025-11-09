@@ -2,7 +2,7 @@ import { Color } from "@common/color.ts";
 import { vec2 } from "@common/vec2.ts";
 import { Layout, makeSplitX, makeView } from "@components/layout/layout";
 import { viewProviders } from "@components/layout/views.tsx";
-import { makeBlock, makeCardinalGravityZone, makeFreeGravityZone, makeGravityZone, makeLava, makeObstacle, makeRoom, makeText, SkapMap, SkapRoom, toIdMap } from "@editor/map.ts";
+import { makeBlock, makeCardinalGravityZone, makeFreeGravityZone, makeGravityZone, makeLava, makeObstacle, makeRoom, makeTeleporterPair, makeText, SkapMap, SkapRoom, toIdMap } from "@editor/map.ts";
 import { CardinalDirection } from "@editor/object/Base";
 
 const defaultLayout = makeSplitX(0.75,
@@ -12,6 +12,10 @@ const defaultLayout = makeSplitX(0.75,
 export const defaultLayoutTree: Layout.Tree = {
 	node: defaultLayout
 };
+const [tp1, tp2] = makeTeleporterPair(
+	50, 5, 60, 25, CardinalDirection.Right,
+	-10, 80, 0, 100, CardinalDirection.Left,
+)
 const homeRoom: SkapRoom = makeRoom(
 	"Home",
 	{ left: 0, top: 0, right: 50, bottom: 25 },
@@ -23,7 +27,8 @@ const homeRoom: SkapRoom = makeRoom(
 		makeLava(15, 15, 25, 50),
 		makeLava(-10, 15, 40, 25),
 		// also the windows 10 sc IME interprets "biang" as "bi'ang" so i had to google it
-		makeText(15, 10, "a,    M_²[ℤ𰻞乙a"),
+		makeText(15, 10, `a,    M_²[ℤ𰻞乙a`),
+		tp1,
 	]
 );
 const testRoom: SkapRoom = makeRoom(
@@ -40,6 +45,7 @@ const testRoom: SkapRoom = makeRoom(
 		makeCardinalGravityZone(25, 50, 50, 100, CardinalDirection.Left),
 		makeCardinalGravityZone(50, 50, 75, 100, CardinalDirection.Up),
 		makeCardinalGravityZone(75, 50, 100, 100, CardinalDirection.Right),
+		tp2,
 	]
 );
 export const defaultMap: SkapMap = {
