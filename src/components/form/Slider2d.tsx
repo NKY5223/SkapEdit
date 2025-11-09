@@ -2,7 +2,7 @@ import { round } from "@common/number.ts";
 import { vec2, Vec2 } from "@common/vec2.ts";
 import { toClassName } from "@components/utils.tsx";
 import { MouseButtons, useDrag } from "@hooks/useDrag.ts";
-import { FC, useRef } from "react";
+import { FC, KeyboardEventHandler, useRef } from "react";
 import css from "./Slider.module.css";
 
 const clampVec = (min: Vec2, max: Vec2) => (v: Vec2): Vec2 =>
@@ -56,6 +56,7 @@ export const Slider2d: FC<Slider2dProps> = ({
 		Math.max(yMin, yMax),
 	);
 	const val = vec2(x, y).sub(minV).div(maxV.sub(minV));
+	const update = (v: Vec2) => onInput?.(clampVec(MinV, MaxV)(roundVec(stepV, v)));
 
 	const { dragging, listeners } = useDrag({
 		buttons: MouseButtons.Left,
@@ -64,12 +65,51 @@ export const Slider2d: FC<Slider2dProps> = ({
 
 		onDrag: v => {
 			if (!onInput) return;
-			const scaled = clampVec(MinV, MaxV)(roundVec(stepV, 
-				vec2(1).sub(v).mul(minV).add(v.mul(maxV))
-			));
-			onInput(scaled);
+			update(vec2(1).sub(v).mul(minV).add(v.mul(maxV)));
 		}
 	});
+
+	const onKeyDown: KeyboardEventHandler = e => {
+		if (!onInput) return;
+		// Default to 1% of slider range
+		const moveX = vec2(xStep || (xMax - xMin) * .01, 0);
+		const moveY = vec2(0, yStep || (yMax - yMin) * .01);
+		switch (e.code) {
+			case "ArrowLeft": {
+				update(val.sub(moveX));
+				return;
+			}
+			case "ArrowRight": {
+				update(val.add(moveX));
+				return;
+			}
+			case "ArrowUp": {
+				update(val.sub(moveY));
+				return;
+			}
+			case "ArrowDown": {
+				update(val.add(moveY));
+				return;
+			}
+			case "Home": {
+				update(vec2(xMin, val[1]));
+				return;
+			}
+			case "End": {
+				update(vec2(xMax, val[1]));
+				return;
+			}
+			case "PageUp": {
+				update(vec2(val[0], yMin));
+				return;
+			}
+			case "PageDown": {
+				update(vec2(val[0], yMax));
+				return;
+			}
+		}
+	}
+
 	const slider2dClassName = toClassName(
 		css["slider-2d"],
 		dragging && css["dragging"],
@@ -81,7 +121,7 @@ export const Slider2d: FC<Slider2dProps> = ({
 	);
 	return (
 		<div ref={slider2dRef} className={slider2dClassName}
-			{...listeners}
+			onKeyDown={onKeyDown} {...listeners}
 		>
 			<div tabIndex={0} className={handleClassName} style={{
 				"--left": `${val[0] * 100}%`,

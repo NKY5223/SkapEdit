@@ -51,13 +51,15 @@ export const Slider: FC<SliderProps> = ({
 
 	const onKeyDown: KeyboardEventHandler = e => {
 		if (!onInput) return;
+		// Default to 1% of slider range
+		const moveStep = step || (max - min) * .01;
 		switch (e.code) {
 			case "ArrowLeft": {
-				update(value - step);
+				update(value - moveStep);
 				return;
 			}
 			case "ArrowRight": {
-				update(value + step);
+				update(value + moveStep);
 				return;
 			}
 			case "Home": {
