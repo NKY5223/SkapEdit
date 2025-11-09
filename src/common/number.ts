@@ -12,3 +12,5 @@ export const round = (step: number, val: number) => {
 	if (step === 0) return val;
 	return step * Math.round(val / step);
 }
+
+export const mod = (value: number, modulo: number) => (value % modulo + modulo) % modulo;

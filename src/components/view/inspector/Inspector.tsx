@@ -14,6 +14,10 @@ import { getObject, useDispatchSkapMap, useSkapMap } from "@editor/reducer";
 import { ReactNode } from "react";
 import css from "./Inspector.module.css";
 import { ColorInput } from "@components/form/ColorInput.tsx";
+import { DropdownSelect } from "@components/form/dropdown/DropdownSelect.tsx";
+import { makeOption } from "@components/form/dropdown/Dropdown.ts";
+import { CardinalDirection, convertGravityZoneDirection, SkapGravityZone } from "@editor/object/gravityZone.ts";
+import { NumberInput } from "@components/form/NumberInput.tsx";
 
 const Inspector: Layout.ViewComponent = ({
 	viewSwitcher,
@@ -79,19 +83,19 @@ const Inspector: Layout.ViewComponent = ({
 				);
 			}
 			case "object": {
-				const selectedObject = getObject(map, sel.id);
-				if (!selectedObject) return (
+				const object = getObject(map, sel.id);
+				if (!object) return (
 					<p>
 						Could not find object selection, id: <code>{sel.id}</code>
 					</p>
 				);
-				switch (selectedObject.type) {
+				switch (object.type) {
 					case "obstacle":
 					case "lava":
 					case "slime":
 					case "ice":
 						{
-							const { bounds } = selectedObject;
+							const { bounds } = object;
 							return (
 								<>
 									<FormSection>
@@ -106,7 +110,7 @@ const Inspector: Layout.ViewComponent = ({
 							);
 						}
 					case "text": {
-						const { id, text, pos } = selectedObject;
+						const { id, text, pos } = object;
 						return (
 							<>
 								<FormSection row>
@@ -132,7 +136,7 @@ const Inspector: Layout.ViewComponent = ({
 						);
 					}
 					case "block": {
-						const { bounds, color, solid, layer } = selectedObject;
+						const { bounds, color, solid, layer } = object;
 						return (
 							<>
 								<FormSection>
@@ -157,10 +161,80 @@ const Inspector: Layout.ViewComponent = ({
 							</>
 						);
 					}
+					case "gravityZone": {
+						const { bounds, direction } = object;
+						return (
+							<>
+								<FormSection>
+									<FormTitle>Positioning</FormTitle>
+									<BoundsInput bounds={bounds} setBounds={bounds => dispatchMap({
+										type: "replace_object",
+										target: sel.id,
+										replacement: obj => ({ ...obj, bounds })
+									})} />
+									<FormTitle>Direction</FormTitle>
+									<FormSection row>
+										<DropdownSelect<SkapGravityZone["direction"]["type"]> initialValue={direction.type}
+											options={[
+												makeOption("cardinal", "cardinal", "Cardinal"),
+												makeOption("free", "free", "Free"),
+											]}
+											onSelect={type => dispatchMap({
+												type: "replace_object",
+												target: sel.id,
+												replacement: obj => ({
+													...obj, direction:
+														convertGravityZoneDirection(
+															"direction" in obj
+																? obj.direction
+																: object.direction,
+															type
+														),
+												})
+											})}
+										/>
+										{object.direction.type === "cardinal"
+											? (<DropdownSelect initialValue={object.direction.direction}
+												options={[
+													makeOption("down", CardinalDirection.Down, "Down"),
+													makeOption("left", CardinalDirection.Left, "Left"),
+													makeOption("up", CardinalDirection.Up, "Up"),
+													makeOption("right", CardinalDirection.Right, "Right"),
+												]}
+												onSelect={dir => dispatchMap({
+													type: "replace_object",
+													target: sel.id,
+													replacement: obj => ({
+														...obj, direction: {
+															type: "cardinal",
+															direction: dir,
+														}
+													})
+												})}
+											/>)
+											: (<NumberInput value={object.direction.direction}
+												label={<Icon icon="360" />}
+												min={0} max={360} step={1}
+												onInput={dir => dispatchMap({
+													type: "replace_object",
+													target: sel.id,
+													replacement: obj => ({
+														...obj, direction: {
+															type: "free",
+															direction: dir,
+														}
+													})
+												})}
+											/>)}
+									</FormSection>
+								</FormSection>
+							</>
+						);
+					}
 				}
 				return (
 					<pre>
-						{JSON.stringify(selectedObject, null, "\t")}
+						{JSON.stringify(object, null, "\t")}
 					</pre>
 				);
 			}
