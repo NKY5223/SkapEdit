@@ -1,6 +1,7 @@
 import { Color } from "@common/color.ts";
 import { Vector } from "@common/vector.ts";
-import { CardinalDirection, SkapGravityZone } from "@editor/object/gravityZone.ts";
+import { SkapGravityZone } from "@editor/object/gravityZone.ts";
+import { CardinalDirection } from "@editor/object/Base.ts";
 import { ViewportInfo } from "../Viewport.tsx";
 import { rect } from "../webgl/webgl.ts";
 import { WebGLLayerRenderer, WebGLViewportInfo } from "../webgl/WebGLLayer.tsx";

@@ -2,6 +2,7 @@ import { BaseObject, SkapObjectProperties } from "./Base.ts";
 import { iceProperties, lavaProperties, obstacleProperties, slimeProperties } from "./basic.ts";
 import { blockProperties } from "./block.ts";
 import { gravityZoneProperties } from "./gravityZone.ts";
+import { teleporterProperties } from "./teleporter.ts";
 import { textProperties } from "./text.ts";
 
 const properties = [
@@ -12,6 +13,7 @@ const properties = [
 	textProperties,
 	blockProperties,
 	gravityZoneProperties,
+	teleporterProperties,
 ];
 
 Object.assign(window, { logZIndices: () => {

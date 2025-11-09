@@ -3,7 +3,7 @@ import { vec2 } from "@common/vec2.ts";
 import { Layout, makeSplitX, makeView } from "@components/layout/layout";
 import { viewProviders } from "@components/layout/views.tsx";
 import { makeBlock, makeCardinalGravityZone, makeFreeGravityZone, makeGravityZone, makeLava, makeObstacle, makeRoom, makeText, SkapMap, SkapRoom, toIdMap } from "@editor/map.ts";
-import { CardinalDirection } from "@editor/object/gravityZone.ts";
+import { CardinalDirection } from "@editor/object/Base";
 
 const defaultLayout = makeSplitX(0.75,
 	makeView(viewProviders["map.viewport"]),

@@ -5,7 +5,9 @@ import { Bounds, BoundsInit } from "./bounds.ts";
 import { SkapIce, SkapLava, SkapObstacle, SkapSlime } from "./object/basic.ts";
 import { SkapText } from "./object/text.ts";
 import { SkapBlock } from "./object/block.ts";
-import { CardinalDirection, SkapGravityZone } from "./object/gravityZone.ts";
+import { SkapGravityZone } from "./object/gravityZone.ts";
+import { CardinalDirection } from "./object/Base.ts";
+import { SkapTeleporter } from "./object/teleporter.ts";
 
 export type SkapObject = (
 	| SkapObstacle
@@ -14,6 +16,7 @@ export type SkapObject = (
 	| SkapIce
 	| SkapText
 	| SkapBlock
+	| SkapTeleporter
 	| SkapGravityZone
 );
 export type SkapRoom = {
@@ -96,6 +99,15 @@ export const makeFreeGravityZone = (left: number, top: number, right: number, bo
 		direction,
 	},
 });
+// export const makeTeleporter = (left: number, top: number, right: number, bottom: number, direction: CardinalDirection): SkapTeleporter => ({
+// 	type: "teleporter",
+// 	id: createId("obj-teleporter"),
+// 	bounds: new Bounds({ left, top, right, bottom }),
+// 	direction,
+// 	target: {
+
+// 	}
+// });
 
 export const toIdMap = <T extends { id: ID; }>(objs: T[]): Map<ID, T> =>
 	new Map(objs.map(o => [o.id, o]));

@@ -1,18 +1,6 @@
 import { mod } from "@common/number.ts";
 import { Bounds } from "@editor/bounds.ts";
-import { BaseObject, makeObjectProperties } from "@editor/object/Base";
-
-export type CardinalDirection =
-	| 0
-	| 1
-	| 2
-	| 3;
-export const CardinalDirection = {
-	Down: 0,
-	Left: 1,
-	Up: 2,
-	Right: 3,
-} as const;
+import { BaseObject, CardinalDirection, makeObjectProperties } from "@editor/object/Base";
 
 export type SkapGravityZone = BaseObject<"gravityZone", {
 	bounds: Bounds;

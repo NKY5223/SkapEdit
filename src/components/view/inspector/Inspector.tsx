@@ -16,7 +16,8 @@ import css from "./Inspector.module.css";
 import { ColorInput } from "@components/form/ColorInput.tsx";
 import { DropdownSelect } from "@components/form/dropdown/DropdownSelect.tsx";
 import { makeOption } from "@components/form/dropdown/Dropdown.ts";
-import { CardinalDirection, convertGravityZoneDirection, SkapGravityZone } from "@editor/object/gravityZone.ts";
+import { convertGravityZoneDirection, SkapGravityZone } from "@editor/object/gravityZone.ts";
+import { CardinalDirection } from "@editor/object/Base";
 import { NumberInput } from "@components/form/NumberInput.tsx";
 
 const Inspector: Layout.ViewComponent = ({
@@ -182,7 +183,7 @@ const Inspector: Layout.ViewComponent = ({
 											onSelect={type => dispatchMap({
 												type: "replace_object",
 												target: sel.id,
-												replacement: obj => ({
+												replacement: obj => (obj.type === "gravityZone" ? {
 													...obj, direction:
 														convertGravityZoneDirection(
 															"direction" in obj
@@ -190,7 +191,7 @@ const Inspector: Layout.ViewComponent = ({
 																: object.direction,
 															type
 														),
-												})
+												} : obj)
 											})}
 										/>
 										{object.direction.type === "cardinal"
@@ -204,12 +205,12 @@ const Inspector: Layout.ViewComponent = ({
 												onSelect={dir => dispatchMap({
 													type: "replace_object",
 													target: sel.id,
-													replacement: obj => ({
+													replacement: obj => (obj.type === "gravityZone" ? {
 														...obj, direction: {
 															type: "cardinal",
 															direction: dir,
 														}
-													})
+													} : obj)
 												})}
 											/>)
 											: (<NumberInput value={object.direction.direction}
@@ -218,12 +219,12 @@ const Inspector: Layout.ViewComponent = ({
 												onInput={dir => dispatchMap({
 													type: "replace_object",
 													target: sel.id,
-													replacement: obj => ({
+													replacement: obj => (obj.type === "gravityZone" ? {
 														...obj, direction: {
 															type: "free",
 															direction: dir,
 														}
-													})
+													} : obj)
 												})}
 											/>)}
 									</FormSection>

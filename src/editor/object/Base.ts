@@ -47,3 +47,13 @@ export const makeSimpleBoundsObjectProperties = <O extends BaseObject<string, { 
 		}),
 	},
 });
+export type CardinalDirection = 0 |
+	1 |
+	2 |
+	3;
+export const CardinalDirection = {
+	Down: 0,
+	Left: 1,
+	Up: 2,
+	Right: 3,
+} as const;

@@ -49,6 +49,28 @@ const objectToSkap = (object: SkapObject, room: SkapRoom, map: SkapMap): SkapFil
 					: object.direction.direction / 90 + 4
 			}];
 		}
+		case "teleporter": {
+			const { target } = object;
+			const targetArea = target.type === "teleporter"
+				? map.rooms
+					.values()
+					.find(room => room.objects.has(target.teleporterId))
+					?.name
+				: map.rooms.get(target.roomId)?.name;
+			if (!targetArea) throw new Error("Cannot find target room for teleporter");
+
+			return [{
+				type: object.type,
+				position: vec2ToSkap(object.bounds.topLeft.sub(topLeft)),
+				size: vec2ToSkap(object.bounds.size),
+				id: object.id,
+				targetArea,
+				dir: object.direction,
+				targetId: target.type === "teleporter"
+					? target.teleporterId
+					: "",
+			}]
+		}
 	}
 }
 

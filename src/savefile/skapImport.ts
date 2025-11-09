@@ -1,21 +1,28 @@
 import { Color } from "@common/color.ts";
-import { createId } from "@common/uuid.ts";
+import { createId, ID } from "@common/uuid.ts";
 import { vec2, Vec2 } from "@common/vec2.ts";
 import { Bounds } from "@editor/bounds.ts";
 import { SkapMap, SkapObject, SkapRoom, toIdMap } from "@editor/map.ts";
 import { SkapFile } from "./skap.ts";
+import { SkapTeleporter } from "@editor/object/teleporter.ts";
+import { CardinalDirection } from "@editor/object/Base.ts";
 
 const skapToVec2 = (v: SkapFile.Vec2): Vec2 => vec2(...v);
 const skapToRgb = (c: SkapFile.Rgb): Color => Color.rgb255(...c);
 const skapToRgba = (c: SkapFile.Rgba): Color => Color.rgb255(...c);
+const skapToBounds = (pos: SkapFile.Vec2, size: SkapFile.Vec2): Bounds => new Bounds({ pos: skapToVec2(pos), size: skapToVec2(size) });
 
-type P<T> = T extends never
-	? {
-		// type: "text";
-		// id: ID;
-		// position: Vec2;
-	}
-	: T
+type P<T> =
+	T extends SkapTeleporter ? {
+		type: "teleporter";
+		bounds: Bounds;
+		id: ID;
+		direction: CardinalDirection;
+		skapId: SkapFile.Id;
+		targetRoom: string;
+		targetSkapId: SkapFile.Id;
+	} :
+	T;
 type PartialSkapObject = P<SkapObject>;
 /** Generate the skeleton of the objects */
 const skapToObjectsPartial = (object: SkapFile.Object, room: SkapFile.Room, map: SkapFile.Map): PartialSkapObject => {
@@ -28,7 +35,7 @@ const skapToObjectsPartial = (object: SkapFile.Object, room: SkapFile.Room, map:
 			return {
 				type: object.type,
 				id,
-				bounds: new Bounds({ pos: skapToVec2(object.position), size: skapToVec2(object.size) })
+				bounds: skapToBounds(object.position, object.size),
 			}
 		case "text": return {
 			type: "text",
@@ -39,7 +46,7 @@ const skapToObjectsPartial = (object: SkapFile.Object, room: SkapFile.Room, map:
 		case "block": return {
 			type: "block",
 			id,
-			bounds: new Bounds({ pos: skapToVec2(object.position), size: skapToVec2(object.size) }),
+			bounds: skapToBounds(object.position, object.size),
 			color: skapToRgba([...object.color, object.opacity]),
 			layer: object.layer,
 			solid: object.collide,
@@ -47,7 +54,7 @@ const skapToObjectsPartial = (object: SkapFile.Object, room: SkapFile.Room, map:
 		case "gravityZone": return {
 			type: "gravityZone",
 			id,
-			bounds: new Bounds({ pos: skapToVec2(object.position), size: skapToVec2(object.size) }),
+			bounds: skapToBounds(object.position, object.size),
 			direction:
 				object.dir === 0 ||
 					object.dir === 1 ||
@@ -56,7 +63,15 @@ const skapToObjectsPartial = (object: SkapFile.Object, room: SkapFile.Room, map:
 					? { type: "cardinal", direction: object.dir }
 					: { type: "free", direction: 90 * object.dir % 360 }
 		}
-		case "teleporter":
+		case "teleporter": return {
+			type: "teleporter",
+			id,
+			bounds: skapToBounds(object.position, object.size),
+			direction: object.dir,
+			skapId: object.id,
+			targetRoom: object.targetArea,
+			targetSkapId: object.targetId,
+		}
 		case "circularObstacle":
 		case "circularLava":
 		case "circularSlime":
@@ -111,7 +126,7 @@ const skapToRoomPartial = (room: SkapFile.Room, map: SkapFile.Map): PartialSkapR
 	};
 }
 
-const completeObject = (object: PartialSkapObject, rooms: PartialSkapRoom[], map: SkapFile.Map): SkapObject => {
+const completeObject = (object: PartialSkapObject, room: PartialSkapRoom, rooms: PartialSkapRoom[], map: SkapFile.Map): SkapObject => {
 	switch (object.type) {
 		case "obstacle":
 		case "lava":
@@ -121,12 +136,51 @@ const completeObject = (object: PartialSkapObject, rooms: PartialSkapRoom[], map
 		case "block":
 		case "gravityZone":
 			{ return object; }
+		case "teleporter": {
+			const { bounds, id, direction } = object;
+			const targetRoom = rooms.find(room => room.name === object.targetRoom);
+			if (!targetRoom) {
+				// No way to find the teleporter's destination.
+				// throw for now, may implement fallback later
+				throw new Error(`Could not find destination for teleporter in ${room.name}, id ${object.skapId}.`, {
+					cause: { object }
+				});
+			}
+			const targetTp = targetRoom
+				.objects
+				.filter(obj => obj.type === "teleporter")
+				.find(obj => obj.skapId === object.targetSkapId);
+
+			if (!targetTp) {
+				// Fallback to a "room" teleporter
+				return {
+					type: "teleporter",
+					id,
+					bounds,
+					direction,
+					target: {
+						type: "room",
+						roomId: room.id,
+					}
+				}
+			}
+			return {
+				type: "teleporter",
+				id,
+				bounds,
+				direction,
+				target: {
+					type: "teleporter",
+					teleporterId: targetTp.id,
+				}
+			}
+		}
 	}
 }
 const completeRoom = (room: PartialSkapRoom, rooms: PartialSkapRoom[], map: SkapFile.Map): SkapRoom => {
 	return {
 		...room,
-		objects: toIdMap(room.objects.map(o => completeObject(o, rooms, map)))
+		objects: toIdMap(room.objects.map(o => completeObject(o, room, rooms, map)))
 	};
 }
 
