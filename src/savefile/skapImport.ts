@@ -44,7 +44,18 @@ const skapToObjectsPartial = (object: SkapFile.Object, room: SkapFile.Room, map:
 			layer: object.layer,
 			solid: object.collide,
 		}
-		case "gravityZone":
+		case "gravityZone": return {
+			type: "gravityZone",
+			id,
+			bounds: new Bounds({ pos: skapToVec2(object.position), size: skapToVec2(object.size) }),
+			direction:
+				object.dir === 0 ||
+					object.dir === 1 ||
+					object.dir === 2 ||
+					object.dir === 3
+					? { type: "cardinal", direction: object.dir }
+					: { type: "free", direction: 90 * object.dir % 360 }
+		}
 		case "teleporter":
 		case "circularObstacle":
 		case "circularLava":
@@ -108,6 +119,7 @@ const completeObject = (object: PartialSkapObject, rooms: PartialSkapRoom[], map
 		case "ice":
 		case "text":
 		case "block":
+		case "gravityZone":
 			{ return object; }
 	}
 }

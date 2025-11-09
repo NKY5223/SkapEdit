@@ -25,6 +25,7 @@ import { ViewportCanvas } from "./ViewportCanvas.tsx";
 import { ViewportRoomSwitcher } from "./ViewportRoomSwitcher.tsx";
 import { WebGLLayer } from "./webgl/WebGLLayer.tsx";
 import { BlockWebGLRenderer } from "./renderer/block.ts";
+import { GravityZoneWebGLRenderer } from "./renderer/gravityZone.ts";
 
 
 /** Maximum distance for something to count as a click */
@@ -50,6 +51,7 @@ export const RealViewport: FC<RealViewportProps> = ({
 			new LavaWebGLRenderer(),
 			new SlimeWebGLRenderer(),
 			new IceWebGLRenderer(),
+			new GravityZoneWebGLRenderer(),
 			new BlockWebGLRenderer(),
 		),
 		TextLayer

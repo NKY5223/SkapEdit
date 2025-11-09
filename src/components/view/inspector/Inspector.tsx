@@ -158,8 +158,14 @@ const Inspector: Layout.ViewComponent = ({
 						);
 					}
 				}
+				return (
+					<pre>
+						{JSON.stringify(selectedObject, null, "\t")}
+					</pre>
+				);
 			}
 		}
+
 	})();
 
 	return (

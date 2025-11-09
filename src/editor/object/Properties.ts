@@ -1,6 +1,7 @@
 import { BaseObject, SkapObjectProperties } from "./Base.ts";
 import { iceProperties, lavaProperties, obstacleProperties, slimeProperties } from "./basic.ts";
 import { blockProperties } from "./block.ts";
+import { gravityZoneProperties } from "./gravityZone.ts";
 import { textProperties } from "./text.ts";
 
 const properties = [
@@ -10,7 +11,20 @@ const properties = [
 	iceProperties,
 	textProperties,
 	blockProperties,
+	gravityZoneProperties,
 ];
+
+Object.assign(window, { logZIndices: () => {
+	properties.forEach(p => {
+		const z = p.selection.zIndex;
+		if (z.length === 0) {
+			// @ts-expect-error
+			console.log(p.type, z(0));
+		} else {
+			console.log(p.type, z);
+		}
+	});
+} });
 
 export const getProperties = <T extends string, O extends BaseObject<T, {}>>(obj: O): SkapObjectProperties<T, O> => {
 	const find = properties.find(p => p.type === obj.type);

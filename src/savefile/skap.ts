@@ -197,7 +197,7 @@ const Spawner = rectObject("spawner").extend({
 
 // #region reward
 const Reward = positionObject("reward").extend({
-	reward: z.string(),
+	reward: z.number().array(),
 })
 const HatReward = positionObject("hatReward").extend({
 	reward: z.string(),

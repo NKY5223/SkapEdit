@@ -264,6 +264,18 @@ export class Color {
 	static readonly LAVA = Color.hex(0xb74038);
 	static readonly SLIME = Color.hex(0x00ca00);
 	static readonly ICE = Color.hex(0x7cabd2);
+
+	static readonly GRAVITYZONE_FG_FREE = Color.hex(0x000000);
+	static readonly GRAVITYZONE_FG_UP = Color.hex(0x0000e0);
+	static readonly GRAVITYZONE_FG_RIGHT = Color.hex(0x00d000);
+	static readonly GRAVITYZONE_FG_LEFT = Color.hex(0xff0000);
+	static readonly GRAVITYZONE_FG_DOWN = Color.hex(0xd0c000);
+
+	static readonly GRAVITYZONE_BG_FREE = Color.hex(0x404040, .25);
+	static readonly GRAVITYZONE_BG_UP = Color.hex(0x000088, .25);
+	static readonly GRAVITYZONE_BG_RIGHT = Color.hex(0x008400, .25);
+	static readonly GRAVITYZONE_BG_LEFT = Color.hex(0xaa0000, .25);
+	static readonly GRAVITYZONE_BG_DOWN = Color.hex(0x848000, .25);
 	// #endregion
 }
 

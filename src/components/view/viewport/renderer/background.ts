@@ -2,7 +2,7 @@ import { Bounds } from "@editor/bounds.ts";
 import { ViewportInfo } from "../Viewport.tsx";
 import { RectWebGLRenderer } from "./rect.ts";
 import fragObs from "./shader/obstacle.frag?raw";
-import fragBG from "./shader/solid.frag?raw";
+import fragBG from "./shader/solidColor.frag?raw";
 import { WebGLViewportInfo } from "../webgl/WebGLLayer.tsx";
 
 export class BackgroundObstacleWebGLRenderer extends RectWebGLRenderer {

@@ -2,7 +2,8 @@ import { Color } from "@common/color.ts";
 import { vec2 } from "@common/vec2.ts";
 import { Layout, makeSplitX, makeView } from "@components/layout/layout";
 import { viewProviders } from "@components/layout/views.tsx";
-import { makeBlock, makeLava, makeObstacle, makeRoom, makeText, SkapMap, SkapRoom, toIdMap } from "@editor/map.ts";
+import { makeBlock, makeCardinalGravityZone, makeFreeGravityZone, makeGravityZone, makeLava, makeObstacle, makeRoom, makeText, SkapMap, SkapRoom, toIdMap } from "@editor/map.ts";
+import { CardinalDirection } from "@editor/object/gravityZone.ts";
 
 const defaultLayout = makeSplitX(0.75,
 	makeView(viewProviders["map.viewport"]),
@@ -31,12 +32,14 @@ const testRoom: SkapRoom = makeRoom(
 	Color.DEFAULT_OBSTACLE,
 	Color.DEFAULT_BACKGROUND,
 	[
-		makeText(50, 50, "test"),
-		makeBlock(0, 0, 75, 50, Color.hex(0x2080ff, 0.5), 0, true),
-		makeBlock(25, 0, 100, 50, Color.hex(0xd01000, 0.5), 0, true),
-
-		makeBlock(25, 50, 100, 100, Color.hex(0xd01000, 0.5), 0, true),
-		makeBlock(0, 50, 75, 100, Color.hex(0x2080ff, 0.5), 0, true),
+		makeFreeGravityZone(0, 0, 25, 50, 45),
+		makeFreeGravityZone(25, 0, 50, 50, 135),
+		makeFreeGravityZone(50, 0, 75, 50, 225),
+		makeFreeGravityZone(75, 0, 100, 50, 315),
+		makeCardinalGravityZone(0, 50, 25, 100, CardinalDirection.Down),
+		makeCardinalGravityZone(25, 50, 50, 100, CardinalDirection.Left),
+		makeCardinalGravityZone(50, 50, 75, 100, CardinalDirection.Up),
+		makeCardinalGravityZone(75, 50, 100, 100, CardinalDirection.Right),
 	]
 );
 export const defaultMap: SkapMap = {

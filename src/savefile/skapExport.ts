@@ -39,6 +39,16 @@ const objectToSkap = (object: SkapObject, room: SkapRoom, map: SkapMap): SkapFil
 				collide: object.solid,
 			}];
 		}
+		case "gravityZone": {
+			return [{
+				type: object.type,
+				position: vec2ToSkap(object.bounds.topLeft.sub(topLeft)),
+				size: vec2ToSkap(object.bounds.size),
+				dir: object.direction.type === "cardinal"
+					? object.direction.direction
+					: object.direction.direction / 90 + 4
+			}];
+		}
 	}
 }
 

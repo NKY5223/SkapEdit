@@ -2,7 +2,7 @@ import { Color } from "@common/color.ts";
 import { Bounds } from "@editor/bounds.ts";
 import { ViewportInfo } from "../Viewport.tsx";
 import { RectWebGLRenderer } from "./rect.ts";
-import frag from "./shader/solid.frag?raw";
+import frag from "./shader/solidColor.frag?raw";
 
 const rgba = Color.SLIME.rgba();
 

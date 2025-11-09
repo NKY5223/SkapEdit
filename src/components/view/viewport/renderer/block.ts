@@ -1,7 +1,7 @@
 import { SkapObject } from "@editor/map.ts";
 import { WebGLLayerRenderer, WebGLViewportInfo } from "../webgl/WebGLLayer.tsx";
-import vert from "./shader/block.vert?raw";
-import frag from "./shader/block.frag?raw";
+import vert from "./shader/color.vert?raw";
+import frag from "./shader/color.frag?raw";
 import { ViewportInfo } from "../Viewport.tsx";
 import { rect } from "../webgl/webgl.ts";
 import { Vector } from "@common/vector.ts";

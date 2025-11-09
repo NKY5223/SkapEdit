@@ -5,6 +5,7 @@ import { Bounds, BoundsInit } from "./bounds.ts";
 import { SkapIce, SkapLava, SkapObstacle, SkapSlime } from "./object/basic.ts";
 import { SkapText } from "./object/text.ts";
 import { SkapBlock } from "./object/block.ts";
+import { CardinalDirection, SkapGravityZone } from "./object/gravityZone.ts";
 
 export type SkapObject = (
 	| SkapObstacle
@@ -13,6 +14,7 @@ export type SkapObject = (
 	| SkapIce
 	| SkapText
 	| SkapBlock
+	| SkapGravityZone
 );
 export type SkapRoom = {
 	id: ID;
@@ -70,6 +72,31 @@ export const makeBlock = (left: number, top: number, right: number, bottom: numb
 	layer,
 	solid,
 });
+export const makeGravityZone = (left: number, top: number, right: number, bottom: number, direction: SkapGravityZone["direction"]): SkapGravityZone => ({
+	type: "gravityZone",
+	id: createId("obj-gravityZone"),
+	bounds: new Bounds({ left, top, right, bottom }),
+	direction,
+});
+export const makeCardinalGravityZone = (left: number, top: number, right: number, bottom: number, direction: CardinalDirection): SkapGravityZone => ({
+	type: "gravityZone",
+	id: createId("obj-gravityZone"),
+	bounds: new Bounds({ left, top, right, bottom }),
+	direction: {
+		type: "cardinal",
+		direction,
+	},
+});
+export const makeFreeGravityZone = (left: number, top: number, right: number, bottom: number, direction: number): SkapGravityZone => ({
+	type: "gravityZone",
+	id: createId("obj-gravityZone"),
+	bounds: new Bounds({ left, top, right, bottom }),
+	direction: {
+		type: "free",
+		direction,
+	},
+});
+
 export const toIdMap = <T extends { id: ID; }>(objs: T[]): Map<ID, T> =>
 	new Map(objs.map(o => [o.id, o]));
 
