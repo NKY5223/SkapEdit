@@ -44,7 +44,7 @@ export type TranslationArgs = {
 	"contextmenu.item.name.viewport.add_object.ice": {};
 	"contextmenu.item.name.viewport.add_object.text": {};
 	// #endregion
-	
+
 	// #region Viewport
 	"viewport.no_room_selected": {};
 	"viewport.no_room_with_id": { id: ID; };
@@ -70,7 +70,7 @@ export type TranslationArgs = {
 	// #region Changelog
 	"changelog": {};
 	"changelog.version-title": { version: string; time?: Date; };
-	"changelog.current-build": { 
+	"changelog.current-build": {
 		mode: string;
 		version: string;
 		github: {
@@ -89,6 +89,13 @@ export type TranslationArgs = {
 	"object.slime": {};
 	"object.ice": {};
 	"object.text": {};
+	// #endregion
+
+	// #region Map Import
+	"import.message": { message: string; object?: string; room?: string; };
+	"import.message.no_spawn_room": { message: string; object?: string; room?: string; };
+	"import.message.broken_teleporter": { message: string; object?: string; room?: string; };
+	"import.message.single_teleporter": { message: string; object?: string; room?: string; };
 	// #endregion
 
 	"generic.position.x": {};
@@ -110,7 +117,7 @@ export type TranslationArgs = {
 	"generic.none_selected": {};
 };
 
-type EmptyKeys<T, K extends keyof T = keyof T> = K extends K 
+type EmptyKeys<T, K extends keyof T = keyof T> = K extends K
 	? T[K] extends {} ? K : never
 	: never;
 

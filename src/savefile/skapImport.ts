@@ -6,6 +6,7 @@ import { SkapMap, SkapObject, SkapRoom, toIdMap } from "@editor/map.ts";
 import { SkapFile } from "./skap.ts";
 import { SkapTeleporter } from "@editor/object/teleporter.ts";
 import { CardinalDirection } from "@editor/object/Base.ts";
+import { Logger } from "./logger.ts";
 
 const skapToVec2 = (v: SkapFile.Vec2): Vec2 => vec2(...v);
 const skapToRgb = (c: SkapFile.Rgb): Color => Color.rgb255(...c);
@@ -126,7 +127,11 @@ const skapToRoomPartial = (room: SkapFile.Room, map: SkapFile.Map): PartialSkapR
 	};
 }
 
-const completeObject = (object: PartialSkapObject, room: PartialSkapRoom, rooms: PartialSkapRoom[], map: SkapFile.Map): SkapObject => {
+const completeObject = (
+	object: PartialSkapObject, 
+	room: PartialSkapRoom, rooms: PartialSkapRoom[], map: SkapFile.Map, 
+	logger: Logger
+): SkapObject => {
 	switch (object.type) {
 		case "obstacle":
 		case "lava":
@@ -142,6 +147,7 @@ const completeObject = (object: PartialSkapObject, room: PartialSkapRoom, rooms:
 			if (!targetRoom) {
 				// Destinationless teleporter.
 				// basically a "broken" tp
+				logger.error("broken_teleporter", JSON.stringify(object.skapId), room.name);
 				return {
 					type: "teleporter",
 					id,
@@ -157,6 +163,7 @@ const completeObject = (object: PartialSkapObject, room: PartialSkapRoom, rooms:
 
 			if (!targetTp) {
 				// Fallback to a "room" teleporter
+				logger.warn("single_teleporter", JSON.stringify(object.skapId), room.name);
 				return {
 					type: "teleporter",
 					id,
@@ -181,14 +188,14 @@ const completeObject = (object: PartialSkapObject, room: PartialSkapRoom, rooms:
 		}
 	}
 }
-const completeRoom = (room: PartialSkapRoom, rooms: PartialSkapRoom[], map: SkapFile.Map): SkapRoom => {
+const completeRoom = (room: PartialSkapRoom, rooms: PartialSkapRoom[], map: SkapFile.Map, logger: Logger): SkapRoom => {
 	return {
 		...room,
-		objects: toIdMap(room.objects.map(o => completeObject(o, room, rooms, map)))
+		objects: toIdMap(room.objects.map(o => completeObject(o, room, rooms, map, logger)))
 	};
 }
 
-export const skapToMap = (map: SkapFile.Map): SkapMap => {
+export const skapToMap = (map: SkapFile.Map, logger: Logger): SkapMap => {
 	const { settings: {
 		name,
 		creator: author,
@@ -198,16 +205,20 @@ export const skapToMap = (map: SkapFile.Map): SkapMap => {
 	}, maps } = map;
 
 	const partialRooms = maps.map(r => skapToRoomPartial(r, map));
-	const roomList = partialRooms.map(r => completeRoom(r, partialRooms, map));
+	const roomList = partialRooms.map(r => completeRoom(r, partialRooms, map, logger));
 
 	const spawnRoom = roomList.find(r => r.name === spawnArea);
-	if (!spawnRoom) throw new Error("error.import.no_spawn_room");
+	if (!spawnRoom) logger.error("no_spawn_room");
+
+	const spawnRoomOrFirst = spawnRoom ?? roomList[0];
+	const spawnRoomId = spawnRoomOrFirst?.id ?? "";
+	const spawnRoomTopLeft = spawnRoomOrFirst?.bounds?.topLeft ?? vec2(0);
 
 	return {
 		author, name, version: version ?? 0,
 		spawn: {
-			room: spawnRoom.id,
-			position: skapToVec2(spawnPosition).sub(spawnRoom.bounds.topLeft),
+			room: spawnRoomId,
+			position: skapToVec2(spawnPosition).sub(spawnRoomTopLeft),
 		},
 		rooms: toIdMap(roomList),
 	};

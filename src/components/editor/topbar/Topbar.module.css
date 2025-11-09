@@ -36,3 +36,15 @@
 		background-color: var(--theme-bg-1);
 	}
 }
+
+.import-issues-list {
+	list-style: none;
+}
+.import-issue-warn > :first-child {
+	color: var(--theme-warn-bg-0);
+	margin-right: .25em;
+}
+.import-issue-error > :first-child {
+	color: var(--theme-negative-bg-0);
+	margin-right: .25em;
+}

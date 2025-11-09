@@ -11,6 +11,8 @@ import { saveFile } from "@common/save.ts";
 import { openFile } from "@common/open.ts";
 import { skapToMap } from "../../../savefile/skapImport.ts";
 import { useDispatchSelection } from "../selection.ts";
+import { makeLogger } from "../../../savefile/logger.ts";
+import { Icon } from "@components/icon/Icon.tsx";
 
 type TopbarProps = {
 	openChangelog: () => void;
@@ -92,11 +94,29 @@ export const Topbar: FC<TopbarProps> = ({
 						const json = JSON.parse(text);
 						console.log("file raw json", json);
 						const m = SkapMapSchema.parse(json);
-						const map = skapToMap(m);
+
+						const logger = makeLogger();
+						const map = skapToMap(m, logger);
+						const logs = logger.logs();
 
 						toast.success(<>
 							Successfully parsed map: {map.name} by {map.author}, version {map.version}.
-						</>, 10)
+						</>, 10);
+
+						if (logs.length) {
+							toast.warn(<>
+								Issues importing map:
+								<ul className={css["import-issues-list"]}>
+									{logs.map(({ level, message, object, room, }, i) => (
+										<li key={i} className={css[`import-issue-${level}`]}>
+											{level === "warn" ? <Icon icon="warning" /> : <Icon icon="error" />}
+											<Translate k="import.message" {...{ message, object, room }} />
+										</li>
+									))}
+								</ul>
+							</>);
+						}
+
 						console.log("Imported map", method, map);
 
 						dispatchMap({

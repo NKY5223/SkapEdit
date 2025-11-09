@@ -97,6 +97,23 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"object.text": "文字",
 	// #endregion
 
+	// #region Map Import
+	"import.message": delegate("import.message", "message"),
+	"import.message.no_spawn_room": ({ }) => "Could not find spawn room",
+	"import.message.broken_teleporter": ({ object, room }) => [
+		room ?? `??`,
+		"：传送机 #",
+		object ?? `"??"`,
+		"无目标房间",
+	],
+	"import.message.single_teleporter": ({ object, room }) => [
+		room ?? `??`,
+		"：传送机 #",
+		object ?? `"??"`,
+		"无目标传送机",
+	],
+	// #endregion
+
 	"generic.position.x": "X坐标",
 	"generic.position.y": "Y坐标",
 	"generic.position.left": "左",

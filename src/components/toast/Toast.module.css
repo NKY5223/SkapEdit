@@ -4,12 +4,15 @@
 	flex-direction: column;
 	align-items: end;
 	gap: 1em;
+	max-height: 100%;
+	overflow-x: clip;
+	overflow-y: auto;
 	
 	pointer-events: none;
 	inset-inline-end: 0;
 	inset-block-end: 0;
 
-	padding-block-end: 1em;
+	padding-block: 1em;
 }
 
 .toast {

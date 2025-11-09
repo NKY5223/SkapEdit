@@ -97,6 +97,23 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"object.text": "Text",
 	// #endregion
 
+	// #region Map Import
+	"import.message": delegate("import.message", "message"),
+	"import.message.no_spawn_room": ({ }) => "Could not find spawn room",
+	"import.message.broken_teleporter": ({ object, room }) => [
+		room ?? `??`,
+		": Teleporter #",
+		object ?? `"??"`, 
+		" has no target room",
+	],
+	"import.message.single_teleporter": ({ object, room }) => [
+		room ?? `??`,
+		": Teleporter #",
+		object ?? `"??"`, 
+		" has no target teleporter",
+	],
+	// #endregion
+
 	"generic.position.x": "X Position",
 	"generic.position.y": "Y Position",
 	"generic.position.left": "Left",

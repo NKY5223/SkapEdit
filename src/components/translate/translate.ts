@@ -76,9 +76,9 @@ export const makeTranslator = <const R extends Record<string, {}>>(
  * "example.key": delegate("example.key", "value"),
  * ...
  *
- * <Translate k="example.key" value="value" />
+ * <Translate k="example.key" value="value" prop="prop" />
  *     ↓    ↓    ↓
- * <Translate k="example.key.value" />
+ * <Translate k="example.key.value" value="value" prop="prop" />
  */
 export const delegateOn = 
 	// Funny trick to 'curry' a type parameter
@@ -90,16 +90,17 @@ export const delegateOn =
 ) => <
 	K extends string, 
 	N extends string,
+	A extends {},
 >(
 	key: K, 
 	name: N, 
 ): Translation<
-	{ [_ in N]: string; }, 
+	{ [_ in N]: string; } & A, 
 	Omit<R, keyof R & `${K}${S}${string}`> & {
 		[_ in K]: {
 			[_ in N]: string;
 		}
-	} & Record<keyof R & `${K}${S}${string}`, {}>
+	} & Record<keyof R & `${K}${S}${string}`, A>
 	// Argument of type '{}' is not assignable to parameter of type 
 	// '(Omit<R, keyof R & `${K}.${string}`> & { [_ in K]: { [_ in N]: string; }; } & Record<keyof R & `${K}.${string}`, {}>)
 	// [`${K}.${{ [_ in N]: string; }[N]}`]'.
@@ -116,7 +117,7 @@ export const delegateOn =
 	// = {}
 	// ???
 	// @ts-expect-error type arithmetic is weird...
-> => (args, translate) => translate(`${key}${seperator}${args[name]}`, {});
+> => (args, translate) => translate(`${key}${seperator}${args[name]}`, args);
 
 // type Equal<A, B> = 
 // 	[(a: A) => A] extends [(b: B) => B] 
