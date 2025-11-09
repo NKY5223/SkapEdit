@@ -52,9 +52,9 @@ export const RealViewport: FC<RealViewportProps> = ({
 			new LavaWebGLRenderer(),
 			new SlimeWebGLRenderer(),
 			new IceWebGLRenderer(),
-			new GravityZoneWebGLRenderer(),
 			new BlockWebGLRenderer(),
 			new TeleporterWebGLRenderer(),
+			new GravityZoneWebGLRenderer(),
 		),
 		TextLayer
 	], []);

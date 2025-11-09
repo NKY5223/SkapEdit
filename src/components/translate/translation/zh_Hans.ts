@@ -114,6 +114,7 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	],
 	// #endregion
 
+	"generic.position": "位置",
 	"generic.position.x": "X坐标",
 	"generic.position.y": "Y坐标",
 	"generic.position.left": "左",
@@ -122,6 +123,14 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"generic.position.bottom": "底",
 	"generic.position.width": "宽",
 	"generic.position.height": "高",
+
+	"generic.direction": "方向",
+	"generic.direction.down": "下",
+	"generic.direction.left": "左",
+	"generic.direction.right": "右",
+	"generic.direction.up": "上",
+	"generic.direction.cardinal": "基本",
+	"generic.direction.free": "自由",
 
 	"generic.list_string": ({ strings }) => strings.join("、"),
 

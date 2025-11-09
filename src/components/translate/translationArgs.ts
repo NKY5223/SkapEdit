@@ -98,6 +98,7 @@ export type TranslationArgs = {
 	"import.message.single_teleporter": { message: string; object?: string; room?: string; };
 	// #endregion
 
+	"generic.position": {};
 	"generic.position.x": {};
 	"generic.position.y": {};
 	"generic.position.left": {};
@@ -106,6 +107,14 @@ export type TranslationArgs = {
 	"generic.position.bottom": {};
 	"generic.position.width": {};
 	"generic.position.height": {};
+
+	"generic.direction": {};
+	"generic.direction.down": {};
+	"generic.direction.left": {};
+	"generic.direction.right": {};
+	"generic.direction.up": {};
+	"generic.direction.cardinal": {};
+	"generic.direction.free": {};
 
 	"generic.action.open": {};
 	"generic.action.close": {};

@@ -19,6 +19,7 @@ import { makeOption } from "@components/form/dropdown/Dropdown.ts";
 import { convertGravityZoneDirection, SkapGravityZone } from "@editor/object/gravityZone.ts";
 import { CardinalDirection } from "@editor/object/Base";
 import { NumberInput } from "@components/form/NumberInput.tsx";
+import { CardinalDirectionInput } from "@components/form/CardinalDirectionInput.tsx";
 
 const Inspector: Layout.ViewComponent = ({
 	viewSwitcher,
@@ -100,7 +101,7 @@ const Inspector: Layout.ViewComponent = ({
 							return (
 								<>
 									<FormSection>
-										<FormTitle>Positioning</FormTitle>
+										<FormTitle><Translate k="generic.position" /></FormTitle>
 										<BoundsInput bounds={bounds} setBounds={bounds => dispatchMap({
 											type: "replace_object",
 											target: sel.id,
@@ -141,7 +142,7 @@ const Inspector: Layout.ViewComponent = ({
 						return (
 							<>
 								<FormSection>
-									<FormTitle>Positioning</FormTitle>
+									<FormTitle><Translate k="generic.position" /></FormTitle>
 									<BoundsInput bounds={bounds} setBounds={bounds => dispatchMap({
 										type: "replace_object",
 										target: sel.id,
@@ -167,18 +168,18 @@ const Inspector: Layout.ViewComponent = ({
 						return (
 							<>
 								<FormSection>
-									<FormTitle>Positioning</FormTitle>
+									<FormTitle><Translate k="generic.position" /></FormTitle>
 									<BoundsInput bounds={bounds} setBounds={bounds => dispatchMap({
 										type: "replace_object",
 										target: sel.id,
 										replacement: obj => ({ ...obj, bounds })
 									})} />
-									<FormTitle>Direction</FormTitle>
+									<FormTitle><Translate k="generic.direction" /></FormTitle>
 									<FormSection row>
 										<DropdownSelect<SkapGravityZone["direction"]["type"]> initialValue={direction.type}
 											options={[
-												makeOption("cardinal", "cardinal", "Cardinal"),
-												makeOption("free", "free", "Free"),
+												makeOption("cardinal", "cardinal", <Translate k="generic.direction.cardinal" />),
+												makeOption("free", "free", <Translate k="generic.direction.free" />),
 											]}
 											onSelect={type => dispatchMap({
 												type: "replace_object",
@@ -195,14 +196,8 @@ const Inspector: Layout.ViewComponent = ({
 											})}
 										/>
 										{object.direction.type === "cardinal"
-											? (<DropdownSelect initialValue={object.direction.direction}
-												options={[
-													makeOption("down", CardinalDirection.Down, "Down"),
-													makeOption("left", CardinalDirection.Left, "Left"),
-													makeOption("up", CardinalDirection.Up, "Up"),
-													makeOption("right", CardinalDirection.Right, "Right"),
-												]}
-												onSelect={dir => dispatchMap({
+											? (<CardinalDirectionInput value={object.direction.direction}
+												onInput={dir => dispatchMap({
 													type: "replace_object",
 													target: sel.id,
 													replacement: obj => (obj.type === "gravityZone" ? {
@@ -213,20 +208,22 @@ const Inspector: Layout.ViewComponent = ({
 													} : obj)
 												})}
 											/>)
-											: (<NumberInput value={object.direction.direction}
-												label={<Icon icon="360" />}
-												min={0} max={360} step={1}
-												onInput={dir => dispatchMap({
-													type: "replace_object",
-													target: sel.id,
-													replacement: obj => (obj.type === "gravityZone" ? {
-														...obj, direction: {
-															type: "free",
-															direction: dir,
-														}
-													} : obj)
-												})}
-											/>)}
+											: (<>
+												<NumberInput value={object.direction.direction}
+													label={<Icon icon="360" />}
+													min={0} max={360} step={1}
+													onInput={dir => dispatchMap({
+														type: "replace_object",
+														target: sel.id,
+														replacement: obj => (obj.type === "gravityZone" ? {
+															...obj, direction: {
+																type: "free",
+																direction: dir,
+															}
+														} : obj)
+													})}
+												/>°
+											</>)}
 									</FormSection>
 								</FormSection>
 							</>
