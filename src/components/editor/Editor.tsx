@@ -17,15 +17,8 @@ import { Changelog } from "./changelog/Changelog.tsx";
 import { defaultLayoutTree, defaultMap } from "./default.tsx";
 import css from "./Editor.module.css";
 import { SelectionProvider } from "./selection.ts";
-
-const chinese = import.meta.env.DEV;
-// use chinese on dev (for testing!!)
-// if anything shows up in english it is probably untranslated.
-// except inspector i couldn't find a translation for that
-const translator = chinese
-	? translator_zh_Hans
-	: translator_en_US;
-if (chinese) document.documentElement.lang = "zh-Hans";
+import { SettingsProvider } from "@components/settings/SettingsProvider.tsx";
+import { SettingsMenu } from "@components/settings/Settings.tsx";
 
 type EditorProps = {
 
@@ -34,36 +27,41 @@ export const Editor: FC<EditorProps> = ({
 
 }) => {
 	const [openChangelog, setOpenChangelog] = useState(() => () => console.error("Did not set open changelog"));
+	const [openSettings, setOpenSettings] = useState(() => () => console.error("Did not set open settings"));
 
 	return (
 		// App
 		<ErrorBoundary location="Editor">
-			<ThemeProvider>
-				<TranslationProvider value={translator}>
-					<ContextMenuProvider>
-						<ToastProvider>
-							{/* Editor */}
-							<SkapMapProvider initialValue={defaultMap}>
-								<SelectionProvider initialValue={[]}>
-									{/* Layout */}
-									<ViewProvidersProvider providers={viewProviders}>
-										<LayoutProvider initialValue={defaultLayoutTree}>
-											<title>{import.meta.env.DEV ? `🛠 SkapEdit (DEV)` : `SkapEdit`}</title>
-											<div className={css["editor"]}>
-												<Topbar openChangelog={openChangelog} />
-												<LayoutRoot />
-												<Changelog changelog={changelog} setOpen={setOpenChangelog} />
-											</div>
-										</LayoutProvider>
-									</ViewProvidersProvider>
+			{/* DO NOT EDIT THIS KEY EVER */}
+			<SettingsProvider localStorageKey="skapedit_settings">
+				<ContextMenuProvider>
+					<ToastProvider>
+						<ThemeProvider>
+							<TranslationProvider>
+								{/* Editor */}
+								<SkapMapProvider initialValue={defaultMap}>
+									<SelectionProvider initialValue={[]}>
+										{/* Layout */}
+										<ViewProvidersProvider providers={viewProviders}>
+											<LayoutProvider initialValue={defaultLayoutTree}>
+												<title>{import.meta.env.DEV ? `🛠 SkapEdit (DEV)` : `SkapEdit`}</title>
+												<div className={css["editor"]}>
+													<Topbar openChangelog={openChangelog} openSettings={openSettings} />
+													<LayoutRoot />
+													<Changelog changelog={changelog} setOpen={setOpenChangelog} />
+													<SettingsMenu setOpen={setOpenSettings} />
+												</div>
+											</LayoutProvider>
+										</ViewProvidersProvider>
 
-								</SelectionProvider>
-							</SkapMapProvider>
+									</SelectionProvider>
+								</SkapMapProvider>
 
-						</ToastProvider>
-					</ContextMenuProvider>
-				</TranslationProvider>
-			</ThemeProvider>
+							</TranslationProvider>
+						</ThemeProvider>
+					</ToastProvider>
+				</ContextMenuProvider>
+			</SettingsProvider>
 		</ErrorBoundary>
 	);
 }

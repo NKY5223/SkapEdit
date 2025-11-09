@@ -14,9 +14,11 @@ import { useDispatchSelection } from "../selection.ts";
 
 type TopbarProps = {
 	openChangelog: () => void;
+	openSettings: () => void;
 };
 export const Topbar: FC<TopbarProps> = ({
 	openChangelog,
+	openSettings,
 }) => {
 	const toast = useToast();
 	const map = useSkapMap();
@@ -27,8 +29,7 @@ export const Topbar: FC<TopbarProps> = ({
 			<li className={css["topbar-icon"]}></li>
 			<TopbarMenuItem items={[
 				makeSingle("topbar.app.settings", "settings", () => {
-					alert("Not implemented yet");
-					console.log("Open settings");
+					openSettings();
 				}),
 				makeSingle("topbar.app.changelog", "history_edu", () => {
 					openChangelog();

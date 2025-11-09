@@ -112,7 +112,8 @@ const HsvInput: FC<SpecificInputProps> = ({
 				onInput={([s, vInv]) => update(h, s, (1 - vInv), a)}
 			/>
 			{/* Slider snaps back to 0 at 360 because Color.hsv mods h by 360 */}
-			<Slider value={h} min={0} max={359} step={1}
+			{/* Keep max at 360 for technically correctness?? Values > 359 should be representable */}
+			<Slider value={h} min={0} max={360} step={1}
 				classList={[css["slider"], css["h-slider"]]}
 				handleClassList={[css["handle"]]}
 				onInput={h => update(h, s, v, a)}
@@ -231,9 +232,9 @@ const RgbInput: FC<SpecificInputProps> = ({
 					if (!match.groups) return;
 					const { r, g, b } = match.groups;
 					update(
-						parseInt(r, 16) / 0xff,
-						parseInt(g, 16) / 0xff,
-						parseInt(b, 16) / 0xff,
+						parseInt(r, 16),
+						parseInt(g, 16),
+						parseInt(b, 16),
 						1,
 					);
 				}}

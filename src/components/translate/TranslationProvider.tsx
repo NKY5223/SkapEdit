@@ -1,14 +1,20 @@
-import { FC, PropsWithChildren } from "react"
-import { translatorContext, Translator } from "./translate.ts"
+import { useSetting } from "@components/settings/settings.ts";
+import { FC, PropsWithChildren, useEffect } from "react";
+import { languages } from "./languages.ts";
+import { translatorContext } from "./translate.ts";
 
-export const TranslationProvider: FC<PropsWithChildren<{
-	/** `<never>` means it is as wide as possible since `Translator` is contravariant */
-	value: Translator<never>
-}>> = ({
-	value, children
+export const TranslationProvider: FC<PropsWithChildren> = ({
+	children
 }) => {
+	const langCode = useSetting("language");
+	const language = languages.find(l => l.code === langCode) ?? languages[0];
+
+	useEffect(() => {
+		document.documentElement.lang = langCode;
+	}, [langCode])
+
 	// @ts-expect-error trust me bro
-	return <translatorContext.Provider value={() => value}>
+	return <translatorContext.Provider value={() => language.translator}>
 		{children}
 	</translatorContext.Provider>
 }

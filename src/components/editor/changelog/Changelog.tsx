@@ -1,4 +1,4 @@
-import { FC, Fragment, useEffect, useRef } from "react";
+import { FC, Fragment, useEffect, useId, useRef } from "react";
 import { ChangelogEntry } from "./changelog.ts";
 import css from "./Changelog.module.css";
 import { RichTextComponent } from "@components/translate/RichText.tsx";
@@ -14,6 +14,7 @@ type ChangelogProps = {
 export const Changelog: FC<ChangelogProps> = ({
 	changelog, setOpen,
 }) => {
+	const id = useId();
 	const ref = useRef<HTMLDivElement>(null);
 	const translate = useTranslate();
 
@@ -24,10 +25,10 @@ export const Changelog: FC<ChangelogProps> = ({
 	}, [ref.current]);
 
 	return (
-		<div ref={ref} className={css["changelog"]} popover="auto">
-			<button className={css["close-button"]} title={translate("generic.action.close")} onClick={() => {
-				ref.current?.hidePopover();
-			}}>
+		<div ref={ref} id={id} className={css["changelog"]} popover="auto">
+			<button className={css["close-button"]} title={translate("generic.action.close")}
+				popoverTarget={id} popoverTargetAction="hide"
+			>
 				<Icon icon="close" />
 			</button>
 			<h2><Translate k="changelog" /></h2>
@@ -39,5 +40,5 @@ export const Changelog: FC<ChangelogProps> = ({
 				</div>
 			))}
 		</div>
-	)
+	);
 }

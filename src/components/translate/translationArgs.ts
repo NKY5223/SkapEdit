@@ -62,6 +62,11 @@ export type TranslationArgs = {
 	"contextmenu.item.name.topbar.file.import_skap": {};
 	// #endregion
 
+	// #region Settings
+	"settings": {};
+	"settings.language": {};
+	// #endregion
+
 	// #region Changelog
 	"changelog": {};
 	"changelog.version-title": { version: string; time?: Date; };
