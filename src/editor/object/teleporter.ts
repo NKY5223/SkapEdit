@@ -5,7 +5,7 @@ import { CardinalDirection } from "./Base.ts";
 
 export type SkapTeleporter = BaseObject<"teleporter", {
 	bounds: Bounds;
-	target: {
+	target: null | {
 		type: "room";
 		roomId: ID;
 	} | {

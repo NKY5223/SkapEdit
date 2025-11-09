@@ -51,6 +51,17 @@ const objectToSkap = (object: SkapObject, room: SkapRoom, map: SkapMap): SkapFil
 		}
 		case "teleporter": {
 			const { target } = object;
+			if (target === null) {
+				return [{
+					type: object.type,
+					position: vec2ToSkap(object.bounds.topLeft.sub(topLeft)),
+					size: vec2ToSkap(object.bounds.size),
+					id: object.id,
+					targetArea: "",
+					dir: object.direction,
+					targetId: "",
+				}]
+			}
 			const targetArea = target.type === "teleporter"
 				? map.rooms
 					.values()

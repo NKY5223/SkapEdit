@@ -140,11 +140,15 @@ const completeObject = (object: PartialSkapObject, room: PartialSkapRoom, rooms:
 			const { bounds, id, direction } = object;
 			const targetRoom = rooms.find(room => room.name === object.targetRoom);
 			if (!targetRoom) {
-				// No way to find the teleporter's destination.
-				// throw for now, may implement fallback later
-				throw new Error(`Could not find destination for teleporter in ${room.name}, id ${object.skapId}.`, {
-					cause: { object }
-				});
+				// Destinationless teleporter.
+				// basically a "broken" tp
+				return {
+					type: "teleporter",
+					id,
+					bounds,
+					direction,
+					target: null,
+				};
 			}
 			const targetTp = targetRoom
 				.objects
@@ -160,7 +164,7 @@ const completeObject = (object: PartialSkapObject, room: PartialSkapRoom, rooms:
 					direction,
 					target: {
 						type: "room",
-						roomId: room.id,
+						roomId: targetRoom.id,
 					}
 				}
 			}
