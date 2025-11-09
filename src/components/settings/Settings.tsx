@@ -6,6 +6,7 @@ import { DropdownSelect } from "@components/form/dropdown/DropdownSelect.tsx";
 import { makeOption } from "@components/form/dropdown/Dropdown.ts";
 import { Translate } from "@components/translate/Translate.tsx";
 import { FormSection } from "@components/form/FormSection.tsx";
+import { languages } from "@components/translate/languages.ts";
 
 type SettingsProps = {
 	setOpen: (open: () => void) => void;
@@ -38,10 +39,7 @@ export const SettingsMenu: FC<SettingsProps> = ({
 					<Translate k="settings.language" />
 					<DropdownSelect<Settings["language"]>
 						initialValue={settings.language}
-						options={[
-							makeOption("en-US", "en-US", "English (US)"),
-							makeOption("zh-Hans", "zh-Hans", "简体中文"),
-						]}
+						options={languages.map(l => makeOption(l.code, l.code, l.name))}
 						onSelect={value => setSetting("language", value)}
 					/>
 				</FormSection>

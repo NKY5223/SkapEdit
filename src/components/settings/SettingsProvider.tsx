@@ -26,7 +26,7 @@ export const SettingsProvider: FC<PropsWithChildren<SettingsProviderProps>> = ({
 	const setSettings: typeof setSettingsInternal = action => {
 		setSettingsInternal(settings => {
 			const newSettings = maybeConst(action, settings);
-			console.log("Update settings", newSettings);
+			// console.log("Update settings", newSettings);
 			localStorage.setItem(localStorageKey, JSON.stringify(newSettings));
 			return newSettings;
 		});

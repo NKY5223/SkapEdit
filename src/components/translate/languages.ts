@@ -9,7 +9,7 @@ export type Language = {
 	translator: Translator<TranslationArgs>;
 }
 
-export const languages: Language[] = [
+export const languages = [
 	{
 		code: "en-US",
 		name: "English (US)",
@@ -20,4 +20,4 @@ export const languages: Language[] = [
 		name: "简体中文",
 		translator: translator_zh_Hans,
 	},
-]
+] as const satisfies Language[];

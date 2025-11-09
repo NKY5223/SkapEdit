@@ -34,10 +34,10 @@ export const Editor: FC<EditorProps> = ({
 		<ErrorBoundary location="Editor">
 			{/* DO NOT EDIT THIS KEY EVER */}
 			<SettingsProvider localStorageKey="skapedit_settings">
-				<ContextMenuProvider>
+				<TranslationProvider>
 					<ToastProvider>
 						<ThemeProvider>
-							<TranslationProvider>
+							<ContextMenuProvider>
 								{/* Editor */}
 								<SkapMapProvider initialValue={defaultMap}>
 									<SelectionProvider initialValue={[]}>
@@ -57,10 +57,10 @@ export const Editor: FC<EditorProps> = ({
 									</SelectionProvider>
 								</SkapMapProvider>
 
-							</TranslationProvider>
+							</ContextMenuProvider>
 						</ThemeProvider>
 					</ToastProvider>
-				</ContextMenuProvider>
+				</TranslationProvider>
 			</SettingsProvider>
 		</ErrorBoundary>
 	);

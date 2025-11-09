@@ -7,7 +7,10 @@
 
 	flex-wrap: wrap;
 	flex-direction: column;
-	&.row { flex-direction: row; }
+	&.row { 
+		flex-direction: row; 
+		align-items: center;
+	}
 }
 .title {
 	font-size: 1.25em;

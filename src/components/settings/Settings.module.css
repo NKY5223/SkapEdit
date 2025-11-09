@@ -9,8 +9,6 @@
 	width: clamp(min(30em, calc(100% - 2em)), 75%, 60em);
 	height: auto;
 	margin-block: 1em;
-	/* min-width: 30em;
-	max-width: 60em; */
 
 	padding-inline: 3em;
 	padding-block: 1em;
@@ -33,4 +31,8 @@
 	position: absolute;
 	inset-inline-end: 2em;
 	inset-block-start: 1.5em;
+}
+.settings-list {
+	display: grid;
+	
 }
