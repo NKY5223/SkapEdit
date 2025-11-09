@@ -20,6 +20,10 @@
 	grid-template-columns: min-content auto;
 	gap: .5em;
 	align-items: center;
+
+	&:has(> .input:first-child) {
+		grid-template-columns: auto;
+	}
 }
 .label-content {
 	height: min-content;

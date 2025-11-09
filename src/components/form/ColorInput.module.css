@@ -36,13 +36,14 @@
 		;
 		background-position: 0 0;
 		
-		clip-path: polygon(200% 200%, 100% 0, 40% 40%, 0 100%);
+		clip-path: polygon(50% 0, 100% -100%, 200% 200%, 0 100%);
 	}
 	&::after {
 		content: "";
 		grid-area: all;
 		background-color: var(--colorinput-color-opaque);
-		clip-path: polygon(-100% -100%, 100% 0, 0 100%);
+
+		clip-path: polygon(-200% -200%, 125% -100%, -25% 200%, -200% 200%);
 	}
 }
 .color-popover {
@@ -188,4 +189,8 @@
 		rgb(from var(--colorinput-color-opaque) r g 0),
 		rgb(from var(--colorinput-color-opaque) r g 255)
 	);
+}
+.hex-input {
+	max-width: 50em;
+	width: 100%;
 }

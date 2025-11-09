@@ -1,21 +1,15 @@
-import { FC, ReactNode, useId, useRef, useState } from "react";
-import formCss from "./form.module.css";
 import { Color } from "@common/color.ts";
-import { InputLabel } from "./InputLabel.tsx";
-import { toClassName } from "@components/utils.tsx";
-import css from "./ColorInput.module.css";
-import { Slider } from "./Slider.tsx";
-import { MouseButtons, useDrag } from "@hooks/useDrag.ts";
-import { Vector } from "@common/vector.ts";
-import { Vec2 } from "@common/vec2.ts";
-import { Slider2d } from "./Slider2D.tsx";
-import { NumberInput } from "./NumberInput.tsx";
-import { DropdownSection } from "./dropdown/DropdownSection.tsx";
-import { maybeConst } from "@common/maybeConst.ts";
-import { DropdownSelect } from "./dropdown/DropdownSelect.tsx";
-import { makeOption } from "./dropdown/Dropdown.ts";
-import { TextInput } from "./TextInput.tsx";
 import { Icon } from "@components/icon/Icon.tsx";
+import { toClassName } from "@components/utils.tsx";
+import { FC, ReactNode, useId, useState } from "react";
+import css from "./ColorInput.module.css";
+import { makeOption } from "./dropdown/Dropdown.ts";
+import { DropdownSelect } from "./dropdown/DropdownSelect.tsx";
+import formCss from "./form.module.css";
+import { NumberInput } from "./NumberInput.tsx";
+import { Slider } from "./Slider.tsx";
+import { Slider2d } from "./Slider2d.tsx";
+import { TextInput } from "./TextInput.tsx";
 
 type ColorInputProps = {
 	name?: string;
@@ -32,10 +26,10 @@ type ColorInputProps = {
 	/** Fires when the value is committed (blur) */
 	onChange?: (value: Color) => void;
 
-	classList?: string[];
+	classList?: string | string[];
 };
 export const ColorInput: FC<ColorInputProps> = ({
-	name, label, disabled, alpha,
+	name, label, disabled = false, alpha = false,
 	value,
 	onInput, onChange,
 	classList,
@@ -51,7 +45,7 @@ export const ColorInput: FC<ColorInputProps> = ({
 		}
 	}
 
-	const inputProps = { value, onInput };
+	const inputProps = { value, onInput, alpha };
 
 	const className = toClassName(
 		formCss["label"],
@@ -64,7 +58,7 @@ export const ColorInput: FC<ColorInputProps> = ({
 			"--colorinput-color": value.toCssString(),
 		}}>
 			{label}
-			<button popoverTarget={popoverId} className={css["color-button"]}></button>
+			<button popoverTarget={popoverId} name={name} className={css["color-button"]}></button>
 			<div id={popoverId} className={css["color-popover"]} popover="auto" onToggle={onToggle}>
 				<DropdownSelect<Mode>
 					initialValue={mode}
@@ -84,10 +78,11 @@ export const ColorInput: FC<ColorInputProps> = ({
 type SpecificInputProps = {
 	value: Color;
 	onInput?: (color: Color) => void;
+	alpha: boolean;
 };
 
 const HsvInput: FC<SpecificInputProps> = ({
-	value, onInput,
+	value, onInput, alpha,
 }) => {
 	const [h, s, v, a] = value.hsva();
 
@@ -99,105 +94,151 @@ const HsvInput: FC<SpecificInputProps> = ({
 		classList: [css["input"]],
 		labelClassList: [css["label"]],
 	};
+	const step = 0.01;
+	const unitRange = {
+		min: 0,
+		max: 1,
+		step,
+		places: 3,
+	};
 	return (
 		<div className={css["hsv"]} style={{
 			// Required for degenerate case where s or v = 0
 			"--colorinput-hue": `${h}deg`,
 		}}>
-			<Slider2d x={s} y={1 - v} step={0.001}
+			<Slider2d x={s} y={1 - v} step={step}
 				classList={[css["square"], css["sv-square"]]}
 				handleClassList={[css["handle"]]}
 				onInput={([s, vInv]) => update(h, s, (1 - vInv), a)}
 			/>
-			<Slider value={h} min={0} max={360} step={1}
+			{/* Slider snaps back to 0 at 360 because Color.hsv mods h by 360 */}
+			<Slider value={h} min={0} max={359} step={1}
 				classList={[css["slider"], css["h-slider"]]}
 				handleClassList={[css["handle"]]}
 				onInput={h => update(h, s, v, a)}
 			/>
-			<Slider value={a} min={0} max={1} step={0.001}
+			{alpha && <Slider value={a}
 				classList={[css["slider"], css["a-slider"]]}
 				handleClassList={[css["handle"]]}
 				onInput={a => update(h, s, v, a)}
-			/>
+				{...unitRange}
+			/>}
 			<div className={css["inputs"]}>
-				<NumberInput label="H" value={h} min={0} max={360} step={1}
+				<NumberInput label="H" value={h}
+					min={0} max={360} step={1} places={0}
 					onInput={h => update(h, s, v, a)}
-					{...inputProps} />
-				<NumberInput label="S" value={s} min={0} max={1} step={0.001}
+					{...inputProps}
+				/>
+				<NumberInput label="S" value={s}
 					onInput={s => update(h, s, v, a)}
-					{...inputProps} />
-				<NumberInput label="V" value={v} min={0} max={1} step={0.001}
+					{...inputProps}
+					{...unitRange}
+				/>
+				<NumberInput label="V" value={v}
 					onInput={v => update(h, s, v, a)}
-					{...inputProps} />
-				<NumberInput label="A" value={a} min={0} max={1} step={0.001}
+					{...inputProps}
+					{...unitRange}
+				/>
+				{alpha && <NumberInput label="A" value={a}
 					onInput={a => update(h, s, v, a)}
-					{...inputProps} />
+					{...inputProps}
+					{...unitRange}
+				/>}
 			</div>
 		</div>
 	);
 }
 
 const RgbInput: FC<SpecificInputProps> = ({
-	value, onInput
+	value, onInput, alpha,
 }) => {
-	const [r, g, b, a] = value.rgba();
+	const [r, g, b, a] = value.rgba255();
 
 	const update = (r: number, g: number, b: number, a: number) => {
-		onInput?.(Color.rgb(r, g, b, a));
+		onInput?.(Color.rgb255(r, g, b, a));
 	}
 
 	const inputProps = {
 		classList: [css["input"]],
 		labelClassList: [css["label"]],
 	};
+	
+	const hexRange = {
+		min: 0,
+		max: 255,
+		step: 1,
+		places: 0,
+	};
+	const unitRange = {
+		min: 0,
+		max: 1,
+		step: 0.01,
+		places: 2,
+	};
 	return (
 		<div className={css["rgb"]}>
-			<Slider value={r} min={0} max={1} step={0.001}
+			<Slider value={r}
 				classList={[css["slider"], css["r-slider"]]}
 				handleClassList={[css["handle"]]}
 				onInput={r => update(r, g, b, a)}
+				{...hexRange}
 			/>
-			<Slider value={g} min={0} max={1} step={0.001}
+			<Slider value={g}
 				classList={[css["slider"], css["g-slider"]]}
 				handleClassList={[css["handle"]]}
 				onInput={g => update(r, g, b, a)}
+				{...hexRange}
 			/>
-			<Slider value={b} min={0} max={1} step={0.001}
+			<Slider value={b}
 				classList={[css["slider"], css["b-slider"]]}
 				handleClassList={[css["handle"]]}
 				onInput={b => update(r, g, b, a)}
+				{...hexRange}
 			/>
-			<Slider value={a} min={0} max={1} step={0.001}
+			{alpha && <Slider value={a}
 				classList={[css["slider"], css["a-slider"]]}
 				handleClassList={[css["handle"]]}
 				onInput={a => update(r, g, b, a)}
-			/>
+				{...unitRange}
+			/>}
 			<div className={css["inputs"]}>
-				<NumberInput label="R" value={r} min={0} max={1} step={0.001}
+				<NumberInput label="R" value={r}
 					onInput={r => update(r, g, b, a)}
-					{...inputProps} />
-				<NumberInput label="G" value={g} min={0} max={1} step={0.001}
+					{...inputProps}
+					{...hexRange}
+				/>
+				<NumberInput label="G" value={g}
 					onInput={g => update(r, g, b, a)}
-					{...inputProps} />
-				<NumberInput label="B" value={b} min={0} max={1} step={0.001}
+					{...inputProps}
+					{...hexRange}
+				/>
+				<NumberInput label="B" value={b}
 					onInput={b => update(r, g, b, a)}
-					{...inputProps} />
-				<NumberInput label="A" value={a} min={0} max={1} step={0.001}
+					{...inputProps}
+					{...hexRange}
+				/>
+				{alpha && <NumberInput label="A" value={a}
 					onInput={a => update(r, g, b, a)}
-					{...inputProps} />
+					{...inputProps}
+					{...unitRange}
+				/>}
 			</div>
-			<TextInput label={<Icon icon="tag" title="Hex" />} value={value.toHexString()} onInput={value => {
-				const match = value.match(/^#(?<r>\p{Hex_Digit}{2})(?<g>\p{Hex_Digit}{2})(?<b>\p{Hex_Digit}{2})(?<a>\p{Hex_Digit}{2})?$/u);
-				if (!match) return;
-				if (!match.groups) return;
-				const { r, g, b, a = "ff" } = match.groups;
-				update(
-					parseInt(r, 16) / 0xff,
-					parseInt(g, 16) / 0xff,
-					parseInt(b, 16) / 0xff,
-					parseInt(a, 16) / 0xff,
-				);
-			}} />
+			<TextInput
+				value={alpha ? value.toHexString() : value.toHexStringNoAlpha()}
+				onInput={value => {
+					const match = value.match(/^#(?<r>\p{Hex_Digit}{2})(?<g>\p{Hex_Digit}{2})(?<b>\p{Hex_Digit}{2})$/u);
+					if (!match) return;
+					if (!match.groups) return;
+					const { r, g, b } = match.groups;
+					update(
+						parseInt(r, 16) / 0xff,
+						parseInt(g, 16) / 0xff,
+						parseInt(b, 16) / 0xff,
+						1,
+					);
+				}}
+				inputClassList={css["hex-input"]}
+			/>
 		</div>
 	);
 }

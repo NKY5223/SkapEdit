@@ -31,8 +31,8 @@ type Slider2dProps = {
 
 	onInput?: (value: Vec2) => void;
 
-	classList?: string[];
-	handleClassList?: string[];
+	classList?: string | string[];
+	handleClassList?: string | string[];
 };
 export const Slider2d: FC<Slider2dProps> = ({
 	x, y,

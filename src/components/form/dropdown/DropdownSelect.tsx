@@ -18,9 +18,9 @@ type DropdownSelectProps<T> = {
 
 	onSelect?: (value: T) => void;
 
-	classList?: string[];
-	optionsClassList?: string[];
-	optionClassList?: string[];
+	classList?: string | string[];
+	optionsClassList?: string | string[];
+	optionClassList?: string | string[];
 
 	/** Disable options wrapping to next column. Can be desirable for list-type dropdowns. */
 	nowrap?: boolean;

@@ -18,14 +18,14 @@ export type TextInputProps = {
 	/** Fires when the value is committed (Enter, blur) */
 	onChange?: (value: string) => void;
 
-	inputClass?: string;
+	inputClassList?: string | string[];
 };
 
 export const TextInput: FC<TextInputProps> = ({
 	name, label, disabled,
 	value, maxLength,
 	onInput, onChange,
-	inputClass,
+	inputClassList: inputClass,
 }) => {
 	const id = useId();
 

@@ -1,5 +1,5 @@
 import { toClassName } from "@components/utils.tsx";
-import { FC, useRef } from "react";
+import { FC, KeyboardEventHandler, useRef } from "react";
 import css from "./Slider.module.css";
 import { useDrag, MouseButtons } from "@hooks/useDrag.ts";
 import { clamp, round } from "@common/number.ts";
@@ -19,8 +19,8 @@ type SliderProps = {
 	onInput?: (value: number) => void;
 	orientation?: "horizontal" | "vertical";
 
-	classList?: string[];
-	handleClassList?: string[];
+	classList?: string | string[];
+	handleClassList?: string | string[];
 };
 export const Slider: FC<SliderProps> = ({
 	value, min = 0, max = 1, step = 0,
@@ -33,6 +33,8 @@ export const Slider: FC<SliderProps> = ({
 	const Min = Math.min(min, max);
 	const Max = Math.max(min, max);
 	const val = (value - min) / (max - min);
+	const validate = (value: number) => clamp(Min, Max)(round(step, value));
+	const update = (v: number) => onInput?.(validate(v));
 
 	const { dragging, listeners } = useDrag({
 		buttons: MouseButtons.Left,
@@ -43,10 +45,32 @@ export const Slider: FC<SliderProps> = ({
 		onDrag: ([x, y]) => {
 			if (!onInput) return;
 			const v = orientation === "horizontal" ? x : y;
-			const scaled = clamp(Min, Max)(round(step, (1 - v) * min + v * max));
-			onInput(scaled);
+			update((1 - v) * min + v * max);
 		}
 	});
+
+	const onKeyDown: KeyboardEventHandler = e => {
+		if (!onInput) return;
+		switch (e.code) {
+			case "ArrowLeft": {
+				update(value - step);
+				return;
+			}
+			case "ArrowRight": {
+				update(value + step);
+				return;
+			}
+			case "Home": {
+				update(min);
+				return;
+			}
+			case "End": {
+				update(max);
+				return;
+			}
+		}
+	}
+
 	const trackClassName = toClassName(
 		css["slider"],
 		dragging && css["dragging"],
@@ -60,7 +84,7 @@ export const Slider: FC<SliderProps> = ({
 	return (
 		<div ref={sliderRef} className={trackClassName} style={{
 			"--value": `${val * 100}%`,
-		}} {...listeners}>
+		}} onKeyDown={onKeyDown} {...listeners}>
 			<div tabIndex={0} className={handleClassName}></div>
 		</div>
 	);

@@ -151,6 +151,7 @@ const Inspector: Layout.ViewComponent = ({
 											replacement: obj => ({ ...obj, color })
 										})}
 										label={<Icon icon="colors" title="Color" />}
+										alpha
 									/>
 								</FormSection>
 							</>

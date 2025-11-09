@@ -7,7 +7,7 @@ type IconProps = {
 	icon: IconName;
 	size?: number;
 	title?: string;
-	classList?: string[];
+	classList?: string | string[];
 };
 export const Icon: FC<IconProps> = ({
 	icon, size, title, classList,

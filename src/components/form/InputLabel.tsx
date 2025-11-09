@@ -8,7 +8,7 @@ type InputLabelProps = {
 		label: ReactNode,
 		input: ReactNode,
 	];
-	classList?: string[];
+	classList?: string | string[];
 };
 
 export const InputLabel: FC<InputLabelProps> = ({

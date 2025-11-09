@@ -116,6 +116,24 @@ export class Color {
 		}
 	}
 	/**
+	 * @returns A Vec4 with first three components `∈ [0, 255]`, last component `∈ [0, 1]`.
+	 * @example
+	 * Color.hex(0x2080ff).rgba255() === ⟨32, 128, 255, 1⟩
+	 */
+	rgba255(): Vector<4> {
+		const data = this.data;
+		switch (data.type) {
+			case "rgba": {
+				const { r, g, b, a } = data;
+				return new Vector(r * 255, g * 255, b * 255, a);
+			}
+			case "hsva": {
+				const { r, g, b, a } = hsvToRgb(data);
+				return new Vector(r * 255, g * 255, b * 255, a);
+			}
+		}
+	}
+	/**
 	 * @returns A Vec3 with components `∈ [0, 1]`.
 	 * @example
 	 * Color.hex(0x2080ff).rgba() === ⟨0.12549..., 0.50196..., 1⟩
@@ -192,6 +210,20 @@ export class Color {
 	toHexString(): string {
 		const [r, g, b, a] = this.rgba();
 		return "#" + [r, g, b, a].map(n =>
+			clamp(0, 0xff)(Math.trunc(n * 0xff))
+				.toString(16)
+				.padStart(2, "0")
+				.toUpperCase()
+		).join("");
+	}
+	/**
+	 * @returns A CSS `#rrggbbaa` `'<color>'` string.
+	 * @example
+	 * Color.hex(0x2080ff, 0.25).toHexString() === "#2080ff40"
+	 */
+	toHexStringNoAlpha(): string {
+		const [r, g, b] = this.rgba();
+		return "#" + [r, g, b].map(n =>
 			clamp(0, 0xff)(Math.trunc(n * 0xff))
 				.toString(16)
 				.padStart(2, "0")

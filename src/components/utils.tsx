@@ -5,7 +5,7 @@ export const toClassName = (...list: (string | undefined | null | false | string
 	list.filter((s): s is string | string[] => !!s).flat().join(" ");
 
 export type ExtensibleFC<T> = FC<T & {
-	classList?: string[];
+	classList?: string | string[];
 }>;
 
 export const toDispatchSetStateAction = <S,>(dispatch: Dispatch<S>, state: S): Dispatch<SetStateAction<S>> =>

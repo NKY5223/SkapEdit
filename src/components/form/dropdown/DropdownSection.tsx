@@ -12,7 +12,7 @@ type DropdownSectionProps<T> = {
 	setValue: Dispatch<SetStateAction<T>>;
 	onSelect: ((value: T) => void) | undefined;
 
-	optionClassList?: string[];
+	optionClassList?: string | string[];
 };
 export const DropdownSection = <T,>({
 	section: {

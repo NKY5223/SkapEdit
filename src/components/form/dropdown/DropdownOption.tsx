@@ -8,7 +8,7 @@ import css from "./DropdownSelect.module.css";
 
 type DropdownOptionProps<T> = {
 	option: Option<T>;
-	classList?: string[];
+	classList?: string | string[];
 
 	selectedValue: T;
 	setSelectedValue: Dispatch<SetStateAction<T>>;
