@@ -1,4 +1,4 @@
-import { Dispatch, FC, PropsWithChildren } from "react";
+import { Dispatch, FC, PropsWithChildren, Ref } from "react";
 import { Option } from "@components/form/dropdown/Dropdown.ts";
 import { OptionSection } from "../form/dropdown/Dropdown.ts";
 import { Translate } from "../translate/Translate.tsx";
@@ -59,8 +59,8 @@ export const ViewSelector: FC<ViewSelectorProps> = ({
 	);
 }
 /** Essentially a div */
-export const ViewToolbar: ExtensibleFC<PropsWithChildren> = ({ children, classList: classes }) => (
-	<div className={toClassName(css["toolbar"], ...classes ?? [])}>{children}</div>
+export const ViewToolbar: ExtensibleFC<PropsWithChildren<{ ref?: Ref<HTMLDivElement> }>> = ({ ref, children, classList }) => (
+	<div ref={ref} className={toClassName(css["toolbar"], ...classList ?? [])}>{children}</div>
 );
 export const ViewToolbarButton: typeof Button = ({ ...props }) => (
 	<Button {...props} classList={[...props.classList ?? [], css["button"]]}></Button>

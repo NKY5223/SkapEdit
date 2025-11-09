@@ -55,6 +55,7 @@ export const RealViewport: FC<RealViewportProps> = ({
 		TextLayer
 	], []);
 
+	const toolbarRef = useRef<HTMLDivElement>(null);
 	const map = useSkapMap();
 	const dispatchMap = useDispatchSkapMap();
 	const selection = useEditorSelection();
@@ -68,6 +69,11 @@ export const RealViewport: FC<RealViewportProps> = ({
 	const viewportPos = vec2(rect?.left ?? 0, rect?.top ?? 0);
 	const viewportBounds = camera.getBounds(viewportSize);
 
+	const elementInToolbar = (el: Element) => {
+		const toolbar = toolbarRef.current;
+		if (!toolbar) return;
+		return toolbar.contains(el);
+	}
 
 	const viewportInfo: ViewportInfo = {
 		camera,
@@ -214,7 +220,7 @@ export const RealViewport: FC<RealViewportProps> = ({
 		}
 	});
 	const onWheel: React.WheelEventHandler<HTMLElement> = e => {
-		if (e.target !== e.currentTarget) return;
+		if (e.target instanceof Element && elementInToolbar(e.target)) return;
 		const d = e.deltaY * wheelMult(e.deltaMode);
 		const newIndex = scaleIndex + d;
 
@@ -297,7 +303,7 @@ export const RealViewport: FC<RealViewportProps> = ({
 				"--selection-end-y": `${selectBounds.bottom}px`,
 			}} />}
 
-			<ViewToolbar>
+			<ViewToolbar ref={toolbarRef}>
 				{viewSwitcher}
 				<ViewportRoomSwitcher selectedRoom={state.currentRoomId} {...{ dispatchView }} />
 			</ViewToolbar>
