@@ -1,22 +1,67 @@
-import { Color } from "@common/color.ts";
-import { Bounds } from "@editor/bounds.ts";
+import { Vec2 } from "@common/vec2.ts";
+import { SkapTeleporter } from "@editor/object/teleporter.ts";
 import { ViewportInfo } from "../Viewport.tsx";
-import { RectWebGLRenderer } from "./rect.ts";
-import frag from "./shader/solidColor.frag?raw";
+import { rect } from "../webgl/webgl.ts";
+import { WebGLLayerRenderer, WebGLViewportInfo } from "../webgl/WebGLLayer.tsx";
+import frag from "./shader/teleporter.frag?raw";
+import vert from "./shader/teleporter.vert?raw";
+import { CardinalDirection } from "@editor/object/Base.ts";
 
-const rgba = Color.SLIME.rgba();
+const getGrads = (tp: SkapTeleporter): number[] => {
+	// vertex order
+	// 	topLeft,
+	// 	topRight,
+	// 	bottomRight,
+	// 	topLeft,
+	// 	bottomLeft,
+	// 	bottomRight,
+	switch (tp.direction) {
+		case CardinalDirection.Down:
+			return [0, 0, 1, 0, 1, 1];
+		case CardinalDirection.Left:
+			return [1, 0, 0, 1, 1, 0];
+		case CardinalDirection.Up:
+			return [1, 1, 0, 1, 0, 0];
+		case CardinalDirection.Right:
+			return [0, 1, 1, 0, 0, 1];
+	}
+}
 
-export class TeleporterTempWebGLRenderer extends RectWebGLRenderer {
+export class TeleporterWebGLRenderer extends WebGLLayerRenderer {
 	constructor() {
-		super(frag);
+		super({ vert, frag });
 	}
-	rects(viewportInfo: ViewportInfo): Bounds[] {
-		return viewportInfo.room.objects.values()
-			.filter(obj => obj.type === "teleporter")
-			.map(o => o.bounds)
-			.toArray();
-	}
-	preRender(gl: WebGL2RenderingContext): void {
-		this.setUniform4f(gl, "uColor", rgba);
+	render(viewportInfo: ViewportInfo, webGlViewportInfo: WebGLViewportInfo) {
+		const info = this.info;
+		if (!info) return;
+		const { gl, program } = info;
+
+		gl.useProgram(program);
+		gl.enable(gl.BLEND);
+		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+		const {
+			room,
+		} = viewportInfo;
+		const {
+			cameraSize,
+		} = webGlViewportInfo;
+
+		const camera = viewportInfo.camera;
+		this.setUniform2f(gl, "uCameraPosition", camera.pos);
+		this.setUniform2f(gl, "uCameraSize", cameraSize);
+		this.setUniform4f(gl, "uObstacleColor", room.obstacleColor.rgba());
+		this.setUniform4f(gl, "uBackgroundColor", room.backgroundColor.rgba());
+
+		const tps = viewportInfo.room.objects.values().filter(obj => obj.type === "teleporter").toArray();
+		const pos = tps.flatMap(tp => rect(tp.bounds));
+		const grads = tps.flatMap(getGrads);
+
+		this.setAttribute2f(gl, "aPosition", pos);
+		this.setAttribute1f(gl, "aGrad", grads);
+
+		gl.drawArrays(gl.TRIANGLES, 0, pos.length);
+
+		gl.disable(gl.BLEND);
 	}
 }

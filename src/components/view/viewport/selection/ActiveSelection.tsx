@@ -146,6 +146,7 @@ const ActiveSelectionItem: FC<ActiveSelectionItemProps> = ({
 		case "ice":
 		case "block":
 		case "gravityZone":
+		case "teleporter":
 			{
 				const { bounds } = object;
 				const setBounds: Dispatch<SetStateAction<Bounds>> = update => {

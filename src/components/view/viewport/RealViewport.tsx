@@ -12,10 +12,13 @@ import { useElementSize } from "@hooks/useElementSize.ts";
 import { Dispatch, FC, ReactNode, useMemo, useRef } from "react";
 import { viewportToMap } from "./mapping.ts";
 import { BackgroundObstacleWebGLRenderer, BackgroundWebGLRenderer } from "./renderer/background.ts";
+import { BlockWebGLRenderer } from "./renderer/block.ts";
+import { GravityZoneWebGLRenderer } from "./renderer/gravityZone.ts";
 import { IceWebGLRenderer } from "./renderer/ice.ts";
 import { LavaWebGLRenderer } from "./renderer/lava.ts";
 import { ObstacleWebGLRenderer } from "./renderer/obstacle.ts";
 import { SlimeWebGLRenderer } from "./renderer/slime.ts";
+import { TeleporterWebGLRenderer } from "./renderer/teleporter.ts";
 import { TextLayer } from "./renderer/text.tsx";
 import { ActiveSelection } from "./selection/ActiveSelection.tsx";
 import { getClickbox, getSelectableBounds, getZIndex } from "./selection/getObjectProperties.ts";
@@ -24,9 +27,6 @@ import { ViewportAction, ViewportInfo, ViewportState, wheelMult } from "./Viewpo
 import { ViewportCanvas } from "./ViewportCanvas.tsx";
 import { ViewportRoomSwitcher } from "./ViewportRoomSwitcher.tsx";
 import { WebGLLayer } from "./webgl/WebGLLayer.tsx";
-import { BlockWebGLRenderer } from "./renderer/block.ts";
-import { GravityZoneWebGLRenderer } from "./renderer/gravityZone.ts";
-import { TeleporterTempWebGLRenderer } from "./renderer/teleporter.ts";
 
 
 /** Maximum distance for something to count as a click */
@@ -54,7 +54,7 @@ export const RealViewport: FC<RealViewportProps> = ({
 			new IceWebGLRenderer(),
 			new GravityZoneWebGLRenderer(),
 			new BlockWebGLRenderer(),
-			new TeleporterTempWebGLRenderer(),
+			new TeleporterWebGLRenderer(),
 		),
 		TextLayer
 	], []);

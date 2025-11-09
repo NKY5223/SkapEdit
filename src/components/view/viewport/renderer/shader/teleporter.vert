@@ -5,8 +5,8 @@ uniform vec2 uCameraSize;
 
 attribute vec2 aPosition;
 varying vec2 vPosition;
-attribute vec2 aUV;
-varying vec2 vUV;
+attribute float aGrad;
+varying float vGrad;
 
 void main() {
 	// Fix camera size
@@ -14,4 +14,5 @@ void main() {
 	gl_Position = vec4(pos, 0, 1);
 
 	vPosition = aPosition;
+	vGrad = aGrad;
 }
