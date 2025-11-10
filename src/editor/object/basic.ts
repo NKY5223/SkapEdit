@@ -1,5 +1,5 @@
 import { Bounds } from "@editor/bounds.ts";
-import { BaseObject, makeSimpleBoundsObjectProperties } from "@editor/object/Base";
+import { BaseObject, makeSimpleBoundsObjectProperties } from "@editor/object/Base.tsx";
 
 type Basic<T extends string> = BaseObject<T, { bounds: Bounds }>;
 

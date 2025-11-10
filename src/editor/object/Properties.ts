@@ -1,9 +1,9 @@
-import { BaseObject, SkapObjectProperties } from "./Base.ts";
+import { BaseObject, SkapObjectProperties } from "./Base.tsx";
 import { iceProperties, lavaProperties, obstacleProperties, slimeProperties } from "./basic.ts";
-import { blockProperties } from "./block.ts";
-import { gravityZoneProperties } from "./gravityZone.ts";
-import { teleporterProperties } from "./teleporter.ts";
-import { textProperties } from "./text.ts";
+import { blockProperties } from "./block.tsx";
+import { gravityZoneProperties } from "./gravityZone.tsx";
+import { teleporterProperties } from "./teleporter.tsx";
+import { textProperties } from "./text.tsx";
 
 const properties = [
 	obstacleProperties,

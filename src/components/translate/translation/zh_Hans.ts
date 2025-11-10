@@ -1,4 +1,4 @@
-import { CardinalDirection } from "@editor/object/Base.ts";
+import { CardinalDirection } from "@editor/object/Base.tsx";
 import { makeCode, makeLink } from "../richtext.ts";
 import { delegateOn, makeTranslator, Translator } from "../translate.ts";
 import { TranslationArgs } from "../translationArgs.ts";
@@ -45,11 +45,11 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"contextmenu.item.name.viewport": "视口",
 	"contextmenu.item.name.viewport.reset_camera": "重置相机",
 	"contextmenu.item.name.viewport.add_object": "添加",
-	"contextmenu.item.name.viewport.add_object.obstacle": use("object.obstacle"),
-	"contextmenu.item.name.viewport.add_object.lava": use("object.lava"),
-	"contextmenu.item.name.viewport.add_object.slime": use("object.slime"),
-	"contextmenu.item.name.viewport.add_object.ice": use("object.ice"),
-	"contextmenu.item.name.viewport.add_object.text": use("object.text"),
+	"contextmenu.item.name.viewport.add_object.obstacle": use("object.name.obstacle"),
+	"contextmenu.item.name.viewport.add_object.lava": use("object.name.lava"),
+	"contextmenu.item.name.viewport.add_object.slime": use("object.name.slime"),
+	"contextmenu.item.name.viewport.add_object.ice": use("object.name.ice"),
+	"contextmenu.item.name.viewport.add_object.text": use("object.name.text"),
 	// #endregion
 
 	// #region Viewport
@@ -91,14 +91,15 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	// #endregion
 
 	// #region Objects
-	"object.obstacle": "障碍",
-	"object.lava": "岩浆",
-	"object.slime": "弹浆",
-	"object.ice": "冰块",
-	"object.text": "文字",
-	"object.block": "方块",
-	"object.gravityZone": "重力区",
-	"object.teleporter": "传送机",
+	"object.name": delegate("object.name", "type"),
+	"object.name.obstacle": "障碍",
+	"object.name.lava": "岩浆",
+	"object.name.slime": "弹浆",
+	"object.name.ice": "冰块",
+	"object.name.text": "文字",
+	"object.name.block": "方块",
+	"object.name.gravityZone": "重力区",
+	"object.name.teleporter": "传送机",
 	"object.teleporter.name": ({ object, room }, t) => [
 		"向",
 		t(`generic.direction.${CardinalDirection[object.direction]}`, {}),

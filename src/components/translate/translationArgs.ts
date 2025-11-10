@@ -86,14 +86,16 @@ export type TranslationArgs = {
 	// #endregion
 
 	// #region Objects
-	"object.obstacle": {};
-	"object.lava": {};
-	"object.slime": {};
-	"object.ice": {};
-	"object.text": {};
-	"object.block": {};
-	"object.gravityZone": {};
-	"object.teleporter": {};
+	"object.name": { type: string; };
+	"object.name.obstacle": {};
+	"object.name.lava": {};
+	"object.name.slime": {};
+	"object.name.ice": {};
+	"object.name.text": {};
+	"object.name.block": {};
+	"object.name.gravityZone": {};
+	"object.name.teleporter": {};
+	
 	"object.teleporter.name": { object: SkapTeleporter; room: SkapRoom; };
 	// #endregion
 	

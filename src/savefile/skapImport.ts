@@ -5,7 +5,7 @@ import { Bounds } from "@editor/bounds.ts";
 import { SkapMap, SkapObject, SkapRoom, toIdMap } from "@editor/map.ts";
 import { SkapFile } from "./skap.ts";
 import { SkapTeleporter } from "@editor/object/teleporter.ts";
-import { CardinalDirection } from "@editor/object/Base.ts";
+import { CardinalDirection } from "@editor/object/Base.tsx";
 import { Logger } from "./logger.ts";
 import { mod } from "@common/number.ts";
 

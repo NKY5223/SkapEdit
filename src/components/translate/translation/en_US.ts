@@ -1,4 +1,4 @@
-import { CardinalDirection } from "@editor/object/Base.ts";
+import { CardinalDirection } from "@editor/object/Base.tsx";
 import { makeCode, makeLink } from "../richtext.ts";
 import { delegateOn, makeTranslator, Translator } from "../translate.ts";
 import { TranslationArgs } from "../translationArgs.ts";
@@ -45,11 +45,11 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"contextmenu.item.name.viewport": "Viewport",
 	"contextmenu.item.name.viewport.reset_camera": "Reset Camera",
 	"contextmenu.item.name.viewport.add_object": "Add Object",
-	"contextmenu.item.name.viewport.add_object.obstacle": use("object.obstacle"),
-	"contextmenu.item.name.viewport.add_object.lava": use("object.lava"),
-	"contextmenu.item.name.viewport.add_object.slime": use("object.slime"),
-	"contextmenu.item.name.viewport.add_object.ice": use("object.ice"),
-	"contextmenu.item.name.viewport.add_object.text": use("object.text"),
+	"contextmenu.item.name.viewport.add_object.obstacle": use("object.name.obstacle"),
+	"contextmenu.item.name.viewport.add_object.lava": use("object.name.lava"),
+	"contextmenu.item.name.viewport.add_object.slime": use("object.name.slime"),
+	"contextmenu.item.name.viewport.add_object.ice": use("object.name.ice"),
+	"contextmenu.item.name.viewport.add_object.text": use("object.name.text"),
 	// #endregion
 
 	// #region Viewport
@@ -91,14 +91,15 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	// #endregion
 
 	// #region Objects
-	"object.obstacle": "Obstacle",
-	"object.lava": "Lava",
-	"object.slime": "Slime",
-	"object.ice": "Ice",
-	"object.text": "Text",
-	"object.block": "Block",
-	"object.gravityZone": "Gravity Zone",
-	"object.teleporter": "Teleporter",
+	"object.name": delegate("object.name", "type"),
+	"object.name.obstacle": "Obstacle",
+	"object.name.lava": "Lava",
+	"object.name.slime": "Slime",
+	"object.name.ice": "Ice",
+	"object.name.text": "Text",
+	"object.name.block": "Block",
+	"object.name.gravityZone": "Gravity Zone",
+	"object.name.teleporter": "Teleporter",
 	"object.teleporter.name": ({ object, room }, t) => [
 		"Facing ",
 		t(`generic.direction.${CardinalDirection[object.direction]}`, {}),

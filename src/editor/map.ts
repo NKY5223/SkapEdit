@@ -6,7 +6,7 @@ import { SkapIce, SkapLava, SkapObstacle, SkapSlime } from "./object/basic.ts";
 import { SkapText } from "./object/text.ts";
 import { SkapBlock } from "./object/block.ts";
 import { SkapGravityZone } from "./object/gravityZone.ts";
-import { CardinalDirection } from "./object/Base.ts";
+import { CardinalDirection } from "./object/Base.tsx";
 import { SkapTeleporter } from "./object/teleporter.ts";
 
 export type SkapObject = (

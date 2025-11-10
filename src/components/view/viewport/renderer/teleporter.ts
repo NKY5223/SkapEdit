@@ -5,7 +5,7 @@ import { rect } from "../webgl/webgl.ts";
 import { WebGLLayerRenderer, WebGLViewportInfo } from "../webgl/WebGLLayer.tsx";
 import frag from "./shader/teleporter.frag?raw";
 import vert from "./shader/teleporter.vert?raw";
-import { CardinalDirection } from "@editor/object/Base.ts";
+import { CardinalDirection } from "@editor/object/Base.tsx";
 
 const getGrads = (tp: SkapTeleporter): number[] => {
 	// vertex order

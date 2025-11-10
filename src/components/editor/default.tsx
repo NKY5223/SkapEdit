@@ -2,8 +2,8 @@ import { Color } from "@common/color.ts";
 import { vec2 } from "@common/vec2.ts";
 import { Layout, makeSplitX, makeView } from "@components/layout/layout";
 import { viewProviders } from "@components/layout/views.tsx";
-import { makeBlock, makeCardinalGravityZone, makeFreeGravityZone, makeGravityZone, makeLava, makeObstacle, makeRoom, makeTeleporterPair, makeText, SkapMap, SkapRoom, toIdMap } from "@editor/map.ts";
-import { CardinalDirection } from "@editor/object/Base";
+import { makeCardinalGravityZone, makeFreeGravityZone, makeLava, makeObstacle, makeRoom, makeTeleporterPair, makeText, SkapMap, SkapRoom, toIdMap } from "@editor/map.ts";
+import { CardinalDirection } from "@editor/object/Base.tsx";
 
 const defaultLayout = makeSplitX(0.75,
 	makeView(viewProviders["map.viewport"]),

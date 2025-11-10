@@ -1,17 +1,17 @@
+import { maybeConst } from "@common/maybeConst.ts";
 import { Vec2, vec2 } from "@common/vec2.ts";
 import { SelectableItem, SelectionItem, selectionToSelectable, useEditorSelection } from "@components/editor/selection.ts";
+import { useToast } from "@components/toast/context.ts";
 import { toClassName } from "@components/utils.tsx";
 import { Bounds, BoundsUpdateLRTBWH } from "@editor/bounds.ts";
+import { textRadius } from "@editor/object/text.tsx";
 import { getObject, useDispatchSkapMap, useSkapMap } from "@editor/reducer.ts";
 import { MouseButtons, useDrag } from "@hooks/useDrag.ts";
-import { Dispatch, FC, MouseEventHandler, PointerEventHandler, ReactNode, SetStateAction } from "react";
-import css from "./ActiveSelection.module.css";
-import { ResizeHandle } from "./ResizeHandle.tsx";
+import { Dispatch, FC, MouseEventHandler, ReactNode, SetStateAction } from "react";
 import { ViewportAction, ViewportInfo } from "../Viewport.tsx";
-import { maybeConst } from "@common/maybeConst.ts";
+import css from "./ActiveSelection.module.css";
 import { getAffine, getSelectableBounds, getTranslate } from "./getObjectProperties.ts";
-import { textRadius } from "@editor/object/text.ts";
-import { useToast } from "@components/toast/context.ts";
+import { ResizeHandle } from "./ResizeHandle.tsx";
 
 const rounding = 1;
 

@@ -1,4 +1,4 @@
-import { CardinalDirection } from "@editor/object/Base.ts";
+import { CardinalDirection } from "@editor/object/Base.tsx";
 import { FC } from "react";
 import { makeOption } from "./dropdown/Dropdown.ts";
 import { DropdownSelect } from "./dropdown/DropdownSelect.tsx";
