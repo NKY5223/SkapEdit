@@ -234,13 +234,10 @@ export class Bounds {
 					topLeft: this.topLeft.add(amount),
 					bottomRight: this.bottomRight.sub(amount),
 				});
-				if (bounds.width < 0 || bounds.height < 0) {
-					return new Bounds({
-						topLeft: bounds.topLeft,
-						bottomRight: bounds.topLeft,
-					});
-				}
-				return bounds;
+				return bounds.set({
+					width: Math.max(bounds.width, 0),
+					height: Math.max(bounds.height, 0),
+				});
 			}
 		}
 	}
