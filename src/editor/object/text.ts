@@ -14,7 +14,7 @@ export const textProperties = makeObjectProperties<SkapText>("text", {
 		affine: (obj, scale, translate) => ({ ...obj, pos: obj.pos.mul(scale).add(translate) }),
 	},
 	selection: {
-		zIndex: () => 10,
+		zIndex: () => 22,
 		clickbox: (obj, pos) => obj.pos.sub(pos).mag() <= textRadius,
 	},
 });

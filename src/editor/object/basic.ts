@@ -4,13 +4,13 @@ import { BaseObject, makeSimpleBoundsObjectProperties } from "@editor/object/Bas
 type Basic<T extends string> = BaseObject<T, { bounds: Bounds }>;
 
 export type SkapObstacle = Basic<"obstacle">;
-export const obstacleProperties = makeSimpleBoundsObjectProperties<SkapObstacle>("obstacle", 0);
+export const obstacleProperties = makeSimpleBoundsObjectProperties<SkapObstacle>("obstacle", 2);
 
 export type SkapLava = Basic<"lava">;
-export const lavaProperties = makeSimpleBoundsObjectProperties<SkapLava>("lava", 1);
+export const lavaProperties = makeSimpleBoundsObjectProperties<SkapLava>("lava", 4);
 
 export type SkapSlime = Basic<"slime">;
-export const slimeProperties = makeSimpleBoundsObjectProperties<SkapSlime>("slime", 3);
+export const slimeProperties = makeSimpleBoundsObjectProperties<SkapSlime>("slime", 6);
 
 export type SkapIce = Basic<"ice">;
-export const iceProperties = makeSimpleBoundsObjectProperties<SkapIce>("ice", 2);
+export const iceProperties = makeSimpleBoundsObjectProperties<SkapIce>("ice", 5);

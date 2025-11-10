@@ -18,7 +18,7 @@ export type SkapTeleporter = BaseObject<"teleporter", {
 export const teleporterProperties = makeObjectProperties<SkapTeleporter>("teleporter", {
 	bounds: obj => obj.bounds,
 	selection: {
-		zIndex: () => 10,
+		zIndex: () => 3,
 		clickbox: (obj, pos) => obj.bounds.contains(pos),
 	},
 	transform: {

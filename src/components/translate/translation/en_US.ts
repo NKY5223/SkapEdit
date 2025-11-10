@@ -26,6 +26,7 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"layout.view.name.map.inspector": "Inspector",
 	"layout.view.name.map.viewport": "Viewport",
 	// #endregion
+
 	// #region Context Menu
 	"contextmenu.item.name": delegate("contextmenu.item.name", "name"),
 	"contextmenu.item.name.layout": "Layout",
@@ -49,11 +50,13 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"contextmenu.item.name.viewport.add_object.ice": use("object.ice"),
 	"contextmenu.item.name.viewport.add_object.text": use("object.text"),
 	// #endregion
+
 	// #region Viewport
 	"viewport.no_room_selected": "No room selected",
 	"viewport.no_room_with_id": ({ id }) => ["No room with id: ", makeCode(id)],
 	"viewport.room_fallback": "Unknown room",
 	// #endregion
+
 	// #region Topbar
 	"topbar.app": "App",
 	"contextmenu.item.name.topbar.app.settings": use("settings"),
@@ -64,10 +67,12 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"contextmenu.item.name.topbar.file.export_skap": "Export to skap .json format",
 	"contextmenu.item.name.topbar.file.import_skap": "Import from skap .json format",
 	// #endregion
+
 	// #region Settings
 	"settings": "Settings",
 	"settings.language": "Language",
 	// #endregion
+
 	// #region Changelog
 	"changelog": "Changelog",
 	"changelog.version-title": ({ version, time }) => [
@@ -83,13 +88,22 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 		]);
 	},
 	// #endregion
+
 	// #region Objects
 	"object.obstacle": "Obstacle",
 	"object.lava": "Lava",
 	"object.slime": "Slime",
 	"object.ice": "Ice",
 	"object.text": "Text",
+	"object.block": "Block",
+	"object.gravityZone": "Gravity Zone",
+	"object.teleporter": "Teleporter",
 	// #endregion
+
+	// #region Room
+	"room": "Room",
+	// #endregion
+
 	// #region Map Import
 	"import.message": delegate("import.message", "message"),
 	"import.message.no_spawn_room": ({ }) => "Could not find spawn room",
@@ -106,6 +120,7 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 		" has no target teleporter",
 	],
 	// #endregion
+	
 	"generic.position": "Position",
 	"generic.position.x": "X Position",
 	"generic.position.y": "Y Position",

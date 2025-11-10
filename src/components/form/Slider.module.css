@@ -28,8 +28,12 @@
 		width: var(--size);
 		--top: var(--value);
 	}
+	&.disabled {
+		cursor: not-allowed;
+		--slider-color: var(--theme-disabled-bg);
+	}
 
-	&:hover {
+	&:not(.disabled):hover {
 		--slider-color: var(--theme-primary-bg-1);
 	}
 }
@@ -47,10 +51,16 @@
 	
 	position: relative;
 	user-select: none;
+	cursor: grab;
 	
 	background-color: var(--slider-track-color);
 
-	&:hover {
+	&.disabled {
+		cursor: not-allowed;
+		--slider-color: var(--theme-disabled-bg);
+	}
+
+	&:not(.disabled):hover {
 		--slider-color: var(--theme-primary-bg-1);
 	}
 }

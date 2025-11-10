@@ -29,6 +29,8 @@ type Slider2dProps = {
 	yMax?: number;
 	yStep?: number;
 
+	disabled?: boolean;
+
 	onInput?: (value: Vec2) => void;
 
 	classList?: string | string[];
@@ -39,6 +41,7 @@ export const Slider2d: FC<Slider2dProps> = ({
 	min = 0, max = 1, step = 0,
 	xMin = min, xMax = max, xStep = step,
 	yMin = min, yMax = max, yStep = step,
+	disabled = false,
 	onInput,
 
 	classList, handleClassList,
@@ -64,12 +67,14 @@ export const Slider2d: FC<Slider2dProps> = ({
 		clamp: true,
 
 		onDrag: v => {
+			if (disabled) return;
 			if (!onInput) return;
 			update(vec2(1).sub(v).mul(minV).add(v.mul(maxV)));
 		}
 	});
 
 	const onKeyDown: KeyboardEventHandler = e => {
+		if (disabled) return;
 		if (!onInput) return;
 		// Default to 1% of slider range
 		const moveX = vec2(xStep || (xMax - xMin) * .01, 0);
@@ -113,7 +118,8 @@ export const Slider2d: FC<Slider2dProps> = ({
 	const slider2dClassName = toClassName(
 		css["slider-2d"],
 		dragging && css["dragging"],
-		classList
+		disabled && css["disabled"],
+		classList,
 	);
 	const handleClassName = toClassName(
 		css["handle"],

@@ -93,8 +93,15 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"object.obstacle": "障碍",
 	"object.lava": "岩浆",
 	"object.slime": "弹浆",
-	"object.ice": "冰",
+	"object.ice": "冰块",
 	"object.text": "文字",
+	"object.block": "方块",
+	"object.gravityZone": "重力区",
+	"object.teleporter": "传送机",
+	// #endregion
+
+	// #region Room
+	"room": "房间",
 	// #endregion
 
 	// #region Map Import

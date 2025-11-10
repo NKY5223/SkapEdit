@@ -89,6 +89,13 @@ export type TranslationArgs = {
 	"object.slime": {};
 	"object.ice": {};
 	"object.text": {};
+	"object.block": {};
+	"object.gravityZone": {};
+	"object.teleporter": {};
+	// #endregion
+	
+	// #region Room
+	"room": {};
 	// #endregion
 
 	// #region Map Import

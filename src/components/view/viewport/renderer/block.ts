@@ -5,16 +5,17 @@ import frag from "./shader/color.frag?raw";
 import { ViewportInfo } from "../Viewport.tsx";
 import { rect } from "../webgl/webgl.ts";
 import { Vector } from "@common/vector.ts";
+import { SkapBlock } from "@editor/object/block.ts";
 
 export class BlockWebGLRenderer extends WebGLLayerRenderer {
-	constructor() {
+	constructor(readonly layer: SkapBlock["layer"]) {
 		super({ vert, frag });
 	}
 	render(viewportInfo: ViewportInfo, webGlViewportInfo: WebGLViewportInfo) {
 		const info = this.info;
 		if (!info) return;
 		const { gl, program } = info;
-		
+
 		gl.useProgram(program);
 		gl.enable(gl.BLEND);
 		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
@@ -27,8 +28,11 @@ export class BlockWebGLRenderer extends WebGLLayerRenderer {
 		this.setUniform2f(gl, "uCameraPosition", camera.pos);
 		this.setUniform2f(gl, "uCameraSize", cameraSize);
 
-		const blocks = viewportInfo.room.objects.values().filter(obj => obj.type === "block").toArray();
-		const colors = blocks.flatMap(block => 
+		const blocks = viewportInfo.room.objects.values()
+			.filter(obj => obj.type === "block")
+			.filter(obj => obj.layer === this.layer)
+			.toArray();
+		const colors = blocks.flatMap(block =>
 			// 6 entries, 1 per vertex
 			new Array<Vector<4>>(6).fill(block.color.rgba())
 		);

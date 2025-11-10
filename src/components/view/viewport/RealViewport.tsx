@@ -49,14 +49,32 @@ export const RealViewport: FC<RealViewportProps> = ({
 			new BackgroundObstacleWebGLRenderer(),
 			new BackgroundWebGLRenderer(),
 			new ObstacleWebGLRenderer(),
-			new LavaWebGLRenderer(),
-			new SlimeWebGLRenderer(),
-			new IceWebGLRenderer(),
-			new BlockWebGLRenderer(),
 			new TeleporterWebGLRenderer(),
+			new LavaWebGLRenderer(),
+			new IceWebGLRenderer(),
+			new SlimeWebGLRenderer(),
+			// Buttons
+			// Switches
+			// Doors
+			// door links
+			new BlockWebGLRenderer(0),
+			// Particles
+			// Entities (replace with Spawner)
+			// Turrets
+			// Players
+			new BlockWebGLRenderer(1),
+			// Reward
+			// HatReward
+			// CoinReward (???)
+			// Box (wall power)
 			new GravityZoneWebGLRenderer(),
+			// Fuel Zone (?)
 		),
-		TextLayer
+		TextLayer,
+		WebGLLayer(
+			new BlockWebGLRenderer(1), // (again???)
+			// debug
+		)
 	], []);
 
 	const toolbarRef = useRef<HTMLDivElement>(null);

@@ -59,5 +59,6 @@ export const defaultMap: SkapMap = {
 	rooms: toIdMap([
 		homeRoom,
 		testRoom
-	])
+	]),
+	edited: false,
 };

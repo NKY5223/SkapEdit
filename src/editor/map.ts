@@ -36,6 +36,11 @@ export type SkapMap = {
 		position: Vec2;
 	};
 	rooms: ReadonlyMap<ID, SkapRoom>;
+	/** 
+	 * This property keeps track of if the map has been edited since it was opened.
+	 * Allows us to pop the "are you sure" message when loading.
+	 */
+	edited: boolean;
 };
 // #endregion
 

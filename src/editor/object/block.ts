@@ -12,7 +12,7 @@ export type SkapBlock = BaseObject<"block", {
 export const blockProperties = makeObjectProperties<SkapBlock>("block", {
 	bounds: obj => obj.bounds,
 	selection: {
-		zIndex: obj => obj.layer === 0 ? 1 : 10,
+		zIndex: obj => obj.layer === 0 ? 11 : 23,
 		clickbox: (obj, pos) => obj.bounds.contains(pos),
 	},
 	transform: {

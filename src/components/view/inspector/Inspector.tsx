@@ -11,7 +11,7 @@ import { ViewToolbar } from "@components/layout/LayoutViewToolbar.tsx";
 import { Translate } from "@components/translate/Translate.tsx";
 import { useTranslate } from "@components/translate/translationArgs.ts";
 import { getObject, useDispatchSkapMap, useSkapMap } from "@editor/reducer";
-import { ReactNode } from "react";
+import { Fragment, ReactNode } from "react";
 import css from "./Inspector.module.css";
 import { ColorInput } from "@components/form/ColorInput.tsx";
 import { DropdownSelect } from "@components/form/dropdown/DropdownSelect.tsx";
@@ -20,6 +20,8 @@ import { convertGravityZoneDirection, SkapGravityZone } from "@editor/object/gra
 import { CardinalDirection } from "@editor/object/Base";
 import { NumberInput } from "@components/form/NumberInput.tsx";
 import { CardinalDirectionInput } from "@components/form/CardinalDirectionInput.tsx";
+import { CheckboxInput } from "@components/form/CheckboxInput.tsx";
+import { SkapBlock } from "@editor/object/block.ts";
 
 const Inspector: Layout.ViewComponent = ({
 	viewSwitcher,
@@ -30,28 +32,7 @@ const Inspector: Layout.ViewComponent = ({
 	const translate = useTranslate();
 
 	const contextMenu = useContextMenu([
-		// makeSubmenu("test", "zoom_in", [
-		// 	makeSection({ name: "inspector.test", icon: null }, [
-		// 		makeSingle("inspector.test.0", "hd"),
-		// 		makeSingle("inspector.test.1", "2k"),
-		// 		makeSingle("inspector.test.2", "4k"),
-		// 		makeSingle("inspector.test.3", "8k"),
-		// 		makeSingle("inspector.test.4", "10k"),
-		// 	]),
-		// 	makeSingle("inspector.test.error", "error", () => { throw new Error("uwu") })
-		// ]),
-		// makeSubmenu("test2", "zoom_in", [
-		// 	makeSection({ name: "inspector.test2", icon: null }, [
-		// 		makeSingle("inspector.test2.0", "hd"),
-		// 		makeSingle("inspector.test2.1", "2k"),
-		// 		makeSingle("inspector.test2.2", "4k"),
-		// 		makeSingle("inspector.test2.3", "8k"),
-		// 		makeSingle("inspector.test2.4", "10k"),
-		// 	]),
-		// 	makeSingle("inspector.test2.error", "error", () => { throw new Error("uwu") })
-		// ]),
 	]);
-
 
 	const selectionForm = ((): Exclude<ReactNode, undefined> => {
 		if (selection.length < 1) {
@@ -91,30 +72,33 @@ const Inspector: Layout.ViewComponent = ({
 						Could not find object selection, id: <code>{sel.id}</code>
 					</p>
 				);
+				// im going to refactor this one day trust
 				switch (object.type) {
 					case "obstacle":
 					case "lava":
 					case "slime":
 					case "ice":
 						{
-							const { bounds } = object;
+							const { type, id, bounds } = object;
 							return (
-								<>
+								<Fragment key={id}>
+									<h2><Translate k={`object.${type}`} /></h2>
 									<FormSection>
 										<FormTitle><Translate k="generic.position" /></FormTitle>
 										<BoundsInput bounds={bounds} setBounds={bounds => dispatchMap({
 											type: "replace_object",
-											target: sel.id,
+											target: id,
 											replacement: obj => ({ ...obj, bounds })
 										})} />
 									</FormSection>
-								</>
+								</Fragment>
 							);
 						}
 					case "text": {
-						const { id, text, pos } = object;
+						const { type, id, text, pos } = object;
 						return (
-							<>
+							<Fragment key={id}>
+								<h2><Translate k={`object.${type}`} /></h2>
 								<FormSection row>
 									<TextInput value={text} label={<Icon icon="text_fields" title={translate("generic.text")} />}
 										onInput={text => dispatchMap({
@@ -134,18 +118,19 @@ const Inspector: Layout.ViewComponent = ({
 										pos,
 									}),
 								})} />
-							</>
+							</Fragment>
 						);
 					}
 					case "block": {
-						const { bounds, color, solid, layer } = object;
+						const { type, id, bounds, color, solid, layer } = object;
 						return (
-							<>
+							<Fragment key={id}>
+								<h2><Translate k={`object.${type}`} /></h2>
 								<FormSection>
 									<FormTitle><Translate k="generic.position" /></FormTitle>
 									<BoundsInput bounds={bounds} setBounds={bounds => dispatchMap({
 										type: "replace_object",
-										target: sel.id,
+										target: id,
 										replacement: obj => ({ ...obj, bounds })
 									})} />
 								</FormSection>
@@ -153,25 +138,49 @@ const Inspector: Layout.ViewComponent = ({
 									<ColorInput value={color}
 										onInput={color => dispatchMap({
 											type: "replace_object",
-											target: sel.id,
+											target: id,
 											replacement: obj => ({ ...obj, color })
 										})}
 										label={<Icon icon="colors" title="Color" />}
 										alpha
 									/>
 								</FormSection>
-							</>
+								<FormSection row>
+									<CheckboxInput value={solid}
+										onInput={solid => dispatchMap({
+											type: "replace_object",
+											target: id,
+											replacement: obj => ({ ...obj, solid })
+										})}
+										label={"Solid"}
+									/>
+								</FormSection>
+								<FormSection row>
+									<DropdownSelect<SkapBlock["layer"]> initialValue={layer}
+										options={[
+											makeOption("0", 0, "Back"),
+											makeOption("1", 1, "Front"),
+										]}
+										onSelect={layer => dispatchMap({
+											type: "replace_object",
+											target: id,
+											replacement: obj => ({ ...obj, layer })
+										})}
+									/>
+								</FormSection>
+							</Fragment>
 						);
 					}
 					case "gravityZone": {
-						const { bounds, direction } = object;
+						const { type, id, bounds, direction } = object;
 						return (
-							<>
+							<Fragment key={id}>
+								<h2><Translate k={`object.${type}`} /></h2>
 								<FormSection>
 									<FormTitle><Translate k="generic.position" /></FormTitle>
 									<BoundsInput bounds={bounds} setBounds={bounds => dispatchMap({
 										type: "replace_object",
-										target: sel.id,
+										target: id,
 										replacement: obj => ({ ...obj, bounds })
 									})} />
 									<FormTitle><Translate k="generic.direction" /></FormTitle>
@@ -183,7 +192,7 @@ const Inspector: Layout.ViewComponent = ({
 											]}
 											onSelect={type => dispatchMap({
 												type: "replace_object",
-												target: sel.id,
+												target: id,
 												replacement: obj => (obj.type === "gravityZone" ? {
 													...obj, direction:
 														convertGravityZoneDirection(
@@ -199,7 +208,7 @@ const Inspector: Layout.ViewComponent = ({
 											? (<CardinalDirectionInput value={object.direction.direction}
 												onInput={dir => dispatchMap({
 													type: "replace_object",
-													target: sel.id,
+													target: id,
 													replacement: obj => (obj.type === "gravityZone" ? {
 														...obj, direction: {
 															type: "cardinal",
@@ -226,7 +235,35 @@ const Inspector: Layout.ViewComponent = ({
 											</>)}
 									</FormSection>
 								</FormSection>
-							</>
+							</Fragment>
+						);
+					}
+					case "teleporter": {
+						const { type, id, bounds, direction, target } = object;
+						return (
+							<Fragment key={id}>
+								<h2><Translate k={`object.${type}`} /></h2>
+								<FormSection>
+									<FormTitle><Translate k="generic.position" /></FormTitle>
+									<BoundsInput bounds={bounds} setBounds={bounds => dispatchMap({
+										type: "replace_object",
+										target: id,
+										replacement: obj => ({ ...obj, bounds })
+									})} />
+								</FormSection>
+								<FormSection row>
+									<CardinalDirectionInput value={direction}
+										onInput={dir => dispatchMap({
+											type: "replace_object",
+											target: id,
+											replacement: obj => (obj.type === "teleporter" ? {
+												...obj, direction: dir,
+											} : obj)
+										})}
+									/>
+								</FormSection>
+								<pre>{JSON.stringify(target)}</pre>
+							</Fragment>
 						);
 					}
 				}
@@ -247,14 +284,7 @@ const Inspector: Layout.ViewComponent = ({
 			</ViewToolbar>
 			<div className={css["inspector-content"]}>
 				<FormSection>
-					{/* <FormTitle>Selection</FormTitle>
-					<span>
-						<Icon icon="select" title="Current Selection" />
-						&nbsp;
-						<code style={{ fontSize: ".75em" }}>
-							<Translate k="generic.list_string" strings={selection.map((item) => item.id)} />
-						</code>
-					</span> */}
+
 					{selectionForm}
 				</FormSection>
 			</div>

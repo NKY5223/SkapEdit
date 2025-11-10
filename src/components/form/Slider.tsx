@@ -16,6 +16,8 @@ type SliderProps = {
 	 */
 	step?: number;
 
+	disabled?: boolean;
+
 	onInput?: (value: number) => void;
 	orientation?: "horizontal" | "vertical";
 
@@ -24,6 +26,7 @@ type SliderProps = {
 };
 export const Slider: FC<SliderProps> = ({
 	value, min = 0, max = 1, step = 0,
+	disabled = false,
 	orientation = "horizontal",
 	onInput,
 
@@ -43,6 +46,7 @@ export const Slider: FC<SliderProps> = ({
 		stopPropagation: true,
 
 		onDrag: ([x, y]) => {
+			if (disabled) return;
 			if (!onInput) return;
 			const v = orientation === "horizontal" ? x : y;
 			update((1 - v) * min + v * max);
@@ -50,6 +54,7 @@ export const Slider: FC<SliderProps> = ({
 	});
 
 	const onKeyDown: KeyboardEventHandler = e => {
+		if (disabled) return;
 		if (!onInput) return;
 		// Default to 1% of slider range
 		const moveStep = step || (max - min) * .01;
@@ -73,9 +78,10 @@ export const Slider: FC<SliderProps> = ({
 		}
 	}
 
-	const trackClassName = toClassName(
+	const sliderClassName = toClassName(
 		css["slider"],
 		dragging && css["dragging"],
+		disabled && css["disabled"],
 		css[orientation],
 		classList
 	);
@@ -84,7 +90,7 @@ export const Slider: FC<SliderProps> = ({
 		handleClassList,
 	);
 	return (
-		<div ref={sliderRef} className={trackClassName} style={{
+		<div ref={sliderRef} className={sliderClassName} style={{
 			"--value": `${val * 100}%`,
 		}} onKeyDown={onKeyDown} {...listeners}>
 			<div tabIndex={0} className={handleClassName}></div>

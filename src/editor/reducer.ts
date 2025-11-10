@@ -79,6 +79,10 @@ type SkapMapAction = (
 		roomId: ID;
 		object: SkapObject;
 	}
+	| {
+		type: "set_edited";
+		edited: boolean;
+	}
 );
 const skapMapReducer: Reducer<SkapMap, SkapMapAction> = (map, action) => {
 	switch (action.type) {
@@ -92,6 +96,7 @@ const skapMapReducer: Reducer<SkapMap, SkapMapAction> = (map, action) => {
 			const newRoom = replacement(room);
 			return {
 				...map,
+				edited: true,
 				rooms: idMapWith(map.rooms, newRoom),
 			};
 		}
@@ -102,6 +107,7 @@ const skapMapReducer: Reducer<SkapMap, SkapMapAction> = (map, action) => {
 				if (!success) continue;
 				return {
 					...map,
+					edited: true,
 					rooms: idMapWith(map.rooms, newRoom),
 				};
 			}
@@ -120,6 +126,7 @@ const skapMapReducer: Reducer<SkapMap, SkapMapAction> = (map, action) => {
 				};
 				return {
 					...map,
+					edited: true,
 					rooms: idMapWith(map.rooms, newRoom),
 				};
 			}
@@ -135,7 +142,15 @@ const skapMapReducer: Reducer<SkapMap, SkapMapAction> = (map, action) => {
 			};
 			return {
 				...map,
+				edited: true,
 				rooms: idMapWith(map.rooms, newRoom),
+			};
+		}
+		case "set_edited": {
+			const { edited } = action;
+			return {
+				...map,
+				edited
 			};
 		}
 	}

@@ -221,5 +221,6 @@ export const skapToMap = (map: SkapFile.Map, logger: Logger): SkapMap => {
 			position: skapToVec2(spawnPosition).sub(spawnRoomTopLeft),
 		},
 		rooms: toIdMap(roomList),
+		edited: false,
 	};
 }

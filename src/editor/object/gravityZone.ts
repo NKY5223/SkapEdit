@@ -17,7 +17,7 @@ export type SkapGravityZone = BaseObject<"gravityZone", {
 export const gravityZoneProperties = makeObjectProperties<SkapGravityZone>("gravityZone", {
 	bounds: obj => obj.bounds,
 	selection: {
-		zIndex: () => 5,
+		zIndex: () => 20,
 		clickbox: (obj, pos) => obj.bounds.contains(pos),
 	},
 	transform: {
