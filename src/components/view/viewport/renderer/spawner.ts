@@ -174,10 +174,10 @@ const unitSquareUvs = rect(new Bounds({ left: 0, top: 0, right: 1, bottom: 1 }))
 const rotatedSquare = (pos: Vec2, radius: number, rotation: number): Vec2[] => {
 	const deg45 = Math.PI / 4;
 	const r = radius * Math.SQRT2;
-	const topLeft = pos.add(polar(rotation + 3 * deg45, r));
-	const topRight = pos.add(polar(rotation + 1 * deg45, r));
-	const bottomRight = pos.add(polar(rotation - 1 * deg45, r));
-	const bottomLeft = pos.add(polar(rotation - 3 * deg45, r));
+	const topLeft = pos.add(polar(rotation - 1 * deg45, r));
+	const topRight = pos.add(polar(rotation - 3 * deg45, r));
+	const bottomRight = pos.add(polar(rotation + 3 * deg45, r));
+	const bottomLeft = pos.add(polar(rotation + 1 * deg45, r));
 	return [
 		topLeft,
 		topRight,
