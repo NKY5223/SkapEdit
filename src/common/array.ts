@@ -91,3 +91,22 @@ export const sortBy = <T, U>(array: readonly T[],
 	.map((v, i) => [v, map(v, i)] as const)
 	.sort(([, x], [, y]) => sort(x, y))
 	.map(([a,]) => a);
+
+export const groupEqual = <T>(
+	items: readonly T[], 
+	/** 
+	 * A function that determines two items are equal.  
+	 * It should be transitive and symmetric, and optionally reflexive
+	 * (see [equivalence relation](https://en.wikipedia.org/wiki/Equivalence_relation)).
+	 */
+	equal: (a: T, b: T) => boolean,
+): [T, ...T[]][] => {
+	return items.reduce<[T, ...T[]][]>((acc, item) => {
+		const match = acc.entries().find(([, [other]]) => equal(item, other));
+		if (!match) {
+			return [...acc, [item]];
+		}
+		const [index, arr] = match;
+		return acc.with(index, [...arr, item]);
+	}, []);
+}

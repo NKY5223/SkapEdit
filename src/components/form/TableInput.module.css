@@ -1,0 +1,51 @@
+.table {
+	--table-border: var(--theme-border-width) solid var(--theme-bd-0);
+	border-radius: var(--theme-border-radius);
+	border-collapse: collapse;
+
+	& th {
+		border: var(--table-border);
+		padding: .25em;
+	}
+}
+.summary-row {
+	&.active {
+		background-color: var(--theme-bg-1);
+		color: var(--theme-fg-1);
+	}
+}
+.summary-cell {
+	border: var(--table-border);
+	padding-inline: .5em;
+	padding-block: .25em;
+}
+.details-row {
+}
+.details-cell {
+	padding: .5em;
+	border: var(--table-border);
+}
+.details-content {
+	display: grid;
+	grid-template-rows: 1fr;
+	grid-auto-flow: column;
+	place-items: start end;
+}
+.add-cell {
+	border: var(--table-border);
+}
+
+.remove {
+	background: none;
+	border: none;
+	padding: 0;
+	font-size: .75em;
+	opacity: .75;
+}
+.add {
+	background: none;
+	border: none;
+	padding: 0;
+	width: 100%;
+	grid-template-columns: 1fr 0;
+}

@@ -100,6 +100,8 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"object.name.block": "方块",
 	"object.name.gravityZone": "重力区",
 	"object.name.teleporter": "传送机",
+	"object.name.spawner": "Spawner",
+
 	"object.teleporter.name": ({ object, room }, t) => [
 		"向",
 		t(`generic.direction.${CardinalDirection[object.direction]}`, {}),

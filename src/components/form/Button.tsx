@@ -4,7 +4,7 @@ import { IconName } from "@components/icon/icons.ts";
 import { toClassName, ExtensibleFC } from "../utils.tsx";
 import css from "./Button.module.css";
 
-export type ButtonType = "primary" | "secondary" | "confirm" | "deny";
+export type ButtonType = "secondary" | "primary" | "positive" | "negative";
 
 type ButtonProps = PropsWithChildren<{
 	type?: ButtonType;
@@ -25,7 +25,7 @@ export const Button: ExtensibleFC<ButtonProps> = ({
 		css["button"], 
 		type && css[type], 
 		icon && css["has-icon"], 
-		...classes,
+		classes,
 	);
 	return <button id={id} className={className} disabled={disabled} 
 		onClick={onClick} onContextMenu={e => e.stopPropagation()}

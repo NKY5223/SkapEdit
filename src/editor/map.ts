@@ -8,6 +8,7 @@ import { SkapBlock } from "./object/block.ts";
 import { SkapGravityZone } from "./object/gravityZone.ts";
 import { CardinalDirection } from "./object/Base.tsx";
 import { SkapTeleporter } from "./object/teleporter.ts";
+import { SkapSpawner } from "./object/spawner.tsx";
 
 export type SkapObject = (
 	| SkapObstacle
@@ -18,6 +19,7 @@ export type SkapObject = (
 	| SkapBlock
 	| SkapTeleporter
 	| SkapGravityZone
+	| SkapSpawner
 );
 export type SkapRoom = {
 	id: ID;
@@ -133,6 +135,15 @@ export const makeTeleporterPair = (
 		},
 	];
 };
+export const makeSpawner = (left: number, top: number, right: number, bottom: number, entities: SkapSpawner["entities"]): SkapSpawner => ({
+	type: "spawner",
+	id: createId("obj-spawner"),
+	bounds: new Bounds({ left, top, right, bottom }),
+	entities,
+});
+export const makeSpawnerEntity = (type: string, count: number, speed: number, radius: number): SkapSpawner["entities"][number] => ({
+	type, count, speed, radius
+})
 
 export const toIdMap = <T extends { id: ID; }>(objs: T[]): Map<ID, T> =>
 	new Map(objs.map(o => [o.id, o]));

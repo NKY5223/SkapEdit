@@ -81,7 +81,22 @@ const objectToSkap = (object: SkapObject, room: SkapRoom, map: SkapMap): SkapFil
 				targetId: target.type === "teleporter"
 					? target.teleporterId
 					: "",
-			}]
+			}];
+		}
+		case "spawner": {
+			const { bounds, entities } = object;
+			const common = {
+				type: object.type,
+				position: vec2ToSkap(bounds.topLeft.sub(topLeft)),
+				size: vec2ToSkap(bounds.size),
+			} as const;
+			return entities.map(({ type, count, speed, radius }) => ({
+				...common,
+				entityType: type,
+				number: count,
+				speed,
+				radius,
+			}));
 		}
 	}
 }

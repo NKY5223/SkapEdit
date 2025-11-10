@@ -95,6 +95,7 @@ export type TranslationArgs = {
 	"object.name.block": {};
 	"object.name.gravityZone": {};
 	"object.name.teleporter": {};
+	"object.name.spawner": {};
 	
 	"object.teleporter.name": { object: SkapTeleporter; room: SkapRoom; };
 	// #endregion

@@ -100,6 +100,8 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"object.name.block": "Block",
 	"object.name.gravityZone": "Gravity Zone",
 	"object.name.teleporter": "Teleporter",
+	"object.name.spawner": "Spawner",
+
 	"object.teleporter.name": ({ object, room }, t) => [
 		"Facing ",
 		t(`generic.direction.${CardinalDirection[object.direction]}`, {}),

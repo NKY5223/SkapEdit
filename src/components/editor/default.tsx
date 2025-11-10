@@ -2,7 +2,7 @@ import { Color } from "@common/color.ts";
 import { vec2 } from "@common/vec2.ts";
 import { Layout, makeSplitX, makeView } from "@components/layout/layout";
 import { viewProviders } from "@components/layout/views.tsx";
-import { makeCardinalGravityZone, makeFreeGravityZone, makeLava, makeObstacle, makeRoom, makeTeleporterPair, makeText, SkapMap, SkapRoom, toIdMap } from "@editor/map.ts";
+import { makeCardinalGravityZone, makeFreeGravityZone, makeLava, makeObstacle, makeRoom, makeSpawner, makeSpawnerEntity, makeTeleporterPair, makeText, SkapMap, SkapRoom, toIdMap } from "@editor/map.ts";
 import { CardinalDirection } from "@editor/object/Base.tsx";
 
 const defaultLayout = makeSplitX(0.75,
@@ -37,15 +37,13 @@ const testRoom: SkapRoom = makeRoom(
 	Color.DEFAULT_OBSTACLE,
 	Color.DEFAULT_BACKGROUND,
 	[
-		makeFreeGravityZone(0, 0, 25, 50, 45),
-		makeFreeGravityZone(25, 0, 50, 50, 135),
-		makeFreeGravityZone(50, 0, 75, 50, 225),
-		makeFreeGravityZone(75, 0, 100, 50, 315),
-		makeCardinalGravityZone(0, 50, 25, 100, CardinalDirection.Down),
-		makeCardinalGravityZone(25, 50, 50, 100, CardinalDirection.Left),
-		makeCardinalGravityZone(50, 50, 75, 100, CardinalDirection.Up),
-		makeCardinalGravityZone(75, 50, 100, 100, CardinalDirection.Right),
 		tp2,
+		makeSpawner(0, 0, 100, 100, [
+			makeSpawnerEntity("normal", 5, 5, 5),
+			makeSpawnerEntity("spike", 10, 5, 3),
+			makeSpawnerEntity("reverse", 1, 50, 1),
+			makeSpawnerEntity("normal", 5, 5, 5),
+		])
 	]
 );
 export const defaultMap: SkapMap = {

@@ -8,6 +8,7 @@ import { SkapTeleporter } from "@editor/object/teleporter.ts";
 import { CardinalDirection } from "@editor/object/Base.tsx";
 import { Logger } from "./logger.ts";
 import { mod } from "@common/number.ts";
+import { groupEqual } from "@common/array.ts";
 
 const skapToVec2 = (v: SkapFile.Vec2): Vec2 => vec2(...v);
 const skapToRgb = (c: SkapFile.Rgb): Color => Color.rgb255(...c);
@@ -74,6 +75,17 @@ const skapToObjectsPartial = (object: SkapFile.Object, room: SkapFile.Room, map:
 			targetRoom: object.targetArea,
 			targetSkapId: object.targetId,
 		}
+		case "spawner": return {
+			type: "spawner",
+			id,
+			bounds: skapToBounds(object.position, object.size),
+			entities: [{
+				type: object.entityType,
+				count: object.number,
+				speed: object.speed,
+				radius: object.radius,
+			}],
+		}
 		case "circularObstacle":
 		case "circularLava":
 		case "circularSlime":
@@ -87,7 +99,6 @@ const skapToObjectsPartial = (object: SkapFile.Object, room: SkapFile.Room, map:
 		case "door":
 		case "button":
 		case "switch":
-		case "spawner":
 		case "reward":
 		case "hatReward":
 			return {
@@ -129,19 +140,11 @@ const skapToRoomPartial = (room: SkapFile.Room, map: SkapFile.Map): PartialSkapR
 }
 
 const completeObject = (
-	object: PartialSkapObject, 
-	room: PartialSkapRoom, rooms: PartialSkapRoom[], map: SkapFile.Map, 
+	object: PartialSkapObject,
+	room: PartialSkapRoom, rooms: PartialSkapRoom[], map: SkapFile.Map,
 	logger: Logger
 ): SkapObject => {
 	switch (object.type) {
-		case "obstacle":
-		case "lava":
-		case "slime":
-		case "ice":
-		case "text":
-		case "block":
-		case "gravityZone":
-			{ return object; }
 		case "teleporter": {
 			const { bounds, id, direction } = object;
 			const targetRoom = rooms.find(room => room.name === object.targetRoom);
@@ -187,12 +190,33 @@ const completeObject = (
 				}
 			}
 		}
+		// case "obstacle":
+		// case "lava":
+		// case "slime":
+		// case "ice":
+		// case "text":
+		// case "block":
+		// case "gravityZone":
+		// case "spawner":
+		default: return object;
 	}
 }
 const completeRoom = (room: PartialSkapRoom, rooms: PartialSkapRoom[], map: SkapFile.Map, logger: Logger): SkapRoom => {
+	const objects = room.objects.map(o => completeObject(o, room, rooms, map, logger));
+	const withoutSpawners = objects.filter(obj => obj.type !== "spawner");
+	// Merge overlapping spawners
+	const spawnersGrouped = groupEqual(
+		objects.filter(obj => obj.type === "spawner"),
+		(a, b) => a.bounds.equals(b.bounds),
+	).map(group => group.reduce((acc, spawner) => ({
+		...acc, entities: acc.entities.concat(spawner.entities)
+	})));
 	return {
 		...room,
-		objects: toIdMap(room.objects.map(o => completeObject(o, room, rooms, map, logger)))
+		objects: toIdMap([
+			...withoutSpawners,
+			...spawnersGrouped
+		])
 	};
 }
 

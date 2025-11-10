@@ -169,6 +169,12 @@ export class Bounds {
 		});
 	}
 
+	equals(bounds: Bounds): boolean {
+		return this.left === bounds.left &&
+			this.right === bounds.right &&
+			this.top === bounds.top &&
+			this.bottom === bounds.bottom;
+	}
 	/** Returns true if point is within bounds OR is on the boundary. */
 	contains(point: Vec2): boolean {
 		return (
@@ -179,15 +185,15 @@ export class Bounds {
 		);
 	}
 	containsBounds(bounds: Bounds): boolean {
-// 		console.log(`%cbounds.left >= this.left
-// %cbounds.right <= this.right
-// %cbounds.top >= this.top
-// %cbounds.bottom <= this.bottom`,
-// 			`color: ` + (bounds.left >= this.left ? "lime" : "red"),
-// 			`color: ` + (bounds.right <= this.right ? "lime" : "red"),
-// 			`color: ` + (bounds.top >= this.top ? "lime" : "red"),
-// 			`color: ` + (bounds.right <= this.bottom ? "lime" : "red"),
-// 		);
+		// 		console.log(`%cbounds.left >= this.left
+		// %cbounds.right <= this.right
+		// %cbounds.top >= this.top
+		// %cbounds.bottom <= this.bottom`,
+		// 			`color: ` + (bounds.left >= this.left ? "lime" : "red"),
+		// 			`color: ` + (bounds.right <= this.right ? "lime" : "red"),
+		// 			`color: ` + (bounds.top >= this.top ? "lime" : "red"),
+		// 			`color: ` + (bounds.right <= this.bottom ? "lime" : "red"),
+		// 		);
 		return (
 			bounds.left >= this.left &&
 			bounds.right <= this.right &&

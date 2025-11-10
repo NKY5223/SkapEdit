@@ -1,7 +1,10 @@
-.button {
-	padding: 0.5em 1em;
+@layer component {
 
-	min-height: 2.5em;
+.button {
+	padding-block: .25em;
+	padding-inline: 1em;
+
+	min-height: 2em;
 	width: fit-content;
 	cursor: pointer;
 
@@ -19,16 +22,16 @@
 		--button-bd: var(--theme-primary-bd-0);
 	}
 	&.secondary {
-		--button-bg: var(--theme-secondary-bg-0);
-		--button-fg: var(--theme-secondary-fg-0);
-		--button-bd: var(--theme-secondary-bd-0);
+		--button-bg: var(--theme-bg-1);
+		--button-fg: var(--theme-fg-1);
+		--button-bd: var(--theme-bd-1);
 	}
-	&.confirm {
+	&.positive {
 		--button-bg: var(--theme-positive-bg-0);
 		--button-fg: var(--theme-positive-fg-0);
 		--button-bd: var(--theme-positive-bd-0);
 	}
-	&.deny {
+	&.negative {
 		--button-bg: var(--theme-negative-bg-0);
 		--button-fg: var(--theme-negative-fg-0);
 		--button-bd: var(--theme-negative-bd-0);
@@ -64,5 +67,10 @@
 	& > .content {
 		grid-area: content;
 	}
+	&:has(> .content:empty) {
+		gap: 0;
+	}
+
+}
 
 }

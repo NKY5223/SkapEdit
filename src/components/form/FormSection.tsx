@@ -3,18 +3,23 @@ import { FC, PropsWithChildren } from "react";
 import css from "./form.module.css";
 
 type FormSectionProps = {
-	row?: boolean
+	row?: boolean;
+	gap?: number;
 };
 export const FormSection: FC<PropsWithChildren<FormSectionProps>> = ({
 	children,
-	row
+	row, gap,
 }) => {
 	const classes = toClassName(
 		css["form-section"],
 		row && css["row"],
 	);
 	return (
-		<div className={classes}>
+		<div className={classes} style={
+			gap === undefined ? {} : {
+				"--form-section-gap": `${gap}em`,
+			}
+		}>
 			{children}
 		</div>
 	);
