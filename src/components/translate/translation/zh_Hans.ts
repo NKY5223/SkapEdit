@@ -1,3 +1,4 @@
+import { CardinalDirection } from "@editor/object/Base.ts";
 import { makeCode, makeLink } from "../richtext.ts";
 import { delegateOn, makeTranslator, Translator } from "../translate.ts";
 import { TranslationArgs } from "../translationArgs.ts";
@@ -98,6 +99,14 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"object.block": "方块",
 	"object.gravityZone": "重力区",
 	"object.teleporter": "传送机",
+	"object.teleporter.name": ({ object, room }, t) => [
+		"向",
+		t(`generic.direction.${CardinalDirection[object.direction]}`, {}),
+		"，在",
+		object.bounds.topLeft[0],
+		"，",
+		object.bounds.topLeft[1],
+	],
 	// #endregion
 
 	// #region Room
@@ -146,7 +155,7 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 
 	"generic.text": "文字",
 
-	"generic.lorem": true
+	"generic.lorem": false
 		? "半刃冒或平原家不合拉穿書背連三呀念鼻細。"
 		: "半刃冒或平原家不合拉穿書背連三呀念鼻細。美坐給休朋南往像男天記哪交。黑聲士、人帶裏穿澡抱長，呢魚起歡在寸樹反旁月清害！目麻才給乾布果位車八半泉乾空主丟音肖。喝羊北。",
 

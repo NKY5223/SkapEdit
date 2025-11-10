@@ -10,18 +10,20 @@ import { Layout, makeStatelessViewProvider } from "@components/layout/layout.ts"
 import { ViewToolbar } from "@components/layout/LayoutViewToolbar.tsx";
 import { Translate } from "@components/translate/Translate.tsx";
 import { useTranslate } from "@components/translate/translationArgs.ts";
-import { getObject, useDispatchSkapMap, useSkapMap } from "@editor/reducer";
+import { getObject, getObjects, getObjectsWithRoom, useDispatchSkapMap, useSkapMap } from "@editor/reducer";
 import { Fragment, ReactNode } from "react";
 import css from "./Inspector.module.css";
 import { ColorInput } from "@components/form/ColorInput.tsx";
 import { DropdownSelect } from "@components/form/dropdown/DropdownSelect.tsx";
-import { makeOption } from "@components/form/dropdown/Dropdown.ts";
+import { makeOption, makeOptionSection } from "@components/form/dropdown/Dropdown.ts";
 import { convertGravityZoneDirection, SkapGravityZone } from "@editor/object/gravityZone.ts";
 import { CardinalDirection } from "@editor/object/Base";
 import { NumberInput } from "@components/form/NumberInput.tsx";
 import { CardinalDirectionInput } from "@components/form/CardinalDirectionInput.tsx";
 import { CheckboxInput } from "@components/form/CheckboxInput.tsx";
 import { SkapBlock } from "@editor/object/block.ts";
+import { SkapTeleporter } from "@editor/object/teleporter.ts";
+import { SkapRoom } from "@editor/map.ts";
 
 const Inspector: Layout.ViewComponent = ({
 	viewSwitcher,
@@ -262,7 +264,23 @@ const Inspector: Layout.ViewComponent = ({
 										})}
 									/>
 								</FormSection>
-								<pre>{JSON.stringify(target)}</pre>
+								{target === null
+									? "null target"
+									: target.type === "room"
+										? "room target"
+										: (<DropdownSelect initialValue={target.teleporterId}
+											options={
+												map.rooms.values().map(room => makeOptionSection(
+													room.id, room.name, null,
+													room.objects.values().filter(obj => obj.type === "teleporter")
+														.map((tp) => makeOption(
+															tp.id, tp.id,
+															<Translate k="object.teleporter.name" object={tp} room={room} />
+														)).toArray()
+												)).toArray()
+											}
+											nowrap
+										/>)}
 							</Fragment>
 						);
 					}

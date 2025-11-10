@@ -56,4 +56,9 @@ export const CardinalDirection = {
 	Left: 1,
 	Up: 2,
 	Right: 3,
+	
+	0: `down`,
+	1: `left`,
+	2: `up`,
+	3: `right`,
 } as const;

@@ -1,3 +1,4 @@
+import { CardinalDirection } from "@editor/object/Base.ts";
 import { makeCode, makeLink } from "../richtext.ts";
 import { delegateOn, makeTranslator, Translator } from "../translate.ts";
 import { TranslationArgs } from "../translationArgs.ts";
@@ -98,6 +99,14 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"object.block": "Block",
 	"object.gravityZone": "Gravity Zone",
 	"object.teleporter": "Teleporter",
+	"object.teleporter.name": ({ object, room }, t) => [
+		"Facing ",
+		t(`generic.direction.${CardinalDirection[object.direction]}`, {}),
+		" at ",
+		object.bounds.topLeft[0],
+		", ",
+		object.bounds.topLeft[1],
+	],
 	// #endregion
 
 	// #region Room
@@ -146,7 +155,7 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 
 	"generic.text": "Text",
 
-	"generic.lorem": true
+	"generic.lorem": false
 		? "Lorem ipsum dolor sit amet"
 		: (
 			"Lorem ipsum dolor, sit amet consectetur adipisicing elit. Esse, culpa possimus fuga, veritatis harum autem dolore ipsam provident, id praesentium distinctio ullam similique! Earum praesentium repudiandae magnam ipsum et nihil! " +

@@ -11,6 +11,13 @@ export type ChangelogEntry = {
  */
 export const changelog: ChangelogEntry[] = [
 	{
+		version: "0.1.3",
+		message: [
+			`Added blocks, gravity zones, teleporters.`,
+		],
+		time: new Date(`2030-11-04`),
+	},
+	{
 		version: "0.1.2",
 		message: [
 			`Added importing and exporting.`,

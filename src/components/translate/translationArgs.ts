@@ -1,5 +1,7 @@
 import { ID } from "@common/uuid.ts";
 import { useBaseTranslationString } from "./translate.ts";
+import { SkapTeleporter } from "@editor/object/teleporter.ts";
+import { SkapRoom } from "@editor/map.ts";
 
 export type TranslationArgs = {
 	// #region Layout
@@ -92,6 +94,7 @@ export type TranslationArgs = {
 	"object.block": {};
 	"object.gravityZone": {};
 	"object.teleporter": {};
+	"object.teleporter.name": { object: SkapTeleporter; room: SkapRoom; };
 	// #endregion
 	
 	// #region Room

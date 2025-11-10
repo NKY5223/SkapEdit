@@ -10,6 +10,23 @@ export const getRoom = (
 ): SkapRoom | null => {
 	return map.rooms.get(targetRoom) ?? null;
 }
+
+export const getObjects = (
+	map: SkapMap,
+): SkapObject[] => {
+	return map.rooms.values().flatMap(room => room.objects.values()).toArray();
+}
+
+export const getObjectsWithRoom = (
+	map: SkapMap,
+): (readonly [object: SkapObject, room: SkapRoom])[] => {
+	return map.rooms.values()
+		.flatMap(room => room.objects.values()
+			.map(obj => [obj, room] as const)
+		)
+		.toArray();
+}
+
 export const getObject = (
 	map: SkapMap,
 	targetObject: ID
