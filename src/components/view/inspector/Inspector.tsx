@@ -96,194 +96,200 @@ const Inspector: Layout.ViewComponent = ({
 								</Fragment>
 							);
 						}
-					case "text": {
-						const { type, id, text, pos } = object;
-						return (
-							<Fragment key={id}>
-								<h2><Translate k={`object.${type}`} /></h2>
-								<FormSection row>
-									<TextInput value={text} label={<Icon icon="text_fields" title={translate("generic.text")} />}
-										onInput={text => dispatchMap({
-											type: "replace_object",
-											target: id,
-											replacement: obj => ({
-												...obj,
-												text,
-											}),
-										})} />
-								</FormSection>
-								<Vec2Input vec={pos} setVec={pos => dispatchMap({
-									type: "replace_object",
-									target: id,
-									replacement: obj => ({
-										...obj,
-										pos,
-									}),
-								})} />
-							</Fragment>
-						);
-					}
-					case "block": {
-						const { type, id, bounds, color, solid, layer } = object;
-						return (
-							<Fragment key={id}>
-								<h2><Translate k={`object.${type}`} /></h2>
-								<FormSection>
-									<FormTitle><Translate k="generic.position" /></FormTitle>
-									<BoundsInput bounds={bounds} setBounds={bounds => dispatchMap({
-										type: "replace_object",
-										target: id,
-										replacement: obj => ({ ...obj, bounds })
-									})} />
-								</FormSection>
-								<FormSection row>
-									<ColorInput value={color}
-										onInput={color => dispatchMap({
-											type: "replace_object",
-											target: id,
-											replacement: obj => ({ ...obj, color })
-										})}
-										label={<Icon icon="colors" title="Color" />}
-										alpha
-									/>
-								</FormSection>
-								<FormSection row>
-									<CheckboxInput value={solid}
-										onInput={solid => dispatchMap({
-											type: "replace_object",
-											target: id,
-											replacement: obj => ({ ...obj, solid })
-										})}
-										label={"Solid"}
-									/>
-								</FormSection>
-								<FormSection row>
-									<DropdownSelect<SkapBlock["layer"]> initialValue={layer}
-										options={[
-											makeOption("0", 0, "Back"),
-											makeOption("1", 1, "Front"),
-										]}
-										onSelect={layer => dispatchMap({
-											type: "replace_object",
-											target: id,
-											replacement: obj => ({ ...obj, layer })
-										})}
-									/>
-								</FormSection>
-							</Fragment>
-						);
-					}
-					case "gravityZone": {
-						const { type, id, bounds, direction } = object;
-						return (
-							<Fragment key={id}>
-								<h2><Translate k={`object.${type}`} /></h2>
-								<FormSection>
-									<FormTitle><Translate k="generic.position" /></FormTitle>
-									<BoundsInput bounds={bounds} setBounds={bounds => dispatchMap({
-										type: "replace_object",
-										target: id,
-										replacement: obj => ({ ...obj, bounds })
-									})} />
-									<FormTitle><Translate k="generic.direction" /></FormTitle>
+					case "text":
+						{
+							const { type, id, text, pos } = object;
+							return (
+								<Fragment key={id}>
+									<h2><Translate k={`object.${type}`} /></h2>
 									<FormSection row>
-										<DropdownSelect<SkapGravityZone["direction"]["type"]> initialValue={direction.type}
-											options={[
-												makeOption("cardinal", "cardinal", <Translate k="generic.direction.cardinal" />),
-												makeOption("free", "free", <Translate k="generic.direction.free" />),
-											]}
-											onSelect={type => dispatchMap({
+										<TextInput value={text} label={<Icon icon="text_fields" title={translate("generic.text")} />}
+											onInput={text => dispatchMap({
 												type: "replace_object",
 												target: id,
-												replacement: obj => (obj.type === "gravityZone" ? {
-													...obj, direction:
-														convertGravityZoneDirection(
-															"direction" in obj
-																? obj.direction
-																: object.direction,
-															type
-														),
-												} : obj)
+												replacement: obj => ({
+													...obj,
+													text,
+												}),
+											})} />
+									</FormSection>
+									<Vec2Input vec={pos} setVec={pos => dispatchMap({
+										type: "replace_object",
+										target: id,
+										replacement: obj => ({
+											...obj,
+											pos,
+										}),
+									})} />
+								</Fragment>
+							);
+						}
+					case "block":
+						{
+							const { type, id, bounds, color, solid, layer } = object;
+							return (
+								<Fragment key={id}>
+									<h2><Translate k={`object.${type}`} /></h2>
+									<FormSection>
+										<FormTitle><Translate k="generic.position" /></FormTitle>
+										<BoundsInput bounds={bounds} setBounds={bounds => dispatchMap({
+											type: "replace_object",
+											target: id,
+											replacement: obj => ({ ...obj, bounds })
+										})} />
+									</FormSection>
+									<FormSection row>
+										<ColorInput value={color}
+											onInput={color => dispatchMap({
+												type: "replace_object",
+												target: id,
+												replacement: obj => ({ ...obj, color })
+											})}
+											label={<Icon icon="colors" title="Color" />}
+											alpha
+										/>
+									</FormSection>
+									<FormSection row>
+										<CheckboxInput value={solid}
+											onInput={solid => dispatchMap({
+												type: "replace_object",
+												target: id,
+												replacement: obj => ({ ...obj, solid })
+											})}
+											label={"Solid"}
+										/>
+									</FormSection>
+									<FormSection row>
+										<DropdownSelect<SkapBlock["layer"]> initialValue={layer}
+											options={[
+												makeOption("0", 0, "Back"),
+												makeOption("1", 1, "Front"),
+											]}
+											onSelect={layer => dispatchMap({
+												type: "replace_object",
+												target: id,
+												replacement: obj => ({ ...obj, layer })
 											})}
 										/>
-										{object.direction.type === "cardinal"
-											? (<CardinalDirectionInput value={object.direction.direction}
-												onInput={dir => dispatchMap({
+									</FormSection>
+								</Fragment>
+							);
+						}
+					case "gravityZone":
+						{
+							const { type, id, bounds, direction } = object;
+							return (
+								<Fragment key={id}>
+									<h2><Translate k={`object.${type}`} /></h2>
+									<FormSection>
+										<FormTitle><Translate k="generic.position" /></FormTitle>
+										<BoundsInput bounds={bounds} setBounds={bounds => dispatchMap({
+											type: "replace_object",
+											target: id,
+											replacement: obj => ({ ...obj, bounds })
+										})} />
+										<FormTitle><Translate k="generic.direction" /></FormTitle>
+										<FormSection row>
+											<DropdownSelect<SkapGravityZone["direction"]["type"]> initialValue={direction.type}
+												options={[
+													makeOption("cardinal", "cardinal", <Translate k="generic.direction.cardinal" />),
+													makeOption("free", "free", <Translate k="generic.direction.free" />),
+												]}
+												onSelect={type => dispatchMap({
 													type: "replace_object",
 													target: id,
 													replacement: obj => (obj.type === "gravityZone" ? {
-														...obj, direction: {
-															type: "cardinal",
-															direction: dir,
-														}
+														...obj, direction:
+															convertGravityZoneDirection(
+																"direction" in obj
+																	? obj.direction
+																	: object.direction,
+																type
+															),
 													} : obj)
 												})}
-											/>)
-											: (<>
-												<NumberInput value={object.direction.direction}
-													label={<Icon icon="360" />}
-													min={0} max={360} step={1}
+											/>
+											{object.direction.type === "cardinal"
+												? (<CardinalDirectionInput value={object.direction.direction}
 													onInput={dir => dispatchMap({
 														type: "replace_object",
-														target: sel.id,
+														target: id,
 														replacement: obj => (obj.type === "gravityZone" ? {
 															...obj, direction: {
-																type: "free",
+																type: "cardinal",
 																direction: dir,
 															}
 														} : obj)
 													})}
-												/>°
-											</>)}
+												/>)
+												: (<>
+													<NumberInput value={object.direction.direction}
+														label={<Icon icon="360" />}
+														min={0} max={360} step={1}
+														onInput={dir => dispatchMap({
+															type: "replace_object",
+															target: sel.id,
+															replacement: obj => (obj.type === "gravityZone" ? {
+																...obj, direction: {
+																	type: "free",
+																	direction: dir,
+																}
+															} : obj)
+														})}
+													/>°
+												</>)}
+										</FormSection>
 									</FormSection>
-								</FormSection>
-							</Fragment>
-						);
-					}
-					case "teleporter": {
-						const { type, id, bounds, direction, target } = object;
-						return (
-							<Fragment key={id}>
-								<h2><Translate k={`object.${type}`} /></h2>
-								<FormSection>
-									<FormTitle><Translate k="generic.position" /></FormTitle>
-									<BoundsInput bounds={bounds} setBounds={bounds => dispatchMap({
-										type: "replace_object",
-										target: id,
-										replacement: obj => ({ ...obj, bounds })
-									})} />
-								</FormSection>
-								<FormSection row>
-									<CardinalDirectionInput value={direction}
-										onInput={dir => dispatchMap({
+								</Fragment>
+							);
+						}
+					case "teleporter":
+						{
+							const { type, id, bounds, direction, target } = object;
+							return (
+								<Fragment key={id}>
+									<h2><Translate k={`object.${type}`} /></h2>
+									<FormSection>
+										<FormTitle><Translate k="generic.position" /></FormTitle>
+										<BoundsInput bounds={bounds} setBounds={bounds => dispatchMap({
 											type: "replace_object",
 											target: id,
-											replacement: obj => (obj.type === "teleporter" ? {
-												...obj, direction: dir,
-											} : obj)
-										})}
-									/>
-								</FormSection>
-								{target === null
-									? "null target"
-									: target.type === "room"
-										? "room target"
-										: (<DropdownSelect initialValue={target.teleporterId}
-											options={
-												map.rooms.values().map(room => makeOptionSection(
-													room.id, room.name, null,
-													room.objects.values().filter(obj => obj.type === "teleporter")
-														.map((tp) => makeOption(
-															tp.id, tp.id,
-															<Translate k="object.teleporter.name" object={tp} room={room} />
+											replacement: obj => ({ ...obj, bounds })
+										})} />
+									</FormSection>
+									<FormSection row>
+										<CardinalDirectionInput value={direction}
+											onInput={dir => dispatchMap({
+												type: "replace_object",
+												target: id,
+												replacement: obj => (obj.type === "teleporter" ? {
+													...obj, direction: dir,
+												} : obj)
+											})}
+										/>
+									</FormSection>
+									{target === null
+										? "null target"
+										: target.type === "room"
+											? "room target"
+											: (
+												<DropdownSelect initialValue={target.teleporterId}
+													options={
+														map.rooms.values().map(room => makeOptionSection(
+															room.id, room.name, null,
+															room.objects.values().filter(obj => obj.type === "teleporter")
+																.map((tp) => makeOption(
+																	tp.id, tp.id,
+																	<Translate k="object.teleporter.name" object={tp} room={room} />
+																)).toArray()
 														)).toArray()
-												)).toArray()
-											}
-											nowrap
-										/>)}
-							</Fragment>
-						);
-					}
+													}
+													nowrap
+												/>
+											)}
+								</Fragment>
+							);
+						}
 				}
 				return (
 					<pre>

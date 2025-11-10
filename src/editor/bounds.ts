@@ -217,6 +217,9 @@ export class Bounds {
 	lerp(pos: Vec2): Vec2 {
 		return pos.mul(this.size).add(this.topLeft);
 	}
+	center(): Vec2 {
+		return this.topLeft.add(this.bottomRight).div(2);
+	}
 }
 
 const completeBounds = (

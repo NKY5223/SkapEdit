@@ -316,7 +316,7 @@ export const RealViewport: FC<RealViewportProps> = ({
 			}}>
 			<ViewportCanvas viewportInfo={viewportInfo} layers={layers} />
 
-			<ActiveSelection viewportInfo={viewportInfo} />
+			<ActiveSelection {...{ viewportInfo, dispatchView }} />
 
 			{selectDragging && <div className={css["selection"]} style={{
 				"--selection-start-x": `${selectBounds.left}px`,

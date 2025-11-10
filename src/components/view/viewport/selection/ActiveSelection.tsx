@@ -4,30 +4,37 @@ import { toClassName } from "@components/utils.tsx";
 import { Bounds, BoundsUpdateLRTBWH } from "@editor/bounds.ts";
 import { getObject, useDispatchSkapMap, useSkapMap } from "@editor/reducer.ts";
 import { MouseButtons, useDrag } from "@hooks/useDrag.ts";
-import { Dispatch, FC, ReactNode, SetStateAction } from "react";
+import { Dispatch, FC, MouseEventHandler, PointerEventHandler, ReactNode, SetStateAction } from "react";
 import css from "./ActiveSelection.module.css";
 import { ResizeHandle } from "./ResizeHandle.tsx";
-import { ViewportInfo } from "../Viewport.tsx";
+import { ViewportAction, ViewportInfo } from "../Viewport.tsx";
 import { maybeConst } from "@common/maybeConst.ts";
 import { getAffine, getSelectableBounds, getTranslate } from "./getObjectProperties.ts";
 import { textRadius } from "@editor/object/text.ts";
+import { useToast } from "@components/toast/context.ts";
 
 const rounding = 1;
 
 type ActiveSelectionProps = {
 	viewportInfo: ViewportInfo;
+	dispatchView: Dispatch<ViewportAction>;
 };
 export const ActiveSelection: FC<ActiveSelectionProps> = ({
 	viewportInfo,
+	dispatchView,
 }) => {
 	const selection = useEditorSelection();
 	const map = useSkapMap();
+	const room = viewportInfo.room;
 	const dispatchMap = useDispatchSkapMap();
 	const active = selection.length === 1;
 	const multi = selection.length > 1;
 
-	const activeSelItems = selection.map(item => (
-		<ActiveSelectionItem key={item.id} {...{ item, viewportInfo, active }} />
+	const activeSelItems = selection.filter(item => {
+		if (item.type === "room") return item.id === room.id;
+		return room.objects.has(item.id);
+	}).map(item => (
+		<ActiveSelectionItem key={item.id} {...{ item, viewportInfo, active, dispatchView }} />
 	));
 	if (multi) {
 		const selectables = selection.map(i => selectionToSelectable(i, map));
@@ -108,13 +115,16 @@ type ActiveSelectionItemProps = {
 	item: SelectionItem;
 	viewportInfo: ViewportInfo;
 	active: boolean;
+	dispatchView: Dispatch<ViewportAction>;
 };
 const ActiveSelectionItem: FC<ActiveSelectionItemProps> = ({
 	item, viewportInfo,
 	active,
+	dispatchView,
 }) => {
 	const map = useSkapMap();
 	const dispatchMap = useDispatchSkapMap();
+	const toast = useToast();
 
 	if (item.type === "room") {
 		const room = map.rooms.get(item.id);
@@ -167,7 +177,30 @@ const ActiveSelectionItem: FC<ActiveSelectionItemProps> = ({
 						replacement: () => translate(obj, diff),
 					});
 				}
-				return <BoundsSelection {...{ viewportInfo, object, active, bounds, setBounds, setTranslate }} />;
+				const onDoubleClick: MouseEventHandler = object.type !== "teleporter" ? () => { } : () => {
+					const { target } = object;
+					if (target === null) return;
+					const room = target.type === "room"
+						? map.rooms.get(target.roomId)
+						: map.rooms.values().find(room => room.objects.has(target.teleporterId));
+					if (!room) {
+						toast.warn("Could not find teleporter destination");
+						return;
+					}
+					const teleporter = target.type === "room" ? undefined : room.objects.get(target.teleporterId);
+					const pos = (teleporter && teleporter.type === "teleporter"
+						? teleporter.bounds.center()
+						: undefined) ?? room.bounds.center();
+					dispatchView({
+						type: "set_current_room_id",
+						currentRoomId: room.id,
+					});
+					dispatchView({
+						type: "set_camera_pos",
+						pos,
+					});
+				};
+				return <BoundsSelection {...{ viewportInfo, object, active, bounds, setBounds, setTranslate, onDoubleClick }} />;
 			}
 		case "text": {
 			const { pos } = object;
@@ -192,11 +225,14 @@ type BoundsSelectionProps<O> = {
 	setBounds: Dispatch<SetStateAction<Bounds>>;
 	/** `translate` sets object position from ORIGINAL position, before dragging */
 	setTranslate?: (originalObj: O, diff: Vec2) => void;
+
+	onDoubleClick?: MouseEventHandler;
 };
 const BoundsSelection = <O,>({
 	viewportInfo, active = true, object,
 	bounds, setBounds,
 	setTranslate: translate = (_, diff) => setBounds(bounds.translate(diff)),
+	onDoubleClick,
 }: BoundsSelectionProps<O>): ReactNode => {
 	const [x, y] = bounds.topLeft;
 	const [w, h] = bounds.size;
@@ -236,7 +272,7 @@ const BoundsSelection = <O,>({
 			"--y": `${y}px`,
 			"--w": `${w}px`,
 			"--h": `${h}px`,
-		}} {...listeners}>
+		}} {...listeners} onDoubleClick={onDoubleClick}>
 			<ResizeHandle x={-1} y={-1} {...props} />
 			<ResizeHandle x={+1} y={-1} {...props} />
 			<ResizeHandle x={-1} y={+1} {...props} />
