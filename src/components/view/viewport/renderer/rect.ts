@@ -14,10 +14,8 @@ export abstract class RectWebGLRenderer extends WebGLLayerRenderer {
 	abstract rects(viewportInfo: ViewportInfo, webGlViewportInfo: WebGLViewportInfo): Bounds[];
 
 	preRender(gl: WebGL2RenderingContext, viewportInfo: ViewportInfo, webGlViewportInfo: WebGLViewportInfo): void {
-		// satisfy "no unused variables"
-		gl;
-		viewportInfo;
-		webGlViewportInfo;
+	}
+	postRender(gl: WebGL2RenderingContext, viewportInfo: ViewportInfo, webGlViewportInfo: WebGLViewportInfo): void {
 	}
 	
 	render(viewportInfo: ViewportInfo, webGlViewportInfo: WebGLViewportInfo): void {
@@ -43,5 +41,7 @@ export abstract class RectWebGLRenderer extends WebGLLayerRenderer {
 		this.preRender(gl, viewportInfo, webGlViewportInfo);
 
 		gl.drawArrays(gl.TRIANGLES, 0, boundses.length * 6);
+
+		this.postRender(gl, viewportInfo, webGlViewportInfo);
 	}
 }

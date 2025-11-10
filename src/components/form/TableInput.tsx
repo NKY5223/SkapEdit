@@ -1,4 +1,4 @@
-import { FC, Fragment, ReactNode, useState } from "react";
+import { FC, Fragment, ReactNode, SetStateAction, useState } from "react";
 import css from "./TableInput.module.css";
 import { Button } from "./Button.tsx";
 import { toClassName } from "@components/utils.tsx";
@@ -9,7 +9,7 @@ type TableInputProps<T> = {
 	/**
 	 * This will be used for the expanded view of items.
 	 */
-	Details: (props: { index: number; value: T; }) => ReactNode;
+	details: (value: T, index: number) => ReactNode;
 	/** 
 	 * A function that returns `columns` nodes.
 	 * This will be used for the collapsed view of items.
@@ -25,11 +25,16 @@ type TableInputProps<T> = {
 };
 export const TableInput = <T,>({
 	values,
-	Details, summary, header,
+	details, summary, header,
 	addItem, removeItem,
 }: TableInputProps<T>): ReactNode => {
-	const [openIndex, setOpenIndex] = useState<number | null>(null);
+	const [openIndex, setOpenIndexInternal] = useState<number | null>(null);
 	const columnCount = header.length;
+
+	const setOpenIndex = (action: SetStateAction<number | null>) => {
+		console.log(action);
+		setOpenIndexInternal(action);
+	}
 
 	const rows = values.map((v, i) => (<Fragment key={i}>
 		<tr className={toClassName(
@@ -40,23 +45,25 @@ export const TableInput = <T,>({
 				<td key={j} className={css["summary-cell"]}>{node}</td>
 			))}
 		</tr>
-		{openIndex === i && <tr className={css["details-row"]}>
-			<td colSpan={columnCount} className={css["details-cell"]}>
-				<div className={css["details-content"]}>
-					<div>
-						<Details index={i} value={v} />
+		{openIndex === i &&
+			<tr className={css["details-row"]}>
+				<td colSpan={columnCount} className={css["details-cell"]}>
+					<div className={css["details-content"]}>
+						<div>
+							{details(v, i)}
+						</div>
+						{removeItem && (
+							<Button type="negative" classList={css["remove"]} icon="close"
+								onClick={() => {
+									removeItem(i);
+									setOpenIndex(null);
+								}}
+							/>
+						)}
 					</div>
-					{removeItem && (
-						<Button type="negative" classList={css["remove"]} icon="close"
-							onClick={() => {
-								removeItem(i);
-								setOpenIndex(null);
-							}}
-						/>
-					)}
-				</div>
-			</td>
-		</tr>}
+				</td>
+			</tr>
+		}
 	</Fragment>));
 
 	return (

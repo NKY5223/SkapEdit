@@ -1,4 +1,5 @@
 import { interleave } from "./array.ts";
+import { mod } from "./number.ts";
 import { alignH, bracketPresets, concat, normalize, NormTextBlock } from "./string.ts";
 import { map, ReadonlyTuple, tuple } from "./tuple.ts";
 
@@ -287,6 +288,13 @@ export class Vector<N extends number> {
 	}
 	/** @see {@linkcode Vector.angle} */
 	angle(v: Vector<N>) { return Vector.angle(this, v); }
+	/**
+	 * Take the components of a modulo the components of b.
+	 * Ensures result is positive when b is.
+	 */
+	static mod = compWiseVecOp(mod);
+	/** @see {@linkcode Vector.mod} */
+	mod(v: Vector<N>) { return Vector.mod(this, v); }
 
 	// #endregion
 

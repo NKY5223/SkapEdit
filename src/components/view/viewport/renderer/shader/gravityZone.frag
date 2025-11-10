@@ -1,6 +1,6 @@
 precision mediump float;
 
-// time in ms (performance.now())
+// time in s
 uniform float uTime;
 
 varying vec4 vFgColor;
@@ -43,15 +43,13 @@ bool arrow(vec2 pos) {
 }
 
 void main() {
-	float timeMult = vArrowSpeed / 1000.;
-
 	vec2 scaled = vPosition / arrowSize;
 	mat2 rotation = mat2(
 		cos(vDirection), -sin(vDirection),
 		sin(vDirection), cos(vDirection)
 	);
 	vec2 rotated = rotation * scaled;
-	vec2 translated = rotated - vec2(0, mod(uTime * timeMult, 2.));
+	vec2 translated = rotated - vec2(0, mod(uTime * vArrowSpeed, 2.));
 	bool fg = arrow(translated);
 
 	gl_FragColor = fg ? vFgColor : vBgColor;

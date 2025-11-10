@@ -9,7 +9,7 @@ import frag from "./shader/gravityZone.frag?raw";
 import vert from "./shader/gravityZone.vert?raw";
 
 const getColor = (zone: SkapGravityZone): [fg: Color, bg: Color] => {
-	const {direction} = zone;
+	const { direction } = zone;
 	if (direction.type === "free") return [Color.GRAVITYZONE_FG_FREE, Color.GRAVITYZONE_BG_FREE];
 	switch (direction.direction) {
 		case CardinalDirection.Up: return [Color.GRAVITYZONE_FG_UP, Color.GRAVITYZONE_BG_UP];
@@ -49,6 +49,9 @@ export class GravityZoneWebGLRenderer extends WebGLLayerRenderer {
 		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
 		const {
+			timeOrigin,
+		} = viewportInfo;
+		const {
 			cameraSize,
 		} = webGlViewportInfo;
 
@@ -56,7 +59,7 @@ export class GravityZoneWebGLRenderer extends WebGLLayerRenderer {
 		this.setUniform2f(gl, "uCameraPosition", camera.pos);
 		this.setUniform2f(gl, "uCameraSize", cameraSize);
 
-		this.setUniform1f(gl, "uTime", performance.now());
+		this.setUniform1f(gl, "uTime", (performance.now() - timeOrigin) / 1000);
 
 		const zones = viewportInfo.room.objects.values().filter(obj => obj.type === "gravityZone").toArray();
 		const fgColors = zones.flatMap(block =>

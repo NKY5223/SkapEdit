@@ -24,6 +24,8 @@ export type ViewportInfo = {
 	/** camera bounds, in map units */
 	viewportBounds: Bounds;
 	room: SkapRoom;
+	/** time of reset, in ms */
+	timeOrigin: number;
 }
 export type ViewportLayerFC = FC<{
 	viewportInfo: ViewportInfo;

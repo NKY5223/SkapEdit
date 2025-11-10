@@ -76,41 +76,6 @@ export const spawnerProperties = makeObjectProperties<SkapSpawner>("spawner", {
 						})} />
 					</FormSection>
 					<FormTitle>Entities</FormTitle>
-					{/* <FormSection gap={.5}>
-						{object.entities.map((entity, i) => {
-							const { type, count, speed, radius } = entity;
-							return (
-								<FormSection key={i}>
-									<FormSection row>
-										<TextInput value={type}
-											label={"Type"}
-											onInput={type => updateEntity(i, { type, count, speed, radius })}
-										/>
-										<Button type="negative" onClick={() => removeEntity(i)}>-</Button>
-									</FormSection>
-									<FormSection row>
-										<NumberInput value={count}
-											min={0} step={1}
-											label={<Icon icon="numbers" />}
-											onInput={count => updateEntity(i, { type, count, speed, radius })}
-										/>
-										<NumberInput value={speed}
-											min={0}
-											label={"Speed"}
-											onInput={speed => updateEntity(i, { type, count, speed, radius })}
-										/>
-										<NumberInput value={radius}
-											min={0}
-											label={"Radius"}
-											onInput={radius => updateEntity(i, { type, count, speed, radius })}
-										/>
-									</FormSection>
-								</FormSection>
-							);
-						})}
-					</FormSection>
-					<Button type="secondary" onClick={() => addEntity()}>+</Button> */}
-
 					<TableInput values={object.entities}
 						summary={ent => [
 							ent.type,
@@ -118,7 +83,7 @@ export const spawnerProperties = makeObjectProperties<SkapSpawner>("spawner", {
 							ent.speed,
 							ent.radius,
 						]}
-						Details={({ index: i, value: ent, }) => {
+						details={(ent, i) => {
 							const { type, count, speed, radius } = ent;
 							return (<>
 								<FormSection row>
@@ -130,7 +95,7 @@ export const spawnerProperties = makeObjectProperties<SkapSpawner>("spawner", {
 								<FormSection row>
 									<NumberInput value={count}
 										min={0} step={1}
-										label={<Icon icon="numbers" />}
+										label={"Count"}
 										onInput={count => updateEntity(i, { type, count, speed, radius })}
 									/>
 									<NumberInput value={speed}
@@ -155,9 +120,6 @@ export const spawnerProperties = makeObjectProperties<SkapSpawner>("spawner", {
 						removeItem={removeEntity}
 						addItem={addEntity}
 					/>
-					{/* <pre>
-						{JSON.stringify(object.entities, null, "\t")}
-					</pre> */}
 				</>
 			);
 		}

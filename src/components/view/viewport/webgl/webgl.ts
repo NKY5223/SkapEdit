@@ -15,10 +15,10 @@ export abstract class WebGlRenderer<T extends unknown[]> {
 		program: WebGLProgram;
 
 		buffers: Map<string, WebGLBuffer>;
+		textures: Map<string, WebGLTexture>;
 		uniformLocationCache: Map<string, WebGLUniformLocation>;
 		attribLocationCache: Map<string, number>;
 	};
-
 
 	constructor(public shaderSource: {
 		vert: string;
@@ -38,9 +38,12 @@ export abstract class WebGlRenderer<T extends unknown[]> {
 			gl,
 			program,
 			buffers: new Map(),
+			textures: new Map(),
 			attribLocationCache: new Map(),
 			uniformLocationCache: new Map(),
 		};
+
+		this.load(gl);
 	}
 	cleanup() {
 		if (!this.info) return;
@@ -182,10 +185,91 @@ export abstract class WebGlRenderer<T extends unknown[]> {
 		return location;
 	}
 
+	protected createTexture(gl: WebGL2RenderingContext, imageSource: Promise<TexImageSource>) {
+		const texture = gl.createTexture();
+
+		gl.bindTexture(gl.TEXTURE_2D, texture);
+
+		/** mipmap level */
+		const level = 0;
+		const format = gl.RGBA;
+		const type = gl.UNSIGNED_BYTE;
+		gl.texImage2D(gl.TEXTURE_2D,
+			level,
+			format,
+			1, 1, 0,
+			format, type,
+			new Uint8Array([0xff, 0x00, 0xff, 0xff])
+		);
+
+		imageSource.then(src => {
+			gl.bindTexture(gl.TEXTURE_2D, texture);
+			gl.texImage2D(gl.TEXTURE_2D,
+				level,
+				format, format, type,
+				src,
+			);
+
+			const doMipmap = "width" in src && isPowerOf2(src.width) && isPowerOf2(src.height);
+			if (doMipmap) {
+				// enable mipmap
+				gl.generateMipmap(gl.TEXTURE_2D);
+			} else {
+				// disable mipmap
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+			}
+		}).catch(console.error);
+
+		return texture;
+	}
+	protected loadTexture(gl: WebGL2RenderingContext, name: string, url: string, width: number, height: number) {
+		if (!this.info) throw new Error(`WebGLRenderer is not initialised.`);
+		const image = new Image();
+		const { promise, resolve, reject } = Promise.withResolvers<OffscreenCanvas>();
+		image.addEventListener("load", () => {
+			const canvas = new OffscreenCanvas(width, height);
+			const ctx = canvas.getContext("2d");
+			if (!ctx) throw new Error("Could not get offscreen canvas context for image loading.");
+
+			canvas.width = width;
+			canvas.height = height;
+			ctx.drawImage(image, 0, 0, width, height);
+			resolve(canvas);
+		});
+		const texture = this.createTexture(gl, promise);
+		this.info.textures.set(name, texture);
+		image.src = url;
+	}
+	protected getTexture(name: string) {
+		if (!this.info) throw new Error(`WebGLRenderer is not initialised.`);
+		const texture = this.info.textures.get(name);
+		if (!texture) throw new Error(`No texture with name ${name}.`);
+		return texture;
+	}
+	protected setUniformTexture(gl: WebGL2RenderingContext, name: string, textureName: string, unit: number) {
+		if (unit !== Math.trunc(unit)) throw new Error(`unit must be an integer.`);
+		const max: number = gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+		if (unit >= max) throw new Error(`Not enough texture image units (max index ${max - 1}). Use at most 7.`);
+		const key = `TEXTURE${unit}` as keyof typeof gl & `TEXTURE${number}`;
+
+		const location = this.getUniformLocation(gl, name);
+		const texture = this.getTexture(textureName);
+
+		gl.activeTexture(gl[key]);
+		gl.bindTexture(gl.TEXTURE_2D, texture);
+		gl.uniform1i(location, unit);
+	}
+
+	/** This method is called in `init()`. You may call `loadTexture()` in here to load textures before they are drawn. */
+	load(gl: WebGL2RenderingContext): void {}
 	abstract render(...data: T): void;
 
 	get canvas() { return this.info?.gl.canvas; }
 }
+
+const isPowerOf2 = (n: number) => (n & (n - 1)) === 0;
 
 export function rect(bounds: Bounds): Vec2[] {
 	const { topLeft, topRight, bottomLeft, bottomRight, } = bounds;

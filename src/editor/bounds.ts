@@ -1,3 +1,4 @@
+import { mod } from "@common/number.ts";
 import { Realize, Values } from "../common/types.ts";
 import { Vec2, vec2 } from "../common/vec2.ts";
 
@@ -225,6 +226,47 @@ export class Bounds {
 	}
 	center(): Vec2 {
 		return this.topLeft.add(this.bottomRight).div(2);
+	}
+	inset(amount: number, clamp: "topLeft" = "topLeft"): Bounds {
+		switch (clamp) {
+			case "topLeft": {
+				const bounds = new Bounds({
+					topLeft: this.topLeft.add(amount),
+					bottomRight: this.bottomRight.sub(amount),
+				});
+				if (bounds.width < 0 || bounds.height < 0) {
+					return new Bounds({
+						topLeft: bounds.topLeft,
+						bottomRight: bounds.topLeft,
+					});
+				}
+				return bounds;
+			}
+		}
+	}
+	/** 
+	 * Starting from a point `initial` with velocity `vel`, 
+	 * calculate the position of the point after 1 unit of time
+	 * with bouncing off bounds.
+	 */
+	bounce(pos: Vec2): Vec2 {
+		// reposition top left of bounds to 0,0
+		const [rX, rY] = pos.sub(this.topLeft);
+		// take modulo 2 * size, essentially shrinking the space to 
+		// 0--------|--------|
+		// |        |        |
+		// |     x  |  x     |
+		// |--------|--------|
+		// |     x  |  x     |
+		// |        |        |
+		// |--------|--------|
+		// ensuring 0-size bounds just snap to 0.
+		const modX = this.width <= 0 ? 0 : mod(rX, 2 * this.width);
+		const modY = this.height <= 0 ? 0 : mod(rY, 2 * this.height);
+		const x = modX > this.width ? 2 * this.width - modX : modX;
+		const y = modY > this.height ? 2 * this.height - modY : modY;
+		// Reposition back in bounds
+		return vec2(x, y).add(this.topLeft);
 	}
 }
 

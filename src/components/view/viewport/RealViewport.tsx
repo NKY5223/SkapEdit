@@ -27,6 +27,7 @@ import { ViewportAction, ViewportInfo, ViewportState, wheelMult } from "./Viewpo
 import { ViewportCanvas } from "./ViewportCanvas.tsx";
 import { ViewportRoomSwitcher } from "./ViewportRoomSwitcher.tsx";
 import { WebGLLayer } from "./webgl/WebGLLayer.tsx";
+import { SpawnerBackgroundWebGLRenderer, SpawnerEntitiesWebGLRenderer } from "./renderer/spawner.ts";
 
 
 /** Maximum distance for something to count as a click */
@@ -43,6 +44,7 @@ export const RealViewport: FC<RealViewportProps> = ({
 	room,
 	viewSwitcher,
 }) => {
+	const timeOrigin = useMemo(() => performance.now(), []);
 	// useMemo because the webgl canvas should persist
 	const layers = useMemo(() => [
 		WebGLLayer(
@@ -59,6 +61,8 @@ export const RealViewport: FC<RealViewportProps> = ({
 			// door links
 			new BlockWebGLRenderer(0),
 			// Particles
+			new SpawnerBackgroundWebGLRenderer(),
+			new SpawnerEntitiesWebGLRenderer(),
 			// Entities (replace with Spawner)
 			// Turrets
 			// Players
@@ -91,19 +95,21 @@ export const RealViewport: FC<RealViewportProps> = ({
 	const viewportPos = vec2(rect?.left ?? 0, rect?.top ?? 0);
 	const viewportBounds = camera.getBounds(viewportSize);
 
-	const elementInToolbar = (el: Element) => {
-		const toolbar = toolbarRef.current;
-		if (!toolbar) return;
-		return toolbar.contains(el);
-	}
-
 	const viewportInfo: ViewportInfo = {
 		camera,
 		viewportSize,
 		viewportPos,
 		room,
 		viewportBounds,
+		timeOrigin,
 	};
+
+	const elementInToolbar = (el: Element) => {
+		const toolbar = toolbarRef.current;
+		if (!toolbar) return;
+		return toolbar.contains(el);
+	}
+
 
 	const objectSelectables = room.objects.values().toArray().map(makeObjectSelectableItem);
 	const selectables = [

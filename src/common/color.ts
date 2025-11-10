@@ -276,6 +276,8 @@ export class Color {
 	static readonly GRAVITYZONE_BG_RIGHT = Color.hex(0x008400, .25);
 	static readonly GRAVITYZONE_BG_LEFT = Color.hex(0xaa0000, .25);
 	static readonly GRAVITYZONE_BG_DOWN = Color.hex(0x848000, .25);
+
+	static readonly SPAWNER_BACKGROUND = Color.hex(0x2080ff, .25);
 	// #endregion
 }
 
