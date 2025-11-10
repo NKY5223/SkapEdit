@@ -7,6 +7,7 @@ import { SkapFile } from "./skap.ts";
 import { SkapTeleporter } from "@editor/object/teleporter.ts";
 import { CardinalDirection } from "@editor/object/Base.ts";
 import { Logger } from "./logger.ts";
+import { mod } from "@common/number.ts";
 
 const skapToVec2 = (v: SkapFile.Vec2): Vec2 => vec2(...v);
 const skapToRgb = (c: SkapFile.Rgb): Color => Color.rgb255(...c);
@@ -62,7 +63,7 @@ const skapToObjectsPartial = (object: SkapFile.Object, room: SkapFile.Room, map:
 					object.dir === 2 ||
 					object.dir === 3
 					? { type: "cardinal", direction: object.dir }
-					: { type: "free", direction: 90 * object.dir % 360 }
+					: { type: "free", direction: mod(90 * object.dir, 360) }
 		}
 		case "teleporter": return {
 			type: "teleporter",
