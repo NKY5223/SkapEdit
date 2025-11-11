@@ -502,11 +502,11 @@ export const t = typeset({
 			if (!b) return str;
 			return `${a}.${b.slice(0, 5)}`;
 		},
-		// string
-		x => {
-			if (typeof x !== "string") return;
-			return JSON.stringify(x);
-		},
+		// // string
+		// x => {
+		// 	if (typeof x !== "string") return;
+		// 	return JSON.stringify(x);
+		// },
 		x => x instanceof Vector && x.toText(),
 		x => x instanceof Matrix && x.toText(),
 		// record

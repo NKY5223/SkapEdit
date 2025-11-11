@@ -45,8 +45,7 @@ export class GravityZoneWebGLRenderer extends WebGLLayerRenderer {
 		const { gl, program } = info;
 
 		gl.useProgram(program);
-		gl.enable(gl.BLEND);
-		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+		this.enableDefaultBlend(gl);
 
 		const {
 			timeOrigin,
@@ -88,6 +87,6 @@ export class GravityZoneWebGLRenderer extends WebGLLayerRenderer {
 
 		gl.drawArrays(gl.TRIANGLES, 0, pos.length);
 
-		gl.disable(gl.BLEND);
+		this.disableBlend(gl);
 	}
 }

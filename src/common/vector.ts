@@ -106,6 +106,8 @@ const processVectorParams = <N extends number>(params: VectorParams<N>): VectorT
  */
 export class Vector<N extends number> {
 	readonly [i: number]: number;
+	/** String format for console. */
+	private readonly _: string;
 	readonly components: VectorTuple<N>;
 	readonly length: N;
 
@@ -126,13 +128,11 @@ export class Vector<N extends number> {
 	constructor(...params: VectorParams<N>) {
 		const components = processVectorParams(params);
 
+		this._ = Vector.rowStr(components),
+
 		this.components = components;
 		this.length = components.length;
 
-		Object.defineProperty(this, "v", {
-			enumerable: false,
-			value: Vector.rowStr(components),
-		});
 
 		components.forEach((value, i) => {
 			if (typeof i !== "number") throw new TypeError(`Provided vector components with non-numeric index ${i}???`);

@@ -11,6 +11,7 @@ import { NumberInput } from "@components/form/NumberInput.tsx";
 import { Icon } from "@components/icon/Icon.tsx";
 import { Button } from "@components/form/Button.tsx";
 import { TableInput } from "@components/form/TableInput.tsx";
+import { makeSpawnerEntity } from "@editor/map.ts";
 
 export type SkapSpawner = BaseObject<"spawner", {
 	bounds: Bounds;
@@ -52,12 +53,7 @@ export const spawnerProperties = makeObjectProperties<SkapSpawner>("spawner", {
 			const addEntity = () => updateSpawner(obj => ({
 				...obj, entities: [
 					...obj.entities,
-					{
-						type: "normal",
-						count: 5,
-						speed: 5,
-						radius: 5,
-					}
+					makeSpawnerEntity("normal", 5, 5, 5),
 				]
 			}));
 			const removeEntity = (i: number) => updateSpawner(obj => ({

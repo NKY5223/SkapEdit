@@ -262,6 +262,9 @@ export class Color {
 	static readonly DEFAULT_BACKGROUND = Color.hex(0xe6e6e6);
 
 	static readonly LAVA = Color.hex(0xb74038);
+	// b74038
+	// bf4942
+	// c6514b
 	static readonly SLIME = Color.hex(0x00ca00);
 	static readonly ICE = Color.hex(0x7cabd2);
 

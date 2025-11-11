@@ -34,13 +34,11 @@ export class SpawnerBackgroundWebGLRenderer extends RectWebGLRenderer {
 			.toArray();
 	}
 	preRender(gl: WebGL2RenderingContext): void {
-		gl.enable(gl.BLEND);
-		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-
+		this.enableDefaultBlend(gl);
 		this.setUniform4f(gl, "uColor", rgba);
 	}
 	postRender(gl: WebGL2RenderingContext): void {
-		gl.disable(gl.BLEND);
+		this.disableBlend(gl);
 	}
 }
 export class SpawnerEntitiesWebGLRenderer extends WebGLLayerRenderer {
@@ -66,17 +64,13 @@ export class SpawnerEntitiesWebGLRenderer extends WebGLLayerRenderer {
 		const { gl, program } = info;
 
 		gl.useProgram(program);
-		gl.enable(gl.BLEND);
-		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+		this.enableDefaultBlend(gl);
 
-		const {
-			timeOrigin,
-		} = viewportInfo;
 		const {
 			cameraSize,
+			time
 		} = webGlViewportInfo;
 
-		const time = (performance.now() - timeOrigin) / 1000;
 		const camera = viewportInfo.camera;
 		this.setUniform2f(gl, "uCameraPosition", camera.pos);
 		this.setUniform2f(gl, "uCameraSize", cameraSize);
@@ -155,7 +149,7 @@ export class SpawnerEntitiesWebGLRenderer extends WebGLLayerRenderer {
 			gl.drawArrays(gl.TRIANGLES, 0, pos.length);
 		}
 
-		gl.disable(gl.BLEND);
+		this.disableBlend(gl);
 	}
 	static entityInitials = new Map<ID, EntityInitial[][]>();
 }

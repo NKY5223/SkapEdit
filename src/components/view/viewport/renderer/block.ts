@@ -17,8 +17,7 @@ export class BlockWebGLRenderer extends WebGLLayerRenderer {
 		const { gl, program } = info;
 
 		gl.useProgram(program);
-		gl.enable(gl.BLEND);
-		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+		this.enableDefaultBlend(gl);
 
 		const {
 			cameraSize,
@@ -44,6 +43,6 @@ export class BlockWebGLRenderer extends WebGLLayerRenderer {
 		gl.drawArrays(gl.TRIANGLES, 0, pos.length);
 
 		// disable it, don't need it until drawing blocks again
-		gl.disable(gl.BLEND);
+		this.disableBlend(gl);
 	}
 }

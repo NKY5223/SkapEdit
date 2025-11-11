@@ -2,6 +2,7 @@ import { BaseObject, SkapObjectProperties } from "./Base.tsx";
 import { iceProperties, lavaProperties, obstacleProperties, slimeProperties } from "./basic.ts";
 import { blockProperties } from "./block.tsx";
 import { gravityZoneProperties } from "./gravityZone.tsx";
+import { rotatingLavaProperties } from "./rotating.tsx";
 import { spawnerProperties } from "./spawner.tsx";
 import { teleporterProperties } from "./teleporter.tsx";
 import { textProperties } from "./text.tsx";
@@ -16,7 +17,11 @@ const properties = [
 	gravityZoneProperties,
 	teleporterProperties,
 	spawnerProperties,
+
+	rotatingLavaProperties,
 ];
+
+console.log(properties);
 
 Object.assign(window, { logZIndices: () => {
 	properties.forEach(p => {

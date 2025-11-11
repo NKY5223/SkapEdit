@@ -10,12 +10,25 @@ export type WebGLViewportInfo = {
 	cameraSize: Vec2;
 	/** Canvas bounds, in map units */
 	canvasBounds: Bounds;
+	/** Time since reset, in seconds */
+	time: number;
 };
 export type WebGLLayerRendererParams = [
 	viewportInfo: ViewportInfo,
 	webGlInfo: WebGLViewportInfo,
 ];
-export abstract class WebGLLayerRenderer extends WebGlRenderer<WebGLLayerRendererParams> { };
+export abstract class WebGLLayerRenderer extends WebGlRenderer<WebGLLayerRendererParams> {
+	enableDefaultBlend(gl: WebGL2RenderingContext) {
+		gl.enable(gl.BLEND);
+		gl.blendFuncSeparate(
+			gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA,
+			gl.ZERO, gl.ONE,
+		);
+	}
+	disableBlend(gl: WebGL2RenderingContext) {
+		gl.disable(gl.BLEND);
+	}
+};
 
 const resizeInterval = 1000;
 
@@ -46,7 +59,7 @@ export const WebGLLayer = (...renderers: WebGLLayerRenderer[]): ViewportLayerFC 
 			prev = curr;
 			accDt += dt;
 
-			const { camera, viewportSize } = viewportInfo;
+			const { camera, viewportSize, timeOrigin } = viewportInfo;
 			const resolution = window.devicePixelRatio;
 			const muledSize = viewportSize.mul(resolution);
 			// Resizing canvas is extremely costly. Only resize it occasionally
@@ -72,11 +85,17 @@ export const WebGLLayer = (...renderers: WebGLLayerRenderer[]): ViewportLayerFC 
 			const canvasSize = vec2(canvas.width, canvas.height).div(resolution);
 			const canvasBounds = camera.getBounds(canvasSize);
 			const cameraSize = camera.getBounds(canvasSize).size.mul(vec2(1, -1));
+
+			const time = (performance.now() - timeOrigin) / 1000;
+
 			const webGlViewportInfo: WebGLViewportInfo = {
 				canvasSize,
 				cameraSize,
 				canvasBounds,
+				time,
 			};
+			gl.clearColor(0, 0, 0, 0);
+			gl.clear(gl.COLOR_BUFFER_BIT);
 
 			const errors = renderers.map(renderer => {
 				try {
@@ -118,13 +137,14 @@ export const WebGLLayer = (...renderers: WebGLLayerRenderer[]): ViewportLayerFC 
 				throw new Error("canvasRef was empty");
 			}
 
-			const gl = canvas.getContext("webgl2");
+			const gl = canvas.getContext("webgl2", {
+				premultipliedAlpha: false,
+			});
 			if (!gl) {
 				throw new Error("WebGL2 is not supported.");
 			}
 
 			renderers.forEach(renderer => renderer.init(gl));
-
 
 			window.requestAnimationFrame(t => render({
 				curr: t, prev: 0, accDt: Infinity,

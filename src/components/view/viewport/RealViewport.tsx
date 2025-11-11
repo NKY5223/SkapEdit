@@ -15,7 +15,7 @@ import { BackgroundObstacleWebGLRenderer, BackgroundWebGLRenderer } from "./rend
 import { BlockWebGLRenderer } from "./renderer/block.ts";
 import { GravityZoneWebGLRenderer } from "./renderer/gravityZone.ts";
 import { IceWebGLRenderer } from "./renderer/ice.ts";
-import { LavaWebGLRenderer } from "./renderer/lava.ts";
+import { LavaWebGLRenderer, RotatingLavaWebGLRenderer } from "./renderer/lava.ts";
 import { ObstacleWebGLRenderer } from "./renderer/obstacle.ts";
 import { SlimeWebGLRenderer } from "./renderer/slime.ts";
 import { TeleporterWebGLRenderer } from "./renderer/teleporter.ts";
@@ -50,9 +50,12 @@ export const RealViewport: FC<RealViewportProps> = ({
 		WebGLLayer(
 			new BackgroundObstacleWebGLRenderer(),
 			new BackgroundWebGLRenderer(),
+			// Place spawner behind everything (it was tinting stuff weird)
+			new SpawnerBackgroundWebGLRenderer(),
 			new ObstacleWebGLRenderer(),
 			new TeleporterWebGLRenderer(),
 			new LavaWebGLRenderer(),
+			new RotatingLavaWebGLRenderer(),
 			new IceWebGLRenderer(),
 			new SlimeWebGLRenderer(),
 			// Buttons
@@ -61,9 +64,7 @@ export const RealViewport: FC<RealViewportProps> = ({
 			// door links
 			new BlockWebGLRenderer(0),
 			// Particles
-			new SpawnerBackgroundWebGLRenderer(),
 			new SpawnerEntitiesWebGLRenderer(),
-			// Entities (replace with Spawner)
 			// Turrets
 			// Players
 			new BlockWebGLRenderer(1),

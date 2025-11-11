@@ -37,9 +37,6 @@ export class TeleporterWebGLRenderer extends WebGLLayerRenderer {
 		const { gl, program } = info;
 
 		gl.useProgram(program);
-		gl.enable(gl.BLEND);
-		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-
 		const {
 			room,
 		} = viewportInfo;
@@ -61,7 +58,5 @@ export class TeleporterWebGLRenderer extends WebGLLayerRenderer {
 		this.setAttribute1f(gl, "aGrad", grads);
 
 		gl.drawArrays(gl.TRIANGLES, 0, pos.length);
-
-		gl.disable(gl.BLEND);
 	}
 }
