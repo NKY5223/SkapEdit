@@ -124,6 +124,9 @@
                             }
                         ]
                     },
+                    "gravity": {
+                        "type": "number"
+                    },
                     "backgroundColor": {
                         "readOnly": true,
                         "type": "array",
@@ -2342,7 +2345,10 @@
                                             ]
                                         },
                                         "reward": {
-                                            "type": "string"
+                                            "type": "array",
+                                            "items": {
+                                                "type": "number"
+                                            }
                                         }
                                     },
                                     "required": [

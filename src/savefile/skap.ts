@@ -236,6 +236,7 @@ const SkapObject = z.discriminatedUnion("type", [
 const Room = z.object({
 	name: z.string(),
 	size: Vec2,
+	gravity: z.number().optional(),
 	backgroundColor: RgbaColor.optional(),
 	areaColor: RgbColor.optional(),
 	objects: SkapObject.array(),

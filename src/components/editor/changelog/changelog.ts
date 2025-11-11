@@ -13,9 +13,10 @@ export const changelog: ChangelogEntry[] = [
 	{
 		version: "0.1.3",
 		message: [
-			`Added blocks, gravity zones, teleporters.`,
+			`Added objects: blocks, gravity zones, teleporters, spawners. `,
+			`Added room switching.`
 		],
-		time: new Date(`2030-11-04`),
+		time: new Date(`2025-11-11`),
 	},
 	{
 		version: "0.1.2",
