@@ -28,7 +28,7 @@ export type SkapSpawner = BaseObject<"spawner", {
 export const spawnerProperties = makeObjectProperties<SkapSpawner>("spawner", {
 	bounds: obj => obj.bounds,
 	selection: {
-		zIndex: () => 13,
+		zIndex: () => 0,
 		clickbox: (obj, pos) => obj.bounds.contains(pos),
 	},
 	transform: {
@@ -91,8 +91,8 @@ export const spawnerProperties = makeObjectProperties<SkapSpawner>("spawner", {
 									}} />{type}</>
 									: type,
 								<>×{count}</>,
-								speed,
-								radius,
+								<>r={radius}</>,
+								<>{speed}u/s</>,
 							];
 						}}
 						details={(ent, i) => {
@@ -110,15 +110,15 @@ export const spawnerProperties = makeObjectProperties<SkapSpawner>("spawner", {
 										label={"Count"}
 										onInput={count => updateEntity(i, { type, count, speed, radius })}
 									/>
-									<NumberInput value={speed}
-										min={0}
-										label={"Speed"}
-										onInput={speed => updateEntity(i, { type, count, speed, radius })}
-									/>
 									<NumberInput value={radius}
 										min={0}
 										label={"Radius"}
 										onInput={radius => updateEntity(i, { type, count, speed, radius })}
+									/>
+									<NumberInput value={speed}
+										min={0}
+										label={"Speed"}
+										onInput={speed => updateEntity(i, { type, count, speed, radius })}
 									/>
 								</FormSection>
 							</>);

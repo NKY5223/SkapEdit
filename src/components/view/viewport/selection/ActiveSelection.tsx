@@ -217,7 +217,7 @@ const ActiveSelectionItem: FC<ActiveSelectionItemProps> = ({
 					});
 					return (<>
 						<BoundsSelection {...{ viewportInfo, object, active, bounds, setBounds, setTranslate, onDoubleClick }} />
-						<PointSelection {...{ viewportInfo, pos, setPos }} radius={1} />
+						<PointSelection {...{ viewportInfo, active, pos, setPos }} radius={1} />
 					</>);
 				}
 				return <BoundsSelection {...{ viewportInfo, object, active, bounds, setBounds, setTranslate, onDoubleClick }} />;

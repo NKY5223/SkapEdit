@@ -27,7 +27,7 @@
 	/* grid-area: 1 / 1 / -1 / -1; */
 	overflow: hidden;
 	pointer-events: none;
-	background: #f0f;
+	background: var(--theme-bg-0);
 
 	& > * {
 		position: absolute;

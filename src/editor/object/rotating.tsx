@@ -62,12 +62,18 @@ const rotatingProperties = <T extends Rotating<string>>(type: T["type"], zIndex:
 						<Vec2Input vec={center} setVec={center =>
 							update(obj => ({ ...obj, rotation: { ...obj.rotation, center } }))
 						} />
-						<NumberInput value={initial} min={0} max={360} onInput={initial =>
-							update(obj => ({ ...obj, rotation: { ...obj.rotation, initial } }))
-						} />
-						<NumberInput value={speed} onInput={speed =>
-							update(obj => ({ ...obj, rotation: { ...obj.rotation, speed } }))
-						} />
+						<FormSection row>
+							<NumberInput value={initial} min={0} max={360} onInput={initial =>
+								update(obj => ({ ...obj, rotation: { ...obj.rotation, initial } }))}
+								label={"Initial Angle"}
+							/>°
+						</FormSection>
+						<FormSection row>
+							<NumberInput value={speed} onInput={speed =>
+								update(obj => ({ ...obj, rotation: { ...obj.rotation, speed } }))}
+								label={"Speed"}
+							/>°/s
+						</FormSection>
 					</>
 				);
 			}
