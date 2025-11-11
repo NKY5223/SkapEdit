@@ -10,13 +10,13 @@
 }
 .summary-row {
 	cursor: pointer;
+	border: var(--table-border);
 	&.active {
 		background-color: var(--theme-bg-1);
 		color: var(--theme-fg-1);
 	}
 }
 .summary-cell {
-	border: var(--table-border);
 	padding-inline: .5em;
 	padding-block: .25em;
 }

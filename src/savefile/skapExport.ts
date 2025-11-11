@@ -98,6 +98,17 @@ const objectToSkap = (object: SkapObject, room: SkapRoom, map: SkapMap): SkapFil
 				radius,
 			}));
 		}
+		case "rotatingLava": {
+			const { bounds, rotation: { center, initial, speed } } = object;
+			return [{
+				type: "rotatingLava",
+				position: vec2ToSkap(bounds.topLeft.sub(topLeft)),
+				size: vec2ToSkap(bounds.size),
+				point: vec2ToSkap(center),
+				speed,
+				startAngle: initial,
+			}];
+		}
 	}
 }
 

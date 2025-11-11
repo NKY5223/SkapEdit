@@ -19,7 +19,7 @@ type TableInputProps<T> = {
 	 * An array of `columns` nodes.
 	 * This will be used for the header of the table.
 	 */
-	header: ReactNode[];
+	header?: ReactNode[];
 	addItem?: () => void;
 	removeItem?: (index: number) => void;
 };
@@ -29,7 +29,9 @@ export const TableInput = <T,>({
 	addItem, removeItem,
 }: TableInputProps<T>): ReactNode => {
 	const [openIndex, setOpenIndexInternal] = useState<number | null>(null);
-	const columnCount = header.length;
+	const columnCount = header?.length
+		?? (values.length > 0 ? summary(values[0]).length : undefined)
+		?? 1;
 
 	const setOpenIndex = (action: SetStateAction<number | null>) => {
 		console.log(action);
@@ -68,13 +70,13 @@ export const TableInput = <T,>({
 
 	return (
 		<table className={css["table"]}>
-			<thead>
+			{header && <thead>
 				<tr>
 					{header.map((node, i) => (
 						<th key={i}>{node}</th>
 					))}
 				</tr>
-			</thead>
+			</thead>}
 			<tbody>{rows}</tbody>
 			{addItem && (
 				<tfoot>

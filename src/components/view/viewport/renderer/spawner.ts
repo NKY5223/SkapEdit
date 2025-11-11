@@ -10,17 +10,50 @@ import solidFrag from "./shader/solidColor.frag?raw";
 import textureFrag from "./shader/texture.frag?raw";
 import textureVert from "./shader/texture.vert?raw";
 
-import textureUrlNormal from "/textures/entity/normal.svg";
-import textureUrlReverse from "/textures/entity/reverse.svg";
-import textureUrlSpike from "/textures/entity/spike.svg";
-import textureUrlBouncer from "/textures/entity/bouncer.svg";
-import textureUrlHarmless from "/textures/entity/harmless.svg";
-import textureUrlRotating from "/textures/entity/rotating.svg";
-import textureUrlUnknown from "/textures/entity/unknown.svg";
+import { entityTextures } from "@common/entityTextures.ts";
 
-const knownEntities = ["normal", "reverse", "spike", "bouncer", "harmless", "rotating"] as const;
+export const knownEntities = [
+	"accelerator",
+	"bomb",
+	"bouncer",
+	"contractor",
+	"decelerator",
+	"disabler",
+	"drainer",
+	"expander",
+	"following",
+	"freezer",
+	"gravityDown",
+	"gravityLeft",
+	"gravityRight",
+	"gravityUp",
+	"harmless",
+	"immune",
+	"megaAccelerator",
+	"megaBouncer",
+	"monster",
+	"normal",
+	"reverse",
+	"rotating",
+	"shield",
+	"shooter",
+	"snek",
+	"spike",
+	"stutter",
+	"taker",
+	"wavy",
+] as const;
+export type KnownEntity = typeof knownEntities[number];
 // @ts-expect-error includes is not a type guard for some reason
-const isKnown = (type: string): type is typeof knownEntities[number] => knownEntities.includes(type);
+export const isKnownEntityType = (type: string): type is KnownEntity => knownEntities.includes(type);
+export const entityToTextureName = (type: KnownEntity): keyof typeof entityTextures => {
+	switch (type) {
+		case "bomb": return "bomb0";
+		case "contractor": return "contractor0";
+		case "snek": return "snekHead";
+		default: return type;
+	}
+}
 
 const rgba = Color.SPAWNER_BACKGROUND.rgba();
 export class SpawnerBackgroundWebGLRenderer extends RectWebGLRenderer {
@@ -49,14 +82,10 @@ export class SpawnerEntitiesWebGLRenderer extends WebGLLayerRenderer {
 		});
 	}
 	load(gl: WebGL2RenderingContext) {
-		this.loadTexture(gl, "normal", textureUrlNormal, 512, 512);
-		this.loadTexture(gl, "reverse", textureUrlReverse, 512, 512);
-		this.loadTexture(gl, "spike", textureUrlSpike, 512, 512);
-		this.loadTexture(gl, "bouncer", textureUrlBouncer, 512, 512);
-		this.loadTexture(gl, "harmless", textureUrlHarmless, 512, 512);
-		this.loadTexture(gl, "rotating", textureUrlRotating, 512, 512);
-
-		this.loadTexture(gl, "unknown", textureUrlUnknown, 512, 512);
+		for (const type of knownEntities) {
+			this.loadTexture(gl, type, entityTextures[entityToTextureName(type)], 512, 512);
+		}
+		this.loadTexture(gl, "unknown", entityTextures.unknown, 512, 512);
 	}
 	render(viewportInfo: ViewportInfo, webGlViewportInfo: WebGLViewportInfo): void {
 		const info = this.info;
@@ -77,29 +106,46 @@ export class SpawnerEntitiesWebGLRenderer extends WebGLLayerRenderer {
 
 		const spawners = viewportInfo.room.objects.values().filter(obj => obj.type === "spawner").toArray();
 
-		const entitiesToDraw: {
-			normal: Entity[];
-			reverse: Entity[];
-			spike: Entity[];
-			bouncer: Entity[];
-			harmless: Entity[];
-			rotating: Entity[];
-
-			unknown: Entity[];
-		} = {
+		const entitiesToDraw: Record<KnownEntity | "unknown", Entity[]> = {
+			accelerator: [],
+			bomb: [],
+			bouncer: [],
+			contractor: [],
+			decelerator: [],
+			disabler: [],
+			drainer: [],
+			expander: [],
+			following: [],
+			freezer: [],
+			gravityDown: [],
+			gravityLeft: [],
+			gravityRight: [],
+			gravityUp: [],
+			harmless: [],
+			immune: [],
+			megaAccelerator: [],
+			megaBouncer: [],
+			monster: [],
 			normal: [],
 			reverse: [],
-			spike: [],
-			bouncer: [],
-			harmless: [],
 			rotating: [],
-
+			shield: [],
+			shooter: [],
+			snek: [],
+			spike: [],
+			stutter: [],
+			taker: [],
+			wavy: [],
+			
 			unknown: [],
 		};
 		for (const spawner of spawners) {
 			const initialses = get(SpawnerEntitiesWebGLRenderer.entityInitials, spawner.id, () => []);
-			while (initialses.length <= spawner.entities.length) {
+			while (initialses.length < spawner.entities.length) {
 				initialses.push([]);
+			}
+			while (initialses.length > spawner.entities.length) {
+				initialses.pop();
 			}
 			for (const [i, { type, count, speed, radius }] of spawner.entities.entries()) {
 				const initials = initialses[i];
@@ -112,6 +158,9 @@ export class SpawnerEntitiesWebGLRenderer extends WebGLLayerRenderer {
 						velAngle: Math.random() * 2 * Math.PI,
 						rotation: Math.random() * 2 * Math.PI,
 					});
+				}
+				while (initials.length > count) {
+					initials.pop();
 				}
 				const bounds = spawner.bounds.inset(radius);
 				const doRotation = type === "rotating" ? 1 : 0;
@@ -126,7 +175,7 @@ export class SpawnerEntitiesWebGLRenderer extends WebGLLayerRenderer {
 					rotation: doRotation * (rotation + rotationSpeed * time),
 				}));
 
-				if (isKnown(type)) {
+				if (isKnownEntityType(type)) {
 					entitiesToDraw[type].push(...entities);
 				} else {
 					entitiesToDraw.unknown.push(...entities);

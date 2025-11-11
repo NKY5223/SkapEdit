@@ -86,6 +86,16 @@ const skapToObjectsPartial = (object: SkapFile.Object, room: SkapFile.Room, map:
 				radius: object.radius,
 			}],
 		}
+		case "rotatingLava": return {
+			type: "rotatingLava",
+			id,
+			bounds: skapToBounds(object.position, object.size),
+			rotation: {
+				center: skapToVec2(object.point),
+				initial: object.startAngle,
+				speed: object.speed,
+			},
+		}
 		case "circularObstacle":
 		case "circularLava":
 		case "circularSlime":
@@ -94,7 +104,6 @@ const skapToObjectsPartial = (object: SkapFile.Object, room: SkapFile.Room, map:
 		case "movingLava":
 		case "movingSlime":
 		case "movingIce":
-		case "rotatingLava":
 		case "turret":
 		case "door":
 		case "button":
@@ -190,14 +199,6 @@ const completeObject = (
 				}
 			}
 		}
-		// case "obstacle":
-		// case "lava":
-		// case "slime":
-		// case "ice":
-		// case "text":
-		// case "block":
-		// case "gravityZone":
-		// case "spawner":
 		default: return object;
 	}
 }

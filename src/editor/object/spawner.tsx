@@ -12,6 +12,8 @@ import { Icon } from "@components/icon/Icon.tsx";
 import { Button } from "@components/form/Button.tsx";
 import { TableInput } from "@components/form/TableInput.tsx";
 import { makeSpawnerEntity } from "@editor/map.ts";
+import { entityToTextureName, isKnownEntityType } from "@components/view/viewport/renderer/spawner.ts";
+import { entityTextures } from "@common/entityTextures.ts";
 
 export type SkapSpawner = BaseObject<"spawner", {
 	bounds: Bounds;
@@ -73,12 +75,26 @@ export const spawnerProperties = makeObjectProperties<SkapSpawner>("spawner", {
 					</FormSection>
 					<FormTitle>Entities</FormTitle>
 					<TableInput values={object.entities}
-						summary={ent => [
-							ent.type,
-							ent.count,
-							ent.speed,
-							ent.radius,
-						]}
+						summary={ent => {
+							const { type, count, speed, radius } = ent;
+							const url = isKnownEntityType(type)
+								? entityTextures[entityToTextureName(type)]
+								: undefined;
+							return [
+								url
+									? <><img src={url} style={{
+										display: "inline-block",
+										width: "1em",
+										height: "1em",
+										verticalAlign: "middle",
+										marginInlineEnd: ".5em",
+									}} />{type}</>
+									: type,
+								<>×{count}</>,
+								speed,
+								radius,
+							];
+						}}
 						details={(ent, i) => {
 							const { type, count, speed, radius } = ent;
 							return (<>
@@ -107,12 +123,12 @@ export const spawnerProperties = makeObjectProperties<SkapSpawner>("spawner", {
 								</FormSection>
 							</>);
 						}}
-						header={[
-							"Type",
-							"Count",
-							"Speed",
-							"Radius"
-						]}
+						// header={[
+						// 	"Type",
+						// 	"Count",
+						// 	"Speed",
+						// 	"Radius"
+						// ]}
 						removeItem={removeEntity}
 						addItem={addEntity}
 					/>
