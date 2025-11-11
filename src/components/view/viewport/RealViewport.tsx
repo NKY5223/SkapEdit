@@ -294,6 +294,30 @@ export const RealViewport: FC<RealViewportProps> = ({
 				type: "clear_selection"
 			});
 		}
+		if (e.code === "KeyW") {
+			dispatchView({
+				type: "set_camera_pos",
+				pos: camera.pos.add(vec2(0, -5)),
+			});
+		}
+		if (e.code === "KeyA") {
+			dispatchView({
+				type: "set_camera_pos",
+				pos: camera.pos.add(vec2(-5, 0)),
+			});
+		}
+		if (e.code === "KeyS") {
+			dispatchView({
+				type: "set_camera_pos",
+				pos: camera.pos.add(vec2(0, 5)),
+			});
+		}
+		if (e.code === "KeyD") {
+			dispatchView({
+				type: "set_camera_pos",
+				pos: camera.pos.add(vec2(5, 0)),
+			});
+		}
 	};
 	// #endregion
 
