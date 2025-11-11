@@ -160,7 +160,7 @@ const ActiveSelectionItem: FC<ActiveSelectionItemProps> = ({
 		case "spawner":
 		case "rotatingLava":
 			{
-				const { bounds } = object;
+				const { type, bounds } = object;
 				const setBounds: Dispatch<SetStateAction<Bounds>> = update => {
 					dispatchMap({
 						type: "replace_object",
@@ -202,6 +202,24 @@ const ActiveSelectionItem: FC<ActiveSelectionItemProps> = ({
 						pos,
 					});
 				};
+				if (type === "rotatingLava") {
+					const pos = object.rotation.center;
+					const setPos: Dispatch<SetStateAction<Vec2>> = pos => dispatchMap({
+						type: "replace_object",
+						target: object.id,
+						replacement: obj => obj.type === "rotatingLava" ? {
+							...obj,
+							rotation: {
+								...obj.rotation,
+								center: maybeConst(pos, obj.rotation.center),
+							},
+						} : obj
+					});
+					return (<>
+						<BoundsSelection {...{ viewportInfo, object, active, bounds, setBounds, setTranslate, onDoubleClick }} />
+						<PointSelection {...{ viewportInfo, pos, setPos }} radius={1} />
+					</>);
+				}
 				return <BoundsSelection {...{ viewportInfo, object, active, bounds, setBounds, setTranslate, onDoubleClick }} />;
 			}
 		case "text": {
@@ -214,7 +232,7 @@ const ActiveSelectionItem: FC<ActiveSelectionItemProps> = ({
 					pos: maybeConst(pos, obj.pos)
 				} : obj
 			});
-			return <CircleSelection radius={textRadius} {...{ viewportInfo, active, pos, setPos }} />;
+			return <PointSelection radius={textRadius} {...{ viewportInfo, active, pos, setPos }} />;
 		}
 	}
 }
@@ -321,6 +339,51 @@ const CircleSelection: FC<CircleSelectionProps> = ({
 	const className = toClassName(
 		css["selection"],
 		css["circle"],
+		dragging && css["dragging"],
+		!active && css["inactive"],
+	);
+	return (
+		<div className={className} style={{
+			"--x": `${x}px`,
+			"--y": `${y}px`,
+			"--r": `${radius}px`,
+		}} {...listeners}></div>
+	);
+}
+
+type PointSelectionProps = {
+	viewportInfo: ViewportInfo;
+	active?: boolean;
+	pos: Vec2;
+	setPos: Dispatch<SetStateAction<Vec2>>;
+	radius: number;
+}
+const PointSelection: FC<PointSelectionProps> = ({
+	viewportInfo,
+	pos, setPos,
+	radius,
+	active = true,
+}) => {
+	const { listeners, dragging } = useDrag({
+		buttons: MouseButtons.Left,
+		normalizeDir: false,
+		enabled: active,
+		stopPropagation: true,
+		onDrag: (curr, _, orig) => {
+			if (!active) return;
+			const diff = curr.sub(orig).div(viewportInfo.camera.scale);
+			const rounded = vec2(
+				Math.round(diff[0] / rounding) * rounding,
+				Math.round(diff[1] / rounding) * rounding,
+			);
+			// pos is original pos due to closure
+			setPos(pos.add(rounded));
+		},
+	});
+	const [x, y] = pos;
+	const className = toClassName(
+		css["selection"],
+		css["point"],
 		dragging && css["dragging"],
 		!active && css["inactive"],
 	);

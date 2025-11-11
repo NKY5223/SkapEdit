@@ -45,9 +45,16 @@
 }
 .circle {
 	--r: 25px;
-	width: calc(2 * var(--r) * var(--viewport-scale));
-	height: calc(2 * var(--r) * var(--viewport-scale));
-	translate: -50% -50%;
+	width: calc(2 * var(--r) * var(--viewport-scale) + 2 * var(--selection-border-width));
+	height: calc(2 * var(--r) * var(--viewport-scale) + 2 * var(--selection-border-width));
+	translate: calc(-1 * var(--r) * var(--viewport-scale)) calc(-1 * var(--r) * var(--viewport-scale));
+	border-radius: 50%;
+}
+.point {
+	--r: 25px;
+	width: calc(2 * var(--r) * var(--viewport-scale) + 2 * var(--selection-border-width));
+	height: calc(2 * var(--r) * var(--viewport-scale) + 2 * var(--selection-border-width));
+	translate: calc(-1 * var(--r) * var(--viewport-scale)) calc(-1 * var(--r) * var(--viewport-scale));
 	border-radius: 50%;
 }
 
