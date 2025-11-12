@@ -21,8 +21,6 @@ const properties = [
 	rotatingLavaProperties,
 ];
 
-console.log(properties);
-
 Object.assign(window, { logZIndices: () => {
 	properties.forEach(p => {
 		const z = p.selection.zIndex;

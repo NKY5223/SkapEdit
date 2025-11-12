@@ -362,11 +362,9 @@ export const RealViewport: FC<RealViewportProps> = ({
 				selection: newSelection,
 			});
 		}, { preventDefault: true }],
-		[keybindStr("Escape"), () => {
-			dispatchSelection({
-				type: "clear_selection"
-			});
-		}],
+
+		[keybindStr("Escape"), () => dispatchSelection({ type: "clear_selection" })],
+
 		[[keybindStr("Delete"), keybindStr("Backspace")], () => {
 			roomSelection.forEach(s => {
 				switch (s.type) {
@@ -389,34 +387,23 @@ export const RealViewport: FC<RealViewportProps> = ({
 		}],
 
 		// #region WASD camera movement
-		[keybindStr("KeyW"), () => {
-			translateCamera(vec2(0, -5));
-		}],
-		[keybindStr("KeyA"), () => {
-			translateCamera(vec2(-5, 0));
-		}],
-		[keybindStr("KeyS"), () => {
-			translateCamera(vec2(0, 5));
-		}],
-		[keybindStr("KeyD"), () => {
-			translateCamera(vec2(5, 0));
-		}],
+		[keybindStr("KeyW"), () => translateCamera(vec2(0, -5))],
+		[keybindStr("KeyA"), () => translateCamera(vec2(-5, 0))],
+		[keybindStr("KeyS"), () => translateCamera(vec2(0, 5))],
+		[keybindStr("KeyD"), () => translateCamera(vec2(5, 0))],
 		// #endregion
 
 		// #region Arrow selection movement
-		[keybindStr("ArrowUp"), () => {
-			translateSelected(vec2(0, -1));
-		}],
-		[keybindStr("ArrowLeft"), () => {
-			translateSelected(vec2(-1, 0));
-		}],
-		[keybindStr("ArrowDown"), () => {
-			translateSelected(vec2(0, 1));
-		}],
-		[keybindStr("ArrowRight"), () => {
-			translateSelected(vec2(1, 0));
-		}],
+		[keybindStr("ArrowUp"), () => translateSelected(vec2(0, -1))],
+		[keybindStr("ArrowLeft"), () => translateSelected(vec2(-1, 0))],
+		[keybindStr("ArrowDown"), () => translateSelected(vec2(0, 1))],
+		[keybindStr("ArrowRight"), () => translateSelected(vec2(1, 0))],
 		// #endregion
+	
+		// This does work
+		// [keybindStr("alt+ArrowLeft"), () => {
+		// 	console.log("alt+left");
+		// }, { preventDefault: true }],
 	]);
 	// #endregion
 
