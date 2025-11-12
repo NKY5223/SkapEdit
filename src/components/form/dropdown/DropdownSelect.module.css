@@ -1,6 +1,6 @@
 .select {
 	position: relative;
-	width: fit-content;
+	width: max-content;
 	height: fit-content;
 
 	&:not(:has(> .options:popover-open)) > .current > .arrow-opened,

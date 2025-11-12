@@ -25,6 +25,12 @@
 
 	border-radius: var(--theme-border-radius);
 
+	.disabled & {
+		cursor: not-allowed;
+
+		outline: .125em solid var(--theme-disabled-bd);
+	}
+
 	&::before {
 		content: "";
 		grid-area: all;
@@ -47,6 +53,7 @@
 	}
 }
 .color-popover {
+	display: none;
 	width: fit-content;
 	height: fit-content;
 	

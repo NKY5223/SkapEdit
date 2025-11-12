@@ -52,7 +52,7 @@ export const Topbar: FC<TopbarProps> = ({
 				}),
 			]}><Translate k="topbar.app" /></TopbarMenuItem>
 			<TopbarMenuItem items={[
-				makeSingle("topbar.file.save", "save", () => {
+				makeSingle("topbar.file.save", "file_save", () => {
 					alert("Not implemented yet");
 					console.log("Save map", map);
 				}),

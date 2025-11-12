@@ -30,7 +30,7 @@ import { WebGLLayer } from "./webgl/WebGLLayer.tsx";
 import { SpawnerBackgroundWebGLRenderer, SpawnerEntitiesWebGLRenderer } from "./renderer/spawner.ts";
 import { CardinalDirection } from "@editor/object/Base.tsx";
 import { Color } from "@common/color.ts";
-
+import { hotkeysHandler, keybindStr } from "@common/keybind.ts";
 
 /** Maximum distance for something to count as a click */
 const clickMaxDistance = 2;
@@ -354,9 +354,21 @@ export const RealViewport: FC<RealViewportProps> = ({
 		});
 	}
 	// #region Hotkeys
-	const onKeyDown: React.KeyboardEventHandler = e => {
-		if (e.code === "Delete" || e.code === "Backspace") {
-			selection.forEach(s => {
+	const onKeyDown = hotkeysHandler([
+		[keybindStr("ctrl+KeyA"), () => {
+			const newSelection = objectSelectables.map(selectableToSelection);
+			dispatchSelection({
+				type: "set_selection",
+				selection: newSelection,
+			});
+		}, { preventDefault: true }],
+		[keybindStr("Escape"), () => {
+			dispatchSelection({
+				type: "clear_selection"
+			});
+		}],
+		[[keybindStr("Delete"), keybindStr("Backspace")], () => {
+			roomSelection.forEach(s => {
 				switch (s.type) {
 					case "room": {
 						console.warn("Cannot delete room bounds (???)");
@@ -374,52 +386,38 @@ export const RealViewport: FC<RealViewportProps> = ({
 					}
 				}
 			});
-		}
-		if (e.code === "KeyA" && e.ctrlKey) {
-			e.preventDefault();
-			const newSelection = objectSelectables.map(selectableToSelection);
-			dispatchSelection({
-				type: "set_selection",
-				selection: newSelection,
-			});
-		}
-		const noModifiers = !(e.ctrlKey || e.shiftKey || e.altKey || e.metaKey);
-		if (e.code === "Escape" && noModifiers) {
-			dispatchSelection({
-				type: "clear_selection"
-			});
-		}
+		}],
 
-		// #region Camera WASD movement
-		if (e.code === "KeyW" && noModifiers) {
+		// #region WASD camera movement
+		[keybindStr("KeyW"), () => {
 			translateCamera(vec2(0, -5));
-		}
-		if (e.code === "KeyA" && noModifiers) {
+		}],
+		[keybindStr("KeyA"), () => {
 			translateCamera(vec2(-5, 0));
-		}
-		if (e.code === "KeyS" && noModifiers) {
+		}],
+		[keybindStr("KeyS"), () => {
 			translateCamera(vec2(0, 5));
-		}
-		if (e.code === "KeyD" && noModifiers) {
+		}],
+		[keybindStr("KeyD"), () => {
 			translateCamera(vec2(5, 0));
-		}
+		}],
 		// #endregion
 
-		// #region Selection movement
-		if (e.code === "ArrowUp" && noModifiers) {
+		// #region Arrow selection movement
+		[keybindStr("ArrowUp"), () => {
 			translateSelected(vec2(0, -1));
-		}
-		if (e.code === "ArrowLeft" && noModifiers) {
+		}],
+		[keybindStr("ArrowLeft"), () => {
 			translateSelected(vec2(-1, 0));
-		}
-		if (e.code === "ArrowDown" && noModifiers) {
+		}],
+		[keybindStr("ArrowDown"), () => {
 			translateSelected(vec2(0, 1));
-		}
-		if (e.code === "ArrowRight" && noModifiers) {
+		}],
+		[keybindStr("ArrowRight"), () => {
 			translateSelected(vec2(1, 0));
-		}
+		}],
 		// #endregion
-	};
+	]);
 	// #endregion
 
 	const className = toClassName(

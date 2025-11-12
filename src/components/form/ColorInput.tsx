@@ -14,7 +14,6 @@ import { TextInput } from "./TextInput.tsx";
 type ColorInputProps = {
 	name?: string;
 	/** *Content* of the label associated with this input */
-	label?: ReactNode;
 	disabled?: boolean;
 	/** Whether this input should support alpha input. Defaults to false. */
 	alpha?: boolean;
@@ -26,12 +25,14 @@ type ColorInputProps = {
 	/** Fires when the value is committed (blur) */
 	onChange?: (value: Color) => void;
 
+	label?: ReactNode,
 	classList?: string | string[];
 };
 export const ColorInput: FC<ColorInputProps> = ({
-	name, label, disabled = false, alpha = false,
+	name, disabled = false, alpha = false,
 	value,
 	onInput, onChange,
+	label,
 	classList,
 }) => {
 	const popoverId = useId();
@@ -45,11 +46,12 @@ export const ColorInput: FC<ColorInputProps> = ({
 		}
 	}
 
-	const inputProps = { value, onInput, alpha };
+	const inputProps = { value, onInput, alpha, disabled };
 
 	const className = toClassName(
 		formCss["label"],
 		css["color-input"],
+		disabled && css["disabled"],
 		classList,
 	);
 	return (
@@ -58,8 +60,8 @@ export const ColorInput: FC<ColorInputProps> = ({
 			"--colorinput-color": value.toCssString(),
 		}}>
 			{label}
-			<button popoverTarget={popoverId} name={name} className={css["color-button"]}></button>
-			<div id={popoverId} className={css["color-popover"]} popover="auto" onToggle={onToggle}>
+			<button popoverTarget={popoverId} disabled={disabled} name={name} className={css["color-button"]}></button>
+			<div id={popoverId} className={css["color-popover"]} popover={disabled ? undefined : "auto"} onToggle={onToggle}>
 				<DropdownSelect<Mode>
 					value={mode}
 					onInput={setMode}
@@ -79,14 +81,16 @@ type SpecificInputProps = {
 	value: Color;
 	onInput?: (color: Color) => void;
 	alpha: boolean;
+	disabled?: boolean;
 };
 
 const HsvInput: FC<SpecificInputProps> = ({
-	value, onInput, alpha,
+	value, onInput, alpha, disabled
 }) => {
 	const [h, s, v, a] = value.hsva();
 
 	const update = (h: number, s: number, v: number, a: number) => {
+		if (disabled) return;
 		onInput?.(Color.hsv(h, s, v, a));
 	}
 
@@ -151,11 +155,12 @@ const HsvInput: FC<SpecificInputProps> = ({
 }
 
 const RgbInput: FC<SpecificInputProps> = ({
-	value, onInput, alpha,
+	value, onInput, alpha, disabled,
 }) => {
 	const [r, g, b, a] = value.rgba255();
 
 	const update = (r: number, g: number, b: number, a: number) => {
+		if (disabled) return;
 		onInput?.(Color.rgb255(r, g, b, a));
 	}
 
@@ -163,7 +168,7 @@ const RgbInput: FC<SpecificInputProps> = ({
 		classList: [css["input"]],
 		labelClassList: [css["label"]],
 	};
-	
+
 	const hexRange = {
 		min: 0,
 		max: 255,
@@ -227,16 +232,34 @@ const RgbInput: FC<SpecificInputProps> = ({
 			<TextInput
 				value={alpha ? value.toHexString() : value.toHexStringNoAlpha()}
 				onInput={value => {
-					const match = value.match(/^#(?<r>\p{Hex_Digit}{2})(?<g>\p{Hex_Digit}{2})(?<b>\p{Hex_Digit}{2})$/u);
-					if (!match) return;
-					if (!match.groups) return;
-					const { r, g, b } = match.groups;
-					update(
-						parseInt(r, 16),
-						parseInt(g, 16),
-						parseInt(b, 16),
-						1,
-					);
+					if (alpha) {
+						const match = value.match(
+							/^#(?<r>\p{Hex_Digit}{2})(?<g>\p{Hex_Digit}{2})(?<b>\p{Hex_Digit}{2})(?<a>\p{Hex_Digit}{2})?$/u
+						);
+						if (!match) return;
+						if (!match.groups) return;
+						const { r, g, b, a } = match.groups;
+						
+						update(
+							parseInt(r, 16),
+							parseInt(g, 16),
+							parseInt(b, 16),
+							parseInt(a ?? "ff", 16) / 0xff,
+						);
+					} else {
+						const match = value.match(
+							/^#(?<r>\p{Hex_Digit}{2})(?<g>\p{Hex_Digit}{2})(?<b>\p{Hex_Digit}{2})$/u
+						);
+						if (!match) return;
+						if (!match.groups) return;
+						const { r, g, b } = match.groups;
+						update(
+							parseInt(r, 16),
+							parseInt(g, 16),
+							parseInt(b, 16),
+							1,
+						);
+					}
 				}}
 				inputClassList={css["hex-input"]}
 			/>
