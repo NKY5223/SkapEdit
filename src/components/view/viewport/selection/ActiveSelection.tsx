@@ -1,6 +1,6 @@
 import { maybeConst } from "@common/maybeConst.ts";
 import { Vec2, vec2 } from "@common/vec2.ts";
-import { SelectableItem, SelectionItem, selectionToSelectable, useEditorSelection } from "@components/editor/selection.ts";
+import { SelectableItem, selectionInRoom, SelectionItem, selectionToSelectable, useEditorSelection } from "@components/editor/selection.ts";
 import { useToast } from "@components/toast/context.ts";
 import { toClassName } from "@components/utils.tsx";
 import { Bounds, BoundsUpdateLRTBWH } from "@editor/bounds.ts";
@@ -27,17 +27,15 @@ export const ActiveSelection: FC<ActiveSelectionProps> = ({
 	const map = useSkapMap();
 	const room = viewportInfo.room;
 	const dispatchMap = useDispatchSkapMap();
-	const active = selection.length === 1;
-	const multi = selection.length > 1;
+	const roomSelection = selection.filter(s => selectionInRoom(s, room));
+	const selectables = roomSelection.map(i => selectionToSelectable(i, map));
+	const active = selectables.length === 1;
+	const multi = selectables.length > 1;
 
-	const activeSelItems = selection.filter(item => {
-		if (item.type === "room") return item.id === room.id;
-		return room.objects.has(item.id);
-	}).map(item => (
+	const activeSelItems = roomSelection.map(item => (
 		<ActiveSelectionItem key={item.id} {...{ item, viewportInfo, active, dispatchView }} />
 	));
 	if (multi) {
-		const selectables = selection.map(i => selectionToSelectable(i, map));
 		const bounds = Bounds.merge(selectables.map(getSelectableBounds));
 		const setBounds: Dispatch<SetStateAction<Bounds>> = (update) => {
 			const newBounds = maybeConst(update, bounds);

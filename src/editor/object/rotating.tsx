@@ -37,7 +37,11 @@ const rotatingProperties = <T extends Rotating<string>>(type: T["type"], zIndex:
 		transform: {
 			affine: (obj, scale, translate) => ({
 				...obj,
-				bounds: obj.bounds.affine(scale, translate)
+				bounds: obj.bounds.affine(scale, translate),
+				rotation: {
+					...obj.rotation,
+					center: obj.rotation.center.mul(scale).add(translate),
+				}
 			}),
 		},
 		inspector: {

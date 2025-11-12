@@ -89,6 +89,16 @@ export const selectionToSelectable = (selection: SelectionItem, map: SkapMap): S
 		}
 	}
 }
+export const selectionInRoom = (selection: SelectionItem, room: SkapRoom): boolean => {
+	switch (selection.type) {
+		case "object": {
+			return room.objects.has(selection.id);
+		}
+		case "room": {
+			return room.id === selection.id;
+		}
+	}
+}
 // #endregion
 
 const selectionReducer: Reducer<EditorSelection, SelectionAction> = (selection, action) => {
