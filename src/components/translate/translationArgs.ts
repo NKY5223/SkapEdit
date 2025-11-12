@@ -44,13 +44,23 @@ export type TranslationArgs = {
 	"contextmenu.item.name.viewport.add_object.lava": {};
 	"contextmenu.item.name.viewport.add_object.slime": {};
 	"contextmenu.item.name.viewport.add_object.ice": {};
+	"contextmenu.item.name.viewport.add_object.block": {};
 	"contextmenu.item.name.viewport.add_object.text": {};
+	"contextmenu.item.name.viewport.add_object.gravityZone": {};
+	"contextmenu.item.name.viewport.add_object.rotatingLava": {};
 	// #endregion
 
 	// #region Viewport
+	"viewport": {};
 	"viewport.no_room_selected": {};
 	"viewport.no_room_with_id": { id: ID; };
 	"viewport.room_fallback": {};
+	// #endregion
+
+	// #region Inspector
+	"inspector": {};
+	"inspector.room.background_color": {};
+	"inspector.room.obstacle_color": {};
 	// #endregion
 
 	// #region Topbar
@@ -96,10 +106,11 @@ export type TranslationArgs = {
 	"object.name.gravityZone": {};
 	"object.name.teleporter": {};
 	"object.name.spawner": {};
-	
+	"object.name.rotatingLava": {};
+
 	"object.teleporter.name": { object: SkapTeleporter; room: SkapRoom; };
 	// #endregion
-	
+
 	// #region Room
 	"room": {};
 	// #endregion

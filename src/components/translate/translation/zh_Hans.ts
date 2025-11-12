@@ -42,7 +42,7 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"contextmenu.item.name.layout.swap-x": "交换",
 	"contextmenu.item.name.layout.swap-y": "交换",
 
-	"contextmenu.item.name.viewport": "视口",
+	"contextmenu.item.name.viewport": use("viewport"),
 	"contextmenu.item.name.viewport.reset_camera": "重置相机",
 	"contextmenu.item.name.viewport.add_object": "添加",
 	"contextmenu.item.name.viewport.add_object.obstacle": use("object.name.obstacle"),
@@ -50,12 +50,22 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"contextmenu.item.name.viewport.add_object.slime": use("object.name.slime"),
 	"contextmenu.item.name.viewport.add_object.ice": use("object.name.ice"),
 	"contextmenu.item.name.viewport.add_object.text": use("object.name.text"),
+	"contextmenu.item.name.viewport.add_object.block": use("object.name.block"),
+	"contextmenu.item.name.viewport.add_object.gravityZone": use("object.name.gravityZone"),
+	"contextmenu.item.name.viewport.add_object.rotatingLava": use("object.name.rotatingLava"),
 	// #endregion
 
 	// #region Viewport
+	"viewport": "视口",
 	"viewport.no_room_selected": "还未选择房间",
 	"viewport.no_room_with_id": ({ id }) => ["没有ID为", makeCode(id), "的房间"],
 	"viewport.room_fallback": "？？？",
+	// #endregion
+	
+	// #region Inspector
+	"inspector": "Inspector",
+	"inspector.room.background_color": "背景颜色",
+	"inspector.room.obstacle_color": "障碍颜色",
 	// #endregion
 
 	// #region Topbar
@@ -101,6 +111,7 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"object.name.gravityZone": "重力区",
 	"object.name.teleporter": "传送机",
 	"object.name.spawner": "Spawner",
+	"object.name.rotatingLava": "旋转式岩浆",
 
 	"object.teleporter.name": ({ object, room }, t) => [
 		"向",

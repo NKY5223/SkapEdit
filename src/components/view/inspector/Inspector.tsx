@@ -1,30 +1,21 @@
-import { makeSection, makeSingle, makeSubmenu, useContextMenu } from "@components/contextmenu/ContextMenu.ts";
+import { useContextMenu } from "@components/contextmenu/ContextMenu.ts";
 import { useEditorSelection } from "@components/editor/selection.ts";
 import { BoundsInput } from "@components/form/BoundsInput";
 import { FormSection } from "@components/form/FormSection.tsx";
-import { FormTitle } from "@components/form/FormTitle.tsx";
-import { TextInput } from "@components/form/TextInput.tsx";
-import { Vec2Input } from "@components/form/Vec2Input";
-import { Icon } from "@components/icon/Icon.tsx";
 import { Layout, makeStatelessViewProvider } from "@components/layout/layout.ts";
 import { ViewToolbar } from "@components/layout/LayoutViewToolbar.tsx";
-import { Translate } from "@components/translate/Translate.tsx";
 import { useTranslate } from "@components/translate/translationArgs.ts";
-import { getObject, getObjects, getObjectsWithRoom, useDispatchSkapMap, useSkapMap } from "@editor/reducer";
-import { Fragment, ReactNode } from "react";
-import css from "./Inspector.module.css";
-import { ColorInput } from "@components/form/ColorInput.tsx";
-import { DropdownSelect } from "@components/form/dropdown/DropdownSelect.tsx";
-import { makeOption, makeOptionSection } from "@components/form/dropdown/Dropdown.ts";
-import { convertGravityZoneDirection, SkapGravityZone } from "@editor/object/gravityZone.ts";
-import { CardinalDirection } from "@editor/object/Base";
-import { NumberInput } from "@components/form/NumberInput.tsx";
-import { CardinalDirectionInput } from "@components/form/CardinalDirectionInput.tsx";
-import { CheckboxInput } from "@components/form/CheckboxInput.tsx";
-import { SkapBlock } from "@editor/object/block.ts";
-import { SkapTeleporter } from "@editor/object/teleporter.ts";
-import { SkapRoom } from "@editor/map.ts";
 import { getProperties } from "@editor/object/Properties.ts";
+import { getObject, useDispatchSkapMap, useSkapMap } from "@editor/reducer";
+import { FC, ReactNode } from "react";
+import css from "./Inspector.module.css";
+import { Translate } from "@components/translate/Translate.tsx";
+import { FormTitle } from "@components/form/FormTitle.tsx";
+import { ColorInput } from "@components/form/ColorInput.tsx";
+import { SkapRoom } from "@editor/map.ts";
+import { TextInput } from "@components/form/TextInput.tsx";
+import { InputLabel } from "@components/form/InputLabel.tsx";
+import { Icon } from "@components/icon/Icon.tsx";
 
 const Inspector: Layout.ViewComponent = ({
 	viewSwitcher,
@@ -57,16 +48,7 @@ const Inspector: Layout.ViewComponent = ({
 						Could not find room selection, id: <code>{sel.id}</code>
 					</p>
 				);
-				const bounds = selectedRoom.bounds;
-				return (
-					<>
-						<BoundsInput bounds={bounds} setBounds={bounds => dispatchMap({
-							type: "replace_room",
-							target: sel.id,
-							replacement: room => ({ ...room, bounds })
-						})} />
-					</>
-				);
+				return (<RoomSelectionForm room={selectedRoom} />);
 			}
 			case "object": {
 				const object = getObject(map, sel.id);
@@ -96,7 +78,6 @@ const Inspector: Layout.ViewComponent = ({
 			</ViewToolbar>
 			<div className={css["inspector-content"]}>
 				<FormSection>
-
 					{selectionForm}
 				</FormSection>
 			</div>
@@ -109,3 +90,31 @@ export const InspectorVP: Layout.ViewProvider = makeStatelessViewProvider({
 	Component: Inspector,
 	icon: "frame_inspect",
 });
+
+
+const RoomSelectionForm: FC<{ room: SkapRoom; }> = ({ room }) => {
+	const dispatchMap = useDispatchSkapMap();
+	const translate = useTranslate();
+
+	const { id, name, bounds, obstacleColor, backgroundColor, } = room;
+	const updateRoom = (f: (room: SkapRoom) => SkapRoom) => dispatchMap({
+		type: "replace_room",
+		target: id,
+		replacement: f
+	});
+	return (
+		<>
+			<FormTitle><Translate k="generic.position" /></FormTitle>
+			<TextInput value={name} onInput={name => updateRoom(room => ({ ...room, name }))} />
+			<BoundsInput bounds={bounds} setBounds={bounds => updateRoom(room => ({ ...room, bounds }))} />
+				<ColorInput value={obstacleColor} alpha
+					onInput={obstacleColor => updateRoom(room => ({ ...room, obstacleColor }))}
+					label={<Icon icon="obstacle" title={translate("inspector.room.obstacle_color")} />}
+				/>
+				<ColorInput value={backgroundColor}
+					onInput={backgroundColor => updateRoom(room => ({ ...room, backgroundColor }))}
+					label={<Icon icon="background_dot_large" title={translate("inspector.room.background_color")} />}
+				/>
+		</>
+	);
+}

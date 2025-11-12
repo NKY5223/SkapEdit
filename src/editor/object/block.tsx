@@ -39,14 +39,14 @@ export const blockProperties = makeObjectProperties<SkapBlock>("block", {
 				<>
 					<h2><Translate k="object.name.block" /></h2 >
 					<FormSection>
-						<FormTitle><Translate k="generic.position" /> </FormTitle>
-						< BoundsInput bounds={bounds} setBounds={bounds => dispatchMap({
+						<FormTitle><Translate k="generic.position" /></FormTitle>
+						<BoundsInput bounds={bounds} setBounds={bounds => dispatchMap({
 							type: "replace_object",
 							target: id,
 							replacement: obj => ({ ...obj, bounds })
 						})} />
 					</FormSection>
-					< FormSection row >
+					<FormSection row>
 						<ColorInput value={color}
 							onInput={
 								color => dispatchMap({
@@ -54,7 +54,7 @@ export const blockProperties = makeObjectProperties<SkapBlock>("block", {
 									target: id,
 									replacement: obj => ({ ...obj, color })
 								})}
-							label={< Icon icon="colors" title="Color" />}
+							label={<Icon icon="colors" title="Color" />}
 							alpha
 						/>
 					</FormSection>

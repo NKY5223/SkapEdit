@@ -5,7 +5,7 @@ import { makeObjectSelectableItem, makeObjectSelectionItem, makeRoomSelectableIt
 import { ViewToolbar } from "@components/layout/LayoutViewToolbar.tsx";
 import { mergeListeners, toClassName } from "@components/utils.tsx";
 import { Bounds } from "@editor/bounds.ts";
-import { SkapRoom, makeCardinalGravityZone, makeGravityZone, makeIce, makeLava, makeObstacle, makeRotatingLava, makeSlime, makeText } from "@editor/map.ts";
+import { SkapRoom, makeBlock, makeCardinalGravityZone, makeGravityZone, makeIce, makeLava, makeObstacle, makeRotatingLava, makeSlime, makeText } from "@editor/map.ts";
 import { useDispatchSkapMap, useSkapMap } from "@editor/reducer.ts";
 import { MouseButtons, useDrag } from "@hooks/useDrag.ts";
 import { useElementSize } from "@hooks/useElementSize.ts";
@@ -29,6 +29,7 @@ import { ViewportRoomSwitcher } from "./ViewportRoomSwitcher.tsx";
 import { WebGLLayer } from "./webgl/WebGLLayer.tsx";
 import { SpawnerBackgroundWebGLRenderer, SpawnerEntitiesWebGLRenderer } from "./renderer/spawner.ts";
 import { CardinalDirection } from "@editor/object/Base.tsx";
+import { Color } from "@common/color.ts";
 
 
 /** Maximum distance for something to count as a click */
@@ -170,6 +171,18 @@ export const RealViewport: FC<RealViewportProps> = ({
 				}),
 				makeSingle("viewport.add_object.ice", "square", () => {
 					const object = makeIce(0, 0, 10, 10);
+					dispatchMap({
+						type: "add_object",
+						roomId: room.id,
+						object,
+					});
+					dispatchSelection({
+						type: "set_selection",
+						selection: [makeObjectSelectionItem(object)]
+					});
+				}),
+				makeSingle("viewport.add_object.block", "square", () => {
+					const object = makeBlock(0, 0, 10, 10, Color.hex(0xff00ff, 1), 0, false);
 					dispatchMap({
 						type: "add_object",
 						roomId: room.id,

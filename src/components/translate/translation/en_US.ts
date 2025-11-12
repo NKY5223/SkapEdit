@@ -42,7 +42,7 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"contextmenu.item.name.layout.swap-x": "Swap",
 	"contextmenu.item.name.layout.swap-y": "Swap",
 
-	"contextmenu.item.name.viewport": "Viewport",
+	"contextmenu.item.name.viewport": use("viewport"),
 	"contextmenu.item.name.viewport.reset_camera": "Reset Camera",
 	"contextmenu.item.name.viewport.add_object": "Add Object",
 	"contextmenu.item.name.viewport.add_object.obstacle": use("object.name.obstacle"),
@@ -50,12 +50,22 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"contextmenu.item.name.viewport.add_object.slime": use("object.name.slime"),
 	"contextmenu.item.name.viewport.add_object.ice": use("object.name.ice"),
 	"contextmenu.item.name.viewport.add_object.text": use("object.name.text"),
+	"contextmenu.item.name.viewport.add_object.block": use("object.name.block"),
+	"contextmenu.item.name.viewport.add_object.gravityZone": use("object.name.gravityZone"),
+	"contextmenu.item.name.viewport.add_object.rotatingLava": use("object.name.rotatingLava"),
 	// #endregion
 
 	// #region Viewport
+	"viewport": "Viewport",
 	"viewport.no_room_selected": "No room selected",
 	"viewport.no_room_with_id": ({ id }) => ["No room with id: ", makeCode(id)],
 	"viewport.room_fallback": "Unknown room",
+	// #endregion
+
+	// #region Inspector
+	"inspector": "Inspector",
+	"inspector.room.background_color": "Background Color",
+	"inspector.room.obstacle_color": "Obstacle Color",
 	// #endregion
 
 	// #region Topbar
@@ -101,6 +111,7 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"object.name.gravityZone": "Gravity Zone",
 	"object.name.teleporter": "Teleporter",
 	"object.name.spawner": "Spawner",
+	"object.name.rotatingLava": "Rotating Lava",
 
 	"object.teleporter.name": ({ object, room }, t) => [
 		"Facing ",
@@ -132,7 +143,7 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 		" has no target teleporter",
 	],
 	// #endregion
-	
+
 	"generic.position": "Position",
 	"generic.position.x": "X Position",
 	"generic.position.y": "Y Position",

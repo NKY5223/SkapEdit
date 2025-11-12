@@ -3,7 +3,7 @@ import css from "./form.module.css";
 import { toClassName } from "@components/utils.tsx";
 
 type InputLabelProps = {
-	for: string;
+	for?: string;
 	children: [
 		label: ReactNode,
 		input: ReactNode,
