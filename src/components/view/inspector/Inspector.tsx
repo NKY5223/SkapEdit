@@ -12,10 +12,14 @@ import css from "./Inspector.module.css";
 import { Translate } from "@components/translate/Translate.tsx";
 import { FormTitle } from "@components/form/FormTitle.tsx";
 import { ColorInput } from "@components/form/ColorInput.tsx";
-import { SkapRoom } from "@editor/map.ts";
+import { SkapMap, SkapRoom } from "@editor/map.ts";
 import { TextInput } from "@components/form/TextInput.tsx";
 import { InputLabel } from "@components/form/InputLabel.tsx";
 import { Icon } from "@components/icon/Icon.tsx";
+import { DropdownSection } from "@components/form/dropdown/DropdownSection.tsx";
+import { DropdownSelect } from "@components/form/dropdown/DropdownSelect.tsx";
+import { makeOption } from "@components/form/dropdown/Dropdown.ts";
+import { Vec2Input } from "@components/form/Vec2Input.tsx";
 
 const Inspector: Layout.ViewComponent = ({
 	viewSwitcher,
@@ -31,7 +35,7 @@ const Inspector: Layout.ViewComponent = ({
 	const selectionForm = ((): Exclude<ReactNode, undefined> => {
 		if (selection.length < 1) {
 			return (
-				<p>No object selected</p>
+				<MapForm />
 			);
 		}
 		if (selection.length > 1) {
@@ -104,17 +108,53 @@ const RoomSelectionForm: FC<{ room: SkapRoom; }> = ({ room }) => {
 	});
 	return (
 		<>
-			<FormTitle><Translate k="generic.position" /></FormTitle>
 			<TextInput value={name} onInput={name => updateRoom(room => ({ ...room, name }))} />
+			<FormTitle><Translate k="generic.position" /></FormTitle>
 			<BoundsInput bounds={bounds} setBounds={bounds => updateRoom(room => ({ ...room, bounds }))} />
-				<ColorInput value={obstacleColor} alpha
-					onInput={obstacleColor => updateRoom(room => ({ ...room, obstacleColor }))}
-					label={<Icon icon="obstacle" title={translate("inspector.room.obstacle_color")} />}
-				/>
-				<ColorInput value={backgroundColor}
-					onInput={backgroundColor => updateRoom(room => ({ ...room, backgroundColor }))}
-					label={<Icon icon="background_dot_large" title={translate("inspector.room.background_color")} />}
-				/>
+			<ColorInput value={obstacleColor} alpha
+				onInput={obstacleColor => updateRoom(room => ({ ...room, obstacleColor }))}
+				label={<Icon icon="obstacle" title={translate("inspector.room.obstacle_color")} />}
+			/>
+			<ColorInput value={backgroundColor}
+				onInput={backgroundColor => updateRoom(room => ({ ...room, backgroundColor }))}
+				label={<Icon icon="background_dot_large" title={translate("inspector.room.background_color")} />}
+			/>
+		</>
+	);
+}
+const MapForm: FC = () => {
+	const map = useSkapMap();
+	const dispatchMap = useDispatchSkapMap();
+	const translate = useTranslate();
+
+	const { name, author, spawn: { room: spawnRoom, position: spawnPosition }, version, rooms } = map;
+	const update = (f: (room: SkapMap) => SkapMap) => dispatchMap({
+		type: "replace_map",
+		replacement: f
+	});
+	return (
+		<>
+			<TextInput value={name}
+				onInput={name => update(map => ({ ...map, name }))}
+				label={"Name"}
+			/>
+			<TextInput value={author}
+				onInput={author => update(map => ({ ...map, author }))}
+				label={"Author"}
+				disabled={version > 0}
+			/>
+			Version {version}
+			<FormTitle>Spawn</FormTitle>
+			<DropdownSelect value={spawnRoom}
+				options={rooms.values().map(room => 
+					makeOption(room.id, room.id, room.name)
+				).toArray()}
+				onInput={room => (console.log(room), update(map => ({ ...map, spawn: { ...map.spawn, room } })))}
+				fallbackLabel={<em>Invalid!</em>}
+			/>
+			<Vec2Input vec={spawnPosition}
+				setVec={position => update(map => ({ ...map, spawn: { ...map.spawn, position } }))}
+			/>
 		</>
 	);
 }

@@ -53,7 +53,7 @@ const testRoom: SkapRoom = makeRoom(
 export const defaultMap: SkapMap = {
 	author: "SkapEdit",
 	name: "Default SkapEdit Map",
-	version: 1,
+	version: 0,
 	spawn: {
 		room: homeRoom.id,
 		position: vec2(5, 5),

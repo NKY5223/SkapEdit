@@ -131,8 +131,8 @@ export const mapToSkap = (map: SkapMap): SkapFile.Map => {
 	return {
 		$schema: "https://nky5223.github.io/SkapEdit/schema/skap/0.1.3.json",
 		settings: {
-			name: "test skap export",
-			creator: "SkapEdit",
+			name: map.name,
+			creator: map.author,
 			version: map.version + 1,
 			spawnArea: spawnRoomName,
 			spawnPosition: vec2ToSkap(spawnPosition),

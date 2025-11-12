@@ -10,22 +10,19 @@ type DropdownOptionProps<T> = {
 	option: Option<T>;
 	classList?: string | string[];
 
-	selectedValue: T;
-	setSelectedValue: Dispatch<SetStateAction<T>>;
-
-	onSelect: ((value: T) => void) | undefined;
+	value: T;
+	onInput: ((value: T) => void) | undefined;
 };
 export function DropdownOption<T>({
 	option: {
 		value, label: display, icon,
 	},
 	classList,
-	selectedValue: selectedValue, setSelectedValue: setSelectedValue,
-	onSelect,
+	value: selectedValue,
+	onInput: onInput,
 }: DropdownOptionProps<T>): ReactNode {
 	const onTrigger = () => {
-		setSelectedValue(value);
-		if (onSelect) onSelect(value);
+		if (onInput) onInput(value);
 	};
 	const selected = Object.is(value, selectedValue);
 	const className = toClassName(

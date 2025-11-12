@@ -38,9 +38,9 @@ export const SettingsMenu: FC<SettingsProps> = ({
 				<FormSection row>
 					<Translate k="settings.language" />
 					<DropdownSelect<Settings["language"]>
-						initialValue={settings.language}
+						value={settings.language}
 						options={languages.map(l => makeOption(l.code, l.code, l.name))}
-						onSelect={value => setSetting("language", value)}
+						onInput={value => setSetting("language", value)}
 					/>
 				</FormSection>
 			</FormSection>

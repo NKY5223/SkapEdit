@@ -53,6 +53,12 @@
 		outline: none;
 		border-color: var(--theme-primary-bg-0);
 	}
+	&:disabled {
+		background-color: var(--theme-disabled-bg);
+		border-color: var(--theme-disabled-bd);
+		color: var(--theme-disabled-fg);
+		cursor: not-allowed;
+	}
 }
 .input[type=number] {
 	min-width: 3.5em;

@@ -61,8 +61,8 @@ export const ColorInput: FC<ColorInputProps> = ({
 			<button popoverTarget={popoverId} name={name} className={css["color-button"]}></button>
 			<div id={popoverId} className={css["color-popover"]} popover="auto" onToggle={onToggle}>
 				<DropdownSelect<Mode>
-					initialValue={mode}
-					onSelect={setMode}
+					value={mode}
+					onInput={setMode}
 					options={[
 						makeOption("hsv", "hsv", "HSV"),
 						makeOption("rgb", "rgb", "RGB"),

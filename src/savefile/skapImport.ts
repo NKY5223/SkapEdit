@@ -240,6 +240,8 @@ export const skapToMap = (map: SkapFile.Map, logger: Logger): SkapMap => {
 	const spawnRoomId = spawnRoomOrFirst?.id ?? "";
 	const spawnRoomTopLeft = spawnRoomOrFirst?.bounds?.topLeft ?? vec2(0);
 
+	console.log(spawnRoomId);
+
 	return {
 		author, name, version: version ?? 0,
 		spawn: {

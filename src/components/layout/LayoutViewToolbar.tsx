@@ -41,11 +41,11 @@ export const ViewSelector: FC<ViewSelectorProps> = ({
 
 	return (
 		<div className={css["selector"]}>
-			<DropdownSelect initialValue={view.providerName} options={options}
+			<DropdownSelect value={view.providerName} options={options}
 				fallbackLabel={<Translate k="layout.view.fallback" />}
 				fallbackIcon="indeterminate_question_box"
 				optionsClassList={[css["selector-options"]]}
-				onSelect={name => {
+				onInput={name => {
 					const provider = views.get(name);
 					if (!provider) return;
 					dispatchLayout({

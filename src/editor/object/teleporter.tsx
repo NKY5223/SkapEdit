@@ -46,7 +46,7 @@ export const teleporterProperties = makeObjectProperties<SkapTeleporter>("telepo
 				: target.type === "room"
 					? "room target"
 					: (
-						<DropdownSelect initialValue={target.teleporterId}
+						<DropdownSelect value={target.teleporterId}
 							options={map.rooms.values().map(room => makeOptionSection(
 								room.id, room.name, null,
 								room.objects.values().filter(obj => obj.type === "teleporter")

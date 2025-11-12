@@ -70,13 +70,13 @@ export const blockProperties = makeObjectProperties<SkapBlock>("block", {
 						/>
 					</FormSection>
 					<FormSection row>
-						<DropdownSelect<SkapBlock["layer"]> initialValue={layer}
+						<DropdownSelect<SkapBlock["layer"]> value={layer}
 							options={
 								[
 									makeOption("0", 0, "Back"),
 									makeOption("1", 1, "Front"),
 								]}
-							onSelect={
+							onInput={
 								layer => dispatchMap({
 									type: "replace_object",
 									target: id,

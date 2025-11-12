@@ -12,14 +12,14 @@ export const CardinalDirectionInput: FC<CardinalDirectionInputProps> = ({
 	value, onInput,
 }) => {
 	return (
-		<DropdownSelect initialValue={value}
+		<DropdownSelect value={value}
 			options={[
 				makeOption("down", CardinalDirection.Down, <Translate k="generic.direction.down" />),
 				makeOption("left", CardinalDirection.Left, <Translate k="generic.direction.left" />),
 				makeOption("up", CardinalDirection.Up, <Translate k="generic.direction.up" />),
 				makeOption("right", CardinalDirection.Right, <Translate k="generic.direction.right" />),
 			]}
-			onSelect={onInput}
+			onInput={onInput}
 		/>
 	)
 }

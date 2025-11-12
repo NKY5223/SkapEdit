@@ -9,8 +9,7 @@ import menuCss from "../../menu.module.css";
 type DropdownSectionProps<T> = {
 	section: OptionSection<T>;
 	value: T;
-	setValue: Dispatch<SetStateAction<T>>;
-	onSelect: ((value: T) => void) | undefined;
+	onInput: ((value: T) => void) | undefined;
 
 	optionClassList?: string | string[];
 };
@@ -19,18 +18,17 @@ export const DropdownSection = <T,>({
 		name, label, icon,
 		options,
 	},
-	onSelect,
+	value,
+	onInput,
 
-	value: selectedValue, setValue: setSelectedValue,
 	optionClassList = [],
 }: DropdownSectionProps<T>): ReactNode => {
 	const optionComps = options.map((option) => (
 		<DropdownOption key={option.name} {...{
 			option,
 			classList: [...optionClassList, css["sectioned-option"]],
-			selectedValue,
-			setSelectedValue,
-			onSelect,
+			value: value,
+			onInput,
 		}} />
 	));
 

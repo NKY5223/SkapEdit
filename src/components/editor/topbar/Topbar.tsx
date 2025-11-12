@@ -121,7 +121,7 @@ export const Topbar: FC<TopbarProps> = ({
 
 						dispatchMap({
 							type: "replace_map",
-							map,
+							replacement: map,
 						});
 						dispatchSelection({ type: "clear_selection" });
 					} catch (err) {

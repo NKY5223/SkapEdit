@@ -11,12 +11,11 @@ import menuCss from "../../menu.module.css";
 
 type DropdownSelectProps<T> = {
 	options: readonly (Option<T> | OptionSection<T>)[];
-	initialValue: T;
+	value: T;
+	onInput?: (value: T) => void;
 
 	fallbackLabel?: ReactNode | ((value: T) => ReactNode);
 	fallbackIcon?: IconName | ((value: T) => IconName);
-
-	onSelect?: (value: T) => void;
 
 	classList?: string | string[];
 	optionsClassList?: string | string[];
@@ -28,32 +27,31 @@ type DropdownSelectProps<T> = {
 	noarrow?: boolean;
 };
 export const DropdownSelect = <T,>({
-	options, initialValue,
+	options, value,
 	fallbackLabel, fallbackIcon,
-	onSelect,
+	onInput,
 	classList, optionsClassList, optionClassList,
 
 	nowrap = false, noarrow = false,
 }: DropdownSelectProps<T>): ReactNode => {
 	const optionsId = `options-${useId()}`;
-	const [selectedValue, setSelectedValue] = useState(initialValue);
 
 	const optionNodes = options.map(opt => "options" in opt
 		? (<DropdownSection key={opt.name} section={opt}
-			{...{ onSelect, value: selectedValue, setValue: setSelectedValue, optionClassList }} />)
+			{...{ value, onInput, optionClassList }} />)
 		: (<DropdownOption key={opt.name} option={opt} classList={optionClassList}
-			{...{ onSelect, selectedValue, setSelectedValue }} />)
+			{...{ value, onInput }} />)
 	);
 
 	const optionsFlat = options.flatMap(opt => "options" in opt ? opt.options : opt);
 
-	const selectedOption = optionsFlat.find(opt => Object.is(opt.value, selectedValue));
+	const selectedOption = optionsFlat.find(opt => Object.is(opt.value, value));
 	const currentSelectionLabel =
 		maybeConst(selectedOption?.label, true) ??
-		maybeConst(fallbackLabel, selectedValue);
+		maybeConst(fallbackLabel, value);
 	const currentSelectionIcon =
 		maybeConst(selectedOption?.icon, true) ??
-		maybeConst(fallbackIcon, selectedValue);
+		maybeConst(fallbackIcon, value);
 
 	return (
 		<div className={toClassName(

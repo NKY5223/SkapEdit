@@ -28,8 +28,8 @@ export const ViewportRoomSwitcher: FC<ViewportRoomSwitcherProps> = ({
 						(room.name),
 					))
 					.toArray()
-			} initialValue={selectedRoom}
-			onSelect={value => {
+			} value={selectedRoom}
+			onInput={value => {
 				dispatchView({
 					type: "set_current_room_id",
 					currentRoomId: value,

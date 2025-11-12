@@ -1,8 +1,9 @@
 import { ID } from "@common/uuid.ts";
 import { idMapWith, mapWithout } from "@components/utils.tsx";
 import { createReducerContext } from "@hooks/createReducerContext.tsx";
-import { Reducer } from "react";
+import { Reducer, SetStateAction } from "react";
 import { SkapMap, SkapObject, SkapRoom } from "./map.ts";
+import { maybeConst } from "@common/maybeConst.ts";
 
 export const getRoom = (
 	map: SkapMap,
@@ -70,7 +71,7 @@ const matches = (obj: SkapObject, target: TargetObject) => {
 type SkapMapAction = (
 	| {
 		type: "replace_map";
-		map: SkapMap;
+		replacement: SetStateAction<SkapMap>;
 	}
 	| {
 		type: "replace_room";
@@ -104,7 +105,7 @@ type SkapMapAction = (
 const skapMapReducer: Reducer<SkapMap, SkapMapAction> = (map, action) => {
 	switch (action.type) {
 		case "replace_map": {
-			return action.map;
+			return maybeConst(action.replacement, map);
 		}
 		case "replace_room": {
 			const { target, replacement } = action;

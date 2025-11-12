@@ -52,12 +52,12 @@ export const gravityZoneProperties = makeObjectProperties<SkapGravityZone>("grav
 						})} />
 						<FormTitle><Translate k="generic.direction" /></FormTitle>
 						<FormSection row>
-							<DropdownSelect<SkapGravityZone["direction"]["type"]> initialValue={direction.type}
+							<DropdownSelect<SkapGravityZone["direction"]["type"]> value={direction.type}
 								options={[
 									makeOption("cardinal", "cardinal", <Translate k="generic.direction.cardinal" />),
 									makeOption("free", "free", <Translate k="generic.direction.free" />),
 								]}
-								onSelect={type => dispatchMap({
+								onInput={type => dispatchMap({
 									type: "replace_object",
 									target: id,
 									replacement: obj => (obj.type === "gravityZone" ? {
