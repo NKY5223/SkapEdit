@@ -42,7 +42,7 @@ export const gravityZoneProperties = makeObjectProperties<SkapGravityZone>("grav
 			const { type, id, bounds, direction } = object;
 			return (
 				<>
-					<h2><Translate k="object.name.block" /></h2>
+					<h2><Translate k="object.name.gravityZone" /></h2>
 					<FormSection>
 						<FormTitle><Translate k="generic.position" /></FormTitle>
 						<BoundsInput bounds={bounds} setBounds={bounds => dispatchMap({

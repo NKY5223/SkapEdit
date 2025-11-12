@@ -13,9 +13,9 @@
 	gap: .5em;
 	place-items: center;
 
-	--button-bg: var(--theme-primary-bg-0);
-	--button-fg: var(--theme-primary-fg-0);
-	--button-bd: var(--theme-primary-bd-0);
+	--button-bg: var(--theme-bg-1);
+	--button-fg: var(--theme-fg-1);
+	--button-bd: var(--theme-bd-1);
 	&.primary {
 		--button-bg: var(--theme-primary-bg-0);
 		--button-fg: var(--theme-primary-fg-0);

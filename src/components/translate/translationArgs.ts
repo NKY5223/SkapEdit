@@ -115,12 +115,20 @@ export type TranslationArgs = {
 	"room": {};
 	// #endregion
 
+	// #region Map
+	"map": {};
+	"map.author": {};
+	"map.version": { version: number; };
+	// #endregion
+
 	// #region Map Import
 	"import.message": { message: string; object?: string; room?: string; };
 	"import.message.no_spawn_room": { message: string; object?: string; room?: string; };
 	"import.message.broken_teleporter": { message: string; object?: string; room?: string; };
 	"import.message.single_teleporter": { message: string; object?: string; room?: string; };
 	// #endregion
+
+	"generic.name": {};
 
 	"generic.position": {};
 	"generic.position.x": {};

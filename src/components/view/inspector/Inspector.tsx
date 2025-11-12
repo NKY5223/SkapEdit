@@ -108,7 +108,11 @@ const RoomSelectionForm: FC<{ room: SkapRoom; }> = ({ room }) => {
 	});
 	return (
 		<>
-			<TextInput value={name} onInput={name => updateRoom(room => ({ ...room, name }))} />
+			<h2><Translate k="room" /></h2>
+			<TextInput value={name}
+				onInput={name => updateRoom(room => ({ ...room, name }))}
+				label={<Translate k="generic.name" />}
+			/>
 			<FormTitle><Translate k="generic.position" /></FormTitle>
 			<BoundsInput bounds={bounds} setBounds={bounds => updateRoom(room => ({ ...room, bounds }))} />
 			<ColorInput value={obstacleColor} alpha
@@ -134,23 +138,25 @@ const MapForm: FC = () => {
 	});
 	return (
 		<>
+			<h2><Translate k="map" /></h2>
 			<TextInput value={name}
 				onInput={name => update(map => ({ ...map, name }))}
-				label={"Name"}
+				label={<Translate k="generic.name" />}
 			/>
 			<TextInput value={author}
 				onInput={author => update(map => ({ ...map, author }))}
-				label={"Author"}
+				label={<Translate k="map.author" />}
 				disabled={version > 0}
 			/>
-			Version {version}
+			<Translate k="map.version" version={version} />
 			<FormTitle>Spawn</FormTitle>
 			<DropdownSelect value={spawnRoom}
-				options={rooms.values().map(room => 
+				options={rooms.values().map(room =>
 					makeOption(room.id, room.id, room.name)
 				).toArray()}
 				onInput={room => (console.log(room), update(map => ({ ...map, spawn: { ...map.spawn, room } })))}
 				fallbackLabel={<em>Invalid!</em>}
+				label={<Translate k="room" />}
 			/>
 			<Vec2Input vec={spawnPosition}
 				setVec={position => update(map => ({ ...map, spawn: { ...map.spawn, position } }))}

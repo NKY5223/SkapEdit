@@ -132,104 +132,105 @@ export const RealViewport: FC<RealViewportProps> = ({
 					scaleIndex: 0,
 				});
 			}),
-			makeSubmenu("viewport.add_object", "add", [
-				makeSingle("viewport.add_object.obstacle", "obstacle", () => {
-					const object = makeObstacle(0, 0, 10, 10);
-					dispatchMap({
-						type: "add_object",
-						roomId: room.id,
-						object,
-					});
-					dispatchSelection({
-						type: "set_selection",
-						selection: [makeObjectSelectionItem(object)]
-					});
-				}),
-				makeSingle("viewport.add_object.lava", "square", () => {
-					const object = makeLava(0, 0, 10, 10);
-					dispatchMap({
-						type: "add_object",
-						roomId: room.id,
-						object,
-					});
-					dispatchSelection({
-						type: "set_selection",
-						selection: [makeObjectSelectionItem(object)]
-					});
-				}),
-				makeSingle("viewport.add_object.slime", "square", () => {
-					const object = makeSlime(0, 0, 10, 10);
-					dispatchMap({
-						type: "add_object",
-						roomId: room.id,
-						object,
-					});
-					dispatchSelection({
-						type: "set_selection",
-						selection: [makeObjectSelectionItem(object)]
-					});
-				}),
-				makeSingle("viewport.add_object.ice", "square", () => {
-					const object = makeIce(0, 0, 10, 10);
-					dispatchMap({
-						type: "add_object",
-						roomId: room.id,
-						object,
-					});
-					dispatchSelection({
-						type: "set_selection",
-						selection: [makeObjectSelectionItem(object)]
-					});
-				}),
-				makeSingle("viewport.add_object.block", "square", () => {
-					const object = makeBlock(0, 0, 10, 10, Color.hex(0xff00ff, 1), 0, false);
-					dispatchMap({
-						type: "add_object",
-						roomId: room.id,
-						object,
-					});
-					dispatchSelection({
-						type: "set_selection",
-						selection: [makeObjectSelectionItem(object)]
-					});
-				}),
-				makeSingle("viewport.add_object.text", "text_fields", () => {
-					const object = makeText(0, 0, "|");
-					dispatchMap({
-						type: "add_object",
-						roomId: room.id,
-						object,
-					});
-					dispatchSelection({
-						type: "set_selection",
-						selection: [makeObjectSelectionItem(object)]
-					});
-				}),
-				makeSingle("viewport.add_object.gravityZone", null, () => {
-					const object = makeCardinalGravityZone(0, 0, 10, 10, CardinalDirection.Down);
-					dispatchMap({
-						type: "add_object",
-						roomId: room.id,
-						object,
-					});
-					dispatchSelection({
-						type: "set_selection",
-						selection: [makeObjectSelectionItem(object)]
-					});
-				}),
-				makeSingle("viewport.add_object.rotatingLava", null, () => {
-					const object = makeRotatingLava(0, 0, 10, 10, vec2(5, 5), 0, 90);
-					dispatchMap({
-						type: "add_object",
-						roomId: room.id,
-						object,
-					});
-					dispatchSelection({
-						type: "set_selection",
-						selection: [makeObjectSelectionItem(object)]
-					});
-				}),
-			]),
+		]),
+
+		makeSubmenu("viewport.add_object", "add", [
+			makeSingle("viewport.add_object.obstacle", "obstacle", () => {
+				const object = makeObstacle(0, 0, 10, 10);
+				dispatchMap({
+					type: "add_object",
+					roomId: room.id,
+					object,
+				});
+				dispatchSelection({
+					type: "set_selection",
+					selection: [makeObjectSelectionItem(object)]
+				});
+			}),
+			makeSingle("viewport.add_object.lava", "square", () => {
+				const object = makeLava(0, 0, 10, 10);
+				dispatchMap({
+					type: "add_object",
+					roomId: room.id,
+					object,
+				});
+				dispatchSelection({
+					type: "set_selection",
+					selection: [makeObjectSelectionItem(object)]
+				});
+			}),
+			makeSingle("viewport.add_object.slime", "square", () => {
+				const object = makeSlime(0, 0, 10, 10);
+				dispatchMap({
+					type: "add_object",
+					roomId: room.id,
+					object,
+				});
+				dispatchSelection({
+					type: "set_selection",
+					selection: [makeObjectSelectionItem(object)]
+				});
+			}),
+			makeSingle("viewport.add_object.ice", "square", () => {
+				const object = makeIce(0, 0, 10, 10);
+				dispatchMap({
+					type: "add_object",
+					roomId: room.id,
+					object,
+				});
+				dispatchSelection({
+					type: "set_selection",
+					selection: [makeObjectSelectionItem(object)]
+				});
+			}),
+			makeSingle("viewport.add_object.block", "square", () => {
+				const object = makeBlock(0, 0, 10, 10, Color.hex(0xff00ff, 1), 0, false);
+				dispatchMap({
+					type: "add_object",
+					roomId: room.id,
+					object,
+				});
+				dispatchSelection({
+					type: "set_selection",
+					selection: [makeObjectSelectionItem(object)]
+				});
+			}),
+			makeSingle("viewport.add_object.text", "text_fields", () => {
+				const object = makeText(0, 0, "|");
+				dispatchMap({
+					type: "add_object",
+					roomId: room.id,
+					object,
+				});
+				dispatchSelection({
+					type: "set_selection",
+					selection: [makeObjectSelectionItem(object)]
+				});
+			}),
+			makeSingle("viewport.add_object.gravityZone", null, () => {
+				const object = makeCardinalGravityZone(0, 0, 10, 10, CardinalDirection.Down);
+				dispatchMap({
+					type: "add_object",
+					roomId: room.id,
+					object,
+				});
+				dispatchSelection({
+					type: "set_selection",
+					selection: [makeObjectSelectionItem(object)]
+				});
+			}),
+			makeSingle("viewport.add_object.rotatingLava", null, () => {
+				const object = makeRotatingLava(0, 0, 10, 10, vec2(5, 5), 0, 90);
+				dispatchMap({
+					type: "add_object",
+					roomId: room.id,
+					object,
+				});
+				dispatchSelection({
+					type: "set_selection",
+					selection: [makeObjectSelectionItem(object)]
+				});
+			}),
 		]),
 	]);
 

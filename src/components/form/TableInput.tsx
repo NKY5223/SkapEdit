@@ -55,7 +55,7 @@ export const TableInput = <T,>({
 							{details(v, i)}
 						</div>
 						{removeItem && (
-							<Button type="negative" classList={css["remove"]} icon="close"
+							<Button classList={css["remove"]} icon="remove"
 								onClick={() => {
 									removeItem(i);
 									setOpenIndex(null);

@@ -8,6 +8,7 @@ import { DropdownOption } from "./DropdownOption.tsx";
 import { DropdownSection } from "./DropdownSection.tsx";
 import css from "./DropdownSelect.module.css";
 import menuCss from "../../menu.module.css";
+import formCss from "../form.module.css";
 
 type DropdownSelectProps<T> = {
 	options: readonly (Option<T> | OptionSection<T>)[];
@@ -16,6 +17,8 @@ type DropdownSelectProps<T> = {
 
 	fallbackLabel?: ReactNode | ((value: T) => ReactNode);
 	fallbackIcon?: IconName | ((value: T) => IconName);
+
+	label?: ReactNode;
 
 	classList?: string | string[];
 	optionsClassList?: string | string[];
@@ -28,8 +31,9 @@ type DropdownSelectProps<T> = {
 };
 export const DropdownSelect = <T,>({
 	options, value,
-	fallbackLabel, fallbackIcon,
 	onInput,
+	fallbackLabel, fallbackIcon,
+	label,
 	classList, optionsClassList, optionClassList,
 
 	nowrap = false, noarrow = false,
@@ -54,29 +58,32 @@ export const DropdownSelect = <T,>({
 		maybeConst(fallbackIcon, value);
 
 	return (
-		<div className={toClassName(
-			css["select"],
-			classList,
-		)} role="input">
-			<button tabIndex={0} popoverTarget={optionsId} className={toClassName(
-				css["current"],
-				currentSelectionIcon && css["icon"],
-			)}>
-				{currentSelectionIcon && <Icon icon={currentSelectionIcon} />}
-				<span className={css["label"]}>{currentSelectionLabel}</span>
-				{!noarrow && <>
-					<Icon classList={[css["arrow"], css["arrow-opened"]]} icon="arrow_drop_down" />
-					<Icon classList={[css["arrow"], css["arrow-closed"]]} icon="arrow_right" />
-				</>}
-			</button>
-			<menu id={optionsId} popover="auto" className={toClassName(
-				css["options"],
-				menuCss["menu"],
-				nowrap && menuCss["nowrap"],
-				optionsClassList,
-			)}>
-				{optionNodes}
-			</menu>
+		<div className={formCss["label"]}>
+			{label && <div className={formCss["label-content"]}>{label}</div>}
+			<div className={toClassName(
+				css["select"],
+				classList,
+			)} role="input">
+				<button tabIndex={0} popoverTarget={optionsId} className={toClassName(
+					css["current"],
+					currentSelectionIcon && css["icon"],
+				)}>
+					{currentSelectionIcon && <Icon icon={currentSelectionIcon} />}
+					<span className={css["label"]}>{currentSelectionLabel}</span>
+					{!noarrow && <>
+						<Icon classList={[css["arrow"], css["arrow-opened"]]} icon="arrow_drop_down" />
+						<Icon classList={[css["arrow"], css["arrow-closed"]]} icon="arrow_right" />
+					</>}
+				</button>
+				<menu id={optionsId} popover="auto" className={toClassName(
+					css["options"],
+					menuCss["menu"],
+					nowrap && menuCss["nowrap"],
+					optionsClassList,
+				)}>
+					{optionNodes}
+				</menu>
+			</div>
 		</div>
 	)
 }

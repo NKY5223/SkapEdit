@@ -126,6 +126,12 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	// #region Room
 	"room": "房间",
 	// #endregion
+	
+	// #region Map
+	"map": "地图",
+	"map.author": "创造者",
+	"map.version": ({ version }) => ["第", version, "版本"],
+	// #endregion
 
 	// #region Map Import
 	"import.message": delegate("import.message", "message"),
@@ -143,6 +149,8 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 		"无目标传送机",
 	],
 	// #endregion
+
+	"generic.name": "名",
 
 	"generic.position": "位置",
 	"generic.position.x": "X坐标",
