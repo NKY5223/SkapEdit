@@ -3,6 +3,7 @@ import { FC, KeyboardEventHandler, useRef } from "react";
 import css from "./Slider.module.css";
 import { useDrag, MouseButtons } from "@hooks/useDrag.ts";
 import { clamp, round } from "@common/number.ts";
+import { hotkeysHandler, keybindStr } from "@common/keybind.ts";
 
 type SliderProps = {
 	value: number;
@@ -53,30 +54,14 @@ export const Slider: FC<SliderProps> = ({
 		}
 	});
 
-	const onKeyDown: KeyboardEventHandler = e => {
-		if (disabled) return;
-		if (!onInput) return;
-		// Default to 1% of slider range
-		const moveStep = step || (max - min) * .01;
-		switch (e.code) {
-			case "ArrowLeft": {
-				update(value - moveStep);
-				return;
-			}
-			case "ArrowRight": {
-				update(value + moveStep);
-				return;
-			}
-			case "Home": {
-				update(min);
-				return;
-			}
-			case "End": {
-				update(max);
-				return;
-			}
-		}
-	}
+	// Default to 1% of slider range
+	const moveStep = step || (max - min) * .01;
+	const onKeyDown: KeyboardEventHandler | undefined = (!disabled && onInput) ? hotkeysHandler([
+		[keybindStr("ArrowLeft"), () => update(value - moveStep)],
+		[keybindStr("ArrowRight"), () => update(value + moveStep)],
+		[keybindStr("Home"), () => update(min)],
+		[keybindStr("End"), () => update(max)],
+	]) : undefined;
 
 	const sliderClassName = toClassName(
 		css["slider"],

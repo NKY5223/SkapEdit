@@ -4,6 +4,7 @@ import { toClassName } from "@components/utils.tsx";
 import { MouseButtons, useDrag } from "@hooks/useDrag.ts";
 import { FC, KeyboardEventHandler, useRef } from "react";
 import css from "./Slider.module.css";
+import { hotkeysHandler, keybindStr } from "@common/keybind.ts";
 
 const clampVec = (min: Vec2, max: Vec2) => (v: Vec2): Vec2 =>
 	vec2(
@@ -73,47 +74,19 @@ export const Slider2d: FC<Slider2dProps> = ({
 		}
 	});
 
-	const onKeyDown: KeyboardEventHandler = e => {
-		if (disabled) return;
-		if (!onInput) return;
-		// Default to 1% of slider range
-		const moveX = vec2(xStep || (xMax - xMin) * .01, 0);
-		const moveY = vec2(0, yStep || (yMax - yMin) * .01);
-		switch (e.code) {
-			case "ArrowLeft": {
-				update(val.sub(moveX));
-				return;
-			}
-			case "ArrowRight": {
-				update(val.add(moveX));
-				return;
-			}
-			case "ArrowUp": {
-				update(val.sub(moveY));
-				return;
-			}
-			case "ArrowDown": {
-				update(val.add(moveY));
-				return;
-			}
-			case "Home": {
-				update(vec2(xMin, val[1]));
-				return;
-			}
-			case "End": {
-				update(vec2(xMax, val[1]));
-				return;
-			}
-			case "PageUp": {
-				update(vec2(val[0], yMin));
-				return;
-			}
-			case "PageDown": {
-				update(vec2(val[0], yMax));
-				return;
-			}
-		}
-	}
+	// Default to 1% of slider range
+	const moveX = vec2(xStep || (xMax - xMin) * .01, 0);
+	const moveY = vec2(0, yStep || (yMax - yMin) * .01);
+	const onKeyDown: KeyboardEventHandler | undefined = !disabled && onInput ? hotkeysHandler([
+		[keybindStr("ArrowLeft"), () => update(val.sub(moveX))],
+		[keybindStr("ArrowRight"), () => update(val.add(moveX))],
+		[keybindStr("ArrowUp"), () => update(val.sub(moveY))],
+		[keybindStr("ArrowDown"), () => update(val.add(moveY))],
+		[keybindStr("Home"), () => update(vec2(xMin, val[1]))],
+		[keybindStr("End"), () => update(vec2(xMax, val[1]))],
+		[keybindStr("PageUp"), () => update(vec2(val[0], yMin))],
+		[keybindStr("PageDown"), () => update(vec2(val[0], yMax))],
+	]) : undefined;
 
 	const slider2dClassName = toClassName(
 		css["slider-2d"],
