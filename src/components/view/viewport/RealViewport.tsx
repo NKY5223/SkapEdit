@@ -1,7 +1,7 @@
 import { sortBy } from "@common/array.ts";
-import { vec2 } from "@common/vec2.ts";
+import { Vec2, vec2 } from "@common/vec2.ts";
 import { Sections, makeSection, makeSingle, makeSubmenu, useContextMenu } from "@components/contextmenu/ContextMenu.ts";
-import { makeObjectSelectableItem, makeObjectSelectionItem, makeRoomSelectableItem, selectableToSelection, useDispatchSelection, useEditorSelection } from "@components/editor/selection.ts";
+import { makeObjectSelectableItem, makeObjectSelectionItem, makeRoomSelectableItem, selectableToSelection, selectionInRoom, selectionToSelectable, useDispatchSelection, useEditorSelection } from "@components/editor/selection.ts";
 import { ViewToolbar } from "@components/layout/LayoutViewToolbar.tsx";
 import { mergeListeners, toClassName } from "@components/utils.tsx";
 import { Bounds } from "@editor/bounds.ts";
@@ -21,7 +21,7 @@ import { SlimeWebGLRenderer } from "./renderer/slime.ts";
 import { TeleporterWebGLRenderer } from "./renderer/teleporter.ts";
 import { TextLayer } from "./renderer/text.tsx";
 import { ActiveSelection } from "./selection/ActiveSelection.tsx";
-import { getClickbox, getSelectableBounds, getZIndex } from "./selection/getObjectProperties.ts";
+import { getClickbox, getSelectableBounds, getTranslate, getZIndex } from "./selection/getObjectProperties.ts";
 import css from "./Viewport.module.css";
 import { ViewportAction, ViewportInfo, ViewportState, wheelMult } from "./Viewport.tsx";
 import { ViewportCanvas } from "./ViewportCanvas.tsx";
@@ -115,7 +115,7 @@ export const RealViewport: FC<RealViewportProps> = ({
 
 
 	const objectSelectables = room.objects.values().toArray().map(makeObjectSelectableItem);
-	const selectables = [
+	const allSelectables = [
 		...objectSelectables,
 		makeRoomSelectableItem(room),
 	];
@@ -247,7 +247,7 @@ export const RealViewport: FC<RealViewportProps> = ({
 		const clickPos = viewportToMap(viewportInfo, vec2(e.clientX - left, e.clientY - top));
 
 		const clickedItems = sortBy(
-			selectables.filter(obj => getClickbox(obj, clickPos)),
+			allSelectables.filter(obj => getClickbox(obj, clickPos)),
 			getZIndex,
 			// Descending order of z-index
 			(a, b) => b - a
@@ -286,7 +286,7 @@ export const RealViewport: FC<RealViewportProps> = ({
 			const diff = selectBounds.size.mul(viewportSize);
 			// Must be > 2px (i.e. dragging to select)
 			if (diff.mag() <= clickMaxDistance) return;
-			const newselect = selectables.filter(s => selectBounds.containsBounds(getSelectableBounds(s)));
+			const newselect = allSelectables.filter(s => selectBounds.containsBounds(getSelectableBounds(s)));
 			dispatchSelection({
 				type: "set_selection",
 				selection: newselect.map(selectableToSelection)
@@ -322,6 +322,36 @@ export const RealViewport: FC<RealViewportProps> = ({
 	}
 	// #endregion
 
+	const roomSelection = selection.filter(s => selectionInRoom(s, room));
+	const roomSelectables = roomSelection.map(i => selectionToSelectable(i, map));
+	const translateSelected = (diff: Vec2) => {
+		for (const item of roomSelectables) {
+			switch (item.type) {
+				case "object": {
+					dispatchMap({
+						type: "replace_object",
+						target: item.object.id,
+						replacement: obj => getTranslate(item.object)(item.object, diff)
+					});
+					break;
+				}
+				case "room": {
+					dispatchMap({
+						type: "replace_room",
+						target: item.room.id,
+						replacement: room => ({ ...room, bounds: item.room.bounds.translate(diff) })
+					});
+					break;
+				}
+			}
+		}
+	}
+	const translateCamera = (diff: Vec2) => {
+		dispatchView({
+			type: "set_camera_pos",
+			pos: camera.pos.add(diff),
+		});
+	}
 	// #region Hotkeys
 	const onKeyDown: React.KeyboardEventHandler = e => {
 		if (e.code === "Delete" || e.code === "Backspace") {
@@ -352,35 +382,42 @@ export const RealViewport: FC<RealViewportProps> = ({
 				selection: newSelection,
 			});
 		}
-		if (e.code === "Escape") {
+		const noModifiers = !(e.ctrlKey || e.shiftKey || e.altKey || e.metaKey);
+		if (e.code === "Escape" && noModifiers) {
 			dispatchSelection({
 				type: "clear_selection"
 			});
 		}
-		if (e.code === "KeyW") {
-			dispatchView({
-				type: "set_camera_pos",
-				pos: camera.pos.add(vec2(0, -5)),
-			});
+
+		// #region Camera WASD movement
+		if (e.code === "KeyW" && noModifiers) {
+			translateCamera(vec2(0, -5));
 		}
-		if (e.code === "KeyA") {
-			dispatchView({
-				type: "set_camera_pos",
-				pos: camera.pos.add(vec2(-5, 0)),
-			});
+		if (e.code === "KeyA" && noModifiers) {
+			translateCamera(vec2(-5, 0));
 		}
-		if (e.code === "KeyS") {
-			dispatchView({
-				type: "set_camera_pos",
-				pos: camera.pos.add(vec2(0, 5)),
-			});
+		if (e.code === "KeyS" && noModifiers) {
+			translateCamera(vec2(0, 5));
 		}
-		if (e.code === "KeyD") {
-			dispatchView({
-				type: "set_camera_pos",
-				pos: camera.pos.add(vec2(5, 0)),
-			});
+		if (e.code === "KeyD" && noModifiers) {
+			translateCamera(vec2(5, 0));
 		}
+		// #endregion
+
+		// #region Selection movement
+		if (e.code === "ArrowUp" && noModifiers) {
+			translateSelected(vec2(0, -1));
+		}
+		if (e.code === "ArrowLeft" && noModifiers) {
+			translateSelected(vec2(-1, 0));
+		}
+		if (e.code === "ArrowDown" && noModifiers) {
+			translateSelected(vec2(0, 1));
+		}
+		if (e.code === "ArrowRight" && noModifiers) {
+			translateSelected(vec2(1, 0));
+		}
+		// #endregion
 	};
 	// #endregion
 
