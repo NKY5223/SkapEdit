@@ -48,7 +48,7 @@ export const useOpenFile = () => {
 	if (!openPopover) throw new Error("Used useOpenFile outside of its provider");
 
 	return async (confirm?: (method: OpenMethod) => Promise<boolean>, options?: FilePickerOptions): Promise<[OpenMethod, File]> => {
-		/* if (window.showOpenFilePicker) {
+		if (window.showOpenFilePicker) {
 			const handles = await window.showOpenFilePicker(options);
 			if (handles.length <= 0) throw new Error("select at least one file", { cause: "open_no_files" });
 
@@ -59,7 +59,7 @@ export const useOpenFile = () => {
 
 			const file = await handles[0].getFile();
 			return ["openFilePicker", file];
-		} else  */{
+		} else {
 			const input = await openPopover();
 			const files = input.files;
 			if (confirm) {
