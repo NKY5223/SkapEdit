@@ -1,18 +1,18 @@
+import { saveFile } from "@common/save.ts";
+import { Icon } from "@components/icon/Icon.tsx";
 import { useToast } from "@components/toast/context.ts";
 import { useDispatchSkapMap, useSkapMap } from "@editor/reducer.ts";
+import { useOpenFile } from "@hooks/useOpenFile.tsx";
 import { FC } from "react";
+import { makeLogger } from "../../../savefile/logger.ts";
 import { SkapMapSchema } from "../../../savefile/skap.ts";
 import { mapToSkap } from "../../../savefile/skapExport.ts";
+import { skapToMap } from "../../../savefile/skapImport.ts";
 import { makeSingle } from "../../contextmenu/ContextMenu.ts";
 import { Translate } from "../../translate/Translate.tsx";
+import { useDispatchSelection } from "../selection.ts";
 import css from "./Topbar.module.css";
 import { TopbarMenuItem } from "./TopbarMenuItem.tsx";
-import { saveFile } from "@common/save.ts";
-import { openFile } from "@common/open.ts";
-import { skapToMap } from "../../../savefile/skapImport.ts";
-import { useDispatchSelection } from "../selection.ts";
-import { makeLogger } from "../../../savefile/logger.ts";
-import { Icon } from "@components/icon/Icon.tsx";
 
 type TopbarProps = {
 	openChangelog: () => void;
@@ -26,6 +26,7 @@ export const Topbar: FC<TopbarProps> = ({
 	const map = useSkapMap();
 	const dispatchMap = useDispatchSkapMap();
 	const dispatchSelection = useDispatchSelection();
+	const openFile = useOpenFile();
 	return (
 		<menu className={css["topbar"]}>
 			<li className={css["topbar-icon"]}></li>
@@ -82,7 +83,7 @@ export const Topbar: FC<TopbarProps> = ({
 				makeSingle("topbar.file.import_skap", "file_open", async () => {
 					try {
 						const [method, file] = await openFile(
-							() => confirm("Are you sure? This will overwrite any unsaved progress."),
+							async () => confirm("Are you sure? This will overwrite any unsaved progress."),
 							{
 								id: "skapedit-import",
 								types: [

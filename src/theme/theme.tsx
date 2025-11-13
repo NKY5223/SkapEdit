@@ -9,7 +9,7 @@ export function ThemeProvider({
 	theme
 }: React.PropsWithChildren<ThemeProviderProps>) {
 	return (
-		<div style={theme}>
+		<div data--provider="Theme" style={theme}>
 			{children}
 		</div>	
 	);

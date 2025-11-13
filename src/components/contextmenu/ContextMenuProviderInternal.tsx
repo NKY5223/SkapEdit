@@ -57,7 +57,7 @@ export const ContextMenuProviderInternal: FC<PropsWithChildren<ContextMenuProvid
 
 	return (
 		<clearContextMenuContext.Provider value={() => setMenu(null)}>
-			<div onContextMenuCapture={handleContextMenuCapture} onContextMenu={handleContextMenu}>
+			<div data--provider="ContextMenu" onContextMenuCapture={handleContextMenuCapture} onContextMenu={handleContextMenu}>
 				{children}
 				{/* silly hack to place focus before the first item of the context menu */}
 				{/* popoverOpen compatibility when,,, */}

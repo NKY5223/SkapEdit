@@ -19,6 +19,7 @@ import css from "./Editor.module.css";
 import { SelectionProvider } from "./selection.ts";
 import { SettingsProvider } from "@components/settings/SettingsProvider.tsx";
 import { SettingsMenu } from "@components/settings/Settings.tsx";
+import { OpenFileProvider } from "@hooks/useOpenFile.tsx";
 
 type EditorProps = {
 
@@ -35,31 +36,33 @@ export const Editor: FC<EditorProps> = ({
 			{/* DO NOT EDIT THIS KEY EVER */}
 			<SettingsProvider localStorageKey="skapedit_settings">
 				<TranslationProvider>
-					<ToastProvider>
-						<ThemeProvider>
-							<ContextMenuProvider>
-								{/* Editor */}
-								<SkapMapProvider initialValue={defaultMap}>
-									<SelectionProvider initialValue={[]}>
-										{/* Layout */}
-										<ViewProvidersProvider providers={viewProviders}>
-											<LayoutProvider initialValue={defaultLayoutTree}>
-												<title>{import.meta.env.DEV ? `🛠 SkapEdit (DEV)` : `SkapEdit`}</title>
-												<div className={css["editor"]}>
-													<Topbar openChangelog={openChangelog} openSettings={openSettings} />
-													<LayoutRoot />
-													<Changelog changelog={changelog} setOpen={setOpenChangelog} />
-													<SettingsMenu setOpen={setOpenSettings} />
-												</div>
-											</LayoutProvider>
-										</ViewProvidersProvider>
+					<OpenFileProvider>
+						<ToastProvider>
+							<ThemeProvider>
+								<ContextMenuProvider>
+									{/* Editor */}
+									<SkapMapProvider initialValue={defaultMap}>
+										<SelectionProvider initialValue={[]}>
+											{/* Layout */}
+											<ViewProvidersProvider providers={viewProviders}>
+												<LayoutProvider initialValue={defaultLayoutTree}>
+													<title>{import.meta.env.DEV ? `🛠 SkapEdit (DEV)` : `SkapEdit`}</title>
+													<div className={css["editor"]}>
+														<Topbar openChangelog={openChangelog} openSettings={openSettings} />
+														<LayoutRoot />
+														<Changelog changelog={changelog} setOpen={setOpenChangelog} />
+														<SettingsMenu setOpen={setOpenSettings} />
+													</div>
+												</LayoutProvider>
+											</ViewProvidersProvider>
 
-									</SelectionProvider>
-								</SkapMapProvider>
+										</SelectionProvider>
+									</SkapMapProvider>
 
-							</ContextMenuProvider>
-						</ThemeProvider>
-					</ToastProvider>
+								</ContextMenuProvider>
+							</ThemeProvider>
+						</ToastProvider>
+					</OpenFileProvider>
 				</TranslationProvider>
 			</SettingsProvider>
 		</ErrorBoundary>

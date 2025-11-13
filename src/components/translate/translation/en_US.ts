@@ -185,4 +185,6 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 		),
 
 	"generic.none_selected": "(none)",
+
+	"generic.input_file": "Input file",
 });

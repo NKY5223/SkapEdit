@@ -1,0 +1,29 @@
+.popover {
+	width: 100%;
+	height: 100%;
+	background: none;
+	border: none;
+	&::backdrop {
+		background-color: oklch(from var(--theme-bg-0) l c h / 0.75);
+	}
+	&:popover-open {
+		display: grid;
+	}
+	& > label {
+		place-self: center;
+		cursor: pointer;
+		padding-inline: .5em;
+		padding-block: .25em;
+		
+		font-size: 2em;
+		
+		color: var(--theme-fg-1);
+		background-color: var(--theme-bg-1);
+		border: var(--theme-border-width) solid var(--theme-bd-1);
+		border-radius: var(--theme-border-radius);
+
+		& > input {
+			display: none;
+		}
+	}
+}

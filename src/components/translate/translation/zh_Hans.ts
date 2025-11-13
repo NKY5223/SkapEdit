@@ -182,4 +182,6 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 		: "半刃冒或平原家不合拉穿書背連三呀念鼻細。美坐給休朋南往像男天記哪交。黑聲士、人帶裏穿澡抱長，呢魚起歡在寸樹反旁月清害！目麻才給乾布果位車八半泉乾空主丟音肖。喝羊北。",
 
 	"generic.none_selected": "（无）",
+
+	"generic.input_file": "输入档案",
 });

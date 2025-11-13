@@ -150,12 +150,13 @@ export type TranslationArgs = {
 
 	"generic.action.open": {};
 	"generic.action.close": {};
-
+	
 	"generic.list_string": { strings: string[]; };
-
+	
 	"generic.text": {};
 	"generic.lorem": {};
 	"generic.none_selected": {};
+	"generic.input_file": {};
 };
 
 type EmptyKeys<T, K extends keyof T = keyof T> = K extends K
