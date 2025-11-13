@@ -31,6 +31,7 @@ import { SpawnerBackgroundWebGLRenderer, SpawnerEntitiesWebGLRenderer } from "./
 import { CardinalDirection } from "@editor/object/Base.tsx";
 import { Color } from "@common/color.ts";
 import { hotkeysHandler, keybindStr } from "@common/keybind.ts";
+import { ID } from "@common/uuid.ts";
 
 /** Maximum distance for something to count as a click */
 const clickMaxDistance = 2;
@@ -400,10 +401,24 @@ export const RealViewport: FC<RealViewportProps> = ({
 		[keybindStr("ArrowRight"), () => translateSelected(vec2(1, 0))],
 		// #endregion
 	
-		// This does work
-		// [keybindStr("alt+ArrowLeft"), () => {
-		// 	console.log("alt+left");
-		// }, { preventDefault: true }],
+		[keybindStr("ctrl+ArrowLeft"), () => {
+			const ids: (ID | null)[] = map.rooms.keys().toArray();
+			const index = ids.indexOf(state.currentRoomId);
+			const prevRoomId = ids.at(index - 1) ?? null;
+			dispatchView({
+				type: "set_current_room_id",
+				currentRoomId: prevRoomId,
+			})
+		}, { preventDefault: true }],
+		[keybindStr("ctrl+ArrowRight"), () => {
+			const ids: (ID | null)[] = map.rooms.keys().toArray();
+			const index = ids.indexOf(state.currentRoomId);
+			const nextRoomId = ids.at((index + 1) % ids.length) ?? null;
+			dispatchView({
+				type: "set_current_room_id",
+				currentRoomId: nextRoomId,
+			})
+		}, { preventDefault: true }],
 	]);
 	// #endregion
 
