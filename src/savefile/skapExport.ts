@@ -4,6 +4,7 @@ import { Vec2 } from "@common/vec2.ts";
 import { Color } from "@common/color.ts";
 import { Vector } from "@common/vector.ts";
 import { mod } from "@common/number.ts";
+import { tuples } from "@common/array.ts";
 
 const vec2ToSkap = (vec: Vec2): SkapFile.Vec2 => vec.components;
 const rgbToSkap = (color: Color): SkapFile.Rgb => color.rgb().mul(255).components;
@@ -125,10 +126,39 @@ const objectToSkap = (object: SkapObject, room: SkapRoom, map: SkapMap): SkapFil
 		case "movingSlime":
 		case "movingIce": {
 			const { type, size, period, points } = object;
+
+			const sorted = points
+				.filter(p => p.time >= 0 && p.time <= period)
+				.sort((a, b) => a.time - b.time);
+			const first = sorted[0];
+			const last = sorted[sorted.length - 1];
+			const pos0 = Vector.lerp(first.pos, last.pos)(
+				first.time / (first.time + period - last.time)
+			);
+
+			const withEnds: typeof points = [
+				...first.time === 0 ? [] : [{
+					pos: pos0,
+					time: 0,
+				}],
+				...sorted,
+				...first.time === 0 ? [] : [{
+					pos: pos0,
+					time: period,
+				}],
+			];
+
 			return [{
 				type,
 				size: vec2ToSkap(size),
-				points: [],
+				points: tuples(withEnds, 2).map(([curr, next]) => {
+					const dx = next.pos.sub(curr.pos).mag();
+					const dt = next.time - curr.time;
+					return {
+						position: vec2ToSkap(curr.pos),
+						vel: dx / dt,
+					};
+				}),
 			}];
 		}
 	}
