@@ -142,7 +142,10 @@ const objectToSkap = (object: SkapObject, room: SkapRoom, map: SkapMap): SkapFil
 					time: 0,
 				}],
 				...sorted,
-				...first.time === 0 ? [] : [{
+				...first.time === 0 ? [{
+					pos: first.pos,
+					time: period,
+				}] : [{
 					pos: pos0,
 					time: period,
 				}],
