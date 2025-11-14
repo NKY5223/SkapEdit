@@ -12,6 +12,7 @@ import { ViewportAction, ViewportInfo } from "../Viewport.tsx";
 import css from "./ActiveSelection.module.css";
 import { getAffine, getSelectableBounds, getTranslate } from "./getObjectProperties.ts";
 import { ResizeHandle } from "./ResizeHandle.tsx";
+import { round } from "@common/number.ts";
 
 const rounding = 1;
 
@@ -242,7 +243,15 @@ const ActiveSelectionItem: FC<ActiveSelectionItemProps> = ({
 					pos: maybeConst(pos, obj.pos)
 				} : obj
 			});
-			return <CircleSelection radius={radius} {...{ viewportInfo, active, pos, setPos }} />;
+			const setRadius: Dispatch<SetStateAction<number>> = radius => dispatchMap({
+				type: "replace_object",
+				target: object.id,
+				replacement: obj => "radius" in obj ? {
+					...obj,
+					radius: maybeConst(radius, obj.radius)
+				} : obj
+			});
+			return <CircleSelection {...{ viewportInfo, active, pos, setPos, radius, setRadius }} />;
 		}
 	}
 }
@@ -321,12 +330,13 @@ type CircleSelectionProps = {
 	active?: boolean;
 	pos: Vec2;
 	setPos: Dispatch<SetStateAction<Vec2>>;
+	setRadius: Dispatch<SetStateAction<number>>;
 	radius: number;
 }
 const CircleSelection: FC<CircleSelectionProps> = ({
 	viewportInfo,
 	pos, setPos,
-	radius,
+	radius, setRadius,
 	active = true,
 }) => {
 	const { listeners, dragging } = useDrag({
@@ -346,6 +356,17 @@ const CircleSelection: FC<CircleSelectionProps> = ({
 		},
 	});
 	const [x, y] = pos;
+	const onUpdate = (update: BoundsUpdateLRTBWH) => {
+		if ("left" in update && "top" in update) {
+			const dx = x - update.left;
+			const dy = y - update.top;
+			setRadius(round(rounding, Math.hypot(dx, dy)));
+		}
+	}
+	const props = {
+		viewportInfo,
+		onUpdate
+	};
 	const className = toClassName(
 		css["selection"],
 		css["circle"],
@@ -357,7 +378,14 @@ const CircleSelection: FC<CircleSelectionProps> = ({
 			"--x": `${x}px`,
 			"--y": `${y}px`,
 			"--r": `${radius}px`,
-		}} {...listeners}></div>
+		}} {...listeners}>
+			<ResizeHandle x={-1} y={-1} circle {...props} />
+
+			{/* <ResizeHandle x={+0} y={-1} {...props} />
+			<ResizeHandle x={-1} y={+0} {...props} />
+			<ResizeHandle x={+1} y={+0} {...props} />
+			<ResizeHandle x={+0} y={+1} {...props} /> */}
+		</div>
 	);
 }
 

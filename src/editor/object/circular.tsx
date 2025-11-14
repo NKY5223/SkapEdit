@@ -48,6 +48,7 @@ const circularProperties = <T extends Circular<string>>(type: T["type"], zIndex:
 								onInput={position => update(obj => ({ ...obj, pos: position }))}
 							/>
 							<NumberInput value={radius}
+								min={0}
 								onInput={radius =>
 									update(obj => ({ ...obj, radius }))}
 								label={"Radius"}

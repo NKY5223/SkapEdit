@@ -28,11 +28,14 @@ type ResizeHandleProps = {
 	x: -1 | 0 | 1;
 	/** -1: top | 0: middle | 1: bottom */
 	y: -1 | 0 | 1;
+	circle?: boolean;
 	viewportInfo: ViewportInfo;
 	onUpdate: (update: BoundsUpdateLRTBWH) => void;
 };
 export const ResizeHandle: FC<ResizeHandleProps> = ({
-	x, y, viewportInfo, onUpdate,
+	x, y, 
+	circle,
+	viewportInfo, onUpdate,
 }) => {
 	const xn = xName(x);
 	const yn = yName(y);
@@ -62,6 +65,7 @@ export const ResizeHandle: FC<ResizeHandleProps> = ({
 		css["handle"],
 		css[name],
 		dragging && css["dragging"],
+		circle && css["circle"],
 	);
 	return (
 		<div className={className} {...mergeListeners({

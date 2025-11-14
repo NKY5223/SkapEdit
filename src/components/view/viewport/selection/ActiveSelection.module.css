@@ -34,26 +34,26 @@
 			display: none;
 		}
 	}
-}
-.rect {
-	--w: 0px;
-	--h: 0px;
-	width: calc(var(--w) * var(--viewport-scale) + 2 * var(--selection-border-width));
-	height: calc(var(--h) * var(--viewport-scale) + 2 * var(--selection-border-width));
-}
-.circle {
-	--r: 25px;
-	width: calc(2 * var(--r) * var(--viewport-scale) + 2 * var(--selection-border-width));
-	height: calc(2 * var(--r) * var(--viewport-scale) + 2 * var(--selection-border-width));
-	translate: calc(-1 * var(--r) * var(--viewport-scale)) calc(-1 * var(--r) * var(--viewport-scale));
-	border-radius: 50%;
-}
-.point {
-	--r: 25px;
-	width: calc(2 * var(--r) * var(--viewport-scale) + 2 * var(--selection-border-width));
-	height: calc(2 * var(--r) * var(--viewport-scale) + 2 * var(--selection-border-width));
-	translate: calc(-1 * var(--r) * var(--viewport-scale)) calc(-1 * var(--r) * var(--viewport-scale));
-	border-radius: 50%;
+	&.rect {
+		--w: 0px;
+		--h: 0px;
+		width: calc(var(--w) * var(--viewport-scale) + 2 * var(--selection-border-width));
+		height: calc(var(--h) * var(--viewport-scale) + 2 * var(--selection-border-width));
+	}
+	&.circle {
+		--r: 25px;
+		width: calc(2 * var(--r) * var(--viewport-scale) + 2 * var(--selection-border-width));
+		height: calc(2 * var(--r) * var(--viewport-scale) + 2 * var(--selection-border-width));
+		translate: calc(-1 * var(--r) * var(--viewport-scale)) calc(-1 * var(--r) * var(--viewport-scale));
+		border-radius: 50%;
+	}
+	&.point {
+		--r: 25px;
+		width: calc(2 * var(--r) * var(--viewport-scale) + 2 * var(--selection-border-width));
+		height: calc(2 * var(--r) * var(--viewport-scale) + 2 * var(--selection-border-width));
+		translate: calc(-1 * var(--r) * var(--viewport-scale)) calc(-1 * var(--r) * var(--viewport-scale));
+		border-radius: 50%;
+	}
 }
 
 .handle {
@@ -62,6 +62,7 @@
 	height: var(--selection-handle-size);
 	background-color: var(--selection-handle-color);
 	outline: var(--selection-handle-outline);
+	--circle-inset: 85.355%;
 
 	&.dragging {
 		--selection-handle-interaction-inset: -1000vw;
@@ -101,20 +102,36 @@
 		right: 100%;
 		bottom: 100%;
 		cursor: nwse-resize;
+		&.circle {
+			right: var(--circle-inset);
+			bottom: var(--circle-inset);
+		}
 	}
 	&.top-right {
 		left: 100%;
 		bottom: 100%;
 		cursor: nesw-resize;
+		&.circle {
+			left: var(--circle-inset);
+			bottom: var(--circle-inset);
+		}
 	}
 	&.bottom-left {
 		right: 100%;
 		top: 100%;
 		cursor: nesw-resize;
+		&.circle {
+			right: var(--circle-inset);
+			top: var(--circle-inset);
+		}
 	}
 	&.bottom-right {
 		left: 100%;
 		top: 100%;
 		cursor: nwse-resize;
+		&.circle {
+			left: var(--circle-inset);
+			top: var(--circle-inset);
+		}
 	}
 }
