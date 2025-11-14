@@ -3,6 +3,7 @@ import { iceProperties, lavaProperties, obstacleProperties, slimeProperties } fr
 import { blockProperties } from "./block.tsx";
 import { circularIceProperties, circularLavaProperties, circularObstacleProperties, circularSlimeProperties } from "./circular.tsx";
 import { gravityZoneProperties } from "./gravityZone.tsx";
+import { movingObstacleProperties, movingLavaProperties, movingSlimeProperties, movingIceProperties } from "./moving.tsx";
 import { rotatingLavaProperties } from "./rotating.tsx";
 import { spawnerProperties } from "./spawner.tsx";
 import { teleporterProperties } from "./teleporter.tsx";
@@ -26,6 +27,11 @@ const properties = [
 	circularLavaProperties,
 	circularSlimeProperties,
 	circularIceProperties,
+
+	movingObstacleProperties,
+	movingLavaProperties,
+	movingSlimeProperties,
+	movingIceProperties,
 ];
 
 Object.assign(window, { logZIndices: () => {

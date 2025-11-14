@@ -158,6 +158,10 @@ const ActiveSelectionItem: FC<ActiveSelectionItemProps> = ({
 		case "teleporter":
 		case "spawner":
 		case "rotatingLava":
+		case "movingObstacle":
+		case "movingLava":
+		case "movingSlime":
+		case "movingIce":
 			{
 				const { type, bounds } = object;
 				const setBounds: Dispatch<SetStateAction<Bounds>> = update => {

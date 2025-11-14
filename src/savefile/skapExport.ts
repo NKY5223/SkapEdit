@@ -120,6 +120,17 @@ const objectToSkap = (object: SkapObject, room: SkapRoom, map: SkapMap): SkapFil
 				radius,
 			}];
 		}
+		case "movingObstacle":
+		case "movingLava":
+		case "movingSlime":
+		case "movingIce": {
+			const { type, bounds, points } = object;
+			return [{
+				type,
+				size: vec2ToSkap(bounds.size),
+				points: [],
+			}];
+		}
 	}
 }
 

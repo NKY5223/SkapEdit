@@ -57,8 +57,8 @@ const rotatingProperties = <T extends Rotating<string>>(type: T["type"], zIndex:
 					<>
 						<h2>Rotating Lava</h2>
 						<FormSection>
-							<FormTitle><Translate k="generic.position" /> </FormTitle>
-							<BoundsInput bounds={bounds} setBounds={bounds =>
+							<FormTitle><Translate k="generic.position" /></FormTitle>
+							<BoundsInput value={bounds} onInput={bounds =>
 								update(obj => ({ ...obj, bounds }))
 							} />
 						</FormSection>

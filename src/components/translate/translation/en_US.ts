@@ -117,9 +117,7 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 		"Facing ",
 		t(`generic.direction.${CardinalDirection[object.direction]}`, {}),
 		" at ",
-		object.bounds.topLeft[0],
-		", ",
-		object.bounds.topLeft[1],
+		t(`generic.vec2`, { vector: object.bounds.center() }),
 	],
 	// #endregion
 
@@ -174,6 +172,9 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"generic.action.close": "Close",
 
 	"generic.list_string": ({ strings }) => strings.join(", "),
+	"generic.vec2": ({ vector: [x, y] }) => [
+		x, ", ", y,
+	],
 
 	"generic.text": "Text",
 

@@ -5,7 +5,7 @@ import { toClassName } from "@components/utils.tsx";
 import { Icon } from "@components/icon/Icon.tsx";
 
 type TableInputProps<T> = {
-	values: T[];
+	value: T[];
 	/**
 	 * This will be used for the expanded view of items.
 	 */
@@ -24,15 +24,15 @@ type TableInputProps<T> = {
 	removeItem?: (index: number) => void;
 };
 export const TableInput = <T,>({
-	values,
+	value,
 	details, summary, header,
 	addItem, removeItem,
 }: TableInputProps<T>): ReactNode => {
 	const columnCount = (header?.length
-		?? (values.length > 0 ? summary(values[0]).length : undefined)
+		?? (value.length > 0 ? summary(value[0]).length : undefined)
 		?? 1);
 
-	const rows = values.map((v, i) => (
+	const rows = value.map((v, i) => (
 		// Can't use <details> because it has weird display behaviour
 		<Details key={i}>
 			<>

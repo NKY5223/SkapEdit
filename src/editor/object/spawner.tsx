@@ -67,14 +67,14 @@ export const spawnerProperties = makeObjectProperties<SkapSpawner>("spawner", {
 					<h2><Translate k="object.name.spawner" /></h2>
 					<FormSection>
 						<FormTitle><Translate k="generic.position" /></FormTitle>
-						<BoundsInput bounds={bounds} setBounds={bounds => dispatchMap({
+						<BoundsInput value={bounds} onInput={bounds => dispatchMap({
 							type: "replace_object",
 							target: id,
 							replacement: obj => ({ ...obj, bounds })
 						})} />
 					</FormSection>
 					<FormTitle>Entities</FormTitle>
-					<TableInput values={object.entities}
+					<TableInput value={object.entities}
 						summary={ent => {
 							const { type, count, speed, radius } = ent;
 							const url = isKnownEntityType(type)

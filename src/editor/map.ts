@@ -11,6 +11,7 @@ import { SkapTeleporter } from "./object/teleporter.ts";
 import { SkapSpawner } from "./object/spawner.tsx";
 import { SkapRotatingLava } from "./object/rotating.tsx";
 import { SkapCircularIce, SkapCircularLava, SkapCircularObstacle, SkapCircularSlime } from "./object/circular.tsx";
+import { SkapMovingIce, SkapMovingLava, SkapMovingObstacle, SkapMovingSlime } from "./object/moving.tsx";
 
 export type SkapObject = (
 	| SkapObstacle
@@ -27,6 +28,10 @@ export type SkapObject = (
 	| SkapCircularLava
 	| SkapCircularSlime
 	| SkapCircularIce
+	| SkapMovingObstacle
+	| SkapMovingLava
+	| SkapMovingSlime
+	| SkapMovingIce
 );
 export type SkapRoom = {
 	id: ID;
@@ -152,17 +157,17 @@ export const makeSpawner = (left: number, top: number, right: number, bottom: nu
 export const makeSpawnerEntity = (type: string, count: number, speed: number, radius: number): SkapSpawner["entities"][number] => ({
 	type, count, speed, radius
 });
-export const makeRotatingLava = (left: number, top: number, right: number, bottom: number, 
+export const makeRotatingLava = (left: number, top: number, right: number, bottom: number,
 	center: Vec2, initial: number, speed: number): SkapRotatingLava => ({
-	type: "rotatingLava",
-	id: createId("obj-spawner"),
-	bounds: new Bounds({ left, top, right, bottom }),
-	rotation: {
-		center,
-		initial,
-		speed,
-	},
-});
+		type: "rotatingLava",
+		id: createId("obj-spawner"),
+		bounds: new Bounds({ left, top, right, bottom }),
+		rotation: {
+			center,
+			initial,
+			speed,
+		},
+	});
 
 export const makeCircularLava = (x: number, y: number, radius: number): SkapCircularLava => ({
 	type: "circularLava",
@@ -170,6 +175,19 @@ export const makeCircularLava = (x: number, y: number, radius: number): SkapCirc
 	pos: vec2(x, y),
 	radius,
 });
+
+export const makeMovePoint = (x: number, y: number, time: number): SkapMovingLava["points"][number] => ({
+	pos: vec2(x, y),
+	time,
+});
+export const makeMovingLava = (left: number, top: number, right: number, bottom: number,
+	period: number, points: SkapMovingLava["points"]): SkapMovingLava => ({
+		type: "movingLava",
+		id: createId("obj-movingLava"),
+		bounds: new Bounds({ left, top, right, bottom }),
+		period,
+		points,
+	});
 // #endregion
 
 export const toIdMap = <T extends { id: ID; }>(objs: T[]): Map<ID, T> =>

@@ -8,6 +8,7 @@ import { RectWebGLRenderer } from "./rect.ts";
 import { RotatedRectWebGLRenderer } from "./rotated.ts";
 import frag from "./shader/solidColor.frag?raw";
 import circleFrag from "./shader/solidColorCircle.frag?raw";
+import { MovingRectWebGLRenderer } from "./moving.ts";
 
 const rgba = Color.LAVA.rgba();
 const ghost = Color.LAVA.withAlpha(0.5).rgba();
@@ -18,7 +19,9 @@ export class LavaWebGLRenderer extends RectWebGLRenderer {
 	}
 	rects(viewportInfo: ViewportInfo): Bounds[] {
 		return viewportInfo.room.objects.values()
-			.filter(obj => obj.type === "lava" || obj.type === "rotatingLava")
+			.filter(obj => obj.type === "lava" ||
+				obj.type === "rotatingLava" ||
+				obj.type === "movingLava")
 			.map(o => o.bounds)
 			.toArray();
 	}
@@ -31,7 +34,7 @@ export class RotatingLavaWebGLRenderer extends RotatedRectWebGLRenderer {
 	constructor() {
 		super(frag);
 	}
-	rects(viewportInfo: ViewportInfo, webGlViewportInfo: WebGLViewportInfo): { bounds: Bounds; center: Vec2; rotation: number; }[] {
+	rects(viewportInfo: ViewportInfo, webGlViewportInfo: WebGLViewportInfo) {
 		return viewportInfo.room.objects.values()
 			.filter(obj => obj.type === "rotatingLava")
 			.map(o => ({
@@ -60,5 +63,22 @@ export class CircularLavaWebGLRenderer extends CircleWebGLRenderer {
 	}
 	preRender(gl: WebGL2RenderingContext, viewportInfo: ViewportInfo, webGlViewportInfo: WebGLViewportInfo): void {
 		this.setUniform4f(gl, "uColor", rgba);
+	}
+}
+export class MovingLavaWebGLRenderer extends MovingRectWebGLRenderer {
+	constructor() {
+		super(frag);
+	}
+	rects(viewportInfo: ViewportInfo, webGlViewportInfo: WebGLViewportInfo) {
+		return viewportInfo.room.objects.values()
+			.filter(obj => obj.type === "movingLava")
+			.toArray();
+	}
+	preRender(gl: WebGL2RenderingContext, viewportInfo: ViewportInfo, webGlViewportInfo: WebGLViewportInfo): void {
+		this.enableDefaultBlend(gl);
+		this.setUniform4f(gl, "uColor", ghost);
+	}
+	postRender(gl: WebGL2RenderingContext, viewportInfo: ViewportInfo, webGlViewportInfo: WebGLViewportInfo): void {
+		this.disableBlend(gl);
 	}
 }

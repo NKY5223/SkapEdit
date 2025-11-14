@@ -53,7 +53,19 @@ export const makeTranslator = <const R extends Record<string, {}>>(
 				console.warn("Missing translation:", key, args, "\n", 
 					exportWarnedTranslations(warnings));
 			}
-			return makeItalic(makeCode(String(key)));
+			const entries = Object.entries(args).filter(([k, ]) => k !== "k");
+			return makeItalic(makeCode([
+				String(key),
+				entries.length ? [
+					"(",
+					entries.map(([key, value]) => [
+						key,
+						"=",
+						String(value),
+					]),
+					")",
+				] : [],
+			]));
 		}
 		if (typeof translation === "function") {
 			return translation(args, translator);

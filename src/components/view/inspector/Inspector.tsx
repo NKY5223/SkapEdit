@@ -114,7 +114,7 @@ const RoomSelectionForm: FC<{ room: SkapRoom; }> = ({ room }) => {
 				label={<Translate k="generic.name" />}
 			/>
 			<FormTitle><Translate k="generic.position" /></FormTitle>
-			<BoundsInput bounds={bounds} setBounds={bounds => updateRoom(room => ({ ...room, bounds }))} />
+			<BoundsInput value={bounds} onInput={bounds => updateRoom(room => ({ ...room, bounds }))} />
 			<ColorInput value={obstacleColor} alpha
 				onInput={obstacleColor => updateRoom(room => ({ ...room, obstacleColor }))}
 				label={<Icon icon="obstacle" title={translate("inspector.room.obstacle_color")} />}

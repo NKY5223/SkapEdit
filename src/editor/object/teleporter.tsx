@@ -62,7 +62,7 @@ export const teleporterProperties = makeObjectProperties<SkapTeleporter>("telepo
 					<h2><Translate k="object.name.teleporter" /></h2>
 					<FormSection>
 						<FormTitle><Translate k="generic.position" /></FormTitle>
-						<BoundsInput bounds={bounds} setBounds={bounds => dispatchMap({
+						<BoundsInput value={bounds} onInput={bounds => dispatchMap({
 							type: "replace_object",
 							target: id,
 							replacement: obj => ({ ...obj, bounds })

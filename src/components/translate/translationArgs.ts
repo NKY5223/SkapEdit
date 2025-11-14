@@ -2,6 +2,7 @@ import { ID } from "@common/uuid.ts";
 import { useBaseTranslationString } from "./translate.ts";
 import { SkapTeleporter } from "@editor/object/teleporter.ts";
 import { SkapRoom } from "@editor/map.ts";
+import { Vec2 } from "@common/vec2.ts";
 
 export type TranslationArgs = {
 	// #region Layout
@@ -152,6 +153,7 @@ export type TranslationArgs = {
 	"generic.action.close": {};
 	
 	"generic.list_string": { strings: string[]; };
+	"generic.vec2": { vector: Vec2; };
 	
 	"generic.text": {};
 	"generic.lorem": {};

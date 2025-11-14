@@ -9,8 +9,8 @@ import { IconName } from "@components/icon/icons.ts";
 import { useTranslate } from "@components/translate/translationArgs.ts";
 
 type BoundsInputProps = {
-	bounds: Bounds;
-	setBounds: Dispatch<Bounds>;
+	value: Bounds;
+	onInput: Dispatch<Bounds>;
 	clamp?: BoundsClampBehavior;
 
 	leftTitle?: string;
@@ -29,7 +29,7 @@ type BoundsInputProps = {
 
 /** Despite the name, does not return an `<input />`; Returns `<><FormSection row>...</>`. */
 export const BoundsInput: FC<BoundsInputProps> = ({
-	bounds, setBounds, clamp = "prefer-new",
+	value, onInput, clamp = "prefer-new",
 	leftTitle, leftIcon = "position_left",
 	topTitle, topIcon = "vertical_align_bottom",
 	rightTitle, rightIcon = "position_right",
@@ -40,13 +40,13 @@ export const BoundsInput: FC<BoundsInputProps> = ({
 	const {
 		setLeft, setTop, setRight, setBottom,
 		setWidth, setHeight,
-	} = boundsSetters(toDispatchSetStateAction(setBounds, bounds), clamp);
+	} = boundsSetters(toDispatchSetStateAction(onInput, value), clamp);
 	const translate = useTranslate();
 
 	const {
 		left, top, right, bottom,
 		width, height
-	} = bounds;
+	} = value;
 	return (<>
 		<FormSection row>
 			<NumberInput name="left" value={left} onInput={setLeft} label={

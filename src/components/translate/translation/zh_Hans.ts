@@ -117,9 +117,7 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 		"向",
 		t(`generic.direction.${CardinalDirection[object.direction]}`, {}),
 		"，在",
-		object.bounds.topLeft[0],
-		"，",
-		object.bounds.topLeft[1],
+		t(`generic.vec2`, { vector: object.bounds.center() }),
 	],
 	// #endregion
 
@@ -171,6 +169,9 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"generic.direction.free": "自由",
 
 	"generic.list_string": ({ strings }) => strings.join("、"),
+	"generic.vec2": ({ vector: [x, y] }) => [
+		x, "、", y,
+	],
 
 	"generic.action.open": "开",
 	"generic.action.close": "关",

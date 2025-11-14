@@ -2,7 +2,10 @@
 	--table-border: var(--theme-border-width) solid var(--theme-bd-0);
 	--columns: 1;
 	display: grid;
-	grid-template-columns: min-content repeat(var(--columns), auto) min-content;
+	grid-template-columns: min-content repeat(var(--columns), 1fr);
+	&:has(.remove) {
+		grid-template-columns: min-content repeat(var(--columns), 1fr) min-content;
+	}
 }
 .details {
 	display: grid;

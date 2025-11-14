@@ -25,7 +25,7 @@ const circleObject = <T extends string>(type: T) => z.object({
 const positionObject = <T extends string>(type: T) => z.object({
 	type: z.literal(type),
 	position: Vec2,
-})
+});
 
 // #region basic
 const Obstacle = rectObject("obstacle");
