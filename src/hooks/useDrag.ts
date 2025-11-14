@@ -43,7 +43,7 @@ type DragParams = {
 };
 export const useDrag = ({
 	buttons,
-	normalizeToUnit: normalize = null,
+	normalizeToUnit: normalizeRef = null,
 	clamp = false,
 	onDrag, onEndDrag,
 	normalizeDir = true,
@@ -68,6 +68,29 @@ export const useDrag = ({
 	const [currentPos, setCurrentPos] = useState(zero);
 	const previous = useRef(zero);
 
+	const normalize = (pointer: Vec2): Vec2 => {
+		if (!normalizeRef) {
+			return pointer;
+		}
+		// Normalize to [0, 1]
+		const target = normalizeRef.current;
+		if (!target) return pointer;
+
+		const bounds = target.getBoundingClientRect();
+
+		const targetPos = vec2(bounds.left, bounds.top);
+		const targetSize = vec2(bounds.width, bounds.height);
+		const newPos = pointer.sub(targetPos).div(targetSize);
+
+		const doDirNorm = normalizeDir && elementIsRtl(target);
+		const normedNewPos = doDirNorm
+			? vec2(1 - newPos[0], newPos[1])
+			: newPos;
+		const clamped = clamp ? clampVec(normedNewPos) : normedNewPos;
+
+		return clamped;
+	}
+
 	// Drag
 	useEffect(() => {
 		if (!dragging) return;
@@ -75,33 +98,11 @@ export const useDrag = ({
 		const handleMove = (event: PointerEvent): void => {
 			event.preventDefault();
 			const pointer = vec2(event.clientX, event.clientY);
-			if (!normalize) {
-				// Do not normalize
-				const newPos = pointer;
-				if (onDrag) onDrag(newPos, previous.current, beforeDrag, event);
-				setCurrentPos(newPos);
-				previous.current = newPos;
-				return;
-			}
-			// Normalize to [0, 1]
-			const target = normalize.current;
-			if (!target) return;
-
-			const bounds = target.getBoundingClientRect();
-
-			const targetPos = vec2(bounds.left, bounds.top);
-			const targetSize = vec2(bounds.width, bounds.height);
-			const newPos = pointer.sub(targetPos).div(targetSize);
-
-			const doDirNorm = normalizeDir && elementIsRtl(target);
-			const normedNewPos = doDirNorm
-				? vec2(1 - newPos[0], newPos[1])
-				: newPos;
-			const clamped = clamp ? clampVec(normedNewPos) : normedNewPos;
-
-			if (onDrag) onDrag(clamped, previous.current, beforeDrag, event);
-			setCurrentPos(clamped);
-			previous.current = clamped;
+			const normalized = normalize(pointer);
+			
+			if (onDrag) onDrag(normalized, previous.current, beforeDrag, event);
+			setCurrentPos(normalized);
+			previous.current = normalized;
 		};
 		window.addEventListener("pointermove", handleMove);
 		return () => window.removeEventListener("pointermove", handleMove);
@@ -132,33 +133,12 @@ export const useDrag = ({
 			if (stopPropagation) event.stopPropagation();
 			setDragging(true);
 			const pointer = vec2(event.clientX, event.clientY);
+			const normalized = normalize(pointer);
 
-			if (!normalize) {
-				previous.current = pointer;
-				setBeforeDrag(pointer);
-				setCurrentPos(pointer);
-				onDrag?.(pointer, pointer, pointer, event.nativeEvent);
-				return;
-			}
-
-			const target = normalize.current;
-			if (!target) {
-				console.warn(`Could not calculate previous norm pointer position.`);
-				previous.current = pointer;
-				setBeforeDrag(pointer);
-				setCurrentPos(pointer);
-				return;
-			}
-
-			const bounds = target.getBoundingClientRect();
-			const targetPos = vec2(bounds.left, bounds.top);
-			const targetSize = vec2(bounds.width, bounds.height);
-			const curr = pointer.sub(targetPos).div(targetSize);
-			const clamped = clamp ? clampVec(curr) : curr;
-			previous.current = clamped;
-			setBeforeDrag(clamped);
-			setCurrentPos(clamped);
-			onDrag?.(clamped, clamped, clamped, event.nativeEvent);
+			previous.current = normalized;
+			setBeforeDrag(normalized);
+			setCurrentPos(normalized);
+			onDrag?.(normalized, normalized, normalized, event.nativeEvent);
 		}
 	};
 
