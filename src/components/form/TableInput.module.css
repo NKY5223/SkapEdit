@@ -1,42 +1,59 @@
 .table {
 	--table-border: var(--theme-border-width) solid var(--theme-bd-0);
-	border-radius: var(--theme-border-radius);
-	border-collapse: collapse;
-
-	& th {
-		border: var(--table-border);
-		padding: .25em;
-	}
+	--columns: 1;
+	display: grid;
+	grid-template-columns: min-content repeat(var(--columns), auto) min-content;
 }
-.summary-row {
-	cursor: pointer;
-	border: var(--table-border);
-	&.active {
-		background-color: var(--theme-bg-1);
-		color: var(--theme-fg-1);
-	}
+.details {
+	display: grid;
+	grid-template-columns: subgrid;
+	grid-column: 1 / -1;
 }
-.summary-cell {
-	padding-inline: .5em;
-	padding-block: .25em;
-}
-.details-row {
-}
-.details-cell {
+.summary {
+	display: grid;
+	grid-template-columns: subgrid;
+	grid-column: 1 / -1;
+	grid-row: 1 / 2;
+	
 	padding: .5em;
 	border: var(--table-border);
+	.details.open > & {
+		background-color: var(--theme-bg-1);
+		color: var(--theme-fg-1);
+		border-color: var(--theme-bd-1);
+	}
+	:not(:last-child, .open) > & {
+		border-block-end: none;
+	}
+}
+.arrow {
+	padding-inline-end: .5em;
+	&::after {
+		font: 1.25em "Material Symbols Outlined";
+		line-height: 1;
+		content: "arrow_right";
+	}
+	&:dir(rtl)::after {
+		content: "arrow_left";
+	}
+	.open > .summary > &::after {
+		content: "arrow_drop_down";
+	}
 }
 .details-content {
-	display: grid;
-	grid-template-rows: 1fr;
-	grid-auto-flow: column;
-	grid-template-columns: auto min-content;
-	place-items: center;
-}
-.add-cell {
-	border: var(--table-border);
-}
+	grid-column: 1 / -1;
 
+	padding: .5em;
+	border: var(--table-border);
+	border-block-start: none;
+
+	:not(:last-child) > & {
+		border-block-end: none;
+	}
+	.details:not(.open) > & {
+		display: none;
+	}
+}
 .remove {
 	background: none;
 	border: none;
@@ -45,6 +62,15 @@
 	opacity: .75;
 
 	place-self: start end;
+	&:hover {
+		color: var(--theme-negative-fg-0);
+	}
+}
+.add-cell {
+	grid-column: 1 / -1;
+	display: grid;
+	place-items: center;
+	border: var(--table-border);
 }
 .add {
 	background: none;

@@ -28,69 +28,77 @@ export const TableInput = <T,>({
 	details, summary, header,
 	addItem, removeItem,
 }: TableInputProps<T>): ReactNode => {
-	const [openIndex, setOpenIndexInternal] = useState<number | null>(null);
-	const columnCount = header?.length
+	const columnCount = (header?.length
 		?? (values.length > 0 ? summary(values[0]).length : undefined)
-		?? 1;
+		?? 1);
 
-	const setOpenIndex = (action: SetStateAction<number | null>) => {
-		console.log(action);
-		setOpenIndexInternal(action);
-	}
-
-	const rows = values.map((v, i) => (<Fragment key={i}>
-		<tr className={toClassName(
-			css["summary-row"],
-			openIndex === i && css["active"],
-		)} tabIndex={0} onFocus={() => setOpenIndex(i)}>
-			{summary(v).map((node, j) => (
-				<td key={j} className={css["summary-cell"]}>{node}</td>
-			))}
-		</tr>
-		{openIndex === i &&
-			<tr className={css["details-row"]}>
-				<td colSpan={columnCount} className={css["details-cell"]}>
-					<div className={css["details-content"]}>
-						<div>
-							{details(v, i)}
-						</div>
-						{removeItem && (
-							<Button classList={css["remove"]} icon="remove"
-								onClick={() => {
-									removeItem(i);
-									setOpenIndex(null);
-								}}
-							/>
-						)}
-					</div>
-				</td>
-			</tr>
-		}
-	</Fragment>));
+	const rows = values.map((v, i) => (
+		// Can't use <details> because it has weird display behaviour
+		<Details key={i}>
+			<>
+				<div className={css["arrow"]}></div>
+				{summary(v).map((node, j) => (
+					<div key={j}>{node}</div>
+				))}
+				{removeItem && (
+					<Button classList={css["remove"]} icon="remove"
+						onClick={() => {
+							removeItem(i);
+						}}
+					/>
+				)}
+			</>
+			<>
+				{details(v, i)}
+			</>
+		</Details>
+	));
 
 	return (
-		<table className={css["table"]}>
-			{header && <thead>
-				<tr>
+		<div className={css["table"]} style={{
+			"--columns": columnCount,
+		}}>
+			{header &&
+				<div className={css["header"]}>
 					{header.map((node, i) => (
-						<th key={i}>{node}</th>
+						<div key={i} className={css["cell"]}>{node}</div>
 					))}
-				</tr>
-			</thead>}
-			<tbody>{rows}</tbody>
+				</div>
+			}
+			{rows}
 			{addItem && (
-				<tfoot>
-					<tr>
-						<td colSpan={columnCount} className={css["add-cell"]}>
-							<Button classList={css["add"]} icon="add"
-								onClick={() => {
-									addItem();
-								}}
-							/>
-						</td>
-					</tr>
-				</tfoot>
+				<div className={css["add-cell"]}>
+					<Button classList={css["add"]} icon="add"
+						onClick={() => {
+							addItem();
+						}}
+					/>
+				</div>
 			)}
-		</table>
+		</div>
+	);
+}
+
+const Details: FC<{ children: [summary: ReactNode, content: ReactNode]; }> = ({
+	children: [summary, content]
+}) => {
+	const [open, setOpen] = useState(false);
+	const className = toClassName(
+		css["details"],
+		open && css["open"],
+	);
+	const toggle = () => {
+		setOpen(o => !o);
+	};
+	return (
+		<div className={className}>
+			<div className={css["summary"]} tabIndex={0}
+				onClick={toggle}
+				onKeyDown={e => {
+					if (e.code === "Space" || e.code === "Enter") toggle();
+				}}
+			>{summary}</div>
+			<div className={css["details-content"]}>{content}</div>
+		</div>
 	);
 }

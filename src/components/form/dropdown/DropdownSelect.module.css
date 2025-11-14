@@ -34,6 +34,9 @@
 	& > .arrow {
 		display: block;
 		align-self: center;
+		&:dir(rtl) {
+			scale: -1 1;
+		}
 	}
 }
 
