@@ -1,6 +1,6 @@
 import { maybeConst } from "@common/maybeConst.ts";
 import { Vec2, vec2 } from "@common/vec2.ts";
-import { SelectableItem, selectionInRoom, SelectionItem, selectionToSelectable, useEditorSelection } from "@components/editor/selection.ts";
+import { SelectableItem, selectionInRoom, SelectionItem, selectionKey, selectionToSelectable, useDispatchSelection, useEditorSelection } from "@components/editor/selection.ts";
 import { useToast } from "@components/toast/context.ts";
 import { toClassName } from "@components/utils.tsx";
 import { Bounds, BoundsUpdateLRTBWH } from "@editor/bounds.ts";
@@ -35,10 +35,11 @@ export const ActiveSelection: FC<ActiveSelectionProps> = ({
 	const multi = selectables.length > 1;
 
 	const activeSelItems = roomSelection.map(item => (
-		<ActiveSelectionItem key={item.id} {...{ item, viewportInfo, active, dispatchView }} />
+		<ActiveSelectionItem key={selectionKey(item)} {...{ item, viewportInfo, active, dispatchView }} />
 	));
 	if (multi) {
 		const bounds = Bounds.merge(selectables.map(getSelectableBounds));
+		// TODO: CAN CAUSE NANS AND INFINITIES
 		const setBounds: Dispatch<SetStateAction<Bounds>> = (update) => {
 			const newBounds = maybeConst(update, bounds);
 			// Find S and T such that bounds.affine(S, T) = newBounds,
@@ -66,6 +67,20 @@ export const ActiveSelection: FC<ActiveSelectionProps> = ({
 						});
 						break;
 					}
+					case "node_movingObject": {
+						const { object, nodeIndex, node } = item;
+						dispatchMap({
+							type: "replace_object",
+							target: object.id,
+							replacement: obj => "points" in obj ? {
+								...obj,
+								points: obj.points.with(nodeIndex, {
+									...node,
+									pos: node.pos.mul(scale).add(translate),
+								}),
+							} : obj,
+						});
+					}
 				}
 			});
 		}
@@ -76,7 +91,7 @@ export const ActiveSelection: FC<ActiveSelectionProps> = ({
 						dispatchMap({
 							type: "replace_object",
 							target: item.object.id,
-							replacement: obj => getTranslate(item.object)(item.object, diff)
+							replacement: () => getTranslate(item.object)(item.object, diff)
 						});
 						break;
 					}
@@ -87,6 +102,20 @@ export const ActiveSelection: FC<ActiveSelectionProps> = ({
 							replacement: room => ({ ...room, bounds: item.room.bounds.translate(diff) })
 						});
 						break;
+					}
+					case "node_movingObject": {
+						const { object, nodeIndex, node } = item;
+						dispatchMap({
+							type: "replace_object",
+							target: object.id,
+							replacement: obj => "points" in obj ? {
+								...obj,
+								points: obj.points.with(nodeIndex, {
+									...node,
+									pos: node.pos.add(diff),
+								}),
+							} : obj,
+						});
 					}
 				}
 			});
@@ -124,176 +153,221 @@ const ActiveSelectionItem: FC<ActiveSelectionItemProps> = ({
 }) => {
 	const map = useSkapMap();
 	const dispatchMap = useDispatchSkapMap();
+	const dispatchSelection = useDispatchSelection();
 	const toast = useToast();
 
-	if (item.type === "room") {
-		const room = map.rooms.get(item.id);
-		if (!room) return null;
+	switch (item.type) {
+		case "room": {
+			const room = map.rooms.get(item.id);
+			if (!room) return null;
 
-		const { bounds } = room;
-		const setBounds: Dispatch<SetStateAction<Bounds>> = update => {
-			dispatchMap({
-				type: "replace_room",
-				target: room.id,
-				replacement: room => ({
-					...room,
-					bounds: update instanceof Bounds
-						? update
-						: update(room.bounds),
-				})
-			});
+			const { bounds } = room;
+			const setBounds: Dispatch<SetStateAction<Bounds>> = update => {
+				dispatchMap({
+					type: "replace_room",
+					target: room.id,
+					replacement: room => ({
+						...room,
+						bounds: update instanceof Bounds
+							? update
+							: update(room.bounds),
+					})
+				});
+			}
+			return <BoundsSelection {...{ viewportInfo, active, object: room, bounds, setBounds }} />;
 		}
-		return <BoundsSelection {...{ viewportInfo, active, object: room, bounds, setBounds }} />;
-	}
+		case "object": {
+			const object = getObject(map, item.id);
+			if (!object) return null;
 
-	const object = getObject(map, item.id);
-	if (!object) return null;
+			switch (object.type) {
+				case "obstacle":
+				case "lava":
+				case "slime":
+				case "ice":
+				case "block":
+				case "gravityZone":
+				case "teleporter":
+				case "spawner":
 
-	switch (object.type) {
-		case "obstacle":
-		case "lava":
-		case "slime":
-		case "ice":
-		case "block":
-		case "gravityZone":
-		case "teleporter":
-		case "spawner":
-		case "rotatingLava":
-			{
-				const { type, bounds } = object;
-				const setBounds: Dispatch<SetStateAction<Bounds>> = update => {
-					dispatchMap({
-						type: "replace_object",
-						target: object.id,
-						replacement: obj => "bounds" in obj ? {
-							...obj,
-							bounds: maybeConst(update, obj.bounds),
-						} : obj
-					});
-				}
-				const translate = getTranslate(object);
-				const setTranslate = (obj: typeof object, diff: Vec2) => {
-					dispatchMap({
-						type: "replace_object",
-						target: object.id,
-						replacement: () => translate(obj, diff),
-					});
-				}
-				const onDoubleClick: MouseEventHandler = object.type !== "teleporter" ? () => { } : () => {
-					const { target } = object;
-					if (target === null) return;
-					const room = target.type === "room"
-						? map.rooms.get(target.roomId)
-						: map.rooms.values().find(room => room.objects.has(target.teleporterId));
-					if (!room) {
-						toast.warn("Could not find teleporter destination");
-						return;
+				case "rotatingLava":
+					{
+						const { type, bounds } = object;
+						const setBounds: Dispatch<SetStateAction<Bounds>> = update => {
+							dispatchMap({
+								type: "replace_object",
+								target: object.id,
+								replacement: obj => "bounds" in obj ? {
+									...obj,
+									bounds: maybeConst(update, obj.bounds),
+								} : obj
+							});
+						}
+						const translate = getTranslate(object);
+						const setTranslate = (obj: typeof object, diff: Vec2) => {
+							dispatchMap({
+								type: "replace_object",
+								target: object.id,
+								replacement: () => translate(obj, diff),
+							});
+						}
+						const onDoubleClick: MouseEventHandler = object.type !== "teleporter" ? () => { } : () => {
+							const { target } = object;
+							if (target === null) return;
+							const room = target.type === "room"
+								? map.rooms.get(target.roomId)
+								: map.rooms.values().find(room => room.objects.has(target.teleporterId));
+							if (!room) {
+								toast.warn("Could not find teleporter destination");
+								return;
+							}
+							const teleporter = target.type === "room" ? undefined : room.objects.get(target.teleporterId);
+							const pos = (teleporter && teleporter.type === "teleporter"
+								? teleporter.bounds.center()
+								: undefined) ?? room.bounds.center();
+							dispatchView({
+								type: "set_current_room_id",
+								currentRoomId: room.id,
+							});
+							dispatchView({
+								type: "set_camera_pos",
+								pos,
+							});
+						};
+						if (type === "rotatingLava") {
+							const pos = object.rotation.center;
+							const setPos: Dispatch<SetStateAction<Vec2>> = pos => dispatchMap({
+								type: "replace_object",
+								target: object.id,
+								replacement: obj => obj.type === "rotatingLava" ? {
+									...obj,
+									rotation: {
+										...obj.rotation,
+										center: maybeConst(pos, obj.rotation.center),
+									},
+								} : obj
+							});
+							return (<>
+								<BoundsSelection {...{ viewportInfo, object, active, bounds, setBounds, setTranslate, onDoubleClick }} />
+								<PointSelection {...{ viewportInfo, active, pos, setPos }} radius={1} />
+							</>);
+						}
+						return <BoundsSelection {...{ viewportInfo, object, active, bounds, setBounds, setTranslate, onDoubleClick }} />;
 					}
-					const teleporter = target.type === "room" ? undefined : room.objects.get(target.teleporterId);
-					const pos = (teleporter && teleporter.type === "teleporter"
-						? teleporter.bounds.center()
-						: undefined) ?? room.bounds.center();
-					dispatchView({
-						type: "set_current_room_id",
-						currentRoomId: room.id,
-					});
-					dispatchView({
-						type: "set_camera_pos",
-						pos,
-					});
-				};
-				if (type === "rotatingLava") {
-					const pos = object.rotation.center;
+
+				case "text": {
+					const { pos } = object;
 					const setPos: Dispatch<SetStateAction<Vec2>> = pos => dispatchMap({
 						type: "replace_object",
 						target: object.id,
-						replacement: obj => obj.type === "rotatingLava" ? {
+						replacement: obj => "pos" in obj ? {
 							...obj,
-							rotation: {
-								...obj.rotation,
-								center: maybeConst(pos, obj.rotation.center),
-							},
+							pos: maybeConst(pos, obj.pos)
 						} : obj
 					});
-					return (<>
-						<BoundsSelection {...{ viewportInfo, object, active, bounds, setBounds, setTranslate, onDoubleClick }} />
-						<PointSelection {...{ viewportInfo, active, pos, setPos }} radius={1} />
-					</>);
+					return <PointSelection radius={textRadius} {...{ viewportInfo, active, pos, setPos }} />;
 				}
-				return <BoundsSelection {...{ viewportInfo, object, active, bounds, setBounds, setTranslate, onDoubleClick }} />;
-			}
-		case "text": {
-			const { pos } = object;
-			const setPos: Dispatch<SetStateAction<Vec2>> = pos => dispatchMap({
-				type: "replace_object",
-				target: object.id,
-				replacement: obj => "pos" in obj ? {
-					...obj,
-					pos: maybeConst(pos, obj.pos)
-				} : obj
-			});
-			return <PointSelection radius={textRadius} {...{ viewportInfo, active, pos, setPos }} />;
-		}
-		case "circularLava": {
-			const { pos, radius } = object;
-			const setPos: Dispatch<SetStateAction<Vec2>> = pos => dispatchMap({
-				type: "replace_object",
-				target: object.id,
-				replacement: obj => "pos" in obj ? {
-					...obj,
-					pos: maybeConst(pos, obj.pos)
-				} : obj
-			});
-			const setRadius: Dispatch<SetStateAction<number>> = radius => dispatchMap({
-				type: "replace_object",
-				target: object.id,
-				replacement: obj => "radius" in obj ? {
-					...obj,
-					radius: maybeConst(radius, obj.radius)
-				} : obj
-			});
-			return <CircleSelection {...{ viewportInfo, active, pos, setPos, radius, setRadius }} />;
-		}
 
-		case "movingObstacle":
-		case "movingLava":
-		case "movingSlime":
-		case "movingIce": {
-			const { type, size, points } = object;
-			const setBounds: Dispatch<SetStateAction<Bounds>> = update => {
-				dispatchMap({
-					type: "replace_object",
-					target: object.id,
-					replacement: obj => {
-						if (obj.type !== type) return obj;
-						const newBounds = maybeConst(update, centeredBounds(obj.points[0].pos, obj.size));
-						return {
-							...obj,
-							size: newBounds.size,
-							points: obj.points.with(0, {
-								...obj.points[0],
-								pos: newBounds.center(),
-							}),
-						} satisfies typeof obj;
+				case "circularLava":
+					{
+						const { pos, radius } = object;
+						const setPos: Dispatch<SetStateAction<Vec2>> = pos => dispatchMap({
+							type: "replace_object",
+							target: object.id,
+							replacement: obj => "pos" in obj ? {
+								...obj,
+								pos: maybeConst(pos, obj.pos)
+							} : obj
+						});
+						const setRadius: Dispatch<SetStateAction<number>> = radius => dispatchMap({
+							type: "replace_object",
+							target: object.id,
+							replacement: obj => "radius" in obj ? {
+								...obj,
+								radius: maybeConst(radius, obj.radius)
+							} : obj
+						});
+						return <CircleSelection {...{ viewportInfo, active, pos, setPos, radius, setRadius }} />;
 					}
-				});
-			}
-			const bounds = centeredBounds(points[0].pos, size);
 
-			const setTranslate = (obj: typeof object, diff: Vec2) => {
-				dispatchMap({
-					type: "replace_object",
-					target: object.id,
-					replacement: () => ({
-						...obj,
-						points: obj.points.with(0, {
-							...obj.points[0],
-							pos: obj.points[0].pos.add(diff),
-						}),
-					}),
-				});
+				case "movingObstacle":
+				case "movingLava":
+				case "movingSlime":
+				case "movingIce":
+					{
+						const { type, size, points } = object;
+						const setBounds: Dispatch<SetStateAction<Bounds>> = update => {
+							dispatchMap({
+								type: "replace_object",
+								target: object.id,
+								replacement: obj => {
+									if (obj.type !== type) return obj;
+									const newBounds = maybeConst(update, centeredBounds(obj.points[0].pos, obj.size));
+									return {
+										...obj,
+										size: newBounds.size,
+										points: obj.points.with(0, {
+											...obj.points[0],
+											pos: newBounds.center(),
+										}),
+									} satisfies typeof obj;
+								}
+							});
+						}
+						const bounds = centeredBounds(points[0].pos, size);
+
+						const setTranslate = (obj: typeof object, diff: Vec2) => {
+							dispatchMap({
+								type: "replace_object",
+								target: object.id,
+								replacement: () => ({
+									...obj,
+									points: obj.points.with(0, {
+										...obj.points[0],
+										pos: obj.points[0].pos.add(diff),
+									}),
+								}),
+							});
+						}
+						return <BoundsSelection {...{ viewportInfo, object, active, bounds, setBounds, setTranslate }} />;
+					}
 			}
-			return <BoundsSelection {...{ viewportInfo, object, active, bounds, setBounds, setTranslate }} />;
+			return "uh oh";
+		}
+		case "node_movingObject": {
+			const { objectId, nodeIndex } = item;
+
+			const object = getObject(map, objectId);
+			if (!object) return null;
+			if (!("points" in object)) return null;
+
+			const { type, points } = object;
+
+			const node = points.at(nodeIndex);
+			if (!node) {
+				dispatchSelection({
+					type: "remove_item",
+					item,
+				});
+				return null;
+			}
+
+			const { pos } = node;
+
+			const setPos: Dispatch<SetStateAction<Vec2>> = pos => dispatchMap({
+				type: "replace_object",
+				target: object.id,
+				replacement: obj => obj.type === type ? {
+					...obj,
+					points: obj.points.with(nodeIndex, {
+						...obj.points[nodeIndex],
+						pos: maybeConst(pos, obj.points[nodeIndex].pos),
+					})
+				} : obj
+			});
+			return (<>
+				<PointSelection {...{ viewportInfo, active, pos, setPos }} radius={1} />
+			</>);
 		}
 	}
 }

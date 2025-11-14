@@ -32,7 +32,7 @@ const Inspector: Layout.ViewComponent = ({
 	const contextMenu = useContextMenu([
 	]);
 
-	const selectionForm = ((): Exclude<ReactNode, undefined> => {
+	const selectionForm = ((): ReactNode => {
 		if (selection.length < 1) {
 			return (
 				<MapForm />
@@ -71,8 +71,10 @@ const Inspector: Layout.ViewComponent = ({
 					</pre>
 				);
 			}
+			case "node_movingObject": {
+				return <>Node</>;
+			}
 		}
-
 	})();
 
 	return (

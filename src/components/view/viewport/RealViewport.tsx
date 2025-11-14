@@ -1,7 +1,7 @@
 import { sortBy } from "@common/array.ts";
 import { Vec2, vec2 } from "@common/vec2.ts";
 import { Sections, makeSection, makeSingle, makeSubmenu, useContextMenu } from "@components/contextmenu/ContextMenu.ts";
-import { makeObjectSelectableItem, makeObjectSelectionItem, makeRoomSelectableItem, selectableToSelection, selectionInRoom, selectionToSelectable, useDispatchSelection, useEditorSelection } from "@components/editor/selection.ts";
+import { makeNodeSelectableItem, makeObjectSelectableItem, makeObjectSelectionItem, makeRoomSelectableItem, selectableToSelection, selectionInRoom, selectionToSelectable, useDispatchSelection, useEditorSelection } from "@components/editor/selection.ts";
 import { ViewToolbar } from "@components/layout/LayoutViewToolbar.tsx";
 import { mergeListeners, toClassName } from "@components/utils.tsx";
 import { Bounds } from "@editor/bounds.ts";
@@ -56,8 +56,6 @@ export const RealViewport: FC<RealViewportProps> = ({
 			new BackgroundWebGLRenderer(),
 			// Place spawner behind everything (it was tinting stuff weird)
 			new SpawnerBackgroundWebGLRenderer(),
-			new AllMovingTrackWebGLRenderer(),
-			new AllMovingNodeWebGLRenderer(),
 			new ObstacleWebGLRenderer(),
 			new TeleporterWebGLRenderer(),
 			new LavaWebGLRenderer(),
@@ -66,6 +64,8 @@ export const RealViewport: FC<RealViewportProps> = ({
 			new MovingLavaWebGLRenderer(),
 			new IceWebGLRenderer(),
 			new SlimeWebGLRenderer(),
+			new AllMovingTrackWebGLRenderer(),
+			new AllMovingNodeWebGLRenderer(),
 			// Buttons
 			// Switches
 			// Doors
@@ -121,9 +121,15 @@ export const RealViewport: FC<RealViewportProps> = ({
 
 
 	const objectSelectables = room.objects.values().toArray().map(makeObjectSelectableItem);
+	const roomSelectableItem = makeRoomSelectableItem(room);
+	const nodeSelectables = room.objects.values()
+		.filter(obj => "points" in obj)
+		.flatMap(obj => obj.points.map((point, i) => makeNodeSelectableItem(obj, i)))
+		.toArray();
 	const allSelectables = [
 		...objectSelectables,
-		makeRoomSelectableItem(room),
+		roomSelectableItem,
+		...nodeSelectables,
 	];
 
 	const contextMenu = useContextMenu([
@@ -385,7 +391,7 @@ export const RealViewport: FC<RealViewportProps> = ({
 						});
 						dispatchSelection({
 							type: "remove_item",
-							itemId: s.id,
+							item: s,
 						});
 					}
 				}
@@ -405,7 +411,7 @@ export const RealViewport: FC<RealViewportProps> = ({
 		[keybindStr("ArrowDown"), () => translateSelected(vec2(0, 1))],
 		[keybindStr("ArrowRight"), () => translateSelected(vec2(1, 0))],
 		// #endregion
-	
+
 		[keybindStr("ctrl+ArrowLeft"), () => {
 			const ids: (ID | null)[] = map.rooms.keys().toArray();
 			const index = ids.indexOf(state.currentRoomId);

@@ -14,6 +14,9 @@ export const getZIndex = (
 		case "room": {
 			return -Infinity;
 		}
+		case "node_movingObject": {
+			return 6.8;
+		}
 	}
 };
 export const getClickbox = (
@@ -25,6 +28,9 @@ export const getClickbox = (
 		}
 		case "room": {
 			return item.room.bounds.contains(pos);
+		}
+		case "node_movingObject": {
+			return item.node.pos.sub(pos).mag() <= 1;
 		}
 	}
 };
@@ -48,6 +54,12 @@ export const getSelectableBounds = (
 		}
 		case "room": {
 			return item.room.bounds;
+		}
+		case "node_movingObject": {
+			return new Bounds({
+				topLeft: item.node.pos,
+				bottomRight: item.node.pos,
+			});
 		}
 	}
 }
