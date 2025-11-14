@@ -10,7 +10,7 @@ import { Bounds } from "@editor/bounds.ts";
 import { BaseObject, makeObjectProperties } from "@editor/object/Base";
 import { useDispatchSkapMap } from "@editor/reducer.ts";
 
-type MovingPoint = {
+export type MovingPoint = {
 	pos: Vec2;
 	/** The time in the cycle this point is at */
 	time: number;

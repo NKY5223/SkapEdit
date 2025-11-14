@@ -8,7 +8,8 @@ import { SkapTeleporter } from "@editor/object/teleporter.ts";
 import { CardinalDirection } from "@editor/object/Base.tsx";
 import { Logger } from "./logger.ts";
 import { mod } from "@common/number.ts";
-import { groupEqual } from "@common/array.ts";
+import { groupEqual, tuplesCyclical } from "@common/array.ts";
+import { MovingPoint } from "@editor/object/moving.tsx";
 
 const skapToVec2 = (v: SkapFile.Vec2): Vec2 => vec2(...v);
 const skapToRgb = (c: SkapFile.Rgb): Color => Color.rgb255(...c);
@@ -108,7 +109,27 @@ const skapToObjectsPartial = (object: SkapFile.Object, room: SkapFile.Room, map:
 		case "movingObstacle":
 		case "movingLava":
 		case "movingSlime":
-		case "movingIce":
+		case "movingIce": {
+			let time = 0;
+			const points: MovingPoint[] = [];
+			for (const [curr, next] of tuplesCyclical(object.points, 2)) {
+				const { position, vel } = curr;
+				const { position: nextPosition } = next;
+				const pos = skapToVec2(position);
+				const nextPos = skapToVec2(nextPosition);
+				const dt = nextPos.sub(pos).mag() / vel;
+
+				points.push({ pos, time });
+				time += dt;
+			}
+			return {
+				type: object.type,
+				id,
+				size: skapToVec2(object.size),
+				period: time,
+				points,
+			};
+		}
 		case "turret":
 		case "door":
 		case "button":
@@ -121,9 +142,7 @@ const skapToObjectsPartial = (object: SkapFile.Object, room: SkapFile.Room, map:
 				pos: (
 					"position" in object
 						? skapToVec2(object.position)
-						: "points" in object && object.points.length > 0
-							? skapToVec2(object.points[0].position)
-							: vec2(0)
+						: vec2(0)
 				),
 				text: `⟨${object.type}⟩`,
 			};
