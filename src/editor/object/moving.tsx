@@ -16,23 +16,27 @@ type MovingPoint = {
 	time: number;
 }
 type Moving<T extends string> = BaseObject<T, {
-	bounds: Bounds;
+	size: Vec2;
 	period: number;
-	points: [MovingPoint, ...MovingPoint[]];
+	points: readonly MovingPoint[];
 }>;
 
+export const centeredBounds = (center: Vec2, size: Vec2): Bounds => new Bounds({
+	topLeft: center.sub(size.div(2)),
+	bottomRight: center.add(size.div(2)),
+});
 
 const movingProperties = <T extends Moving<string>>(type: T["type"], zIndex: number) =>
 	makeObjectProperties<T>(type, {
-		bounds: obj => obj.bounds,
+		bounds: obj => centeredBounds(obj.points[0].pos, obj.size),
 		selection: {
 			zIndex: () => zIndex,
-			clickbox: (obj, pos) => obj.bounds.contains(pos),
+			clickbox: (obj, pos) => centeredBounds(obj.points[0].pos, obj.size).contains(pos),
 		},
 		transform: {
 			affine: (obj, scale, translate) => ({
 				...obj,
-				bounds: obj.bounds.affine(scale, translate),
+				size: obj.size.mul(scale),
 				points: obj.points.map(point => ({
 					...point,
 					pos: point.pos.mul(scale).add(translate),
@@ -48,16 +52,13 @@ const movingProperties = <T extends Moving<string>>(type: T["type"], zIndex: num
 					// @ts-expect-error
 					replacement: obj => obj.type === type ? f(obj) : obj,
 				});
-				const { type, id, bounds, period, points } = object;
+				const { type, id, size, period, points } = object;
 				return (
 					<>
 						<h2>Moving Lava</h2>
-						<FormSection>
-							<FormTitle><Translate k="generic.position" /></FormTitle>
-							<BoundsInput value={bounds} onInput={bounds =>
-								update(obj => ({ ...obj, bounds }))
-							} />
-						</FormSection>
+						<Vec2Input value={size}
+							onInput={size => update(obj => ({ ...obj, size }))}
+						/>
 						<FormTitle>Points</FormTitle>
 						<NumberInput value={period}
 							onInput={period => update(obj => ({ ...obj, period }))}

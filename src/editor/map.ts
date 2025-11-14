@@ -180,14 +180,13 @@ export const makeMovePoint = (x: number, y: number, time: number): SkapMovingLav
 	pos: vec2(x, y),
 	time,
 });
-export const makeMovingLava = (left: number, top: number, right: number, bottom: number,
-	period: number, points: SkapMovingLava["points"]): SkapMovingLava => ({
-		type: "movingLava",
-		id: createId("obj-movingLava"),
-		bounds: new Bounds({ left, top, right, bottom }),
-		period,
-		points,
-	});
+export const makeMovingLava = (width: number, height: number, period: number, points: SkapMovingLava["points"]): SkapMovingLava => ({
+	type: "movingLava",
+	id: createId("obj-movingLava"),
+	size: vec2(width, height),
+	period,
+	points,
+});
 // #endregion
 
 export const toIdMap = <T extends { id: ID; }>(objs: T[]): Map<ID, T> =>

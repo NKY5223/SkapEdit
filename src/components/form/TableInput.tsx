@@ -5,7 +5,7 @@ import { toClassName } from "@components/utils.tsx";
 import { Icon } from "@components/icon/Icon.tsx";
 
 type TableInputProps<T> = {
-	value: T[];
+	value: readonly T[];
 	/**
 	 * This will be used for the expanded view of items.
 	 */

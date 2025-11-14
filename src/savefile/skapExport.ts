@@ -124,10 +124,10 @@ const objectToSkap = (object: SkapObject, room: SkapRoom, map: SkapMap): SkapFil
 		case "movingLava":
 		case "movingSlime":
 		case "movingIce": {
-			const { type, bounds, points } = object;
+			const { type, size, period, points } = object;
 			return [{
 				type,
-				size: vec2ToSkap(bounds.size),
+				size: vec2ToSkap(size),
 				points: [],
 			}];
 		}

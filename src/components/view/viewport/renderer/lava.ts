@@ -9,6 +9,7 @@ import { RotatedRectWebGLRenderer } from "./rotated.ts";
 import frag from "./shader/solidColor.frag?raw";
 import circleFrag from "./shader/solidColorCircle.frag?raw";
 import { MovingRectWebGLRenderer } from "./moving.ts";
+import { centeredBounds } from "@editor/object/moving.tsx";
 
 const rgba = Color.LAVA.rgba();
 const ghost = Color.LAVA.withAlpha(0.5).rgba();
@@ -22,7 +23,9 @@ export class LavaWebGLRenderer extends RectWebGLRenderer {
 			.filter(obj => obj.type === "lava" ||
 				obj.type === "rotatingLava" ||
 				obj.type === "movingLava")
-			.map(o => o.bounds)
+			.map(o => "bounds" in o
+				? o.bounds
+				: centeredBounds(o.points[0].pos, o.size))
 			.toArray();
 	}
 	preRender(gl: WebGL2RenderingContext): void {

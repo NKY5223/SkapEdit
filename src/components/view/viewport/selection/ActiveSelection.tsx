@@ -13,6 +13,7 @@ import css from "./ActiveSelection.module.css";
 import { getAffine, getSelectableBounds, getTranslate } from "./getObjectProperties.ts";
 import { ResizeHandle } from "./ResizeHandle.tsx";
 import { round } from "@common/number.ts";
+import { centeredBounds } from "@editor/object/moving.tsx";
 
 const rounding = 1;
 
@@ -158,10 +159,6 @@ const ActiveSelectionItem: FC<ActiveSelectionItemProps> = ({
 		case "teleporter":
 		case "spawner":
 		case "rotatingLava":
-		case "movingObstacle":
-		case "movingLava":
-		case "movingSlime":
-		case "movingIce":
 			{
 				const { type, bounds } = object;
 				const setBounds: Dispatch<SetStateAction<Bounds>> = update => {
@@ -256,6 +253,47 @@ const ActiveSelectionItem: FC<ActiveSelectionItemProps> = ({
 				} : obj
 			});
 			return <CircleSelection {...{ viewportInfo, active, pos, setPos, radius, setRadius }} />;
+		}
+
+		case "movingObstacle":
+		case "movingLava":
+		case "movingSlime":
+		case "movingIce": {
+			const { type, size, points } = object;
+			const setBounds: Dispatch<SetStateAction<Bounds>> = update => {
+				dispatchMap({
+					type: "replace_object",
+					target: object.id,
+					replacement: obj => {
+						if (obj.type !== type) return obj;
+						const newBounds = maybeConst(update, centeredBounds(obj.points[0].pos, obj.size));
+						return {
+							...obj,
+							size: newBounds.size,
+							points: obj.points.with(0, {
+								...obj.points[0],
+								pos: newBounds.center(),
+							}),
+						} satisfies typeof obj;
+					}
+				});
+			}
+			const bounds = centeredBounds(points[0].pos, size);
+
+			const setTranslate = (obj: typeof object, diff: Vec2) => {
+				dispatchMap({
+					type: "replace_object",
+					target: object.id,
+					replacement: () => ({
+						...obj,
+						points: obj.points.with(0, {
+							...obj.points[0],
+							pos: obj.points[0].pos.add(diff),
+						}),
+					}),
+				});
+			}
+			return <BoundsSelection {...{ viewportInfo, object, active, bounds, setBounds, setTranslate }} />;
 		}
 	}
 }

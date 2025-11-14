@@ -40,15 +40,15 @@ const testRoom: SkapRoom = makeRoom(
 		tp2,
 		makeRotatingLava(
 			0, 45, 100, 55,
-			vec2(50, 50), 
+			vec2(50, 50),
 			90, 90,
 		),
 		makeCircularLava(50, 50, 10),
-		makeMovingLava(0, 0, 10, 10, 10, [
-			makeMovePoint(0, 0, 0),
-			makeMovePoint(90, 0, 2.5),
-			makeMovePoint(90, 90, 5),
-			makeMovePoint(0, 90, 7.5),
+		makeMovingLava(10, 10, 10, [
+			makeMovePoint(5, 5, 0),
+			makeMovePoint(95, 5, 2.5),
+			makeMovePoint(95, 95, 5),
+			makeMovePoint(5, 95, 7.5),
 		]),
 	]
 );

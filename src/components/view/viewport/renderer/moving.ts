@@ -4,6 +4,7 @@ import { rect } from "../webgl/webgl.ts";
 import { WebGLLayerRenderer, WebGLViewportInfo } from "../webgl/WebGLLayer.tsx";
 import vert from "./shader/default.vert?raw";
 import { Vec2 } from "@common/vec2.ts";
+import { centeredBounds } from "@editor/object/moving.tsx";
 
 export abstract class MovingRectWebGLRenderer extends WebGLLayerRenderer {
 	constructor(frag: string) {
@@ -13,7 +14,7 @@ export abstract class MovingRectWebGLRenderer extends WebGLLayerRenderer {
 		});
 	}
 	abstract rects(viewportInfo: ViewportInfo, webGlViewportInfo: WebGLViewportInfo): {
-		bounds: Bounds;
+		size: Vec2;
 		period: number;
 		points: readonly {
 			pos: Vec2;
@@ -44,19 +45,24 @@ export abstract class MovingRectWebGLRenderer extends WebGLLayerRenderer {
 
 		const rects = this.rects(viewportInfo, webGlViewportInfo);
 		const pos = rects.map<Bounds>(rect => {
-			const { bounds, period, points } = rect;
+			const { size, period, points } = rect;
 			const t = time % period;
 			const sorted = points.toSorted((a, b) => a.time - b.time);
 			const first = sorted[0];
-			const wraparound = {
+			const last = sorted[sorted.length - 1];
+			const firstMod = {
 				...first,
 				time: first.time + period,
 			};
-			const prev = sorted.findLast(({ time }) => time <= t) ?? first;
-			const next = sorted.find(({ time }) => time > t) ?? wraparound;
+			const lastMod = {
+				...last,
+				time: last.time - period,
+			};
+			const prev = sorted.findLast(({ time }) => time <= t) ?? lastMod;
+			const next = sorted.find(({ time }) => time > t) ?? firstMod;
 			const factor = (t - prev.time) / (next.time - prev.time);
 			const pos = prev.pos.add(next.pos.sub(prev.pos).mul(factor));
-			return bounds.translate(pos.sub(first.pos));
+			return centeredBounds(pos, size);
 		}).flatMap(rect);
 
 		this.setAttribute2f(gl, "aPosition", pos);
