@@ -6,6 +6,15 @@ import vert from "./shader/default.vert?raw";
 import { Vec2 } from "@common/vec2.ts";
 import { centeredBounds } from "@editor/object/moving.tsx";
 
+export type MovingData = {
+	size: Vec2;
+	period: number;
+	points: readonly {
+		pos: Vec2;
+		time: number;
+	}[];
+};
+
 export abstract class MovingRectWebGLRenderer extends WebGLLayerRenderer {
 	constructor(frag: string) {
 		super({
@@ -13,14 +22,7 @@ export abstract class MovingRectWebGLRenderer extends WebGLLayerRenderer {
 			frag,
 		});
 	}
-	abstract rects(viewportInfo: ViewportInfo, webGlViewportInfo: WebGLViewportInfo): {
-		size: Vec2;
-		period: number;
-		points: readonly {
-			pos: Vec2;
-			time: number;
-		}[];
-	}[];
+	abstract rects(viewportInfo: ViewportInfo, webGlViewportInfo: WebGLViewportInfo): MovingData[];
 
 	preRender(gl: WebGL2RenderingContext, viewportInfo: ViewportInfo, webGlViewportInfo: WebGLViewportInfo): void {
 	}
@@ -47,7 +49,9 @@ export abstract class MovingRectWebGLRenderer extends WebGLLayerRenderer {
 		const pos = rects.map<Bounds>(rect => {
 			const { size, period, points } = rect;
 			const t = time % period;
-			const sorted = points.toSorted((a, b) => a.time - b.time);
+			const sorted = points
+				.filter(p => p.time >= 0 && p.time <= period)
+				.sort((a, b) => a.time - b.time);
 			const first = sorted[0];
 			const last = sorted[sorted.length - 1];
 			const firstMod = {

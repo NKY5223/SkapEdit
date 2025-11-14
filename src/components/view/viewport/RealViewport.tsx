@@ -32,6 +32,7 @@ import { CardinalDirection } from "@editor/object/Base.tsx";
 import { Color } from "@common/color.ts";
 import { hotkeysHandler, keybindStr } from "@common/keybind.ts";
 import { ID } from "@common/uuid.ts";
+import { AllMovingNodeWebGLRenderer, AllMovingTrackWebGLRenderer } from "./renderer/movingTrack.ts";
 
 /** Maximum distance for something to count as a click */
 const clickMaxDistance = 2;
@@ -55,6 +56,8 @@ export const RealViewport: FC<RealViewportProps> = ({
 			new BackgroundWebGLRenderer(),
 			// Place spawner behind everything (it was tinting stuff weird)
 			new SpawnerBackgroundWebGLRenderer(),
+			new AllMovingTrackWebGLRenderer(),
+			new AllMovingNodeWebGLRenderer(),
 			new ObstacleWebGLRenderer(),
 			new TeleporterWebGLRenderer(),
 			new LavaWebGLRenderer(),

@@ -72,6 +72,7 @@ const movingProperties = <T extends Moving<string>>(type: T["type"], zIndex: num
 								return (
 									<>
 										<NumberInput value={point.time}
+											step={0.1}
 											onInput={time => updatePoint(point => ({ ...point, time }))}
 											label={"Time"} />
 										<Vec2Input value={point.pos}
