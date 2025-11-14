@@ -99,7 +99,12 @@ const skapToObjectsPartial = (object: SkapFile.Object, room: SkapFile.Room, map:
 		case "circularObstacle":
 		case "circularLava":
 		case "circularSlime":
-		case "circularIce":
+		case "circularIce": return {
+			type: object.type,
+			id,
+			pos: skapToVec2(object.position),
+			radius: object.radius,
+		}
 		case "movingObstacle":
 		case "movingLava":
 		case "movingSlime":

@@ -15,7 +15,7 @@ import { BackgroundObstacleWebGLRenderer, BackgroundWebGLRenderer } from "./rend
 import { BlockWebGLRenderer } from "./renderer/block.ts";
 import { GravityZoneWebGLRenderer } from "./renderer/gravityZone.ts";
 import { IceWebGLRenderer } from "./renderer/ice.ts";
-import { LavaWebGLRenderer, RotatingLavaWebGLRenderer } from "./renderer/lava.ts";
+import { CircularLavaWebGLRenderer, LavaWebGLRenderer, RotatingLavaWebGLRenderer } from "./renderer/lava.ts";
 import { ObstacleWebGLRenderer } from "./renderer/obstacle.ts";
 import { SlimeWebGLRenderer } from "./renderer/slime.ts";
 import { TeleporterWebGLRenderer } from "./renderer/teleporter.ts";
@@ -59,6 +59,7 @@ export const RealViewport: FC<RealViewportProps> = ({
 			new TeleporterWebGLRenderer(),
 			new LavaWebGLRenderer(),
 			new RotatingLavaWebGLRenderer(),
+			new CircularLavaWebGLRenderer(),
 			new IceWebGLRenderer(),
 			new SlimeWebGLRenderer(),
 			// Buttons

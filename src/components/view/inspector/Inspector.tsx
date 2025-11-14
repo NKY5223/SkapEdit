@@ -158,8 +158,8 @@ const MapForm: FC = () => {
 				fallbackLabel={<em>Invalid!</em>}
 				label={<Translate k="room" />}
 			/>
-			<Vec2Input vec={spawnPosition}
-				setVec={position => update(map => ({ ...map, spawn: { ...map.spawn, position } }))}
+			<Vec2Input value={spawnPosition}
+				onInput={position => update(map => ({ ...map, spawn: { ...map.spawn, position } }))}
 			/>
 		</>
 	);

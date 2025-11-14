@@ -1,6 +1,7 @@
 import { BaseObject, SkapObjectProperties } from "./Base.tsx";
 import { iceProperties, lavaProperties, obstacleProperties, slimeProperties } from "./basic.ts";
 import { blockProperties } from "./block.tsx";
+import { circularIceProperties, circularLavaProperties, circularObstacleProperties, circularSlimeProperties } from "./circular.tsx";
 import { gravityZoneProperties } from "./gravityZone.tsx";
 import { rotatingLavaProperties } from "./rotating.tsx";
 import { spawnerProperties } from "./spawner.tsx";
@@ -12,6 +13,7 @@ const properties = [
 	lavaProperties,
 	slimeProperties,
 	iceProperties,
+
 	textProperties,
 	blockProperties,
 	gravityZoneProperties,
@@ -19,6 +21,11 @@ const properties = [
 	spawnerProperties,
 
 	rotatingLavaProperties,
+
+	circularObstacleProperties,
+	circularLavaProperties,
+	circularSlimeProperties,
+	circularIceProperties,
 ];
 
 Object.assign(window, { logZIndices: () => {

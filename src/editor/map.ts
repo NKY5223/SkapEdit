@@ -10,6 +10,7 @@ import { CardinalDirection } from "./object/Base.tsx";
 import { SkapTeleporter } from "./object/teleporter.ts";
 import { SkapSpawner } from "./object/spawner.tsx";
 import { SkapRotatingLava } from "./object/rotating.tsx";
+import { SkapCircularIce, SkapCircularLava, SkapCircularObstacle, SkapCircularSlime } from "./object/circular.tsx";
 
 export type SkapObject = (
 	| SkapObstacle
@@ -22,6 +23,10 @@ export type SkapObject = (
 	| SkapGravityZone
 	| SkapSpawner
 	| SkapRotatingLava
+	| SkapCircularObstacle
+	| SkapCircularLava
+	| SkapCircularSlime
+	| SkapCircularIce
 );
 export type SkapRoom = {
 	id: ID;
@@ -50,6 +55,7 @@ export type SkapMap = {
 
 // #region constructors
 
+// #region object
 export const makeObstacle = (left: number, top: number, right: number, bottom: number): SkapObstacle => ({
 	type: "obstacle",
 	id: createId("obj-obstacle"),
@@ -157,6 +163,14 @@ export const makeRotatingLava = (left: number, top: number, right: number, botto
 		speed,
 	},
 });
+
+export const makeCircularLava = (x: number, y: number, radius: number): SkapCircularLava => ({
+	type: "circularLava",
+	id: createId("obj-circularLava"),
+	pos: vec2(x, y),
+	radius,
+});
+// #endregion
 
 export const toIdMap = <T extends { id: ID; }>(objs: T[]): Map<ID, T> =>
 	new Map(objs.map(o => [o.id, o]));

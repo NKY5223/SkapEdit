@@ -8,9 +8,9 @@ import { toDispatchSetStateAction } from "@components/utils.tsx";
 import { vec2Setters } from "@hooks/useVec2.ts";
 import { Dispatch, FC } from "react";
 
-type BoundsInputProps = {
-	vec: Vec2;
-	setVec: Dispatch<Vec2>;
+type Vec2InputProps = {
+	value: Vec2;
+	onInput: Dispatch<Vec2>;
 
 	xTitle?: string;
 	xIcon?: IconName | null;
@@ -19,8 +19,8 @@ type BoundsInputProps = {
 };
 
 /** Despite the name, does not return an `<input />`; Returns `<><FormSection row>...</>`. */
-export const Vec2Input: FC<BoundsInputProps> = ({
-	vec, setVec,
+export const Vec2Input: FC<Vec2InputProps> = ({
+	value: vec, onInput: setVec,
 	xTitle, xIcon = "position_x",
 	yTitle, yIcon = "position_y",
 }) => {

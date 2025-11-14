@@ -99,14 +99,25 @@ const objectToSkap = (object: SkapObject, room: SkapRoom, map: SkapMap): SkapFil
 			}));
 		}
 		case "rotatingLava": {
-			const { bounds, rotation: { center, initial, speed } } = object;
+			const { type, bounds, rotation: { center, initial, speed } } = object;
 			return [{
-				type: "rotatingLava",
+				type,
 				position: vec2ToSkap(bounds.topLeft.sub(topLeft)),
 				size: vec2ToSkap(bounds.size),
 				point: vec2ToSkap(center),
 				speed,
 				startAngle: initial,
+			}];
+		}
+		case "circularObstacle":
+		case "circularLava":
+		case "circularSlime":
+		case "circularIce": {
+			const { type, pos, radius } = object;
+			return [{
+				type,
+				position: vec2ToSkap(pos),
+				radius,
 			}];
 		}
 	}

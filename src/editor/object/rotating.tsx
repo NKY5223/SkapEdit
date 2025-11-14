@@ -63,7 +63,7 @@ const rotatingProperties = <T extends Rotating<string>>(type: T["type"], zIndex:
 							} />
 						</FormSection>
 						<FormTitle>Rotation</FormTitle>
-						<Vec2Input vec={center} setVec={center =>
+						<Vec2Input value={center} onInput={center =>
 							update(obj => ({ ...obj, rotation: { ...obj.rotation, center } }))
 						} />
 						<FormSection row>

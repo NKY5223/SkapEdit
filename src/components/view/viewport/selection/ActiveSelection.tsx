@@ -232,6 +232,18 @@ const ActiveSelectionItem: FC<ActiveSelectionItemProps> = ({
 			});
 			return <PointSelection radius={textRadius} {...{ viewportInfo, active, pos, setPos }} />;
 		}
+		case "circularLava": {
+			const { pos, radius } = object;
+			const setPos: Dispatch<SetStateAction<Vec2>> = pos => dispatchMap({
+				type: "replace_object",
+				target: object.id,
+				replacement: obj => "pos" in obj ? {
+					...obj,
+					pos: maybeConst(pos, obj.pos)
+				} : obj
+			});
+			return <CircleSelection radius={radius} {...{ viewportInfo, active, pos, setPos }} />;
+		}
 	}
 }
 

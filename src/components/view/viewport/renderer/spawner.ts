@@ -211,7 +211,7 @@ const get = <K, T>(map: Map<K, T>, key: K, create: () => T): T => {
 	return newValue;
 }
 
-const unitSquareUvs = rect(new Bounds({ left: 0, top: 0, right: 1, bottom: 1 }));
+export const unitSquareUvs = rect(new Bounds({ left: 0, top: 0, right: 1, bottom: 1 }));
 
 /** rotated clockwise */
 const rotatedSquare = (pos: Vec2, radius: number, rotation: number): Vec2[] => {

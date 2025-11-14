@@ -2,7 +2,7 @@ import { Color } from "@common/color.ts";
 import { vec2 } from "@common/vec2.ts";
 import { Layout, makeSplitX, makeView } from "@components/layout/layout";
 import { viewProviders } from "@components/layout/views.tsx";
-import { makeCardinalGravityZone, makeFreeGravityZone, makeLava, makeObstacle, makeRoom, makeRotatingLava, makeSpawner, makeSpawnerEntity, makeTeleporterPair, makeText, SkapMap, SkapRoom, toIdMap } from "@editor/map.ts";
+import { makeCardinalGravityZone, makeCircularLava, makeFreeGravityZone, makeLava, makeObstacle, makeRoom, makeRotatingLava, makeSpawner, makeSpawnerEntity, makeTeleporterPair, makeText, SkapMap, SkapRoom, toIdMap } from "@editor/map.ts";
 import { CardinalDirection } from "@editor/object/Base.tsx";
 
 const defaultLayout = makeSplitX(0.75,
@@ -46,8 +46,9 @@ const testRoom: SkapRoom = makeRoom(
 		makeRotatingLava(
 			0, 45, 100, 55,
 			vec2(50, 50), 
-			90, 0,
+			90, 90,
 		),
+		makeCircularLava(50, 50, 10),
 	]
 );
 export const defaultMap: SkapMap = {

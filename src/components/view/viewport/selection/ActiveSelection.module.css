@@ -24,10 +24,8 @@
 	outline: var(--selection-outline);
 
 	user-select: none;
+	cursor: move;
 
-	&.dragging {
-		cursor: move;
-	}
 	&.inactive {
 		--selection-border-width: 1px;
 		outline: none;

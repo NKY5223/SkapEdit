@@ -43,7 +43,7 @@ export const textProperties = makeObjectProperties<SkapText>("text", {
 								}),
 							})} />
 					</FormSection>
-					<Vec2Input vec={pos} setVec={pos => dispatchMap({
+					<Vec2Input value={pos} onInput={pos => dispatchMap({
 						type: "replace_object",
 						target: id,
 						replacement: obj => ({
