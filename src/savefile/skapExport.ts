@@ -6,11 +6,14 @@ import { Vector } from "@common/vector.ts";
 import { mod } from "@common/number.ts";
 import { tuples } from "@common/array.ts";
 import { customJson } from "./json.ts";
+import { ID } from "@common/uuid.ts";
 
 const vec2ToSkap = (vec: Vec2): SkapFile.Vec2 => vec.components;
 const rgbToSkap = (color: Color): SkapFile.Rgb => color.rgb().mul(255).components;
 const rgbaMult = new Vector<4>([255, 255, 255, 1]);
 const rgbaToSkap = (color: Color): SkapFile.Rgba => color.rgba().mul(rgbaMult).components;
+
+const getObjectIndex = (room: SkapRoom, id: ID) => room.objects.keys().toArray().indexOf(id);
 
 const objectToSkap = (object: SkapObject, room: SkapRoom, map: SkapMap): SkapFile.Object[] => {
 	const topLeft = room.bounds.topLeft;
@@ -167,7 +170,7 @@ const objectToSkap = (object: SkapObject, room: SkapRoom, map: SkapMap): SkapFil
 		}
 		case "turret": {
 			const { type, pos, region, bulletRadius, bulletSpeed, bulletInterval, groupSize, groupInterval } = object;
-			
+
 			return [{
 				type,
 				position: vec2ToSkap(pos),
@@ -181,23 +184,39 @@ const objectToSkap = (object: SkapObject, room: SkapRoom, map: SkapMap): SkapFil
 			}];
 		}
 		case "door": {
-			const { type, bounds } = object;
+			const { type, bounds, connections } = object;
 			return [{
 				type,
 				position: vec2ToSkap(bounds.topLeft),
 				size: vec2ToSkap(bounds.size),
-				linkIds: [],
+				linkIds: connections.map(c => {
+					const { objectId, hidden, invert } = c;
+					const index = getObjectIndex(room, objectId);
+					return `${invert ? "-" : ""}${index}${hidden ? ".1" : ""}`;
+				}),
 			}];
 		}
 		case "button": {
 			const { type, id, bounds, dir, timer, } = object;
+			const index = getObjectIndex(room, id);
 			return [{
 				type,
-				id,
+				id: index,
 				position: vec2ToSkap(bounds.topLeft),
 				size: vec2ToSkap(bounds.size),
 				dir,
 				time: timer,
+			}];
+		}
+		case "switch": {
+			const { type, id, bounds, dir, } = object;
+			const index = getObjectIndex(room, id);
+			return [{
+				type,
+				id: index,
+				position: vec2ToSkap(bounds.topLeft),
+				size: vec2ToSkap(bounds.size),
+				dir,
 			}];
 		}
 		// default: return [];
