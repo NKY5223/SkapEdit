@@ -169,6 +169,7 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	// #endregion
 
 	"generic.name": "Name",
+	"generic.radius": "Radius",
 
 	"generic.position": "Position",
 	"generic.position.x": "X Position",
