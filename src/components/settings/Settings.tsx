@@ -7,6 +7,7 @@ import { makeOption } from "@components/form/dropdown/Dropdown.ts";
 import { Translate } from "@components/translate/Translate.tsx";
 import { FormSection } from "@components/form/FormSection.tsx";
 import { languages } from "@components/translate/languages.ts";
+import { Icon } from "@components/icon/Icon.tsx";
 
 type SettingsProps = {
 	setOpen: (open: () => void) => void;
@@ -17,22 +18,26 @@ export const SettingsMenu: FC<SettingsProps> = ({
 	const settings = useSettings();
 	const setSetting = useSetSetting();
 
-	const id = useId();
-	const ref = useRef<HTMLDivElement>(null);
+	const ref = useRef<HTMLDialogElement>(null);
 	const translate = useTranslate();
 
 	useEffect(() => {
-		const popover = ref.current;
-		if (!popover) return;
+		const dialog = ref.current;
+		if (!dialog) return;
 
-		setOpen(() => () => popover.showPopover());
+		setOpen(() => () => dialog.showModal());
 	}, [ref.current]);
 
 	return (
-		<div id={id} ref={ref} className={css["settings"]} popover="auto">
+		<dialog ref={ref} className={css["settings"]}>
 			<button className={css["close-button"]} title={translate("generic.action.close")}
-				popoverTarget={id} popoverTargetAction="hide"
-			></button>
+				onClick={() => {
+					const dialog = ref.current;
+					if (!dialog) return;
+
+					dialog.requestClose();
+				}}
+			><Icon icon="close" /></button>
 			<h3><Translate k="settings" /></h3>
 			<FormSection>
 				<FormSection row>
@@ -44,6 +49,6 @@ export const SettingsMenu: FC<SettingsProps> = ({
 					/>
 				</FormSection>
 			</FormSection>
-		</div>
+		</dialog>
 	);
 }

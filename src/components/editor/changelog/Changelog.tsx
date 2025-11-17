@@ -14,20 +14,23 @@ type ChangelogProps = {
 export const Changelog: FC<ChangelogProps> = ({
 	changelog, setOpen,
 }) => {
-	const id = useId();
-	const ref = useRef<HTMLDivElement>(null);
+	const ref = useRef<HTMLDialogElement>(null);
 	const translate = useTranslate();
 
 	useEffect(() => {
-		const popover = ref.current;
-		if (!popover) return;
-		setOpen(() => () => popover.showPopover());
+		const dialog = ref.current;
+		if (!dialog) return;
+		setOpen(() => () => dialog.showModal());
 	}, [ref.current]);
 
 	return (
-		<div ref={ref} id={id} className={css["changelog"]} popover="auto">
+		<dialog ref={ref} className={css["changelog"]}>
 			<button className={css["close-button"]} title={translate("generic.action.close")}
-				popoverTarget={id} popoverTargetAction="hide"
+				onClick={() => {
+					const dialog = ref.current;
+					if (!dialog) return;
+					dialog.requestClose();
+				}}
 			>
 				<Icon icon="close" />
 			</button>
@@ -39,6 +42,6 @@ export const Changelog: FC<ChangelogProps> = ({
 					<RichTextComponent text={entry.message} />
 				</div>
 			))}
-		</div>
+		</dialog>
 	);
 }

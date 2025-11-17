@@ -47,6 +47,9 @@
 	code, pre {
 		font-family: var(--theme-font-monospace);
 	}
+	dialog::backdrop {
+		background-color: rgb(0 0 0 / .5);
+	}
 }
 @layer misc {
 	#app_root {
