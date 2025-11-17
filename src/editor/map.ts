@@ -11,7 +11,8 @@ import { SkapTeleporter } from "./object/teleporter.ts";
 import { SkapSpawner } from "./object/spawner.tsx";
 import { SkapRotatingLava } from "./object/rotating.tsx";
 import { SkapCircularIce, SkapCircularLava, SkapCircularObstacle, SkapCircularSlime } from "./object/circular.tsx";
-import { SkapMovingIce, SkapMovingLava, SkapMovingObstacle, SkapMovingSlime } from "./object/moving.tsx";
+import { MovingPoint, SkapMovingIce, SkapMovingLava, SkapMovingObstacle, SkapMovingSlime } from "./object/moving.tsx";
+import { SkapTurret } from "./object/turret.tsx";
 
 export type SkapObject = (
 	| SkapObstacle
@@ -32,6 +33,7 @@ export type SkapObject = (
 	| SkapMovingLava
 	| SkapMovingSlime
 	| SkapMovingIce
+	| SkapTurret
 );
 export type SkapRoom = {
 	id: ID;
@@ -169,23 +171,76 @@ export const makeRotatingLava = (left: number, top: number, right: number, botto
 		},
 	});
 
+export const makeCircularObstacle = (x: number, y: number, radius: number): SkapCircularObstacle => ({
+	type: "circularObstacle",
+	id: createId("obj-circularObstacle"),
+	pos: vec2(x, y),
+	radius,
+});
 export const makeCircularLava = (x: number, y: number, radius: number): SkapCircularLava => ({
 	type: "circularLava",
 	id: createId("obj-circularLava"),
 	pos: vec2(x, y),
 	radius,
 });
+export const makeCircularSlime = (x: number, y: number, radius: number): SkapCircularSlime => ({
+	type: "circularSlime",
+	id: createId("obj-circularSlime"),
+	pos: vec2(x, y),
+	radius,
+});
+export const makeCircularIce = (x: number, y: number, radius: number): SkapCircularIce => ({
+	type: "circularIce",
+	id: createId("obj-circularIce"),
+	pos: vec2(x, y),
+	radius,
+});
 
-export const makeMovePoint = (x: number, y: number, time: number): SkapMovingLava["points"][number] => ({
+export const makeMovePoint = (x: number, y: number, time: number): MovingPoint => ({
 	pos: vec2(x, y),
 	time,
 });
-export const makeMovingLava = (width: number, height: number, period: number, points: SkapMovingLava["points"]): SkapMovingLava => ({
+export const makeMovingObstacle = (width: number, height: number, period: number, points: readonly MovingPoint[]): SkapMovingObstacle => ({
+	type: "movingObstacle",
+	id: createId("obj-movingObstacle"),
+	size: vec2(width, height),
+	period,
+	points,
+});
+export const makeMovingLava = (width: number, height: number, period: number, points: readonly MovingPoint[]): SkapMovingLava => ({
 	type: "movingLava",
 	id: createId("obj-movingLava"),
 	size: vec2(width, height),
 	period,
 	points,
+});
+export const makeMovingSlime = (width: number, height: number, period: number, points: readonly MovingPoint[]): SkapMovingSlime => ({
+	type: "movingSlime",
+	id: createId("obj-movingSlime"),
+	size: vec2(width, height),
+	period,
+	points,
+});
+export const makeMovingIce = (width: number, height: number, period: number, points: readonly MovingPoint[]): SkapMovingIce => ({
+	type: "movingIce",
+	id: createId("obj-movingIce"),
+	size: vec2(width, height),
+	period,
+	points,
+});
+
+export const makeTurret = (x: number, y: number, left: number, top: number, right: number, bottom: number,
+	bulletRadius: number, bulletInterval: number, bulletSpeed: number, groupInterval: number, groupSize: number,
+): SkapTurret => ({
+	type: "turret",
+	id: createId("obj-turret"),
+	pos: vec2(x, y),
+	region: new Bounds({ left, top, right, bottom }),
+	bulletRadius,
+	bulletInterval,
+	bulletSpeed,
+	groupInterval,
+	groupSize,
 });
 // #endregion
 

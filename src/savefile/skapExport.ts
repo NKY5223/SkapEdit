@@ -164,6 +164,7 @@ const objectToSkap = (object: SkapObject, room: SkapRoom, map: SkapMap): SkapFil
 				}),
 			}];
 		}
+		// default: return [];
 	}
 }
 

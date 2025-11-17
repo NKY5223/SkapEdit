@@ -2,7 +2,7 @@ import { Color } from "@common/color.ts";
 import { vec2 } from "@common/vec2.ts";
 import { Layout, makeSplitX, makeView } from "@components/layout/layout";
 import { viewProviders } from "@components/layout/views.tsx";
-import { makeCardinalGravityZone, makeCircularLava, makeFreeGravityZone, makeLava, makeMovePoint, makeMovingLava, makeObstacle, makeRoom, makeRotatingLava, makeSpawner, makeSpawnerEntity, makeTeleporterPair, makeText, SkapMap, SkapRoom, toIdMap } from "@editor/map.ts";
+import { makeCardinalGravityZone, makeCircularLava, makeFreeGravityZone, makeLava, makeMovePoint, makeMovingLava, makeObstacle, makeRoom, makeRotatingLava, makeSpawner, makeSpawnerEntity, makeTeleporterPair, makeText, makeTurret, SkapMap, SkapRoom, toIdMap } from "@editor/map.ts";
 import { CardinalDirection } from "@editor/object/Base.tsx";
 
 const defaultLayout = makeSplitX(0.75,
@@ -38,18 +38,22 @@ const testRoom: SkapRoom = makeRoom(
 	Color.DEFAULT_BACKGROUND,
 	[
 		tp2,
-		makeRotatingLava(
-			0, 45, 100, 55,
-			vec2(50, 50),
-			90, 90,
-		),
-		makeCircularLava(50, 50, 10),
+		// makeRotatingLava(
+		// 	0, 45, 100, 55,
+		// 	vec2(50, 50),
+		// 	90, 90,
+		// ),
+		// makeCircularLava(50, 50, 10),
 		makeMovingLava(10, 10, 10, [
 			makeMovePoint(5, 5, 0),
 			makeMovePoint(95, 5, 2.5),
 			makeMovePoint(95, 95, 5),
 			makeMovePoint(5, 95, 7.5),
 		]),
+		makeTurret(50, 50,
+			0, 0, 100, 100,
+			2, 0.1, 10, 4, 4,
+		)
 	]
 );
 export const defaultMap: SkapMap = {

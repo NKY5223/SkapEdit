@@ -1,3 +1,4 @@
+import { SkapObject } from "@editor/map.ts";
 import { BaseObject, SkapObjectProperties } from "./Base.tsx";
 import { iceProperties, lavaProperties, obstacleProperties, slimeProperties } from "./basic.ts";
 import { blockProperties } from "./block.tsx";
@@ -8,6 +9,7 @@ import { rotatingLavaProperties } from "./rotating.tsx";
 import { spawnerProperties } from "./spawner.tsx";
 import { teleporterProperties } from "./teleporter.tsx";
 import { textProperties } from "./text.tsx";
+import { turretProperties } from "./turret.tsx";
 
 const properties = [
 	obstacleProperties,
@@ -32,7 +34,16 @@ const properties = [
 	movingLavaProperties,
 	movingSlimeProperties,
 	movingIceProperties,
+
+	turretProperties,
 ];
+
+type Assert<T extends true> = T;
+type Extract<T> = T extends SkapObjectProperties<infer S, infer T> ? T : never
+type Implemented = Extract<typeof properties[number]>;
+type Unimplemented = Exclude<SkapObject, Implemented>;
+type test = Assert<Unimplemented extends never ? true : false>;
+true satisfies test;
 
 Object.assign(window, { logZIndices: () => {
 	properties.forEach(p => {

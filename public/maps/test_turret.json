@@ -1,0 +1,63 @@
+{
+	"settings": {
+		"name": "test turret",
+		"creator": "nky",
+		"spawnPosition": [
+			50,
+			50
+		],
+		"spawnArea": "Home",
+		"version": null
+	},
+	"maps": [
+		{
+			"name": "Home",
+			"size": [
+				100,
+				100
+			],
+			"objects": [
+				{
+					"type": "turret",
+					"position": [
+						21,
+						49
+					],
+					"regionPosition": [
+						0,
+						0
+					],
+					"regionSize": [
+						100,
+						100
+					],
+					"radius": 10,
+					"shootingSpeed": 0.1,
+					"overHeat": 4.5,
+					"speed": 10,
+					"coolDownTime": 4
+				},
+				{
+					"type": "turret",
+					"position": [
+						76,
+						49
+					],
+					"regionPosition": [
+						0,
+						0
+					],
+					"regionSize": [
+						100,
+						100
+					],
+					"radius": 2,
+					"shootingSpeed": 2,
+					"overHeat": 1,
+					"speed": 10,
+					"coolDownTime": 1e308
+				}
+			]
+		}
+	]
+}

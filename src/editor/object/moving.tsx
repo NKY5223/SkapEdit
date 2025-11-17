@@ -37,14 +37,15 @@ const movingProperties = <T extends Moving<string>>(type: T["type"], zIndex: num
 			affine: (obj, scale, translate) => ({
 				...obj,
 				size: obj.size.mul(scale),
-				points: obj.points.map(point => ({
-					...point,
-					pos: point.pos.mul(scale).add(translate),
+				points: obj.points.with(0, ({
+					...obj.points[0],
+					pos: obj.points[0].pos.mul(scale).add(translate),
 				})),
 			}),
 		},
 		inspector: {
 			Component: ({ object }) => {
+				const { type, id, size, period, points } = object;
 				const dispatchMap = useDispatchSkapMap();
 				const update = (f: (val: T) => T) => dispatchMap({
 					type: "replace_object",
@@ -52,10 +53,9 @@ const movingProperties = <T extends Moving<string>>(type: T["type"], zIndex: num
 					// @ts-expect-error
 					replacement: obj => obj.type === type ? f(obj) : obj,
 				});
-				const { type, id, size, period, points } = object;
 				return (
 					<>
-						<h2>Moving Lava</h2>
+						<h2><Translate k="object.name" type={type} /></h2>
 						<Vec2Input value={size}
 							onInput={size => update(obj => ({ ...obj, size }))}
 						/>

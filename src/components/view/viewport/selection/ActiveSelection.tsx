@@ -14,6 +14,8 @@ import { getAffine, getSelectableBounds, getTranslate } from "./getObjectPropert
 import { ResizeHandle } from "./ResizeHandle.tsx";
 import { round } from "@common/number.ts";
 import { centeredBounds } from "@editor/object/moving.tsx";
+import { SkapTurret } from "@editor/object/turret.tsx";
+import { id } from "zod/locales";
 
 const rounding = 1;
 
@@ -268,9 +270,12 @@ const ActiveSelectionItem: FC<ActiveSelectionItemProps> = ({
 					return <PointSelection radius={textRadius} {...{ viewportInfo, active, pos, setPos }} />;
 				}
 
+				case "circularObstacle":
 				case "circularLava":
+				case "circularSlime":
+				case "circularIce":
 					{
-						const { pos, radius } = object;
+						const { type, pos, radius } = object;
 						const setPos: Dispatch<SetStateAction<Vec2>> = pos => dispatchMap({
 							type: "replace_object",
 							target: object.id,
@@ -282,7 +287,7 @@ const ActiveSelectionItem: FC<ActiveSelectionItemProps> = ({
 						const setRadius: Dispatch<SetStateAction<number>> = radius => dispatchMap({
 							type: "replace_object",
 							target: object.id,
-							replacement: obj => "radius" in obj ? {
+							replacement: obj => obj.type === type ? {
 								...obj,
 								radius: maybeConst(radius, obj.radius)
 							} : obj
@@ -331,6 +336,21 @@ const ActiveSelectionItem: FC<ActiveSelectionItemProps> = ({
 						}
 						return <BoundsSelection {...{ viewportInfo, object, active, bounds, setBounds, setTranslate }} />;
 					}
+
+				case "turret": {
+					const { type, id, pos } = object;
+					const update = (f: (obj: SkapTurret) => SkapTurret) => dispatchMap({
+						type: "replace_object",
+						target: id,
+						replacement: obj => obj.type !== type ? obj : f(obj),
+					});
+					const setPos: Dispatch<SetStateAction<Vec2>> = pos => update(obj => ({
+						...obj,
+						pos: maybeConst(pos, obj.pos),
+					}));
+
+					return <PointSelection radius={3} {...{ viewportInfo, active, pos, setPos }} />
+				}
 			}
 			return "uh oh";
 		}

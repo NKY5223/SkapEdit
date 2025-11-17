@@ -41,14 +41,28 @@ export type TranslationArgs = {
 	"contextmenu.item.name.viewport": {};
 	"contextmenu.item.name.viewport.reset_camera": {};
 	"contextmenu.item.name.viewport.add_object": {};
+	"contextmenu.item.name.viewport.add_object.basic": {};
 	"contextmenu.item.name.viewport.add_object.obstacle": {};
 	"contextmenu.item.name.viewport.add_object.lava": {};
 	"contextmenu.item.name.viewport.add_object.slime": {};
 	"contextmenu.item.name.viewport.add_object.ice": {};
+
 	"contextmenu.item.name.viewport.add_object.block": {};
 	"contextmenu.item.name.viewport.add_object.text": {};
 	"contextmenu.item.name.viewport.add_object.gravityZone": {};
 	"contextmenu.item.name.viewport.add_object.rotatingLava": {};
+
+	"contextmenu.item.name.viewport.add_object.circular": {};
+	"contextmenu.item.name.viewport.add_object.circularIce": {};
+	"contextmenu.item.name.viewport.add_object.circularLava": {};
+	"contextmenu.item.name.viewport.add_object.circularObstacle": {};
+	"contextmenu.item.name.viewport.add_object.circularSlime": {};
+
+	"contextmenu.item.name.viewport.add_object.moving": {};
+	"contextmenu.item.name.viewport.add_object.movingIce": {};
+	"contextmenu.item.name.viewport.add_object.movingLava": {};
+	"contextmenu.item.name.viewport.add_object.movingObstacle": {};
+	"contextmenu.item.name.viewport.add_object.movingSlime": {};
 	// #endregion
 
 	// #region Viewport
@@ -108,6 +122,15 @@ export type TranslationArgs = {
 	"object.name.teleporter": {};
 	"object.name.spawner": {};
 	"object.name.rotatingLava": {};
+	"object.name.circularObstacle": {};
+	"object.name.circularLava": {};
+	"object.name.circularSlime": {};
+	"object.name.circularIce": {};
+	"object.name.movingObstacle": {};
+	"object.name.movingLava": {};
+	"object.name.movingSlime": {};
+	"object.name.movingIce": {};
+	"object.name.turret": {};
 
 	"object.teleporter.name": { object: SkapTeleporter; room: SkapRoom; };
 	// #endregion
@@ -151,10 +174,10 @@ export type TranslationArgs = {
 
 	"generic.action.open": {};
 	"generic.action.close": {};
-	
+
 	"generic.list_string": { strings: string[]; };
 	"generic.vec2": { vector: Vec2; };
-	
+
 	"generic.text": {};
 	"generic.lorem": {};
 	"generic.none_selected": {};

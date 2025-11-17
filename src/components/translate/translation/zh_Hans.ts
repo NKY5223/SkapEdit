@@ -45,6 +45,7 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"contextmenu.item.name.viewport": use("viewport"),
 	"contextmenu.item.name.viewport.reset_camera": "重置相机",
 	"contextmenu.item.name.viewport.add_object": "添加",
+	"contextmenu.item.name.viewport.add_object.basic": "简单",
 	"contextmenu.item.name.viewport.add_object.obstacle": use("object.name.obstacle"),
 	"contextmenu.item.name.viewport.add_object.lava": use("object.name.lava"),
 	"contextmenu.item.name.viewport.add_object.slime": use("object.name.slime"),
@@ -53,6 +54,16 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"contextmenu.item.name.viewport.add_object.block": use("object.name.block"),
 	"contextmenu.item.name.viewport.add_object.gravityZone": use("object.name.gravityZone"),
 	"contextmenu.item.name.viewport.add_object.rotatingLava": use("object.name.rotatingLava"),
+	"contextmenu.item.name.viewport.add_object.circular": "圆形",
+	"contextmenu.item.name.viewport.add_object.circularIce": use("object.name.circularIce"),
+	"contextmenu.item.name.viewport.add_object.circularLava": use("object.name.circularLava"),
+	"contextmenu.item.name.viewport.add_object.circularObstacle": use("object.name.circularObstacle"),
+	"contextmenu.item.name.viewport.add_object.circularSlime": use("object.name.circularSlime"),
+	"contextmenu.item.name.viewport.add_object.moving": "移动",
+	"contextmenu.item.name.viewport.add_object.movingIce": use("object.name.movingIce"),
+	"contextmenu.item.name.viewport.add_object.movingLava": use("object.name.movingLava"),
+	"contextmenu.item.name.viewport.add_object.movingObstacle": use("object.name.movingObstacle"),
+	"contextmenu.item.name.viewport.add_object.movingSlime": use("object.name.movingSlime"),
 	// #endregion
 
 	// #region Viewport
@@ -112,6 +123,15 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"object.name.teleporter": "传送机",
 	"object.name.spawner": "Spawner",
 	"object.name.rotatingLava": "旋转式岩浆",
+	"object.name.circularObstacle": "圆形障碍",
+	"object.name.circularLava": "圆形岩浆",
+	"object.name.circularSlime": "圆形弹浆",
+	"object.name.circularIce": "圆形冰块",
+	"object.name.movingIce": "移动障碍",
+	"object.name.movingLava": "移动岩浆",
+	"object.name.movingObstacle": "移动弹浆",
+	"object.name.movingSlime": "移动冰块",
+	"object.name.turret": "炮塔",
 
 	"object.teleporter.name": ({ object, room }, t) => [
 		"向",

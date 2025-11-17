@@ -21,3 +21,18 @@ createRoot(root).render((
 		<Editor />
 	</StrictMode>
 ));
+
+const editorsync = async (code: string, file: string) => {
+	const res = await fetch(file);
+	const json = await res.json();
+	console.log("Loaded map:", json);
+	await fetch("https://skip.nightly.pw:6661/editorsync", {
+		method: "POST",
+		body: JSON.stringify({
+			password: code,
+			map: json
+		})
+	});
+	console.log("Done!");
+}
+Object.assign(window, { editorsync });

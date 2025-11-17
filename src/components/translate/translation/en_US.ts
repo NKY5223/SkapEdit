@@ -45,6 +45,7 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"contextmenu.item.name.viewport": use("viewport"),
 	"contextmenu.item.name.viewport.reset_camera": "Reset Camera",
 	"contextmenu.item.name.viewport.add_object": "Add Object",
+	"contextmenu.item.name.viewport.add_object.basic": "Basic",
 	"contextmenu.item.name.viewport.add_object.obstacle": use("object.name.obstacle"),
 	"contextmenu.item.name.viewport.add_object.lava": use("object.name.lava"),
 	"contextmenu.item.name.viewport.add_object.slime": use("object.name.slime"),
@@ -53,6 +54,16 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"contextmenu.item.name.viewport.add_object.block": use("object.name.block"),
 	"contextmenu.item.name.viewport.add_object.gravityZone": use("object.name.gravityZone"),
 	"contextmenu.item.name.viewport.add_object.rotatingLava": use("object.name.rotatingLava"),
+	"contextmenu.item.name.viewport.add_object.circular": "Circular",
+	"contextmenu.item.name.viewport.add_object.circularIce": use("object.name.circularIce"),
+	"contextmenu.item.name.viewport.add_object.circularLava": use("object.name.circularLava"),
+	"contextmenu.item.name.viewport.add_object.circularObstacle": use("object.name.circularObstacle"),
+	"contextmenu.item.name.viewport.add_object.circularSlime": use("object.name.circularSlime"),
+	"contextmenu.item.name.viewport.add_object.moving": "Moving",
+	"contextmenu.item.name.viewport.add_object.movingIce": use("object.name.movingIce"),
+	"contextmenu.item.name.viewport.add_object.movingLava": use("object.name.movingLava"),
+	"contextmenu.item.name.viewport.add_object.movingObstacle": use("object.name.movingObstacle"),
+	"contextmenu.item.name.viewport.add_object.movingSlime": use("object.name.movingSlime"),
 	// #endregion
 
 	// #region Viewport
@@ -112,6 +123,15 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"object.name.teleporter": "Teleporter",
 	"object.name.spawner": "Spawner",
 	"object.name.rotatingLava": "Rotating Lava",
+	"object.name.circularObstacle": "Circular Obstacle",
+	"object.name.circularLava": "Circular Lava",
+	"object.name.circularSlime": "Circular Slime",
+	"object.name.circularIce": "Circular Ice",
+	"object.name.movingObstacle": "Moving Obstacle",
+	"object.name.movingLava": "Moving Lava",
+	"object.name.movingSlime": "Moving Slime",
+	"object.name.movingIce": "Moving Ice",
+	"object.name.turret": "Turret",
 
 	"object.teleporter.name": ({ object, room }, t) => [
 		"Facing ",

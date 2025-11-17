@@ -5,7 +5,7 @@ import { makeNodeSelectableItem, makeObjectSelectableItem, makeObjectSelectionIt
 import { ViewToolbar } from "@components/layout/LayoutViewToolbar.tsx";
 import { mergeListeners, toClassName } from "@components/utils.tsx";
 import { Bounds } from "@editor/bounds.ts";
-import { SkapRoom, makeBlock, makeCardinalGravityZone, makeGravityZone, makeIce, makeLava, makeObstacle, makeRotatingLava, makeSlime, makeText } from "@editor/map.ts";
+import { SkapObject, SkapRoom, makeBlock, makeCardinalGravityZone, makeCircularIce, makeCircularLava, makeCircularObstacle, makeCircularSlime, makeGravityZone, makeIce, makeLava, makeMovePoint, makeMovingIce, makeMovingLava, makeMovingObstacle, makeMovingSlime, makeObstacle, makeRotatingLava, makeSlime, makeText } from "@editor/map.ts";
 import { useDispatchSkapMap, useSkapMap } from "@editor/reducer.ts";
 import { MouseButtons, useDrag } from "@hooks/useDrag.ts";
 import { useElementSize } from "@hooks/useElementSize.ts";
@@ -33,6 +33,7 @@ import { Color } from "@common/color.ts";
 import { hotkeysHandler, keybindStr } from "@common/keybind.ts";
 import { ID } from "@common/uuid.ts";
 import { AllMovingNodeWebGLRenderer, AllMovingTrackWebGLRenderer } from "./renderer/movingTrack.ts";
+import { TurretWebGLRenderer } from "./renderer/turret.ts";
 
 /** Maximum distance for something to count as a click */
 const clickMaxDistance = 2;
@@ -73,7 +74,7 @@ export const RealViewport: FC<RealViewportProps> = ({
 			new BlockWebGLRenderer(0),
 			// Particles
 			new SpawnerEntitiesWebGLRenderer(),
-			// Turrets
+			new TurretWebGLRenderer(),
 			// Players
 			new BlockWebGLRenderer(1),
 			// Reward
@@ -132,6 +133,18 @@ export const RealViewport: FC<RealViewportProps> = ({
 		...nodeSelectables,
 	];
 
+	const addAndSelect = (object: SkapObject) => {
+		dispatchMap({
+			type: "add_object",
+			roomId: room.id,
+			object,
+		});
+		dispatchSelection({
+			type: "set_selection",
+			selection: [makeObjectSelectionItem(object)]
+		});
+	}
+
 	const contextMenu = useContextMenu([
 		makeSection(Sections.viewport, [
 			makeSingle("viewport.reset_camera", "reset_shutter_speed", () => {
@@ -147,102 +160,60 @@ export const RealViewport: FC<RealViewportProps> = ({
 		]),
 
 		makeSubmenu("viewport.add_object", "add", [
-			makeSingle("viewport.add_object.obstacle", "obstacle", () => {
-				const object = makeObstacle(0, 0, 10, 10);
-				dispatchMap({
-					type: "add_object",
-					roomId: room.id,
-					object,
-				});
-				dispatchSelection({
-					type: "set_selection",
-					selection: [makeObjectSelectionItem(object)]
-				});
-			}),
-			makeSingle("viewport.add_object.lava", "square", () => {
-				const object = makeLava(0, 0, 10, 10);
-				dispatchMap({
-					type: "add_object",
-					roomId: room.id,
-					object,
-				});
-				dispatchSelection({
-					type: "set_selection",
-					selection: [makeObjectSelectionItem(object)]
-				});
-			}),
-			makeSingle("viewport.add_object.slime", "square", () => {
-				const object = makeSlime(0, 0, 10, 10);
-				dispatchMap({
-					type: "add_object",
-					roomId: room.id,
-					object,
-				});
-				dispatchSelection({
-					type: "set_selection",
-					selection: [makeObjectSelectionItem(object)]
-				});
-			}),
-			makeSingle("viewport.add_object.ice", "square", () => {
-				const object = makeIce(0, 0, 10, 10);
-				dispatchMap({
-					type: "add_object",
-					roomId: room.id,
-					object,
-				});
-				dispatchSelection({
-					type: "set_selection",
-					selection: [makeObjectSelectionItem(object)]
-				});
-			}),
+			makeSubmenu("viewport.add_object.basic", "square", [
+				makeSingle("viewport.add_object.obstacle", "obstacle", () => {
+					addAndSelect(makeObstacle(0, 0, 10, 10));
+				}),
+				makeSingle("viewport.add_object.lava", "square", () => {
+					addAndSelect(makeLava(0, 0, 10, 10));
+				}),
+				makeSingle("viewport.add_object.slime", "square", () => {
+					addAndSelect(makeSlime(0, 0, 10, 10));
+				}),
+				makeSingle("viewport.add_object.ice", "square", () => {
+					addAndSelect(makeIce(0, 0, 10, 10));
+				}),
+			]),
 			makeSingle("viewport.add_object.block", "square", () => {
-				const object = makeBlock(0, 0, 10, 10, Color.hex(0xff00ff, 1), 0, false);
-				dispatchMap({
-					type: "add_object",
-					roomId: room.id,
-					object,
-				});
-				dispatchSelection({
-					type: "set_selection",
-					selection: [makeObjectSelectionItem(object)]
-				});
+				addAndSelect(makeBlock(0, 0, 10, 10, Color.hex(0xff00ff, 1), 0, false));
 			}),
 			makeSingle("viewport.add_object.text", "text_fields", () => {
-				const object = makeText(0, 0, "|");
-				dispatchMap({
-					type: "add_object",
-					roomId: room.id,
-					object,
-				});
-				dispatchSelection({
-					type: "set_selection",
-					selection: [makeObjectSelectionItem(object)]
-				});
+				addAndSelect(makeText(0, 0, "|"));
 			}),
 			makeSingle("viewport.add_object.gravityZone", null, () => {
-				const object = makeCardinalGravityZone(0, 0, 10, 10, CardinalDirection.Down);
-				dispatchMap({
-					type: "add_object",
-					roomId: room.id,
-					object,
-				});
-				dispatchSelection({
-					type: "set_selection",
-					selection: [makeObjectSelectionItem(object)]
-				});
+				addAndSelect(makeCardinalGravityZone(0, 0, 10, 10, CardinalDirection.Down));
 			}),
 			makeSingle("viewport.add_object.rotatingLava", null, () => {
-				const object = makeRotatingLava(0, 0, 10, 10, vec2(5, 5), 0, 90);
-				dispatchMap({
-					type: "add_object",
-					roomId: room.id,
-					object,
-				});
-				dispatchSelection({
-					type: "set_selection",
-					selection: [makeObjectSelectionItem(object)]
-				});
+				addAndSelect(makeRotatingLava(0, 0, 10, 10, vec2(5, 5), 0, 90));
 			}),
+			makeSubmenu("viewport.add_object.circular", "circle", [
+				makeSingle("viewport.add_object.circularObstacle", null, () => {
+					addAndSelect(makeCircularObstacle(0, 0, 10));
+				}),
+				makeSingle("viewport.add_object.circularLava", null, () => {
+					addAndSelect(makeCircularLava(0, 0, 10));
+				}),
+				makeSingle("viewport.add_object.circularSlime", null, () => {
+					addAndSelect(makeCircularSlime(0, 0, 10));
+				}),
+				makeSingle("viewport.add_object.circularIce", null, () => {
+					addAndSelect(makeCircularIce(0, 0, 10));
+				}),
+			]),
+			makeSubmenu("viewport.add_object.moving", "move_item", [
+				makeSingle("viewport.add_object.movingObstacle", null, () => {
+					addAndSelect(makeMovingObstacle(10, 10, 5, [makeMovePoint(0, 0, 0)]));
+				}),
+				makeSingle("viewport.add_object.movingLava", null, () => {
+					addAndSelect(makeMovingLava(10, 10, 5, [makeMovePoint(0, 0, 0)]));
+				}),
+				makeSingle("viewport.add_object.movingSlime", null, () => {
+					addAndSelect(makeMovingSlime(10, 10, 5, [makeMovePoint(0, 0, 0)]));
+				}),
+				makeSingle("viewport.add_object.movingIce", null, () => {
+					addAndSelect(makeMovingIce(10, 10, 5, [makeMovePoint(0, 0, 0)]));
+				}),
+			]),
 		]),
 	]);
 

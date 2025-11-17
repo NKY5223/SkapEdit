@@ -281,6 +281,8 @@ export class Color {
 	static readonly GRAVITYZONE_BG_DOWN = Color.hex(0x848000, .25);
 
 	static readonly SPAWNER_BACKGROUND = Color.hex(0x2080ff, .25);
+
+	static readonly TURRET = Color.hex(0x4d4d4d);
 	// #endregion
 }
 
