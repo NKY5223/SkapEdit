@@ -31,6 +31,7 @@ const circularProperties = <T extends Circular<string>>(type: T["type"], zIndex:
 		},
 		inspector: {
 			Component: ({ object }) => {
+				const { type, id, pos, radius } = object;
 				const dispatchMap = useDispatchSkapMap();
 				const update = (f: (val: T) => T) => dispatchMap({
 					type: "replace_object",
@@ -38,10 +39,9 @@ const circularProperties = <T extends Circular<string>>(type: T["type"], zIndex:
 					// @ts-expect-error
 					replacement: obj => obj.type === type ? f(obj) : obj,
 				});
-				const { type, id, pos, radius } = object;
 				return (
 					<>
-						<h2>Circular Lava</h2>
+						<h2><Translate k="object.name" type={type} /></h2>
 						<FormSection>
 							<FormTitle><Translate k="generic.position" /> </FormTitle>
 							<Vec2Input value={pos}

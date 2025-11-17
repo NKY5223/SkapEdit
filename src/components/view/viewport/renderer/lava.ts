@@ -1,15 +1,14 @@
 import { Color } from "@common/color.ts";
-import { Vec2 } from "@common/vec2.ts";
 import { Bounds } from "@editor/bounds.ts";
+import { centeredBounds } from "@editor/object/moving.tsx";
 import { ViewportInfo } from "../Viewport.tsx";
 import { WebGLViewportInfo } from "../webgl/WebGLLayer.tsx";
 import { CircleWebGLRenderer } from "./circle.ts";
+import { MovingRectWebGLRenderer } from "./moving.ts";
 import { RectWebGLRenderer } from "./rect.ts";
 import { RotatedRectWebGLRenderer } from "./rotated.ts";
 import frag from "./shader/solidColor.frag?raw";
 import circleFrag from "./shader/solidColorCircle.frag?raw";
-import { MovingRectWebGLRenderer } from "./moving.ts";
-import { centeredBounds } from "@editor/object/moving.tsx";
 
 const rgba = Color.LAVA.rgba();
 const ghost = Color.LAVA.withAlpha(0.5).rgba();

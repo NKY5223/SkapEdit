@@ -153,6 +153,7 @@ export type TranslationArgs = {
 	// #endregion
 
 	"generic.name": {};
+	"generic.radius": {};
 
 	"generic.position": {};
 	"generic.position.x": {};

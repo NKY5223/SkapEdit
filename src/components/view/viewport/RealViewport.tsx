@@ -14,10 +14,10 @@ import { viewportToMap } from "./mapping.ts";
 import { BackgroundObstacleWebGLRenderer, BackgroundWebGLRenderer } from "./renderer/background.ts";
 import { BlockWebGLRenderer } from "./renderer/block.ts";
 import { GravityZoneWebGLRenderer } from "./renderer/gravityZone.ts";
-import { IceWebGLRenderer } from "./renderer/ice.ts";
+import { CircularIceWebGLRenderer, IceWebGLRenderer, MovingIceWebGLRenderer } from "./renderer/ice.ts";
 import { CircularLavaWebGLRenderer, LavaWebGLRenderer, MovingLavaWebGLRenderer, RotatingLavaWebGLRenderer } from "./renderer/lava.ts";
-import { ObstacleWebGLRenderer } from "./renderer/obstacle.ts";
-import { SlimeWebGLRenderer } from "./renderer/slime.ts";
+import { CircularObstacleWebGLRenderer, MovingObstacleWebGLRenderer, ObstacleWebGLRenderer } from "./renderer/obstacle.ts";
+import { CircularSlimeWebGLRenderer, MovingSlimeWebGLRenderer, SlimeWebGLRenderer } from "./renderer/slime.ts";
 import { TeleporterWebGLRenderer } from "./renderer/teleporter.ts";
 import { TextLayer } from "./renderer/text.tsx";
 import { ActiveSelection } from "./selection/ActiveSelection.tsx";
@@ -58,13 +58,19 @@ export const RealViewport: FC<RealViewportProps> = ({
 			// Place spawner behind everything (it was tinting stuff weird)
 			new SpawnerBackgroundWebGLRenderer(),
 			new ObstacleWebGLRenderer(),
+			new CircularObstacleWebGLRenderer(),
+			new MovingObstacleWebGLRenderer(),
 			new TeleporterWebGLRenderer(),
 			new LavaWebGLRenderer(),
 			new RotatingLavaWebGLRenderer(),
 			new CircularLavaWebGLRenderer(),
 			new MovingLavaWebGLRenderer(),
 			new IceWebGLRenderer(),
+			new CircularIceWebGLRenderer(),
+			new MovingIceWebGLRenderer(),
 			new SlimeWebGLRenderer(),
+			new CircularSlimeWebGLRenderer(),
+			new MovingSlimeWebGLRenderer(),
 			new AllMovingTrackWebGLRenderer(),
 			new AllMovingNodeWebGLRenderer(),
 			// Buttons

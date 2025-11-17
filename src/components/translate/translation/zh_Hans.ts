@@ -127,10 +127,10 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"object.name.circularLava": "圆形岩浆",
 	"object.name.circularSlime": "圆形弹浆",
 	"object.name.circularIce": "圆形冰块",
-	"object.name.movingIce": "移动障碍",
+	"object.name.movingObstacle": "移动障碍",
+	"object.name.movingSlime": "移动弹浆",
 	"object.name.movingLava": "移动岩浆",
-	"object.name.movingObstacle": "移动弹浆",
-	"object.name.movingSlime": "移动冰块",
+	"object.name.movingIce": "移动冰块",
 	"object.name.turret": "炮塔",
 
 	"object.teleporter.name": ({ object, room }, t) => [
@@ -169,6 +169,7 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	// #endregion
 
 	"generic.name": "名",
+	"generic.radius": "半径",
 
 	"generic.position": "位置",
 	"generic.position.x": "X坐标",

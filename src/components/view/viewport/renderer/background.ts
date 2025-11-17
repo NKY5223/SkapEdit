@@ -16,6 +16,7 @@ export class BackgroundObstacleWebGLRenderer extends RectWebGLRenderer {
 	}
 	preRender(gl: WebGL2RenderingContext, viewportInfo: ViewportInfo): void {
 		this.setUniform4f(gl, "uColor", viewportInfo.room.obstacleColor.rgba());
+		this.setUniform1f(gl, "uOpacity", 1);
 	}
 }
 export class BackgroundWebGLRenderer extends RectWebGLRenderer {
