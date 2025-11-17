@@ -1,10 +1,11 @@
 import { SkapMap, SkapObject, SkapRoom } from "@editor/map.ts";
 import { SkapFile } from "./skap.ts";
-import { Vec2 } from "@common/vec2.ts";
+import { vec2, Vec2 } from "@common/vec2.ts";
 import { Color } from "@common/color.ts";
 import { Vector } from "@common/vector.ts";
 import { mod } from "@common/number.ts";
 import { tuples } from "@common/array.ts";
+import { customJson } from "./json.ts";
 
 const vec2ToSkap = (vec: Vec2): SkapFile.Vec2 => vec.components;
 const rgbToSkap = (color: Color): SkapFile.Rgb => color.rgb().mul(255).components;
@@ -164,6 +165,21 @@ const objectToSkap = (object: SkapObject, room: SkapRoom, map: SkapMap): SkapFil
 				}),
 			}];
 		}
+		case "turret": {
+			const { type, pos, region, bulletRadius, bulletSpeed, bulletInterval, groupSize, groupInterval } = object;
+			
+			return [{
+				type,
+				position: vec2ToSkap(pos),
+				regionPosition: vec2ToSkap(region.topLeft),
+				regionSize: vec2ToSkap(region.size),
+				radius: bulletRadius,
+				speed: bulletSpeed,
+				shootingSpeed: bulletInterval,
+				overHeat: groupSize,
+				coolDownTime: groupInterval,
+			}];
+		}
 		// default: return [];
 	}
 }
@@ -198,5 +214,5 @@ export const mapToSkap = (map: SkapMap): SkapFile.Map => {
 }
 
 export const mapToSkapJson = (map: SkapMap): string => {
-	return JSON.stringify(mapToSkap(map));
+	return customJson(mapToSkap(map));
 }

@@ -6,7 +6,7 @@ import { useOpenFile } from "@hooks/useOpenFile.tsx";
 import { FC } from "react";
 import { makeLogger } from "../../../savefile/logger.ts";
 import { SkapMapSchema } from "../../../savefile/skap.ts";
-import { mapToSkap } from "../../../savefile/skapExport.ts";
+import { mapToSkapJson } from "../../../savefile/skapExport.ts";
 import { skapToMap } from "../../../savefile/skapImport.ts";
 import { makeSingle } from "../../contextmenu/ContextMenu.ts";
 import { Translate } from "../../translate/Translate.tsx";
@@ -60,9 +60,10 @@ export const Topbar: FC<TopbarProps> = ({
 				makeSingle("topbar.file.export_skap", "file_export", async () => {
 					try {
 						await saveFile("map.skap.json",
-							() => new Blob([
-								JSON.stringify(mapToSkap(map))
-							], { type: "application/json" }),
+							() => {
+								const json = mapToSkapJson(map);
+								return new Blob([json], { type: "application/json" });
+							},
 							{
 								id: "skapedit-export",
 								types: [
