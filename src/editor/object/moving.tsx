@@ -1,4 +1,4 @@
-import { Vec2 } from "@common/vec2.ts";
+import { vec2, Vec2 } from "@common/vec2.ts";
 import { BoundsInput } from "@components/form/BoundsInput.tsx";
 import { FormSection } from "@components/form/FormSection.tsx";
 import { FormTitle } from "@components/form/FormTitle.tsx";
@@ -72,7 +72,7 @@ const movingProperties = <T extends Moving<string>>(type: T["type"], zIndex: num
 								return (
 									<>
 										<NumberInput value={point.time}
-											step={0.1}
+											min={0} max={period} step={0.1}
 											onInput={time => updatePoint(point => ({ ...point, time }))}
 											label={"Time"} />
 										<Vec2Input value={point.pos}
@@ -84,6 +84,17 @@ const movingProperties = <T extends Moving<string>>(type: T["type"], zIndex: num
 								<>t={point.time}</>,
 								<><Translate k="generic.vec2" vector={point.pos} /></>
 							]}
+							addItem={() => update(obj => ({
+								...obj,
+								points: [...obj.points, {
+									pos: vec2(0, 0),
+									time: period,
+								}]
+							}))}
+							removeItem={i => update(obj => ({
+								...obj,
+								points: points.toSpliced(i, 1),
+							}))}
 						/>
 					</>
 				);
