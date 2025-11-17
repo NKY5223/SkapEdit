@@ -282,7 +282,14 @@ export class Color {
 
 	static readonly SPAWNER_BACKGROUND = Color.hex(0x2080ff, .25);
 
-	static readonly TURRET = Color.hex(0x4d4d4d);
+	static readonly TURRET = Color.hex(0x626262);
+
+	static readonly DOOR_BACKGROUND = Color.hex(0x9d9d9d);
+	static readonly BUTTON = Color.hex(0x494949);
+	static readonly DOORLINK = Color.hex(0x606250);
+	static readonly DOORLINK_ACTIVE = Color.hex(0x938e17);
+	static readonly DOORLINK_HIDDEN = Color.DOORLINK.withAlpha(.5);
+	static readonly DOORLINK_ACTIVE_HIDDEN = Color.DOORLINK_ACTIVE.withAlpha(.5);
 	// #endregion
 }
 

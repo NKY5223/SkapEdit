@@ -2,9 +2,14 @@ import { treeifyError } from "zod";
 import { SettingsSchema } from "./settings.ts";
 
 const vø = {};
+const v1 = {
+	language: "zh-Hans",
+	theme: "light",
+};
 
 const results = Object.entries({
-	vø
+	vø,
+	v1,
 }).map(([k, v]) => [k, SettingsSchema.safeParse(v)] as const);
 
 console.log(

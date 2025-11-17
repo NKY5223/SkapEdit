@@ -139,6 +139,11 @@ const Turret = circleObject("turret").extend({
 
 // #region door, button, switch
 const Door = rectObject("door").extend({
+	/** 
+	 * A list of ids similar to those of buttons and switches (inputs).
+	 * If the id is prefixed with a "-", the input is inverted.
+	 * If it is suffixed with anything, the link is hidden.
+	 */
 	linkIds: SkapId.array()
 });
 const Button = rectObject("button").extend({

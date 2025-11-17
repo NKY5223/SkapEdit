@@ -73,7 +73,7 @@ export abstract class MovingRectWebGLRenderer extends WebGLLayerRenderer {
 
 		this.preRender(gl, viewportInfo, webGlViewportInfo);
 
-		gl.drawArrays(gl.TRIANGLES, 0, rects.length * 6);
+		gl.drawArrays(gl.TRIANGLES, 0, pos.length);
 
 		this.postRender(gl, viewportInfo, webGlViewportInfo);
 	}

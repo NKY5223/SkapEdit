@@ -34,6 +34,9 @@ import { hotkeysHandler, keybindStr } from "@common/keybind.ts";
 import { ID } from "@common/uuid.ts";
 import { AllMovingNodeWebGLRenderer, AllMovingTrackWebGLRenderer } from "./renderer/movingTrack.ts";
 import { TurretWebGLRenderer } from "./renderer/turret.ts";
+import { DoorWebGLRenderer } from "./renderer/door.ts";
+import { ButtonWebGLRenderer } from "./renderer/button.ts";
+import { DoorLinkWebGLRenderer } from "./renderer/doorLink.ts";
 
 /** Maximum distance for something to count as a click */
 const clickMaxDistance = 2;
@@ -73,10 +76,10 @@ export const RealViewport: FC<RealViewportProps> = ({
 			new MovingSlimeWebGLRenderer(),
 			new AllMovingTrackWebGLRenderer(),
 			new AllMovingNodeWebGLRenderer(),
-			// Buttons
+			new ButtonWebGLRenderer(),
 			// Switches
-			// Doors
-			// door links
+			new DoorWebGLRenderer(),
+			new DoorLinkWebGLRenderer(),
 			new BlockWebGLRenderer(0),
 			// Particles
 			new SpawnerEntitiesWebGLRenderer(),
@@ -345,7 +348,10 @@ export const RealViewport: FC<RealViewportProps> = ({
 	// #region Hotkeys
 	const onKeyDown = hotkeysHandler([
 		[keybindStr("ctrl+KeyA"), () => {
-			const newSelection = objectSelectables.map(selectableToSelection);
+			const newSelection = [
+				...objectSelectables,
+				...nodeSelectables,
+			].map(selectableToSelection);
 			dispatchSelection({
 				type: "set_selection",
 				selection: newSelection,

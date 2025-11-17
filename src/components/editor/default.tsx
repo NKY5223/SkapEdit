@@ -2,7 +2,7 @@ import { Color } from "@common/color.ts";
 import { vec2 } from "@common/vec2.ts";
 import { Layout, makeSplitX, makeView } from "@components/layout/layout";
 import { viewProviders } from "@components/layout/views.tsx";
-import { makeCardinalGravityZone, makeCircularLava, makeFreeGravityZone, makeLava, makeMovePoint, makeMovingLava, makeObstacle, makeRoom, makeRotatingLava, makeSpawner, makeSpawnerEntity, makeTeleporterPair, makeText, makeTurret, SkapMap, SkapRoom, toIdMap } from "@editor/map.ts";
+import { makeButton, makeCardinalGravityZone, makeCircularLava, makeDoor, makeFreeGravityZone, makeLava, makeMovePoint, makeMovingLava, makeObstacle, makeRoom, makeRotatingLava, makeSpawner, makeSpawnerEntity, makeTeleporterPair, makeText, makeTurret, SkapMap, SkapRoom, toIdMap } from "@editor/map.ts";
 import { CardinalDirection } from "@editor/object/Base.tsx";
 
 const defaultLayout = makeSplitX(0.75,
@@ -15,7 +15,7 @@ export const defaultLayoutTree: Layout.Tree = {
 const [tp1, tp2] = makeTeleporterPair(
 	50, 5, 60, 25, CardinalDirection.Right,
 	-10, 80, 0, 100, CardinalDirection.Left,
-)
+);
 const homeRoom: SkapRoom = makeRoom(
 	"Home",
 	{ left: 0, top: 0, right: 50, bottom: 25 },
@@ -31,6 +31,7 @@ const homeRoom: SkapRoom = makeRoom(
 		tp1,
 	]
 );
+const button = makeButton(90, 0, 100, 20, "Button", CardinalDirection.Right, 5);
 const testRoom: SkapRoom = makeRoom(
 	"Test 1",
 	{ left: 0, top: 0, right: 100, bottom: 100, },
@@ -38,22 +39,16 @@ const testRoom: SkapRoom = makeRoom(
 	Color.DEFAULT_BACKGROUND,
 	[
 		tp2,
-		// makeRotatingLava(
-		// 	0, 45, 100, 55,
-		// 	vec2(50, 50),
-		// 	90, 90,
-		// ),
-		// makeCircularLava(50, 50, 10),
-		makeMovingLava(10, 10, 10, [
-			makeMovePoint(5, 5, 0),
-			makeMovePoint(95, 5, 2.5),
-			makeMovePoint(95, 95, 5),
-			makeMovePoint(5, 95, 7.5),
-		]),
 		makeTurret(50, 50,
 			0, 0, 100, 100,
 			2, 0.1, 10, 4, 4,
-		)
+		),
+		makeDoor(90, 80, 100, 100, [{
+			objectId: button.id,
+			invert: true,
+			hidden: true,
+		}]),
+		button,
 	]
 );
 export const defaultMap: SkapMap = {

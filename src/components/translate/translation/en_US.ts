@@ -132,6 +132,9 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"object.name.movingSlime": "Moving Slime",
 	"object.name.movingIce": "Moving Ice",
 	"object.name.turret": "Turret",
+	"object.name.door": "Door",
+	"object.name.button": "Button",
+	"object.name.switch": "Switch",
 
 	"object.teleporter.name": ({ object, room }, t) => [
 		"Facing ",

@@ -13,6 +13,8 @@ import { SkapRotatingLava } from "./object/rotating.tsx";
 import { SkapCircularIce, SkapCircularLava, SkapCircularObstacle, SkapCircularSlime } from "./object/circular.tsx";
 import { MovingPoint, SkapMovingIce, SkapMovingLava, SkapMovingObstacle, SkapMovingSlime } from "./object/moving.tsx";
 import { SkapTurret } from "./object/turret.tsx";
+import { SkapDoor } from "./object/door.tsx";
+import { SkapButton } from "./object/button.tsx";
 
 export type SkapObject = (
 	| SkapObstacle
@@ -34,6 +36,8 @@ export type SkapObject = (
 	| SkapMovingSlime
 	| SkapMovingIce
 	| SkapTurret
+	| SkapDoor
+	| SkapButton
 );
 export type SkapRoom = {
 	id: ID;
@@ -241,6 +245,21 @@ export const makeTurret = (x: number, y: number, left: number, top: number, righ
 	bulletSpeed,
 	groupInterval,
 	groupSize,
+});
+
+export const makeDoor = (left: number, top: number, right: number, bottom: number, connections: SkapDoor["connections"]): SkapDoor => ({
+	type: "door",
+	id: createId("obj-door"),
+	bounds: new Bounds({ left, top, right, bottom }),
+	connections,
+});
+export const makeButton = (left: number, top: number, right: number, bottom: number, name: string, dir: CardinalDirection, timer: number): SkapButton => ({
+	type: "button",
+	name,
+	id: createId("obj-button"),
+	bounds: new Bounds({ left, top, right, bottom }),
+	dir,
+	timer,
 });
 // #endregion
 

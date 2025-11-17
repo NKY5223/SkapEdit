@@ -12,7 +12,7 @@ import frag from "./shader/solidColor.frag?raw";
 import circleFrag from "./shader/solidColorCircle.frag?raw";
 import { unitSquareUvs } from "./spawner.ts";
 
-const line = (a: Vec2, b: Vec2, width: number = 1): Vec2[] => {
+export const line = (a: Vec2, b: Vec2, width: number = 1): Vec2[] => {
 	if (a.equal(b)) return [a, a, a, a, a, a];
 	const long = a.sub(b);
 	const cross = ccw90.mulVec(long).norm(width / 2);

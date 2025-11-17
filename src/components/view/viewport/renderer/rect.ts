@@ -40,7 +40,7 @@ export abstract class RectWebGLRenderer extends WebGLLayerRenderer {
 
 		this.preRender(gl, viewportInfo, webGlViewportInfo);
 
-		gl.drawArrays(gl.TRIANGLES, 0, boundses.length * 6);
+		gl.drawArrays(gl.TRIANGLES, 0, pos.length);
 
 		this.postRender(gl, viewportInfo, webGlViewportInfo);
 	}

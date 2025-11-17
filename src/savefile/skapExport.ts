@@ -180,6 +180,26 @@ const objectToSkap = (object: SkapObject, room: SkapRoom, map: SkapMap): SkapFil
 				coolDownTime: groupInterval,
 			}];
 		}
+		case "door": {
+			const { type, bounds } = object;
+			return [{
+				type,
+				position: vec2ToSkap(bounds.topLeft),
+				size: vec2ToSkap(bounds.size),
+				linkIds: [],
+			}];
+		}
+		case "button": {
+			const { type, id, bounds, dir, timer, } = object;
+			return [{
+				type,
+				id,
+				position: vec2ToSkap(bounds.topLeft),
+				size: vec2ToSkap(bounds.size),
+				dir,
+				time: timer,
+			}];
+		}
 		// default: return [];
 	}
 }

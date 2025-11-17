@@ -1,21 +1,25 @@
 import { Vec2 } from "@common/vec2.ts";
-import { circleBounds } from "@editor/object/circular.tsx";
+import { Bounds } from "@editor/bounds.ts";
+import { CardinalDirection } from "@editor/object/Base.tsx";
 import { ViewportInfo } from "../Viewport.tsx";
-import { rect } from "../webgl/webgl.ts";
 import { WebGLLayerRenderer, WebGLViewportInfo } from "../webgl/WebGLLayer.tsx";
-import vert from "./shader/texture.vert?raw";
-import { unitSquareUvs } from "./spawner.ts";
+import vert from "./shader/default.vert?raw";
 
-export abstract class CircleWebGLRenderer extends WebGLLayerRenderer {
-	constructor(frag: string) {
+export abstract class TransformedRectWebGLRenderer extends WebGLLayerRenderer {
+	constructor(frag: string, readonly transforms: Map<CardinalDirection, [
+		topLeft: Vec2,
+		topRight: Vec2,
+		bottomLeft: Vec2,
+		bottomRight: Vec2,
+	]>) {
 		super({
 			vert,
 			frag,
 		});
 	}
-	abstract circles(viewportInfo: ViewportInfo, webGlViewportInfo: WebGLViewportInfo): {
-		pos: Vec2;
-		radius: number;
+	abstract rects(viewportInfo: ViewportInfo, webGlViewportInfo: WebGLViewportInfo): {
+		bounds: Bounds;
+		dir: CardinalDirection;
 	}[];
 
 	preRender(gl: WebGL2RenderingContext, viewportInfo: ViewportInfo, webGlViewportInfo: WebGLViewportInfo): void {
@@ -38,12 +42,22 @@ export abstract class CircleWebGLRenderer extends WebGLLayerRenderer {
 		this.setUniform2f(gl, "uCameraPosition", camera.pos);
 		this.setUniform2f(gl, "uCameraSize", cameraSize);
 
-		const circles = this.circles(viewportInfo, webGlViewportInfo);
-		const pos = circles.flatMap(r => rect(circleBounds(r.pos, r.radius)));
-		const uvs = circles.flatMap(() => unitSquareUvs);
+		const rects = this.rects(viewportInfo, webGlViewportInfo);
+		const pos = rects.flatMap(r => {
+			const trans = this.transforms.get(r.dir);
+			if (!trans) throw new Error("No transform for transformedrect");
+			const [topLeft, topRight, bottomLeft, bottomRight] = trans.map(t => r.bounds.lerp(t));
+			return [
+				topLeft,
+				topRight,
+				bottomRight,
+				topLeft,
+				bottomLeft,
+				bottomRight,
+			];
+		});
 
 		this.setAttribute2f(gl, "aPosition", pos);
-		this.setAttribute2f(gl, "aUv", uvs);
 
 		this.preRender(gl, viewportInfo, webGlViewportInfo);
 

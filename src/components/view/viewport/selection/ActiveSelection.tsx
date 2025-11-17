@@ -16,8 +16,7 @@ import { round } from "@common/number.ts";
 import { centeredBounds } from "@editor/object/moving.tsx";
 import { SkapTurret } from "@editor/object/turret.tsx";
 import { id } from "zod/locales";
-
-const rounding = 1;
+import { useSetting } from "@components/settings/settings.ts";
 
 type ActiveSelectionProps = {
 	viewportInfo: ViewportInfo;
@@ -191,6 +190,9 @@ const ActiveSelectionItem: FC<ActiveSelectionItemProps> = ({
 				case "gravityZone":
 				case "teleporter":
 				case "spawner":
+				case "door":
+				case "button":
+				// case "switch":
 
 				case "rotatingLava":
 					{
@@ -409,6 +411,7 @@ const BoundsSelection = <O,>({
 	setTranslate: translate = (_, diff) => setBounds(bounds.translate(diff)),
 	onDoubleClick,
 }: BoundsSelectionProps<O>): ReactNode => {
+	const rounding = useSetting("grid");
 	const [x, y] = bounds.topLeft;
 	const [w, h] = bounds.size;
 	const onUpdate = (update: BoundsUpdateLRTBWH) => {
@@ -423,8 +426,8 @@ const BoundsSelection = <O,>({
 			if (!active) return;
 			const diff = curr.sub(orig).div(viewportInfo.camera.scale);
 			const rounded = vec2(
-				Math.round(diff[0] / rounding) * rounding,
-				Math.round(diff[1] / rounding) * rounding,
+				round(rounding, diff[0]),
+				round(rounding, diff[1]),
 			);
 			// object is the ORIGINAL object
 			// because closures
@@ -475,6 +478,7 @@ const CircleSelection: FC<CircleSelectionProps> = ({
 	radius, setRadius,
 	active = true,
 }) => {
+	const rounding = useSetting("grid");
 	const { listeners, dragging } = useDrag({
 		buttons: MouseButtons.Left,
 		normalizeDir: false,
@@ -484,8 +488,8 @@ const CircleSelection: FC<CircleSelectionProps> = ({
 			if (!active) return;
 			const diff = curr.sub(orig).div(viewportInfo.camera.scale);
 			const rounded = vec2(
-				Math.round(diff[0] / rounding) * rounding,
-				Math.round(diff[1] / rounding) * rounding,
+				round(rounding, diff[0]),
+				round(rounding, diff[1]),
 			);
 			// pos is original pos due to closure
 			setPos(pos.add(rounded));
@@ -538,6 +542,7 @@ const PointSelection: FC<PointSelectionProps> = ({
 	radius,
 	active = true,
 }) => {
+	const rounding = useSetting("grid");
 	const { listeners, dragging } = useDrag({
 		buttons: MouseButtons.Left,
 		normalizeDir: false,
@@ -547,8 +552,8 @@ const PointSelection: FC<PointSelectionProps> = ({
 			if (!active) return;
 			const diff = curr.sub(orig).div(viewportInfo.camera.scale);
 			const rounded = vec2(
-				Math.round(diff[0] / rounding) * rounding,
-				Math.round(diff[1] / rounding) * rounding,
+				round(rounding, diff[0]),
+				round(rounding, diff[1]),
 			);
 			// pos is original pos due to closure
 			setPos(pos.add(rounded));

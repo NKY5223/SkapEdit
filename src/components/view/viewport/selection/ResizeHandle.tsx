@@ -6,8 +6,8 @@ import { FC } from "react";
 import css from "./ActiveSelection.module.css";
 import { viewportToMap } from "../mapping.ts";
 import { ViewportInfo } from "../Viewport.tsx";
-
-const rounding = 1;
+import { round } from "@common/number.ts";
+import { useSetting } from "@components/settings/settings.ts";
 
 const xName = (x: -1 | 0 | 1) => {
 	switch (x) {
@@ -37,6 +37,7 @@ export const ResizeHandle: FC<ResizeHandleProps> = ({
 	circle,
 	viewportInfo, onUpdate,
 }) => {
+	const rounding = useSetting("grid");
 	const xn = xName(x);
 	const yn = yName(y);
 	// Uses || for the case where x === y === 0
@@ -49,8 +50,8 @@ export const ResizeHandle: FC<ResizeHandleProps> = ({
 			const sub = curr.sub(viewportInfo.viewportPos);
 			const normed = viewportToMap(viewportInfo, sub);
 			const rounded = vec2(
-				Math.round(normed[0] / rounding) * rounding,
-				Math.round(normed[1] / rounding) * rounding,
+				round(rounding, normed[0]),
+				round(rounding, normed[1]),
 			);
 
 			if (xn || yn) {

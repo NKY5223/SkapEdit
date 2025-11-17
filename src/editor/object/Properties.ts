@@ -10,6 +10,8 @@ import { spawnerProperties } from "./spawner.tsx";
 import { teleporterProperties } from "./teleporter.tsx";
 import { textProperties } from "./text.tsx";
 import { turretProperties } from "./turret.tsx";
+import { doorProperties } from "./door.tsx";
+import { buttonProperties } from "./button.tsx";
 
 const properties = [
 	obstacleProperties,
@@ -36,10 +38,12 @@ const properties = [
 	movingIceProperties,
 
 	turretProperties,
+	doorProperties,
+	buttonProperties,
 ];
 
 type Assert<T extends true> = T;
-type Extract<T> = T extends SkapObjectProperties<infer S, infer T> ? T : never
+type Extract<T> = T extends SkapObjectProperties<infer S, infer T> ? T : never;
 type Implemented = Extract<typeof properties[number]>;
 type Unimplemented = Exclude<SkapObject, Implemented>;
 type test = Assert<Unimplemented extends never ? true : false>;

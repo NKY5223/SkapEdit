@@ -132,6 +132,9 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"object.name.movingLava": "移动岩浆",
 	"object.name.movingIce": "移动冰块",
 	"object.name.turret": "炮塔",
+	"object.name.door": "门",
+	"object.name.button": "按钮",
+	"object.name.switch": "开关",
 
 	"object.teleporter.name": ({ object, room }, t) => [
 		"向",
