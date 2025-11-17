@@ -11,10 +11,17 @@ export type ChangelogEntry = {
  */
 export const changelog: ChangelogEntry[] = [
 	{
+		version: "0.1.4",
+		message: [
+			`Added objects: rotating lava, circular objects, moving objects. `,
+		],
+		time: new Date(`2025-11-17`),
+	},
+	{
 		version: "0.1.3",
 		message: [
 			`Added objects: blocks, gravity zones, teleporters, spawners. `,
-			`Added room switching.`
+			`Added room switching.`,
 		],
 		time: new Date(`2025-11-11`),
 	},
