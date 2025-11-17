@@ -10,6 +10,9 @@ import { Logger } from "./logger.ts";
 import { mod } from "@common/number.ts";
 import { groupEqual, tuplesCyclical } from "@common/array.ts";
 import { MovingPoint } from "@editor/object/moving.tsx";
+import { SkapButton } from "@editor/object/button.tsx";
+import { SkapDoor } from "@editor/object/door.tsx";
+import { SkapSwitch } from "@editor/object/switch.tsx";
 
 const skapToVec2 = (v: SkapFile.Vec2): Vec2 => vec2(...v);
 const skapToRgb = (c: SkapFile.Rgb): Color => Color.rgb255(...c);
@@ -26,10 +29,22 @@ type P<T> =
 		targetRoom: string;
 		targetSkapId: SkapFile.Id;
 	} :
+	T extends SkapButton | SkapSwitch ? T & { skapId: string } :
+	T extends SkapDoor ? {
+		type: "door";
+		id: ID;
+		bounds: Bounds;
+		connections: {
+			skapId: string;
+			hidden: boolean;
+			invert: boolean;
+		}[];
+	} :
 	T;
 type PartialSkapObject = P<SkapObject>;
 /** Generate the skeleton of the objects */
-const skapToObjectsPartial = (object: SkapFile.Object, room: SkapFile.Room, map: SkapFile.Map): PartialSkapObject => {
+const skapToObjectsPartial = (object: SkapFile.Object, room: SkapFile.Room, map: SkapFile.Map,
+	logger: Logger): PartialSkapObject => {
 	const id = createId(`obj-${object.type}`);
 	switch (object.type) {
 		case "obstacle":
@@ -130,10 +145,77 @@ const skapToObjectsPartial = (object: SkapFile.Object, room: SkapFile.Room, map:
 				points,
 			};
 		}
-		case "turret":
-		case "door":
-		case "button":
-		case "switch":
+
+		case "turret": return {
+			type: "turret",
+			id,
+			pos: skapToVec2(object.position),
+			region: skapToBounds(object.regionPosition, object.regionSize),
+			bulletRadius: object.radius,
+			bulletSpeed: object.speed,
+			bulletInterval: object.shootingSpeed,
+			groupSize: object.overHeat,
+			groupInterval: object.coolDownTime,
+		};
+
+		case "door": return {
+			type: "door",
+			id,
+			bounds: skapToBounds(object.position, object.size),
+			connections: object.linkIds.map(skapId => {
+				const match = String(skapId).match(/^(?<invert>-)?(?<sId>[^\.]*)(?<hidden>\..*)?$/);
+				if (!match?.groups) {
+					logger.warn("broken_link_format", id, room.name);
+					return null;
+				}
+				const { invert, sId, hidden } = match.groups;
+				return {
+					skapId: sId,
+					invert: !!invert,
+					hidden: !!hidden,
+				};
+			}).filter(v => v !== null),
+		}
+		case "button": {
+			const bounds = skapToBounds(object.position, object.size);
+			const center = bounds.center();
+			const text = (room.objects
+				.filter(obj => obj.type === "text")
+				.map(obj => [obj, center.sub(skapToVec2(obj.position)).mag()] as const))
+				.filter(([, d]) => d <= 15)
+				.sort(([, a], [, b]) => b - a)
+				.at(0);
+			const name = text?.[0].text ?? "button";
+			return {
+				type: "button",
+				id,
+				name,
+				bounds,
+				dir: object.dir,
+				timer: object.time,
+				skapId: String(object.id),
+			};
+		}
+		case "switch": {
+			const bounds = skapToBounds(object.position, object.size);
+			const center = bounds.center();
+			const text = room.objects
+				.filter(obj => obj.type === "text")
+				.map(obj => [obj, center.sub(skapToVec2(obj.position)).mag()] as const)
+				.filter(([, d]) => d <= 15)
+				.sort(([, a], [, b]) => b - a)
+				.at(0);
+			const name = text?.[0].text ?? "switch";
+			return {
+				type: "switch",
+				id,
+				name,
+				bounds,
+				dir: object.dir,
+				skapId: String(object.id),
+			};
+		}
+
 		case "reward":
 		case "hatReward":
 			return {
@@ -153,8 +235,9 @@ type PartialSkapRoom = Omit<SkapRoom, "objects"> & {
 	objects: PartialSkapObject[];
 }
 /** Generate rooms with partial objects */
-const skapToRoomPartial = (room: SkapFile.Room, map: SkapFile.Map): PartialSkapRoom => {
-	const objects = room.objects.map(o => skapToObjectsPartial(o, room, map));
+const skapToRoomPartial = (room: SkapFile.Room, map: SkapFile.Map,
+	logger: Logger): PartialSkapRoom => {
+	const objects = room.objects.map(o => skapToObjectsPartial(o, room, map, logger));
 	return {
 		id: createId("room"),
 		name: room.name,
@@ -223,6 +306,25 @@ const completeObject = (
 				}
 			}
 		}
+		case "door": {
+			const { type, id, bounds, connections } = object;
+			return {
+				type, id, bounds,
+				connections: connections.map(c => {
+					const { skapId, hidden, invert } = c;
+					const input = room.objects.find(obj => "skapId" in obj && obj.skapId === skapId);
+					if (!input) {
+						logger.warn("broken_link_noid", id, room.name);
+						return null;
+					}
+					return {
+						objectId: input.id,
+						hidden,
+						invert,
+					};
+				}).filter(v => v !== null),
+			}
+		}
 		default: return object;
 	}
 }
@@ -254,7 +356,7 @@ export const skapToMap = (map: SkapFile.Map, logger: Logger): SkapMap => {
 		version,
 	}, maps } = map;
 
-	const partialRooms = maps.map(r => skapToRoomPartial(r, map));
+	const partialRooms = maps.map(r => skapToRoomPartial(r, map, logger));
 	const roomList = partialRooms.map(r => completeRoom(r, partialRooms, map, logger));
 
 	const spawnRoom = roomList.find(r => r.name === spawnArea);
