@@ -192,8 +192,7 @@ const ActiveSelectionItem: FC<ActiveSelectionItemProps> = ({
 				case "spawner":
 				case "door":
 				case "button":
-				// case "switch":
-
+				case "switch":
 				case "rotatingLava":
 					{
 						const { type, bounds } = object;

@@ -7,40 +7,40 @@ import frag from "./shader/solidColor.frag?raw";
 import { TransformedRectWebGLRenderer } from "./transformed.ts";
 
 const bg = Color.BUTTON.rgba();
-const bevel = 0.1;
+const bevel = 0.2;
 
-export class ButtonWebGLRenderer extends TransformedRectWebGLRenderer {
+export class SwitchWebGLRenderer extends TransformedRectWebGLRenderer {
 	constructor() {
 		super(frag, new Map([
 			[CardinalDirection.Down, [
-				vec2(bevel, 0),
-				vec2(1 - bevel, 0),
+				vec2(0, 0),
+				vec2(1, -bevel),
 				vec2(0, 1),
 				vec2(1, 1),
 			]],
 			[CardinalDirection.Left, [
 				vec2(0, 0),
-				vec2(1, bevel),
+				vec2(1, 0),
 				vec2(0, 1),
-				vec2(1, 1 - bevel),
+				vec2(1 + bevel, 1),
 			]],
 			[CardinalDirection.Up, [
 				vec2(0, 0),
 				vec2(1, 0),
-				vec2(bevel, 1),
-				vec2(1 - bevel, 1),
+				vec2(0, 1 + bevel),
+				vec2(1, 1),
 			]],
 			[CardinalDirection.Right, [
-				vec2(0, bevel),
+				vec2(-bevel, 0),
 				vec2(1, 0),
-				vec2(0, 1 - bevel),
+				vec2(0, 1),
 				vec2(1, 1),
 			]],
 		]));
 	}
 	rects(viewportInfo: ViewportInfo) {
 		return viewportInfo.room.objects.values()
-			.filter(obj => obj.type === "button")
+			.filter(obj => obj.type === "switch")
 			.toArray();
 	}
 	preRender(gl: WebGL2RenderingContext): void {

@@ -37,6 +37,7 @@ import { TurretWebGLRenderer } from "./renderer/turret.ts";
 import { DoorWebGLRenderer } from "./renderer/door.ts";
 import { ButtonWebGLRenderer } from "./renderer/button.ts";
 import { DoorLinkWebGLRenderer } from "./renderer/doorLink.ts";
+import { SwitchWebGLRenderer } from "./renderer/switch.ts";
 
 /** Maximum distance for something to count as a click */
 const clickMaxDistance = 2;
@@ -77,7 +78,7 @@ export const RealViewport: FC<RealViewportProps> = ({
 			new AllMovingTrackWebGLRenderer(),
 			new AllMovingNodeWebGLRenderer(),
 			new ButtonWebGLRenderer(),
-			// Switches
+			new SwitchWebGLRenderer(),
 			new DoorWebGLRenderer(),
 			new DoorLinkWebGLRenderer(),
 			new BlockWebGLRenderer(0),

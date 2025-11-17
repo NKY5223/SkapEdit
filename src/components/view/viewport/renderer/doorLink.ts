@@ -39,7 +39,7 @@ export class DoorLinkWebGLRenderer extends WebGLLayerRenderer {
 				const { objectId } = connection;
 				const input = room.objects.get(objectId);
 				if (!input) return null;
-				if (input.type !== "button"/*  && input.type !== "switch" */) return null;
+				if (input.type !== "button" && input.type !== "switch") return null;
 				return [door, input, connection] as const;
 			}))
 			.filter(v => v !== null)
@@ -54,14 +54,16 @@ export class DoorLinkWebGLRenderer extends WebGLLayerRenderer {
 				if (invert) return InvertHiddenRgba;
 				return HiddenRgba;
 			}
-			if (invert) return InvertHiddenRgba;
+			if (invert) return InvertRgba;
 			return LinkRgba;
 		}).flatMap(v => new Array<typeof v>(6).fill(v));
 
 		this.setAttribute2f(gl, "aPosition", pos);
 		this.setAttribute4f(gl, "aColor", colors);
 
+		this.enableDefaultBlend(gl);
 		gl.drawArrays(gl.TRIANGLES, 0, pos.length);
+		this.disableBlend(gl);
 
 	}
 }

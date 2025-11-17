@@ -12,6 +12,7 @@ import { textProperties } from "./text.tsx";
 import { turretProperties } from "./turret.tsx";
 import { doorProperties } from "./door.tsx";
 import { buttonProperties } from "./button.tsx";
+import { switchProperties } from "./switch.tsx";
 
 const properties = [
 	obstacleProperties,
@@ -40,6 +41,7 @@ const properties = [
 	turretProperties,
 	doorProperties,
 	buttonProperties,
+	switchProperties,
 ];
 
 type Assert<T extends true> = T;

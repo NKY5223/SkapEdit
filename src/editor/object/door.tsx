@@ -52,7 +52,7 @@ export const doorProperties = makeObjectProperties<SkapDoor>("door", {
 				connections: obj.connections.with(i, f(obj.connections[i]))
 			}));
 			const inputs = room.objects.values()
-				.filter(obj => obj.type === "button" /* || obj.type === "switch" */)
+				.filter(obj => obj.type === "button" || obj.type === "switch")
 				.toArray();
 
 			return (
@@ -88,10 +88,13 @@ export const doorProperties = makeObjectProperties<SkapDoor>("door", {
 						summary={connection => {
 							const { objectId, hidden, invert } = connection;
 							const input = room.objects.get(objectId);
-							const name = !input || input.type !== "button" /* && input.type !== "switch" */
+							const name = !input || input.type !== "button" && input.type !== "switch"
 								? (<em>??</em>)
-								: (<>Button '{input.name}'</>);
+								: (<>{input.name}</>);
 							return [
+								input
+									? (<Translate k="object.name" type={input.type} />)
+									: (<em>??</em>),
 								name,
 								hidden ? "Hidden" : "Visible",
 								invert ? "Inverted" : "Normal",
@@ -103,6 +106,9 @@ export const doorProperties = makeObjectProperties<SkapDoor>("door", {
 								hidden: false,
 								invert: false,
 							}]
+						}))}
+						removeItem={i => update(obj => ({
+							...obj, connections: obj.connections.toSpliced(i, 1)
 						}))}
 					/>
 					{/* <pre>{JSON.stringify(connections, null, "\t")}</pre> */}

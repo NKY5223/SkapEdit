@@ -9,17 +9,16 @@ import { Bounds } from "@editor/bounds.ts";
 import { BaseObject, CardinalDirection, makeObjectProperties } from "@editor/object/Base";
 import { useDispatchSkapMap } from "@editor/reducer.ts";
 
-export type SkapButton = BaseObject<"button", {
+export type SkapSwitch = BaseObject<"switch", {
 	name: string;
 	bounds: Bounds;
 	dir: CardinalDirection;
-	timer: number;
 }>;
 
-export const buttonProperties = makeObjectProperties<SkapButton>("button", {
+export const switchProperties = makeObjectProperties<SkapSwitch>("switch", {
 	bounds: obj => obj.bounds,
 	selection: {
-		zIndex: () => 7,
+		zIndex: () => 8,
 		clickbox: (obj, pos) => obj.bounds.contains(pos),
 	},
 	transform: {
@@ -30,10 +29,10 @@ export const buttonProperties = makeObjectProperties<SkapButton>("button", {
 	},
 	inspector: {
 		Component: ({ object }) => {
-			const { type, id, name, bounds, dir, timer } = object;
+			const { type, id, name, bounds, dir } = object;
 			const dispatchMap = useDispatchSkapMap();
 
-			const update = (f: (obj: SkapButton) => SkapButton) => dispatchMap({
+			const update = (f: (obj: SkapSwitch) => SkapSwitch) => dispatchMap({
 				type: "replace_object",
 				target: id,
 				replacement: obj => obj.type !== type ? obj : f(obj),
@@ -49,7 +48,6 @@ export const buttonProperties = makeObjectProperties<SkapButton>("button", {
 						<BoundsInput value={bounds} onInput={bounds => update(obj => ({ ...obj, bounds }))} />
 					</FormSection>
 					<CardinalDirectionInput value={dir} onInput={dir => update(obj => ({ ...obj, dir }))} />
-					<NumberInput value={timer} onInput={timer => update(obj => ({ ...obj, timer }))} />
 				</>
 			);
 		}
