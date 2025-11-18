@@ -5,7 +5,7 @@ import { makeNodeSelectableItem, makeObjectSelectableItem, makeObjectSelectionIt
 import { ViewToolbar } from "@components/layout/LayoutViewToolbar.tsx";
 import { mergeListeners, toClassName } from "@components/utils.tsx";
 import { Bounds } from "@editor/bounds.ts";
-import { SkapObject, SkapRoom, makeBlock, makeCardinalGravityZone, makeCircularIce, makeCircularLava, makeCircularObstacle, makeCircularSlime, makeGravityZone, makeIce, makeLava, makeMovePoint, makeMovingIce, makeMovingLava, makeMovingObstacle, makeMovingSlime, makeObstacle, makeRotatingLava, makeSlime, makeText } from "@editor/map.ts";
+import { SkapObject, SkapRoom, makeBlock, makeCardinalGravityZone, makeCircularIce, makeCircularLava, makeCircularObstacle, makeCircularSlime, makeGravityZone, makeIce, makeLava, makeMovePoint, makeMovingIce, makeMovingLava, makeMovingObstacle, makeMovingSlime, makeObstacle, makeRotatingLava, makeSlime, makeSpawner, makeText } from "@editor/map.ts";
 import { useDispatchSkapMap, useSkapMap } from "@editor/reducer.ts";
 import { MouseButtons, useDrag } from "@hooks/useDrag.ts";
 import { useElementSize } from "@hooks/useElementSize.ts";
@@ -184,18 +184,6 @@ export const RealViewport: FC<RealViewportProps> = ({
 					addAndSelect(makeIce(0, 0, 10, 10));
 				}),
 			]),
-			makeSingle("viewport.add_object.block", "square", () => {
-				addAndSelect(makeBlock(0, 0, 10, 10, Color.hex(0xff00ff, 1), 0, false));
-			}),
-			makeSingle("viewport.add_object.text", "text_fields", () => {
-				addAndSelect(makeText(0, 0, "|"));
-			}),
-			makeSingle("viewport.add_object.gravityZone", null, () => {
-				addAndSelect(makeCardinalGravityZone(0, 0, 10, 10, CardinalDirection.Down));
-			}),
-			makeSingle("viewport.add_object.rotatingLava", null, () => {
-				addAndSelect(makeRotatingLava(0, 0, 10, 10, vec2(5, 5), 0, 90));
-			}),
 			makeSubmenu("viewport.add_object.circular", "circle", [
 				makeSingle("viewport.add_object.circularObstacle", null, () => {
 					addAndSelect(makeCircularObstacle(0, 0, 10));
@@ -224,6 +212,21 @@ export const RealViewport: FC<RealViewportProps> = ({
 					addAndSelect(makeMovingIce(10, 10, 5, [makeMovePoint(0, 0, 0)]));
 				}),
 			]),
+			makeSingle("viewport.add_object.block", "square", () => {
+				addAndSelect(makeBlock(0, 0, 10, 10, Color.hex(0xff00ff, 1), 0, false));
+			}),
+			makeSingle("viewport.add_object.text", "text_fields", () => {
+				addAndSelect(makeText(0, 0, "|"));
+			}),
+			makeSingle("viewport.add_object.gravityZone", null, () => {
+				addAndSelect(makeCardinalGravityZone(0, 0, 10, 10, CardinalDirection.Down));
+			}),
+			makeSingle("viewport.add_object.spawner", null, () => {
+				addAndSelect(makeSpawner(0, 0, 10, 10, []));
+			}),
+			makeSingle("viewport.add_object.rotatingLava", null, () => {
+				addAndSelect(makeRotatingLava(0, 0, 10, 10, vec2(5, 5), 0, 90));
+			}),
 		]),
 	]);
 

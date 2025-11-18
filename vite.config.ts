@@ -5,12 +5,12 @@ import path from "node:path";
 // https://vitejs.dev/config/
 export default defineConfig(({mode}) => {
 	const env = loadEnv(mode, "./");
-	console.log("env:", env);
+	// console.log("env:", env);
 
 	const base = env.VITE_GITHUB_REPO_NAME !== undefined
 		? `/${env.VITE_GITHUB_REPO_NAME}/` 
 		: "/";
-	console.log("Base:", base);
+	// console.log("Base:", base);
 
 	return {
 		plugins: [react()],

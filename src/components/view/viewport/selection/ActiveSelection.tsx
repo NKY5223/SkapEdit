@@ -17,6 +17,7 @@ import { centeredBounds } from "@editor/object/moving.tsx";
 import { SkapTurret } from "@editor/object/turret.tsx";
 import { id } from "zod/locales";
 import { useSetting } from "@components/settings/settings.ts";
+import { rewardRadius, SkapReward } from "@editor/object/reward.tsx";
 
 type ActiveSelectionProps = {
 	viewportInfo: ViewportInfo;
@@ -350,8 +351,25 @@ const ActiveSelectionItem: FC<ActiveSelectionItemProps> = ({
 						pos: maybeConst(pos, obj.pos),
 					}));
 
-					return <PointSelection radius={3} {...{ viewportInfo, active, pos, setPos }} />
+					return <PointSelection radius={3} {...{ viewportInfo, active, pos, setPos }} />;
 				}
+
+				case "reward":
+					{
+						const { type, id, pos } = object;
+						type T = typeof object;
+						const update = (f: (obj: T) => T) => dispatchMap({
+							type: "replace_object",
+							target: id,
+							replacement: obj => obj.type !== type ? obj : f(obj),
+						});
+						const setPos: Dispatch<SetStateAction<Vec2>> = pos => update(obj => ({
+							...obj,
+							pos: maybeConst(pos, obj.pos),
+						}));
+
+						return <PointSelection shape="square" radius={rewardRadius} {...{ viewportInfo, active, pos, setPos }} />;
+					}
 			}
 			return "uh oh";
 		}
@@ -534,12 +552,14 @@ type PointSelectionProps = {
 	pos: Vec2;
 	setPos: Dispatch<SetStateAction<Vec2>>;
 	radius: number;
+	shape?: "square" | "circle";
 }
 const PointSelection: FC<PointSelectionProps> = ({
 	viewportInfo,
 	pos, setPos,
 	radius,
 	active = true,
+	shape = "circle",
 }) => {
 	const rounding = useSetting("grid");
 	const { listeners, dragging } = useDrag({
@@ -562,6 +582,7 @@ const PointSelection: FC<PointSelectionProps> = ({
 	const className = toClassName(
 		css["selection"],
 		css["point"],
+		css[`point-${shape}`],
 		dragging && css["dragging"],
 		!active && css["inactive"],
 	);

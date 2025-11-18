@@ -134,6 +134,8 @@ export type TranslationArgs = {
 	"object.name.door": {};
 	"object.name.button": {};
 	"object.name.switch": {};
+	"object.name.reward": {};
+	"object.name.hatReward": {};
 
 	"object.teleporter.name": { object: SkapTeleporter; room: SkapRoom; };
 	// #endregion

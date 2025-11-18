@@ -1,15 +1,12 @@
-import { Vec2 } from "@common/vec2.ts";
-import { FormSection } from "@components/form/FormSection.tsx";
+import { vec2, Vec2 } from "@common/vec2.ts";
 import { NumberInput } from "@components/form/NumberInput.tsx";
 import { TableInput } from "@components/form/TableInput.tsx";
-import { TextInput } from "@components/form/TextInput.tsx";
 import { Vec2Input } from "@components/form/Vec2Input.tsx";
-import { Icon } from "@components/icon/Icon.tsx";
 import { Translate } from "@components/translate/Translate.tsx";
-import { useTranslate } from "@components/translate/translationArgs.ts";
 import { Bounds } from "@editor/bounds.ts";
 import { BaseObject, makeObjectProperties } from "@editor/object/Base";
 import { useDispatchSkapMap } from "@editor/reducer.ts";
+import { centeredBounds } from "./moving.tsx";
 
 export type SkapReward = BaseObject<"reward", {
 	pos: Vec2;
@@ -24,7 +21,7 @@ export const Power = {
 	Boom: 1,
 } as const;
 
-export const rewardRadius = 5;
+export const rewardRadius = 9;
 export const rewardProperties = makeObjectProperties<SkapReward>("reward", {
 	bounds: obj => new Bounds({ topLeft: obj.pos, bottomRight: obj.pos }),
 	transform: {
@@ -32,7 +29,7 @@ export const rewardProperties = makeObjectProperties<SkapReward>("reward", {
 	},
 	selection: {
 		zIndex: () => 16,
-		clickbox: (obj, pos) => obj.pos.sub(pos).mag() <= rewardRadius,
+		clickbox: (obj, pos) => centeredBounds(obj.pos, vec2(2 * rewardRadius)).contains(pos),
 	},
 	inspector: {
 		Component: ({ object }) => {

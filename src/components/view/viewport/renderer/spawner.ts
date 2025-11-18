@@ -11,6 +11,7 @@ import textureFrag from "./shader/texture.frag?raw";
 import textureVert from "./shader/texture.vert?raw";
 
 import { entityTextures } from "@common/entityTextures.ts";
+import { TextureRect, TextureWebGLRenderer } from "./texture.ts";
 
 export const knownEntities = [
 	"accelerator",
@@ -74,36 +75,17 @@ export class SpawnerBackgroundWebGLRenderer extends RectWebGLRenderer {
 		this.disableBlend(gl);
 	}
 }
-export class SpawnerEntitiesWebGLRenderer extends WebGLLayerRenderer {
-	constructor() {
-		super({
-			vert: textureVert,
-			frag: textureFrag,
-		});
-	}
+export class SpawnerEntitiesWebGLRenderer extends TextureWebGLRenderer {
 	load(gl: WebGL2RenderingContext) {
 		for (const type of knownEntities) {
 			this.loadTexture(gl, type, entityTextures[entityToTextureName(type)], 512, 512);
 		}
 		this.loadTexture(gl, "unknown", entityTextures.unknown, 512, 512);
 	}
-	render(viewportInfo: ViewportInfo, webGlViewportInfo: WebGLViewportInfo): void {
-		const info = this.info;
-		if (!info) return;
-		const { gl, program } = info;
-
-		gl.useProgram(program);
-		this.enableDefaultBlend(gl);
-
-		const {
-			cameraSize,
-			time
-		} = webGlViewportInfo;
-
-		const camera = viewportInfo.camera;
-		this.setUniform2f(gl, "uCameraPosition", camera.pos);
-		this.setUniform2f(gl, "uCameraSize", cameraSize);
-
+	textures(viewportInfo: ViewportInfo, webGlViewportInfo: WebGLViewportInfo): [
+		texture: string, rects: TextureRect[]
+	][] {
+		const { time } = webGlViewportInfo;
 		const spawners = viewportInfo.room.objects.values().filter(obj => obj.type === "spawner").toArray();
 
 		const entitiesToDraw: Record<KnownEntity | "unknown", Entity[]> = {
@@ -136,7 +118,7 @@ export class SpawnerEntitiesWebGLRenderer extends WebGLLayerRenderer {
 			stutter: [],
 			taker: [],
 			wavy: [],
-			
+
 			unknown: [],
 		};
 		for (const spawner of spawners) {
@@ -186,19 +168,11 @@ export class SpawnerEntitiesWebGLRenderer extends WebGLLayerRenderer {
 		Object.assign(window, { entitiesToDraw });
 
 		const types = [...knownEntities, "unknown"] as const;
-		for (const type of types) {
-			const entities = entitiesToDraw[type];
-			const pos: Vec2[] = entities.flatMap(({ pos, radius, rotation }) => rotatedSquare(pos, radius, rotation));
-			const uvs: Vec2[] = entities.flatMap(() => unitSquareUvs);
-
-			this.setUniformTexture(gl, "uSampler", type, 0);
-			this.setAttribute2f(gl, "aPosition", pos);
-			this.setAttribute2f(gl, "aUv", uvs);
-
-			gl.drawArrays(gl.TRIANGLES, 0, pos.length);
-		}
-
-		this.disableBlend(gl);
+		return types.map(t => [t, entitiesToDraw[t].map(entity => ({
+			center: entity.pos,
+			bounds: new Bounds({ topLeft: vec2(-entity.radius), bottomRight: vec2(entity.radius) }),
+			rotation: entity.rotation,
+		} satisfies TextureRect))]);
 	}
 	static entityInitials = new Map<ID, EntityInitial[][]>();
 }
@@ -213,24 +187,6 @@ const get = <K, T>(map: Map<K, T>, key: K, create: () => T): T => {
 
 export const unitSquareUvs = rect(new Bounds({ left: 0, top: 0, right: 1, bottom: 1 }));
 
-/** rotated clockwise */
-const rotatedSquare = (pos: Vec2, radius: number, rotation: number): Vec2[] => {
-	const deg45 = Math.PI / 4;
-	const r = radius * Math.SQRT2;
-	const topLeft = pos.add(polar(rotation - 1 * deg45, r));
-	const topRight = pos.add(polar(rotation - 3 * deg45, r));
-	const bottomRight = pos.add(polar(rotation + 3 * deg45, r));
-	const bottomLeft = pos.add(polar(rotation + 1 * deg45, r));
-	return [
-		topLeft,
-		topRight,
-		bottomRight,
-		topLeft,
-		bottomLeft,
-		bottomRight,
-	];
-}
-
 type EntityInitial = {
 	pos: Vec2;
 	velAngle: number;
@@ -240,4 +196,4 @@ type Entity = {
 	pos: Vec2;
 	radius: number;
 	rotation: number;
-}
+};

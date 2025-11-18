@@ -135,6 +135,8 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"object.name.door": "门",
 	"object.name.button": "按钮",
 	"object.name.switch": "开关",
+	"object.name.reward": "奖励",
+	"object.name.hatReward": "帽子奖励",
 
 	"object.teleporter.name": ({ object, room }, t) => [
 		"向",

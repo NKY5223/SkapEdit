@@ -22,6 +22,7 @@ export const arg = (vec: Vec2) => Math.atan2(vec[1], vec[0]);
 
 export const parallel = (a: Vec2, b: Vec2, ε: number = 0.001) => Math.abs(a.dotNorm(b)) > 1 - ε;
 /** 
+ * Rotates clockwise (in x-right y-down coordinates)
  * ```
  * rotationMat(90°) => [ĵ, -î]
  * ```

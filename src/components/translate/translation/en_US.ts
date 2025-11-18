@@ -135,6 +135,8 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"object.name.door": "Door",
 	"object.name.button": "Button",
 	"object.name.switch": "Switch",
+	"object.name.reward": "Reward",
+	"object.name.hatReward": "Hat Reward",
 
 	"object.teleporter.name": ({ object, room }, t) => [
 		"Facing ",
