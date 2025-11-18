@@ -7,6 +7,8 @@ import { Bounds } from "@editor/bounds.ts";
 import { BaseObject, makeObjectProperties } from "@editor/object/Base";
 import { useDispatchSkapMap } from "@editor/reducer.ts";
 import { centeredBounds } from "./moving.tsx";
+import { powerTextures } from "@common/powerTextures.ts";
+import { Icon } from "@components/icon/Icon.tsx";
 
 export type SkapReward = BaseObject<"reward", {
 	pos: Vec2;
@@ -28,7 +30,7 @@ export const powerNamesArray = [
 	[12, "blueFrisbee"],
 	[13, "redFrisbee"],
 ] as const;
-export const powerNames: ReadonlyMap<number, string> = new Map(powerNamesArray);
+export const powerNames: ReadonlyMap<number, typeof powerNamesArray[number][1]> = new Map(powerNamesArray);
 export const Power = {
 	Shrinker: 0,
 	Explosion: 1,
@@ -76,10 +78,15 @@ export const rewardProperties = makeObjectProperties<SkapReward>("reward", {
 					<h2><Translate k="object.name" type={type} /></h2>
 					<Vec2Input value={pos} onInput={pos => update(obj => ({ ...obj, pos, }))} />
 					<TableInput value={reward}
-						summary={r => [
-							powerNames.get(r) ?? <em>??</em>,
-							<code>{r}</code>,
-						]}
+						summary={r => {
+							const name = powerNames.get(r);
+							return [
+								name
+									? <><Icon icon={`power.${name}`} size={1} /> {name}</>
+									: (<em>??</em>),
+								<code>{r}</code>,
+							];
+						}}
 						details={(r, i) => (<>
 							<NumberInput value={r}
 								onInput={r => updateReward(i, () => r)}

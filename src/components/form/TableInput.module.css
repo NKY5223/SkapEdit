@@ -1,10 +1,10 @@
 .table {
 	--table-border: var(--theme-border-width) solid var(--theme-bd-0);
-	--columns: 1;
+	--columns: 0;
 	display: grid;
-	grid-template-columns: min-content repeat(var(--columns), 1fr);
+	grid-template-columns: min-content 2fr repeat(var(--columns), 1fr);
 	&:has(.remove) {
-		grid-template-columns: min-content repeat(var(--columns), 1fr) min-content;
+		grid-template-columns: min-content 2fr repeat(var(--columns), 1fr) min-content;
 	}
 }
 .details {
@@ -27,6 +27,11 @@
 	}
 	:not(:last-child, .open) > & {
 		border-block-end: none;
+	}
+
+	& > * {
+		width: fit-content;
+		padding-inline-end: .5em;
 	}
 }
 .arrow {

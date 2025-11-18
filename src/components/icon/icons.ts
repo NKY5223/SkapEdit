@@ -1,8 +1,10 @@
+import { entityTextures } from "@common/entityTextures.ts";
+import { powerTextures } from "@common/powerTextures.ts";
+import obstacle from "./icons/obstacle.svg";
 import position_left from "./icons/position_left.svg";
 import position_right from "./icons/position_right.svg";
 import position_x from "./icons/position_x.svg";
 import position_y from "./icons/position_y.svg";
-import obstacle from "./icons/obstacle.svg";
 
 // #region Material Icons
 // current_versions.json contains all the material icon names
@@ -62,25 +64,98 @@ export const MaterialIcons = [
 export type MaterialIconName = typeof MaterialIcons[number];
 // #endregion
 
-// #region Custom Icons
-const CustomIcons = [
+// #region Custom Mask Icons
+const CustomMaskIcons = [
 	["position_left", position_left],
 	["position_right", position_right],
 	["position_x", position_x],
 	["position_y", position_y],
 	["obstacle", obstacle],
 ] as const;
-export const CustomIconsMap = new Map(CustomIcons);
+export const CustomMaskIconsMap = new Map(CustomMaskIcons);
 
-export type CustomIconName = typeof CustomIcons[number][0];
+export type CustomMaskIconName = typeof CustomMaskIcons[number][0];
+// #endregion
+
+// #region Custom Colored Icons
+const CustomEntityIcons = [
+	["entity.accelerator", entityTextures.accelerator],
+	["entity.blueFrisbeeEntity", entityTextures.blueFrisbeeEntity],
+	["entity.bomb0", entityTextures.bomb0],
+	["entity.bomb1", entityTextures.bomb1],
+	["entity.bouncer", entityTextures.bouncer],
+	["entity.contractor0", entityTextures.contractor0],
+	["entity.contractor1", entityTextures.contractor1],
+	["entity.decelerator", entityTextures.decelerator],
+	["entity.disabler", entityTextures.disabler],
+	["entity.drainer", entityTextures.drainer],
+	["entity.enemyBullet", entityTextures.enemyBullet],
+	["entity.expander", entityTextures.expander],
+	["entity.following", entityTextures.following],
+	["entity.freezer", entityTextures.freezer],
+	["entity.frostEntity", entityTextures.frostEntity],
+	["entity.gravityDown", entityTextures.gravityDown],
+	["entity.gravityLeft", entityTextures.gravityLeft],
+	["entity.gravityRight", entityTextures.gravityRight],
+	["entity.gravityUp", entityTextures.gravityUp],
+	["entity.harmless", entityTextures.harmless],
+	["entity.healingGhost", entityTextures.healingGhost],
+	["entity.immune", entityTextures.immune],
+	["entity.megaAccelerator", entityTextures.megaAccelerator],
+	["entity.megaBouncer", entityTextures.megaBouncer],
+	["entity.meteorBullet", entityTextures.meteorBullet],
+	["entity.monster", entityTextures.monster],
+	["entity.normal", entityTextures.normal],
+	["entity.path", entityTextures.path],
+	["entity.redFrisbeeEntity", entityTextures.redFrisbeeEntity],
+	["entity.restZone", entityTextures.restZone],
+	["entity.reverse", entityTextures.reverse],
+	["entity.rotating", entityTextures.rotating],
+	["entity.shield", entityTextures.shield],
+	["entity.shooter", entityTextures.shooter],
+	["entity.snekBody", entityTextures.snekBody],
+	["entity.snekHead", entityTextures.snekHead],
+	["entity.spike", entityTextures.spike],
+	["entity.stutter", entityTextures.stutter],
+	["entity.tail", entityTextures.tail],
+	["entity.taker", entityTextures.taker],
+	["entity.turretBullet", entityTextures.turretBullet],
+	["entity.wavy", entityTextures.wavy],
+] as const;
+const CustomPowerIcons = [
+	["power.shrinker", powerTextures.shrinker],
+	["power.explosion", powerTextures.explosion],
+	["power.wall", powerTextures.wall],
+	["power.meteor", powerTextures.meteor],
+	["power.refuel", powerTextures.refuel],
+	["power.feather", powerTextures.feather],
+	["power.shield", powerTextures.shield],
+	["power.dash", powerTextures.dash],
+	["power.lantern", powerTextures.lantern],
+	["power.ghost", powerTextures.ghost],
+	["power.frost", powerTextures.frost],
+	["power.shell", powerTextures.shell],
+	["power.blueFrisbee", powerTextures.blueFrisbee],
+	["power.redFrisbee", powerTextures.redFrisbee],
+] as const;
+const CustomColorIcons = [
+	...CustomEntityIcons,
+	...CustomPowerIcons,
+] as const;
+export const CustomColorIconsMap = new Map(CustomColorIcons);
+
+export type CustomColorIconName = typeof CustomColorIcons[number][0];
 // #endregion
 
 export type IconName = (
 	| MaterialIconName
-	| CustomIconName
+	| CustomMaskIconName
+	| CustomColorIconName
 );
 
 // #region 
-export const getCustomIconUrl = (icon: IconName): string | undefined => 
-	(CustomIconsMap as Map<IconName, string>).get(icon);
+export const getCustomColorIconUrl = (icon: IconName): string | undefined =>
+	(CustomColorIconsMap as Map<string, string>).get(icon);
+export const getCustomMaskIconUrl = (icon: IconName): string | undefined =>
+	(CustomMaskIconsMap as Map<string, string>).get(icon);
 // #endregion

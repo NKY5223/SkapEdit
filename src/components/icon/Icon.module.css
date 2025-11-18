@@ -20,13 +20,11 @@
 		'opsz' 24;
 }
 
-.custom-icon {
+.custom-mask-icon {
 	display: inline-block;
 	user-select: none;
 	cursor: default;
-	button & {
-		cursor: pointer;
-	}
+	vertical-align: middle;
 
 	--size: 1.5;
 	--icon: url("");
@@ -34,4 +32,28 @@
 	height: calc(var(--size) * 1em);
 	background-color: currentColor;
 	mask-image: var(--icon);
+
+	button & {
+		cursor: inherit;
+	}
+
+}
+.custom-color-icon {
+	display: inline-block;
+	user-select: none;
+	cursor: default;
+	vertical-align: middle;
+
+	--size: 1.5;
+	--icon: url("");
+	width: calc(var(--size) * 1em);
+	height: calc(var(--size) * 1em);
+	background-image: var(--icon);
+	background-repeat: no-repeat;
+	background-size: 100%;
+
+	button & {
+		cursor: inherit;
+	}
+
 }

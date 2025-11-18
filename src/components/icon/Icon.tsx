@@ -1,7 +1,7 @@
 import { toClassName } from "@components/utils.tsx";
 import { FC } from "react";
 import css from "./Icon.module.css";
-import { IconName, getCustomIconUrl } from "./icons.ts";
+import { IconName, getCustomColorIconUrl, getCustomMaskIconUrl } from "./icons.ts";
 
 type IconProps = {
 	icon: IconName;
@@ -12,15 +12,29 @@ type IconProps = {
 export const Icon: FC<IconProps> = ({
 	icon, size, title, classList,
 }) => {
-	const customIconUrl = getCustomIconUrl(icon);
-	if (customIconUrl) {
+	const customColorIconUrl = getCustomColorIconUrl(icon);
+	if (customColorIconUrl) {
 		const className = toClassName(
-			css["custom-icon"],
+			css["custom-color-icon"],
 			classList,
 		);
 		const style = {
 			"--size": size,
-			"--icon": `url("${customIconUrl}")`,
+			"--icon": `url("${customColorIconUrl}")`,
+		};
+		return (
+			<span role="img" {...{ className, title, style }} />
+		);
+	}
+	const customMaskIconUrl = getCustomMaskIconUrl(icon);
+	if (customMaskIconUrl) {
+		const className = toClassName(
+			css["custom-mask-icon"],
+			classList,
+		);
+		const style = {
+			"--size": size,
+			"--icon": `url("${customMaskIconUrl}")`,
 		};
 		return (
 			<span role="img" {...{ className, title, style }} />

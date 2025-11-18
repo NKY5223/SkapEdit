@@ -56,7 +56,7 @@ export const TableInput = <T,>({
 
 	return (
 		<div className={css["table"]} style={{
-			"--columns": columnCount,
+			"--columns": columnCount - 1,
 		}}>
 			{header &&
 				<div className={css["header"]}>

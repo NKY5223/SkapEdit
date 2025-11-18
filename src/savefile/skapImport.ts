@@ -216,7 +216,13 @@ const skapToObjectsPartial = (object: SkapFile.Object, room: SkapFile.Room, map:
 			};
 		}
 
-		case "reward":
+		case "reward": return {
+			type: "reward",
+			id,
+			pos: skapToVec2(object.position),
+			reward: object.reward,
+		};
+
 		case "hatReward":
 			return {
 				type: "text",

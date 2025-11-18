@@ -77,18 +77,12 @@ export const spawnerProperties = makeObjectProperties<SkapSpawner>("spawner", {
 					<TableInput value={object.entities}
 						summary={ent => {
 							const { type, count, speed, radius } = ent;
-							const url = isKnownEntityType(type)
-								? entityTextures[entityToTextureName(type)]
+							const icon = isKnownEntityType(type)
+								? entityToTextureName(type)
 								: undefined;
 							return [
-								url
-									? <><img src={url} style={{
-										display: "inline-block",
-										width: "1em",
-										height: "1em",
-										verticalAlign: "middle",
-										marginInlineEnd: ".5em",
-									}} />{type}</>
+								icon
+									? <><Icon icon={`entity.${icon}`} size={1} /> {type}</>
 									: type,
 								<>×{count}</>,
 								<>r={radius}</>,
