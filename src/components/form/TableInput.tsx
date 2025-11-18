@@ -14,7 +14,7 @@ type TableInputProps<T> = {
 	 * A function that returns `columns` nodes.
 	 * This will be used for the collapsed view of items.
 	 */
-	summary: (value: T) => ReactNode[];
+	summary: (value: T, index: number) => ReactNode[];
 	/** 
 	 * An array of `columns` nodes.
 	 * This will be used for the header of the table.
@@ -29,7 +29,7 @@ export const TableInput = <T,>({
 	addItem, removeItem,
 }: TableInputProps<T>): ReactNode => {
 	const columnCount = (header?.length
-		?? (value.length > 0 ? summary(value[0]).length : undefined)
+		?? (value.length > 0 ? summary(value[0], 0).length : undefined)
 		?? 1);
 
 	const rows = value.map((v, i) => (
@@ -37,7 +37,7 @@ export const TableInput = <T,>({
 		<Details key={i}>
 			<>
 				<div className={css["arrow"]}></div>
-				{summary(v).map((node, j) => (
+				{summary(v, i).map((node, j) => (
 					<div key={j}>{node}</div>
 				))}
 				{removeItem && (

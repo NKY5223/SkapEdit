@@ -16,6 +16,7 @@ import { SkapTurret } from "./object/turret.tsx";
 import { SkapDoor } from "./object/door.tsx";
 import { SkapButton } from "./object/button.tsx";
 import { SkapSwitch } from "./object/switch.tsx";
+import { SkapReward } from "./object/reward.tsx";
 
 export type SkapObject = (
 	| SkapObstacle
@@ -40,6 +41,7 @@ export type SkapObject = (
 	| SkapDoor
 	| SkapButton
 	| SkapSwitch
+	| SkapReward
 );
 export type SkapRoom = {
 	id: ID;
@@ -257,18 +259,25 @@ export const makeDoor = (left: number, top: number, right: number, bottom: numbe
 });
 export const makeButton = (left: number, top: number, right: number, bottom: number, name: string, dir: CardinalDirection, timer: number): SkapButton => ({
 	type: "button",
-	name,
 	id: createId("obj-button"),
+	name,
 	bounds: new Bounds({ left, top, right, bottom }),
 	dir,
 	timer,
 });
 export const makeSwitch = (left: number, top: number, right: number, bottom: number, name: string, dir: CardinalDirection): SkapSwitch => ({
 	type: "switch",
-	name,
 	id: createId("obj-switch"),
+	name,
 	bounds: new Bounds({ left, top, right, bottom }),
 	dir,
+});
+
+export const makeReward = (x: number, y: number, reward: readonly number[]): SkapReward => ({
+	type: "reward",
+	id: createId("obj-reward"),
+	pos: vec2(x, y),
+	reward,
 });
 // #endregion
 

@@ -2,8 +2,9 @@ import { Color } from "@common/color.ts";
 import { vec2 } from "@common/vec2.ts";
 import { Layout, makeSplitX, makeView } from "@components/layout/layout";
 import { viewProviders } from "@components/layout/views.tsx";
-import { makeButton, makeCardinalGravityZone, makeCircularLava, makeDoor, makeFreeGravityZone, makeLava, makeMovePoint, makeMovingLava, makeObstacle, makeRoom, makeRotatingLava, makeSpawner, makeSpawnerEntity, makeSwitch, makeTeleporterPair, makeText, makeTurret, SkapMap, SkapRoom, toIdMap } from "@editor/map.ts";
+import { makeButton, makeCardinalGravityZone, makeCircularLava, makeDoor, makeFreeGravityZone, makeLava, makeMovePoint, makeMovingLava, makeObstacle, makeReward, makeRoom, makeRotatingLava, makeSpawner, makeSpawnerEntity, makeSwitch, makeTeleporterPair, makeText, makeTurret, SkapMap, SkapRoom, toIdMap } from "@editor/map.ts";
 import { CardinalDirection } from "@editor/object/Base.tsx";
+import { Power } from "@editor/object/reward.tsx";
 
 const defaultLayout = makeSplitX(0.75,
 	makeView(viewProviders["map.viewport"]),
@@ -48,13 +49,16 @@ const testRoom: SkapRoom = makeRoom(
 			objectId: button.id,
 			invert: true,
 			hidden: true,
-		},{
+		}, {
 			objectId: switchObj.id,
 			invert: false,
 			hidden: false,
 		}]),
 		button,
 		switchObj,
+		makeReward(50, 80, [
+			Power.Boom,
+		]),
 	]
 );
 export const defaultMap: SkapMap = {
