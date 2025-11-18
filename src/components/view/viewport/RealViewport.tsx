@@ -38,6 +38,7 @@ import { DoorWebGLRenderer } from "./renderer/door.ts";
 import { ButtonWebGLRenderer } from "./renderer/button.ts";
 import { DoorLinkWebGLRenderer } from "./renderer/doorLink.ts";
 import { SwitchWebGLRenderer } from "./renderer/switch.ts";
+import { RewardWebGLRenderer } from "./renderer/reward.ts";
 
 /** Maximum distance for something to count as a click */
 const clickMaxDistance = 2;
@@ -87,7 +88,7 @@ export const RealViewport: FC<RealViewportProps> = ({
 			new TurretWebGLRenderer(),
 			// Players
 			new BlockWebGLRenderer(1),
-			// Reward
+			new RewardWebGLRenderer(),
 			// HatReward
 			// CoinReward (???)
 			// Box (wall power)
@@ -216,7 +217,7 @@ export const RealViewport: FC<RealViewportProps> = ({
 				addAndSelect(makeBlock(0, 0, 10, 10, Color.hex(0xff00ff, 1), 0, false));
 			}),
 			makeSingle("viewport.add_object.text", "text_fields", () => {
-				addAndSelect(makeText(0, 0, "|"));
+				addAndSelect(makeText(0, 0, "ABC"));
 			}),
 			makeSingle("viewport.add_object.gravityZone", null, () => {
 				addAndSelect(makeCardinalGravityZone(0, 0, 10, 10, CardinalDirection.Down));

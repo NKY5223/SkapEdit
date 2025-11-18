@@ -1,0 +1,13 @@
+The following textures are taken from skap.io and belong to them:
+- dash.svg 
+- explosion.svg 
+- feather.svg 
+- frost.svg 
+- ghost.svg 
+- lantern.svg 
+- meteor.svg 
+- refuel.svg 
+- shell.svg 
+- shield.svg 
+- shrinker.svg 
+- wall.svg

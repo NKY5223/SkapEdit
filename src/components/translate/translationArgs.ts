@@ -47,11 +47,6 @@ export type TranslationArgs = {
 	"contextmenu.item.name.viewport.add_object.slime": {};
 	"contextmenu.item.name.viewport.add_object.ice": {};
 
-	"contextmenu.item.name.viewport.add_object.block": {};
-	"contextmenu.item.name.viewport.add_object.text": {};
-	"contextmenu.item.name.viewport.add_object.gravityZone": {};
-	"contextmenu.item.name.viewport.add_object.rotatingLava": {};
-
 	"contextmenu.item.name.viewport.add_object.circular": {};
 	"contextmenu.item.name.viewport.add_object.circularIce": {};
 	"contextmenu.item.name.viewport.add_object.circularLava": {};
@@ -63,6 +58,14 @@ export type TranslationArgs = {
 	"contextmenu.item.name.viewport.add_object.movingLava": {};
 	"contextmenu.item.name.viewport.add_object.movingObstacle": {};
 	"contextmenu.item.name.viewport.add_object.movingSlime": {};
+
+	"contextmenu.item.name.viewport.add_object.block": {};
+	"contextmenu.item.name.viewport.add_object.text": {};
+	"contextmenu.item.name.viewport.add_object.gravityZone": {};
+	"contextmenu.item.name.viewport.add_object.spawner": {};
+	"contextmenu.item.name.viewport.add_object.rotatingLava": {};
+	"contextmenu.item.name.viewport.add_object.reward": {};
+	"contextmenu.item.name.viewport.add_object.hatReward": {};
 	// #endregion
 
 	// #region Viewport

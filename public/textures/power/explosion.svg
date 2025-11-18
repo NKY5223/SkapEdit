@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid meet" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <path
+      d="M10.52 33.17C18.88 41.94 24.11 47.42 26.2 49.62C27.43 50.91 27.36 52.95 26.04 54.15C23.93 56.08 18.66 60.88 10.23 68.57C20.07 68.57 26.21 68.57 28.67 68.57C29.45 68.57 30.02 69.3 29.84 70.05C29.21 72.75 27.62 79.49 25.09 90.28C32.35 82.41 36.89 77.49 38.71 75.52C39.81 74.33 41.65 74.21 42.89 75.27C45.35 77.37 51.51 82.61 61.36 91.01C59.76 83.69 58.76 79.11 58.36 77.28C57.92 75.25 59.98 73.58 61.87 74.44C64.1 75.44 69.66 77.96 78.55 81.98C73.89 72.86 70.98 67.16 69.82 64.88C69 63.29 69.61 61.34 71.18 60.48C74.05 58.92 81.21 55.01 92.68 48.76C84.19 46.5 78.89 45.08 76.76 44.52C74.67 43.96 73.39 41.85 73.86 39.73C74.48 36.91 76.05 29.87 78.55 18.61C68.13 26.19 61.61 30.93 59.01 32.82C57.66 33.8 55.76 33.04 55.45 31.41C54.88 28.4 53.45 20.88 51.17 8.84C47.1 20.15 44.56 27.22 43.55 30.05C42.99 31.59 41.09 32.15 39.79 31.16C37.83 29.66 32.93 25.91 25.09 19.92C28.54 27.9 30.7 32.88 31.57 34.88C32.2 36.34 30.9 37.91 29.34 37.55C26.83 36.96 20.56 35.51 10.52 33.17Z"
+      id="b1aWBaXKQ"></path>
+    <radialGradient id="gradientb1zM2QDXap" gradientUnits="userSpaceOnUse" cx="49.13" cy="50" dx="50" dy="100" r="50.01">
+      <stop style="stop-color: #d4c918;stop-opacity: 1" offset="0%"></stop>
+      <stop style="stop-color: #f94907;stop-opacity: 1" offset="100%"></stop>
+    </radialGradient>
+  </defs>
+  <g>
+    <g>
+      <use xlink:href="#b1aWBaXKQ" opacity="1" fill="url(#gradientb1zM2QDXap)"></use>
+      <g>
+        <use xlink:href="#b1aWBaXKQ" opacity="1" fill-opacity="0" stroke="#f5071b" stroke-width="4" stroke-opacity="1"></use>
+      </g>
+    </g>
+  </g>
+</svg>

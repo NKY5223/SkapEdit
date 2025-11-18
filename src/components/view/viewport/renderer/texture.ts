@@ -24,6 +24,12 @@ export abstract class TextureWebGLRenderer extends WebGLLayerRenderer {
 		texture: string,
 		rects: TextureRect[],
 	][];
+	
+	preRender(gl: WebGL2RenderingContext, viewportInfo: ViewportInfo, webGlViewportInfo: WebGLViewportInfo): void {
+	}
+	postRender(gl: WebGL2RenderingContext, viewportInfo: ViewportInfo, webGlViewportInfo: WebGLViewportInfo): void {
+	}
+
 	render(viewportInfo: ViewportInfo, webGlViewportInfo: WebGLViewportInfo): void {
 		const info = this.info;
 		if (!info) return;
@@ -42,6 +48,7 @@ export abstract class TextureWebGLRenderer extends WebGLLayerRenderer {
 
 		const textures = this.textures(viewportInfo, webGlViewportInfo);
 
+		this.preRender(gl, viewportInfo, webGlViewportInfo);
 		for (const [texture, rects] of textures) {
 			const pos: Vec2[] = rects.flatMap(({ center, bounds, rotation }) => rotatedBounds(center, bounds, rotation));
 			const uvs: Vec2[] = rects.flatMap(() => unitSquareUvs);
@@ -52,7 +59,8 @@ export abstract class TextureWebGLRenderer extends WebGLLayerRenderer {
 
 			gl.drawArrays(gl.TRIANGLES, 0, pos.length);
 		}
-
+		this.postRender(gl, viewportInfo, webGlViewportInfo);
+		
 		this.disableBlend(gl);
 	}
 }

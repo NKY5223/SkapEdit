@@ -12,13 +12,40 @@ export type SkapReward = BaseObject<"reward", {
 	pos: Vec2;
 	reward: readonly number[];
 }>;
-export const powerNames: ReadonlyMap<number, string> = new Map([
+export const powerNamesArray = [
 	[0, "shrinker"],
-	[1, "boom"],
-]);
+	[1, "explosion"],
+	[2, "wall"],
+	[3, "meteor"],
+	[4, "refuel"],
+	[5, "feather"],
+	[6, "shield"],
+	[7, "dash"],
+	[8, "lantern"],
+	[9, "ghost"],
+	[10, "frost"],
+	[11, "shell"],
+	[12, "blueFrisbee"],
+	[13, "redFrisbee"],
+] as const;
+export const powerNames: ReadonlyMap<number, string> = new Map(powerNamesArray);
 export const Power = {
 	Shrinker: 0,
-	Boom: 1,
+	Explosion: 1,
+	Wall: 2,
+	Meteor: 3,
+	Refuel: 4,
+	Feather: 5,
+	Shield: 6,
+	Dash: 7,
+	Lantern: 8,
+	Ghost: 9,
+	Frost: 10,
+	Shell: 11,
+	// powers that used to be in skap
+	// they never got a texture
+	BlueFrisbee: 12,
+	RedFrisbee: 13,
 } as const;
 
 export const rewardRadius = 9;
@@ -54,9 +81,12 @@ export const rewardProperties = makeObjectProperties<SkapReward>("reward", {
 							<code>{r}</code>,
 						]}
 						details={(r, i) => (<>
-							<NumberInput value={r} onInput={r => updateReward(i, () => r)} />
+							<NumberInput value={r}
+								onInput={r => updateReward(i, () => r)}
+							/>
 						</>)}
-
+						addItem={() => update(obj => ({ ...obj, reward: [...obj.reward, 0] }))}
+						removeItem={i => update(obj => ({ ...obj, reward: obj.reward.toSpliced(i, 1) }))}
 					/>
 				</>
 			);

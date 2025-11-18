@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   preserveAspectRatio="xMidYMid meet"
+   viewBox="0 0 100 100"
+   width="100"
+   height="100"
+   id="svg28"
+   sodipodi:docname="shrinker.svg"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)">
+  <metadata
+     id="metadata32">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     id="namedview30"
+     showgrid="false"
+     inkscape:zoom="7.4671875"
+     inkscape:cx="50"
+     inkscape:cy="50"
+     inkscape:window-x="1016"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g26" />
+  <defs
+     id="defs6">
+    <path
+       d="M90 50C90 72.08 72.08 90 50 90C27.92 90 10 72.08 10 50C10 27.93 27.92 10 50 10C72.08 10 90 27.93 90 50Z"
+       id="c1oJhxzrzT" />
+    <path
+       d="M79.12 52.38C79.12 68.38 66.13 81.38 50.12 81.38C34.12 81.38 21.12 68.38 21.12 52.38C21.12 36.37 34.12 23.38 50.12 23.38C66.13 23.38 79.12 36.37 79.12 52.38Z"
+       id="h35c7kcDVO" />
+    <path
+       d=""
+       id="breOgDONH" />
+    <path
+       d="M64.62 59.94C64.62 67.94 58.13 74.44 50.12 74.44C42.12 74.44 35.62 67.94 35.62 59.94C35.62 51.93 42.12 45.44 50.12 45.44C58.13 45.44 64.62 51.93 64.62 59.94Z"
+       id="a39eC8fmuu" />
+  </defs>
+  <g
+     id="g26">
+    <g
+       id="g10"
+       style="fill:#da9ff2;fill-opacity:1">
+      <use
+         xlink:href="#c1oJhxzrzT"
+         id="use8"
+         fill-opacity="1"
+         fill="#c28aff"
+         opacity="1"
+         style="fill:#da9ff2;fill-opacity:1" />
+    </g>
+    <g
+       id="g14"
+       style="fill:#b767d7;fill-opacity:1;stroke:none;stroke-opacity:1">
+      <use
+         xlink:href="#h35c7kcDVO"
+         id="use12"
+         fill-opacity="1"
+         fill="#845db0"
+         opacity="1"
+         style="fill:#b767d7;fill-opacity:1;stroke:none;stroke-opacity:1" />
+    </g>
+    <g
+       id="g20">
+      <g
+         id="g18">
+        <use
+           xlink:href="#breOgDONH"
+           id="use16"
+           stroke-opacity="1"
+           stroke-width="1"
+           stroke="#000000"
+           fill-opacity="0"
+           opacity="1" />
+      </g>
+    </g>
+    <g
+       id="g24"
+       style="fill:#8220a8;fill-opacity:1">
+      <use
+         xlink:href="#a39eC8fmuu"
+         id="use22"
+         fill-opacity="1"
+         fill="#6423ab"
+         opacity="1"
+         style="fill:#8220a8;fill-opacity:1" />
+    </g>
+  </g>
+</svg>

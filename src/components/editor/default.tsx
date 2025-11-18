@@ -57,7 +57,7 @@ const testRoom: SkapRoom = makeRoom(
 		button,
 		switchObj,
 		makeReward(50, 80, [
-			Power.Boom,
+			Power.Explosion,
 		]),
 	]
 );

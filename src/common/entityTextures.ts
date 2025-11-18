@@ -39,8 +39,11 @@ import stutter from "/textures/entity/stutter.svg";
 import tail from "/textures/entity/tail.svg";
 import taker from "/textures/entity/taker.svg";
 import turretBullet from "/textures/entity/turretBullet.svg";
-import unknown from "/textures/entity/unknown.svg";
 import wavy from "/textures/entity/wavy.svg";
+
+import unknown from "/textures/entity/unknown.svg";
+
+export const unknownTexture = unknown;
 
 export const entityTextures = {
 	accelerator,
@@ -84,6 +87,5 @@ export const entityTextures = {
 	tail,
 	taker,
 	turretBullet,
-	unknown,
 	wavy,
 } as const;

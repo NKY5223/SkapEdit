@@ -1,16 +1,13 @@
 import { Color } from "@common/color.ts";
+import { entityTextures, unknownTexture } from "@common/entityTextures.ts";
 import { ID } from "@common/uuid.ts";
 import { polar, vec2, Vec2 } from "@common/vec2.ts";
 import { Bounds } from "@editor/bounds.ts";
 import { ViewportInfo } from "../Viewport.tsx";
-import { WebGLLayerRenderer, WebGLViewportInfo } from "../webgl/WebGLLayer.tsx";
+import { WebGLViewportInfo } from "../webgl/WebGLLayer.tsx";
 import { rect } from "../webgl/webgl.ts";
 import { RectWebGLRenderer } from "./rect.ts";
 import solidFrag from "./shader/solidColor.frag?raw";
-import textureFrag from "./shader/texture.frag?raw";
-import textureVert from "./shader/texture.vert?raw";
-
-import { entityTextures } from "@common/entityTextures.ts";
 import { TextureRect, TextureWebGLRenderer } from "./texture.ts";
 
 export const knownEntities = [
@@ -80,7 +77,7 @@ export class SpawnerEntitiesWebGLRenderer extends TextureWebGLRenderer {
 		for (const type of knownEntities) {
 			this.loadTexture(gl, type, entityTextures[entityToTextureName(type)], 512, 512);
 		}
-		this.loadTexture(gl, "unknown", entityTextures.unknown, 512, 512);
+		this.loadTexture(gl, "unknown", unknownTexture, 512, 512);
 	}
 	textures(viewportInfo: ViewportInfo, webGlViewportInfo: WebGLViewportInfo): [
 		texture: string, rects: TextureRect[]
