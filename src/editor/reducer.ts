@@ -81,6 +81,14 @@ type SkapMapAction = (
 		replacement: (prevRoom: SkapRoom) => SkapRoom;
 	}
 	| {
+		type: "remove_room";
+		roomId: ID;
+	}
+	| {
+		type: "add_room";
+		room: SkapRoom;
+	}
+	| {
 		type: "replace_object";
 		/** Either an `ID` or a filter function. */
 		target: TargetObject;
@@ -116,6 +124,22 @@ const skapMapReducer: Reducer<SkapMap, SkapMapAction> = (map, action) => {
 				...map,
 				edited: true,
 				rooms: idMapWith(map.rooms, newRoom),
+			};
+		}
+		case "add_room": {
+			const { room } = action;
+			return {
+				...map,
+				edited: true,
+				rooms: idMapWith(map.rooms, room),
+			};
+		}
+		case "remove_room": {
+			const { roomId } = action;
+			return {
+				...map,
+				edited: true,
+				rooms: mapWithout(map.rooms, roomId),
 			};
 		}
 		case "replace_object": {

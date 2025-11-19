@@ -1,6 +1,9 @@
 @layer component {
 
 .context-menu {
+	&.anchored {
+		max-height: none;
+	}
 }
 
 .anchor {
@@ -98,7 +101,7 @@
 }
 .submenu-content {
 	display: flex;
-	gap: 0.5em;
+	gap: 0.25em;
 	align-items: center;
 }
 .submenu-arrow {

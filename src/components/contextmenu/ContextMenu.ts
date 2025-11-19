@@ -87,6 +87,10 @@ export const Sections = {
 		name: "viewport",
 		icon: "monitor",
 	},
+	viewport_add_object: {
+		name: "viewport.add.object",
+		icon: null,
+	}
 } as const satisfies Record<string, SectionPref>;
 
 export const makeSection = ({ name, icon }: SectionPref, items: readonly (ContextMenu.SingleItem | ContextMenu.Submenu)[]): ContextMenu.Section => ({

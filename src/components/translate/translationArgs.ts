@@ -40,32 +40,36 @@ export type TranslationArgs = {
 
 	"contextmenu.item.name.viewport": {};
 	"contextmenu.item.name.viewport.reset_camera": {};
-	"contextmenu.item.name.viewport.add_object": {};
-	"contextmenu.item.name.viewport.add_object.basic": {};
-	"contextmenu.item.name.viewport.add_object.obstacle": {};
-	"contextmenu.item.name.viewport.add_object.lava": {};
-	"contextmenu.item.name.viewport.add_object.slime": {};
-	"contextmenu.item.name.viewport.add_object.ice": {};
 
-	"contextmenu.item.name.viewport.add_object.circular": {};
-	"contextmenu.item.name.viewport.add_object.circularIce": {};
-	"contextmenu.item.name.viewport.add_object.circularLava": {};
-	"contextmenu.item.name.viewport.add_object.circularObstacle": {};
-	"contextmenu.item.name.viewport.add_object.circularSlime": {};
+	"contextmenu.item.name.viewport.add": {};
+	"contextmenu.item.name.viewport.add.object": {};
+	"contextmenu.item.name.viewport.add.object.basic": {};
+	"contextmenu.item.name.viewport.add.object.obstacle": {};
+	"contextmenu.item.name.viewport.add.object.lava": {};
+	"contextmenu.item.name.viewport.add.object.slime": {};
+	"contextmenu.item.name.viewport.add.object.ice": {};
 
-	"contextmenu.item.name.viewport.add_object.moving": {};
-	"contextmenu.item.name.viewport.add_object.movingIce": {};
-	"contextmenu.item.name.viewport.add_object.movingLava": {};
-	"contextmenu.item.name.viewport.add_object.movingObstacle": {};
-	"contextmenu.item.name.viewport.add_object.movingSlime": {};
+	"contextmenu.item.name.viewport.add.object.circular": {};
+	"contextmenu.item.name.viewport.add.object.circularIce": {};
+	"contextmenu.item.name.viewport.add.object.circularLava": {};
+	"contextmenu.item.name.viewport.add.object.circularObstacle": {};
+	"contextmenu.item.name.viewport.add.object.circularSlime": {};
 
-	"contextmenu.item.name.viewport.add_object.block": {};
-	"contextmenu.item.name.viewport.add_object.text": {};
-	"contextmenu.item.name.viewport.add_object.gravityZone": {};
-	"contextmenu.item.name.viewport.add_object.spawner": {};
-	"contextmenu.item.name.viewport.add_object.rotatingLava": {};
-	"contextmenu.item.name.viewport.add_object.reward": {};
-	"contextmenu.item.name.viewport.add_object.hatReward": {};
+	"contextmenu.item.name.viewport.add.object.moving": {};
+	"contextmenu.item.name.viewport.add.object.movingIce": {};
+	"contextmenu.item.name.viewport.add.object.movingLava": {};
+	"contextmenu.item.name.viewport.add.object.movingObstacle": {};
+	"contextmenu.item.name.viewport.add.object.movingSlime": {};
+
+	"contextmenu.item.name.viewport.add.object.block": {};
+	"contextmenu.item.name.viewport.add.object.text": {};
+	"contextmenu.item.name.viewport.add.object.gravityZone": {};
+	"contextmenu.item.name.viewport.add.object.spawner": {};
+	"contextmenu.item.name.viewport.add.object.rotatingLava": {};
+	"contextmenu.item.name.viewport.add.object.reward": {};
+	"contextmenu.item.name.viewport.add.object.hatReward": {};
+
+	"contextmenu.item.name.viewport.add.room": {};
 	// #endregion
 
 	// #region Viewport

@@ -1,25 +1,38 @@
 import { sortBy } from "@common/array.ts";
+import { Color } from "@common/color.ts";
+import { hotkeysHandler, keybindStr } from "@common/keybind.ts";
+import { ID } from "@common/uuid.ts";
 import { Vec2, vec2 } from "@common/vec2.ts";
 import { Sections, makeSection, makeSingle, makeSubmenu, useContextMenu } from "@components/contextmenu/ContextMenu.ts";
-import { makeNodeSelectableItem, makeObjectSelectableItem, makeObjectSelectionItem, makeRoomSelectableItem, selectableToSelection, selectionInRoom, selectionToSelectable, useDispatchSelection, useEditorSelection } from "@components/editor/selection.ts";
+import { makeNodeSelectableItem, makeObjectSelectableItem, makeObjectSelectionItem, makeRoomSelectableItem, makeRoomSelectionItem, selectableToSelection, selectionInRoom, selectionToSelectable, useDispatchSelection, useEditorSelection } from "@components/editor/selection.ts";
 import { ViewToolbar } from "@components/layout/LayoutViewToolbar.tsx";
 import { mergeListeners, toClassName } from "@components/utils.tsx";
 import { Bounds } from "@editor/bounds.ts";
-import { SkapObject, SkapRoom, makeBlock, makeCardinalGravityZone, makeCircularIce, makeCircularLava, makeCircularObstacle, makeCircularSlime, makeGravityZone, makeHatReward, makeIce, makeLava, makeMovePoint, makeMovingIce, makeMovingLava, makeMovingObstacle, makeMovingSlime, makeObstacle, makeReward, makeRotatingLava, makeSlime, makeSpawner, makeText } from "@editor/map.ts";
+import { SkapObject, SkapRoom, makeBlock, makeCardinalGravityZone, makeCircularIce, makeCircularLava, makeCircularObstacle, makeCircularSlime, makeHatReward, makeIce, makeLava, makeMovePoint, makeMovingIce, makeMovingLava, makeMovingObstacle, makeMovingSlime, makeObstacle, makeReward, makeRoom, makeRotatingLava, makeSlime, makeSpawner, makeText } from "@editor/map.ts";
+import { CardinalDirection } from "@editor/object/Base.tsx";
 import { useDispatchSkapMap, useSkapMap } from "@editor/reducer.ts";
 import { MouseButtons, useDrag } from "@hooks/useDrag.ts";
 import { useElementSize } from "@hooks/useElementSize.ts";
-import { Dispatch, FC, ReactNode, TouchEventHandler, useMemo, useRef } from "react";
+import { Dispatch, FC, ReactNode, useMemo, useRef } from "react";
 import { viewportToMap } from "./mapping.ts";
 import { BackgroundObstacleWebGLRenderer, BackgroundWebGLRenderer } from "./renderer/background.ts";
 import { BlockWebGLRenderer } from "./renderer/block.ts";
+import { ButtonWebGLRenderer } from "./renderer/button.ts";
+import { DoorWebGLRenderer } from "./renderer/door.ts";
+import { DoorLinkWebGLRenderer } from "./renderer/doorLink.ts";
 import { GravityZoneWebGLRenderer } from "./renderer/gravityZone.ts";
+import { HatRewardWebGLRenderer } from "./renderer/hatReward.ts";
 import { CircularIceWebGLRenderer, IceWebGLRenderer, MovingIceWebGLRenderer } from "./renderer/ice.ts";
 import { CircularLavaWebGLRenderer, LavaWebGLRenderer, MovingLavaWebGLRenderer, RotatingLavaWebGLRenderer } from "./renderer/lava.ts";
+import { AllMovingNodeWebGLRenderer, AllMovingTrackWebGLRenderer } from "./renderer/movingTrack.ts";
 import { CircularObstacleWebGLRenderer, MovingObstacleWebGLRenderer, ObstacleWebGLRenderer } from "./renderer/obstacle.ts";
+import { RewardWebGLRenderer } from "./renderer/reward.ts";
 import { CircularSlimeWebGLRenderer, MovingSlimeWebGLRenderer, SlimeWebGLRenderer } from "./renderer/slime.ts";
+import { SpawnerBackgroundWebGLRenderer, SpawnerEntitiesWebGLRenderer } from "./renderer/spawner.ts";
+import { SwitchWebGLRenderer } from "./renderer/switch.ts";
 import { TeleporterWebGLRenderer } from "./renderer/teleporter.ts";
 import { TextLayer } from "./renderer/text.tsx";
+import { TurretWebGLRenderer } from "./renderer/turret.ts";
 import { ActiveSelection } from "./selection/ActiveSelection.tsx";
 import { getClickbox, getSelectableBounds, getTranslate, getZIndex } from "./selection/getObjectProperties.ts";
 import css from "./Viewport.module.css";
@@ -27,19 +40,6 @@ import { ViewportAction, ViewportInfo, ViewportState, wheelMult } from "./Viewpo
 import { ViewportCanvas } from "./ViewportCanvas.tsx";
 import { ViewportRoomSwitcher } from "./ViewportRoomSwitcher.tsx";
 import { WebGLLayer } from "./webgl/WebGLLayer.tsx";
-import { SpawnerBackgroundWebGLRenderer, SpawnerEntitiesWebGLRenderer } from "./renderer/spawner.ts";
-import { CardinalDirection } from "@editor/object/Base.tsx";
-import { Color } from "@common/color.ts";
-import { hotkeysHandler, keybindStr } from "@common/keybind.ts";
-import { ID } from "@common/uuid.ts";
-import { AllMovingNodeWebGLRenderer, AllMovingTrackWebGLRenderer } from "./renderer/movingTrack.ts";
-import { TurretWebGLRenderer } from "./renderer/turret.ts";
-import { DoorWebGLRenderer } from "./renderer/door.ts";
-import { ButtonWebGLRenderer } from "./renderer/button.ts";
-import { DoorLinkWebGLRenderer } from "./renderer/doorLink.ts";
-import { SwitchWebGLRenderer } from "./renderer/switch.ts";
-import { RewardWebGLRenderer } from "./renderer/reward.ts";
-import { HatRewardWebGLRenderer } from "./renderer/hatReward.ts";
 
 /** Maximum distance for something to count as a click */
 const clickMaxDistance = 5;
@@ -171,69 +171,94 @@ export const RealViewport: FC<RealViewportProps> = ({
 			}),
 		]),
 
-		makeSubmenu("viewport.add_object", "add", [
-			makeSubmenu("viewport.add_object.basic", "square", [
-				makeSingle("viewport.add_object.obstacle", "obstacle", () => {
-					addAndSelect(makeObstacle(0, 0, 10, 10));
+		makeSubmenu("viewport.add", "add", [
+			makeSubmenu("viewport.add.object", "deployed_code", [
+				makeSubmenu("viewport.add.object.basic", "square", [
+					makeSingle("viewport.add.object.obstacle", "obstacle", () => {
+						addAndSelect(makeObstacle(0, 0, 10, 10));
+					}),
+					makeSingle("viewport.add.object.lava", "square", () => {
+						addAndSelect(makeLava(0, 0, 10, 10));
+					}),
+					makeSingle("viewport.add.object.slime", "square", () => {
+						addAndSelect(makeSlime(0, 0, 10, 10));
+					}),
+					makeSingle("viewport.add.object.ice", "square", () => {
+						addAndSelect(makeIce(0, 0, 10, 10));
+					}),
+				]),
+				makeSubmenu("viewport.add.object.circular", "circle", [
+					makeSingle("viewport.add.object.circularObstacle", null, () => {
+						addAndSelect(makeCircularObstacle(0, 0, 10));
+					}),
+					makeSingle("viewport.add.object.circularLava", null, () => {
+						addAndSelect(makeCircularLava(0, 0, 10));
+					}),
+					makeSingle("viewport.add.object.circularSlime", null, () => {
+						addAndSelect(makeCircularSlime(0, 0, 10));
+					}),
+					makeSingle("viewport.add.object.circularIce", null, () => {
+						addAndSelect(makeCircularIce(0, 0, 10));
+					}),
+				]),
+				makeSubmenu("viewport.add.object.moving", "move_item", [
+					makeSingle("viewport.add.object.movingObstacle", null, () => {
+						addAndSelect(makeMovingObstacle(10, 10, 5, [makeMovePoint(0, 0, 0)]));
+					}),
+					makeSingle("viewport.add.object.movingLava", null, () => {
+						addAndSelect(makeMovingLava(10, 10, 5, [makeMovePoint(0, 0, 0)]));
+					}),
+					makeSingle("viewport.add.object.movingSlime", null, () => {
+						addAndSelect(makeMovingSlime(10, 10, 5, [makeMovePoint(0, 0, 0)]));
+					}),
+					makeSingle("viewport.add.object.movingIce", null, () => {
+						addAndSelect(makeMovingIce(10, 10, 5, [makeMovePoint(0, 0, 0)]));
+					}),
+				]),
+				makeSingle("viewport.add.object.block", "square", () => {
+					addAndSelect(makeBlock(0, 0, 10, 10, Color.hex(0xff00ff, 1), 0, false));
 				}),
-				makeSingle("viewport.add_object.lava", "square", () => {
-					addAndSelect(makeLava(0, 0, 10, 10));
+				makeSingle("viewport.add.object.text", "text_fields", () => {
+					addAndSelect(makeText(0, 0, "ABC"));
 				}),
-				makeSingle("viewport.add_object.slime", "square", () => {
-					addAndSelect(makeSlime(0, 0, 10, 10));
+				makeSingle("viewport.add.object.gravityZone", null, () => {
+					addAndSelect(makeCardinalGravityZone(0, 0, 10, 10, CardinalDirection.Down));
 				}),
-				makeSingle("viewport.add_object.ice", "square", () => {
-					addAndSelect(makeIce(0, 0, 10, 10));
+				makeSingle("viewport.add.object.spawner", null, () => {
+					addAndSelect(makeSpawner(0, 0, 10, 10, []));
+				}),
+				makeSingle("viewport.add.object.rotatingLava", null, () => {
+					addAndSelect(makeRotatingLava(0, 0, 10, 10, vec2(5, 5), 0, 90));
+				}),
+				makeSingle("viewport.add.object.reward", "featured_seasonal_and_gifts", () => {
+					addAndSelect(makeReward(0, 0, []));
+				}),
+				makeSingle("viewport.add.object.hatReward", "featured_seasonal_and_gifts", () => {
+					addAndSelect(makeHatReward(0, 0, "cowboy"));
 				}),
 			]),
-			makeSubmenu("viewport.add_object.circular", "circle", [
-				makeSingle("viewport.add_object.circularObstacle", null, () => {
-					addAndSelect(makeCircularObstacle(0, 0, 10));
-				}),
-				makeSingle("viewport.add_object.circularLava", null, () => {
-					addAndSelect(makeCircularLava(0, 0, 10));
-				}),
-				makeSingle("viewport.add_object.circularSlime", null, () => {
-					addAndSelect(makeCircularSlime(0, 0, 10));
-				}),
-				makeSingle("viewport.add_object.circularIce", null, () => {
-					addAndSelect(makeCircularIce(0, 0, 10));
-				}),
-			]),
-			makeSubmenu("viewport.add_object.moving", "move_item", [
-				makeSingle("viewport.add_object.movingObstacle", null, () => {
-					addAndSelect(makeMovingObstacle(10, 10, 5, [makeMovePoint(0, 0, 0)]));
-				}),
-				makeSingle("viewport.add_object.movingLava", null, () => {
-					addAndSelect(makeMovingLava(10, 10, 5, [makeMovePoint(0, 0, 0)]));
-				}),
-				makeSingle("viewport.add_object.movingSlime", null, () => {
-					addAndSelect(makeMovingSlime(10, 10, 5, [makeMovePoint(0, 0, 0)]));
-				}),
-				makeSingle("viewport.add_object.movingIce", null, () => {
-					addAndSelect(makeMovingIce(10, 10, 5, [makeMovePoint(0, 0, 0)]));
-				}),
-			]),
-			makeSingle("viewport.add_object.block", "square", () => {
-				addAndSelect(makeBlock(0, 0, 10, 10, Color.hex(0xff00ff, 1), 0, false));
-			}),
-			makeSingle("viewport.add_object.text", "text_fields", () => {
-				addAndSelect(makeText(0, 0, "ABC"));
-			}),
-			makeSingle("viewport.add_object.gravityZone", null, () => {
-				addAndSelect(makeCardinalGravityZone(0, 0, 10, 10, CardinalDirection.Down));
-			}),
-			makeSingle("viewport.add_object.spawner", null, () => {
-				addAndSelect(makeSpawner(0, 0, 10, 10, []));
-			}),
-			makeSingle("viewport.add_object.rotatingLava", null, () => {
-				addAndSelect(makeRotatingLava(0, 0, 10, 10, vec2(5, 5), 0, 90));
-			}),
-			makeSingle("viewport.add_object.reward", "featured_seasonal_and_gifts", () => {
-				addAndSelect(makeReward(0, 0, []));
-			}),
-			makeSingle("viewport.add_object.hatReward", "featured_seasonal_and_gifts", () => {
-				addAndSelect(makeHatReward(0, 0, "cowboy"));
+			makeSingle("viewport.add.room", "meeting_room", () => {
+				const room = makeRoom("<Room Name>",
+					{ left: 0, top: 0, right: 100, bottom: 100 },
+					Color.DEFAULT_OBSTACLE, Color.DEFAULT_BACKGROUND,
+					[]
+				);
+				dispatchMap({
+					type: "add_room",
+					room: room,
+				});
+				dispatchSelection({
+					type: "set_selection",
+					selection: [makeRoomSelectionItem(room)],
+				})
+				dispatchView({
+					type: "set_current_room_id",
+					currentRoomId: room.id,
+				});
+				dispatchView({
+					type: "set_camera_pos",
+					pos: room.bounds.center(),
+				});
 			}),
 		]),
 	]);
@@ -376,7 +401,24 @@ export const RealViewport: FC<RealViewportProps> = ({
 			roomSelection.forEach(s => {
 				switch (s.type) {
 					case "room": {
-						console.warn("Cannot delete room bounds (???)");
+						if (roomSelection.length !== 1) {
+							if (!confirm("Delete room?")) {
+								return;
+							}
+						}
+						dispatchMap({
+							type: "remove_room",
+							roomId: s.id,
+						});
+						dispatchSelection({
+							type: "remove_item",
+							item: s,
+						});
+						const newRoomId = map.rooms.keys().find(id => id !== s.id) ?? null;
+						dispatchView({
+							type: "set_current_room_id",
+							currentRoomId: newRoomId,
+						});
 						return;
 					}
 					case "object": {
