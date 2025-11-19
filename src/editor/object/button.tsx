@@ -4,6 +4,7 @@ import { FormSection } from "@components/form/FormSection.tsx";
 import { FormTitle } from "@components/form/FormTitle.tsx";
 import { NumberInput } from "@components/form/NumberInput.tsx";
 import { TextInput } from "@components/form/TextInput.tsx";
+import { Icon } from "@components/icon/Icon.tsx";
 import { Translate } from "@components/translate/Translate.tsx";
 import { Bounds } from "@editor/bounds.ts";
 import { BaseObject, CardinalDirection, makeObjectProperties } from "@editor/object/Base";
@@ -46,10 +47,18 @@ export const buttonProperties = makeObjectProperties<SkapButton>("button", {
 					/>
 					<FormSection>
 						<FormTitle><Translate k="generic.position" /></FormTitle>
-						<BoundsInput value={bounds} onInput={bounds => update(obj => ({ ...obj, bounds }))} />
+						<BoundsInput value={bounds}
+							onInput={bounds => update(obj => ({ ...obj, bounds }))}
+						/>
 					</FormSection>
-					<CardinalDirectionInput value={dir} onInput={dir => update(obj => ({ ...obj, dir }))} />
-					<NumberInput value={timer} onInput={timer => update(obj => ({ ...obj, timer }))} />
+					<CardinalDirectionInput value={dir}
+						onInput={dir => update(obj => ({ ...obj, dir }))}
+						label={<Translate k="generic.direction" />}
+					/>
+					<NumberInput value={timer}
+						onInput={timer => update(obj => ({ ...obj, timer }))}
+						label={<Icon icon="timer" />}
+					/>
 				</>
 			);
 		}

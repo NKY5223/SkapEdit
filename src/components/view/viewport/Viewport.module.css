@@ -4,6 +4,7 @@
 	align-items: start;
 	inset: 0;
 	user-select: none;
+	touch-action: none;
 
 	--viewport-x: 0px;
 	--viewport-y: 0px;

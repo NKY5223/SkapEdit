@@ -222,18 +222,23 @@ const skapToObjectsPartial = (object: SkapFile.Object, room: SkapFile.Room, map:
 			pos: skapToVec2(object.position),
 			reward: object.reward,
 		};
-
-		case "hatReward":
-			return {
-				type: "text",
-				id,
-				pos: (
-					"position" in object
-						? skapToVec2(object.position)
-						: vec2(0)
-				),
-				text: `⟨${object.type}⟩`,
-			};
+		case "hatReward": return {
+			type: "hatReward",
+			id,
+			pos: skapToVec2(object.position),
+			hatReward: object.reward,
+		};
+		
+		// default: return {
+		// 	type: "text",
+		// 	id,
+		// 	pos: (
+		// 		"position" in object
+		// 			? skapToVec2(object.position)
+		// 			: vec2(0)
+		// 	),
+		// 	text: `⟨${object.type}⟩`,
+		// };
 	}
 }
 

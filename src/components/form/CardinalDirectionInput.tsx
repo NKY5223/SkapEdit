@@ -1,5 +1,5 @@
 import { CardinalDirection } from "@editor/object/Base.tsx";
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 import { makeOption } from "./dropdown/Dropdown.ts";
 import { DropdownSelect } from "./dropdown/DropdownSelect.tsx";
 import { Translate } from "@components/translate/Translate.tsx";
@@ -7,9 +7,11 @@ import { Translate } from "@components/translate/Translate.tsx";
 type CardinalDirectionInputProps = {
 	value: CardinalDirection;
 	onInput: (value: CardinalDirection) => void;
+	label?: ReactNode;
 };
 export const CardinalDirectionInput: FC<CardinalDirectionInputProps> = ({
 	value, onInput,
+	label,
 }) => {
 	return (
 		<DropdownSelect value={value}
@@ -20,6 +22,7 @@ export const CardinalDirectionInput: FC<CardinalDirectionInputProps> = ({
 				makeOption("right", CardinalDirection.Right, <Translate k="generic.direction.right" />),
 			]}
 			onInput={onInput}
+			label={label}
 		/>
 	)
 }

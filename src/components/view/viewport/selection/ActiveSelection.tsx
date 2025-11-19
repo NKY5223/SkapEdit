@@ -355,6 +355,7 @@ const ActiveSelectionItem: FC<ActiveSelectionItemProps> = ({
 				}
 
 				case "reward":
+				case "hatReward":
 					{
 						const { type, id, pos } = object;
 						type T = typeof object;

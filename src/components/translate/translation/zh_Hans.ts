@@ -69,8 +69,8 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"contextmenu.item.name.viewport.add_object.gravityZone": use("object.name.gravityZone"),
 	"contextmenu.item.name.viewport.add_object.spawner": use("object.name.spawner"),
 	"contextmenu.item.name.viewport.add_object.rotatingLava": use("object.name.rotatingLava"),
-	"contextmenu.item.name.viewport.add_object.reward": use("object.name.spawner"),
-	"contextmenu.item.name.viewport.add_object.hatReward": use("object.name.spawner"),
+	"contextmenu.item.name.viewport.add_object.reward": use("object.name.reward"),
+	"contextmenu.item.name.viewport.add_object.hatReward": use("object.name.hatReward"),
 	// #endregion
 
 	// #region Viewport

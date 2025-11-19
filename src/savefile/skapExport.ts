@@ -227,6 +227,14 @@ const objectToSkap = (object: SkapObject, room: SkapRoom, map: SkapMap): SkapFil
 				reward: [...reward],
 			}];
 		}
+		case "hatReward": {
+			const { type, pos, hatReward } = object;
+			return [{
+				type,
+				position: vec2ToSkap(pos),
+				reward: hatReward,
+			}];
+		}
 		// default: return [];
 	}
 }

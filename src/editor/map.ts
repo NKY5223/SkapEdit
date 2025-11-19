@@ -17,6 +17,7 @@ import { SkapDoor } from "./object/door.tsx";
 import { SkapButton } from "./object/button.tsx";
 import { SkapSwitch } from "./object/switch.tsx";
 import { SkapReward } from "./object/reward.tsx";
+import { SkapHatReward } from "./object/hatReward.tsx";
 
 export type SkapObject = (
 	| SkapObstacle
@@ -42,6 +43,7 @@ export type SkapObject = (
 	| SkapButton
 	| SkapSwitch
 	| SkapReward
+	| SkapHatReward
 );
 export type SkapRoom = {
 	id: ID;
@@ -278,6 +280,12 @@ export const makeReward = (x: number, y: number, reward: readonly number[]): Ska
 	id: createId("obj-reward"),
 	pos: vec2(x, y),
 	reward,
+});
+export const makeHatReward = (x: number, y: number, hatReward: string): SkapHatReward => ({
+	type: "hatReward",
+	id: createId("obj-hatReward"),
+	pos: vec2(x, y),
+	hatReward,
 });
 // #endregion
 

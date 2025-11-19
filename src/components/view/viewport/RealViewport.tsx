@@ -5,11 +5,11 @@ import { makeNodeSelectableItem, makeObjectSelectableItem, makeObjectSelectionIt
 import { ViewToolbar } from "@components/layout/LayoutViewToolbar.tsx";
 import { mergeListeners, toClassName } from "@components/utils.tsx";
 import { Bounds } from "@editor/bounds.ts";
-import { SkapObject, SkapRoom, makeBlock, makeCardinalGravityZone, makeCircularIce, makeCircularLava, makeCircularObstacle, makeCircularSlime, makeGravityZone, makeIce, makeLava, makeMovePoint, makeMovingIce, makeMovingLava, makeMovingObstacle, makeMovingSlime, makeObstacle, makeRotatingLava, makeSlime, makeSpawner, makeText } from "@editor/map.ts";
+import { SkapObject, SkapRoom, makeBlock, makeCardinalGravityZone, makeCircularIce, makeCircularLava, makeCircularObstacle, makeCircularSlime, makeGravityZone, makeHatReward, makeIce, makeLava, makeMovePoint, makeMovingIce, makeMovingLava, makeMovingObstacle, makeMovingSlime, makeObstacle, makeReward, makeRotatingLava, makeSlime, makeSpawner, makeText } from "@editor/map.ts";
 import { useDispatchSkapMap, useSkapMap } from "@editor/reducer.ts";
 import { MouseButtons, useDrag } from "@hooks/useDrag.ts";
 import { useElementSize } from "@hooks/useElementSize.ts";
-import { Dispatch, FC, ReactNode, useMemo, useRef } from "react";
+import { Dispatch, FC, ReactNode, TouchEventHandler, useMemo, useRef } from "react";
 import { viewportToMap } from "./mapping.ts";
 import { BackgroundObstacleWebGLRenderer, BackgroundWebGLRenderer } from "./renderer/background.ts";
 import { BlockWebGLRenderer } from "./renderer/block.ts";
@@ -39,9 +39,10 @@ import { ButtonWebGLRenderer } from "./renderer/button.ts";
 import { DoorLinkWebGLRenderer } from "./renderer/doorLink.ts";
 import { SwitchWebGLRenderer } from "./renderer/switch.ts";
 import { RewardWebGLRenderer } from "./renderer/reward.ts";
+import { HatRewardWebGLRenderer } from "./renderer/hatReward.ts";
 
 /** Maximum distance for something to count as a click */
-const clickMaxDistance = 2;
+const clickMaxDistance = 5;
 
 type RealViewportProps = {
 	state: ViewportState;
@@ -89,7 +90,7 @@ export const RealViewport: FC<RealViewportProps> = ({
 			// Players
 			new BlockWebGLRenderer(1),
 			new RewardWebGLRenderer(),
-			// HatReward
+			new HatRewardWebGLRenderer(),
 			// CoinReward (???)
 			// Box (wall power)
 			new GravityZoneWebGLRenderer(),
@@ -227,6 +228,12 @@ export const RealViewport: FC<RealViewportProps> = ({
 			}),
 			makeSingle("viewport.add_object.rotatingLava", null, () => {
 				addAndSelect(makeRotatingLava(0, 0, 10, 10, vec2(5, 5), 0, 90));
+			}),
+			makeSingle("viewport.add_object.reward", "featured_seasonal_and_gifts", () => {
+				addAndSelect(makeReward(0, 0, []));
+			}),
+			makeSingle("viewport.add_object.hatReward", "featured_seasonal_and_gifts", () => {
+				addAndSelect(makeHatReward(0, 0, "cowboy"));
 			}),
 		]),
 	]);

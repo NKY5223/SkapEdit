@@ -19,7 +19,7 @@
 	height: 100%;
 	aspect-ratio: 1;
 	max-width: 3em;
-	background-image: url("/logo-transparency.svg");
+	background-image: url("/logo/logo-transparency.svg");
 	background-size: 1.25em 1.25em;
 	background-repeat: no-repeat;
 	background-position: center;
