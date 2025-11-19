@@ -108,6 +108,9 @@
 	opacity: 0.5;
 	justify-self: end;
 }
+.section {
+	--this-is-a-section-dead-code-stuff-idk: 0;
+}
 
 .error {
 	width: fit-content;
