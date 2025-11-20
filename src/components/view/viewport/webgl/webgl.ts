@@ -1,6 +1,7 @@
 import { Vec2 } from "@common/vec2.ts";
 import { Vector } from "../../../../common/vector.ts";
 import { Bounds } from "../../../../editor/bounds.ts";
+import { saveFile } from "@common/save.ts";
 
 type WebGLValueType = {
 	size: number;
@@ -237,6 +238,14 @@ export abstract class WebGlRenderer<T extends unknown[]> {
 			canvas.height = height;
 			ctx.drawImage(image, 0, 0, width, height);
 			resolve(canvas);
+
+			if (import.meta.env.DEV) {
+				const webglTextures = "webglTextures" in window && typeof window.webglTextures === "object" && window.webglTextures
+					? window.webglTextures
+					: Object.assign(window, { webglTextures: {} }).webglTextures;
+				// @ts-expect-error
+				webglTextures[name] = canvas;
+			}
 		});
 		const texture = this.createTexture(gl, promise);
 		this.info.textures.set(name, texture);
@@ -270,6 +279,14 @@ export abstract class WebGlRenderer<T extends unknown[]> {
 }
 
 const isPowerOf2 = (n: number) => (n & (n - 1)) === 0;
+
+Object.assign(window, {
+	saveOffscreenCanvas: (canvas: OffscreenCanvas) => {
+		saveFile("canvas.png", () => canvas.convertToBlob(), {
+			id: "skapedit-saveOffscreenCanvas",
+		});
+	}
+});
 
 export function rect(bounds: Bounds): Vec2[] {
 	const { topLeft, topRight, bottomLeft, bottomRight, } = bounds;

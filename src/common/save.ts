@@ -37,19 +37,21 @@ declare global {
 }
 export const saveFile = async (
 	fileName: string,
-	contents: (saveMethod: SaveMethod) => Blob,
+	contents: (saveMethod: SaveMethod) => Blob | Promise<Blob>,
 	options?: FilePickerOptions,
 ): Promise<SaveMethod> => {
 	if (window.showSaveFilePicker) {
 		const handle = await window.showSaveFilePicker(options);
 		const writable = await handle.createWritable();
-		await writable.write(contents("saveFilePicker"));
+		const blob = await contents("saveFilePicker");
+		await writable.write(blob);
 		await writable.close();
 
 		return "saveFilePicker";
 	} else {
+		const blob = await contents("linkDownload");
 		// Fallback to <a download> clicking
-		const url = URL.createObjectURL(contents("linkDownload"));
+		const url = URL.createObjectURL(blob);
 
 		const anchor = document.createElement("a");
 		anchor.href = url;

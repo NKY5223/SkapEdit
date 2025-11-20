@@ -4,6 +4,7 @@ import { ViewportVP } from "@components/view/viewport/Viewport.tsx";
 import { TestErrorVP } from "../../test/TestError.tsx";
 import { TestSwatchVP } from "../../test/TestSwatch.tsx";
 import { Layout, makeStatelessViewProvider } from "./layout.ts";
+import { OutlineVP } from "@components/view/outline/Outline.tsx";
 
 export const viewProviders = {
 	"test.swatch": TestSwatchVP,
@@ -20,4 +21,5 @@ export const viewProviders = {
 	}),
 	"map.viewport": ViewportVP,
 	"map.inspector": InspectorVP,
+	"map.outline": OutlineVP,
 } as const;

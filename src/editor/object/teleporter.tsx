@@ -52,7 +52,7 @@ export const teleporterProperties = makeObjectProperties<SkapTeleporter>("telepo
 								room.objects.values().filter(obj => obj.type === "teleporter")
 									.map((tp) => makeOption(
 										tp.id, tp.id,
-										<Translate k="object.teleporter.name" object={tp} room={room} />
+										<Translate k="object.individual_name" object={tp} room={room} map={map} />
 									)).toArray()
 							)).toArray()}
 							nowrap />

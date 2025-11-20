@@ -1,11 +1,16 @@
 import { CardinalDirection } from "@editor/object/Base.tsx";
-import { makeCode, makeLink } from "../richtext.ts";
+import { makeCode, makeItalic, makeLink } from "../richtext.ts";
 import { delegateOn, makeTranslator, Translator } from "../translate.ts";
 import { TranslationArgs } from "../translationArgs.ts";
 
 // so beautifully type "perfect"
 const delegate = delegateOn<TranslationArgs>(".");
 const use = (k: keyof TranslationArgs) => (_: {}, translate: Translator<TranslationArgs>) => translate(k, {});
+const trunc = (str: string, maxLength: number) => {
+	const chars = [...str];
+	if (chars.length <= maxLength) return str;
+	return chars.slice(0, maxLength).join("") + "…";
+}
 
 export const translator_en_US = makeTranslator<TranslationArgs>({
 	"error.layout.view.unknown": ({ viewProviderName }) => ["Unknown view provider: ", viewProviderName],
@@ -23,9 +28,10 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"layout.view.name.test.translate.lorem": use("generic.lorem"),
 	"layout.view.name.test.empty": "Empty",
 
-	"layout.view.category.name.map": "Map",
-	"layout.view.name.map.inspector": "Inspector",
-	"layout.view.name.map.viewport": "Viewport",
+	"layout.view.category.name.map": use("map"),
+	"layout.view.name.map.inspector": use("inspector"),
+	"layout.view.name.map.viewport": use("viewport"),
+	"layout.view.name.map.outline": use("outline"),
 	// #endregion
 
 	// #region Context Menu
@@ -72,7 +78,7 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"contextmenu.item.name.viewport.add.object.rotatingLava": use("object.name.rotatingLava"),
 	"contextmenu.item.name.viewport.add.object.reward": use("object.name.reward"),
 	"contextmenu.item.name.viewport.add.object.hatReward": use("object.name.hatReward"),
-	
+
 	"contextmenu.item.name.viewport.add.room": use("room"),
 	// #endregion
 
@@ -87,6 +93,10 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"inspector": "Inspector",
 	"inspector.room.background_color": "Background Color",
 	"inspector.room.obstacle_color": "Obstacle Color",
+	// #endregion
+
+	// #region Outline
+	"outline": "Outline",
 	// #endregion
 
 	// #region Topbar
@@ -148,12 +158,35 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"object.name.reward": "Reward",
 	"object.name.hatReward": "Hat Reward",
 
-	"object.teleporter.name": ({ object, room }, t) => [
-		"Facing ",
-		t(`generic.direction.${CardinalDirection[object.direction]}`, {}),
-		" at ",
-		t(`generic.vec2`, { vector: object.bounds.center() }),
+	"object.individual_name": ({ object, room, map }, t) => {
+		switch (object.type) {
+			case "text":
+				return t("object.text_name", { object, room, map });
+			case "teleporter":
+				return t("object.teleporter_name", { object, room, map });
+			default:
+				return t("object.name", { type: object.type });
+		}
+	}, 
+	"object.text_name": ({ object }, t) => [
+		t("object.name.text", {}),
+		" (",
+		makeItalic(trunc(object.text, 20)),
+		")",
 	],
+	"object.teleporter_name": ({ object, map }, t) => {
+		const { target } = object;
+		const roomName = target === null
+			? undefined
+			: target.type === "room"
+				? map.rooms.get(target.roomId)?.name
+				: map.rooms.values().find(room => room.objects.has(target.teleporterId))?.name;
+		return [
+			t("object.name.teleporter", {}),
+			" →",
+			roomName ?? makeItalic("???"),
+		];
+	},
 	// #endregion
 
 	// #region Room

@@ -1,0 +1,84 @@
+.outline {
+	display: grid;
+	grid-template-areas: "toolbar" "rooms";
+	grid-template-rows: min-content auto;
+	height: 100%;
+}
+.rooms {
+	overflow-y: auto;
+	padding: .5em;
+	padding-block-start: 0;
+}
+.room {
+	& > :first-child {
+		border-radius: var(--theme-border-radius);
+		border: var(--theme-border-width) solid transparent;
+		.selected > & {
+			color: var(--theme-fg-1);
+			background-color: var(--theme-bg-1);
+			border-color: var(--theme-bd-1);
+		}
+		.last > & {
+			color: var(--theme-primary-fg-0);
+			background-color: var(--theme-primary-bg-0);
+			border-color: var(--theme-primary-bd-0);
+		}
+	}
+}
+.room-summary {
+	user-select: none;
+}
+.room-objects {
+	display: grid;
+	grid-template-columns: auto;
+	grid-auto-flow: row;
+	gap: .125em;
+}
+.object {
+	padding-inline: .5em;
+	padding-block: .125em;
+	border-radius: var(--theme-border-radius);
+	border: var(--theme-border-width) solid transparent;
+	&.selected {
+		color: var(--theme-fg-1);
+		background-color: var(--theme-bg-1);
+		border-color: var(--theme-bd-1);
+	}
+	&.last {
+		color: var(--theme-primary-fg-0);
+		background-color: var(--theme-primary-bg-0);
+		border-color: var(--theme-primary-bd-0);
+	}
+}
+
+.details {
+	&:not(.open) > .details-content {
+		display: none;
+	}
+}
+.summary {
+	display: grid;
+	grid-template-areas: "arrow content";
+	grid-template-columns: min-content auto;
+	padding-block: .125em;
+
+	&::before {
+		display: inline-block;
+		font-family: "Material Symbols Outlined";
+		font-size: 1.25em;
+		line-height: 1;
+		vertical-align: middle;
+		content: "arrow_right";
+	}
+	.open > &::before {
+		content: "arrow_drop_down";
+	}
+}
+.details-content {
+	user-select: none;
+	margin-inline-start: .625em;
+	padding-inline-start: .25em;
+	padding-block-start: .25em;
+	border-inline-start: var(--theme-border-width) solid var(--theme-bd-0);
+	margin-block-end: .25em;
+}

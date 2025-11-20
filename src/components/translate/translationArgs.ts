@@ -1,8 +1,9 @@
 import { ID } from "@common/uuid.ts";
 import { useBaseTranslationString } from "./translate.ts";
 import { SkapTeleporter } from "@editor/object/teleporter.ts";
-import { SkapRoom } from "@editor/map.ts";
+import { SkapMap, SkapObject, SkapRoom } from "@editor/map.ts";
 import { Vec2 } from "@common/vec2.ts";
+import { SkapText } from "@editor/object/text.tsx";
 
 export type TranslationArgs = {
 	// #region Layout
@@ -22,6 +23,7 @@ export type TranslationArgs = {
 	"layout.view.category.name.map": {};
 	"layout.view.name.map.inspector": {};
 	"layout.view.name.map.viewport": {};
+	"layout.view.name.map.outline": {};
 	// #endregion
 
 	// #region Context Menu
@@ -85,6 +87,10 @@ export type TranslationArgs = {
 	"inspector.room.obstacle_color": {};
 	// #endregion
 
+	// #region Outline
+	"outline": {};
+	// #endregion
+
 	// #region Topbar
 	"topbar.app": {};
 	"contextmenu.item.name.topbar.app.settings": {};
@@ -144,7 +150,9 @@ export type TranslationArgs = {
 	"object.name.reward": {};
 	"object.name.hatReward": {};
 
-	"object.teleporter.name": { object: SkapTeleporter; room: SkapRoom; };
+	"object.individual_name": { object: SkapObject; room: SkapRoom; map: SkapMap; };
+	"object.text_name": { object: SkapText; room: SkapRoom; map: SkapMap; };
+	"object.teleporter_name": { object: SkapTeleporter; room: SkapRoom; map: SkapMap; };
 	// #endregion
 
 	// #region Room

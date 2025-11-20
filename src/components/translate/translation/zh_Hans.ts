@@ -1,5 +1,5 @@
 import { CardinalDirection } from "@editor/object/Base.tsx";
-import { makeCode, makeLink } from "../richtext.ts";
+import { makeCode, makeItalic, makeLink } from "../richtext.ts";
 import { delegateOn, makeTranslator, Translator } from "../translate.ts";
 import { TranslationArgs } from "../translationArgs.ts";
 
@@ -7,6 +7,12 @@ import { TranslationArgs } from "../translationArgs.ts";
 
 const delegate = delegateOn<TranslationArgs>(".");
 const use = (k: keyof TranslationArgs) => (_: {}, translate: Translator<TranslationArgs>) => translate(k, {});
+const trunc = (str: string, maxLength: number) => {
+	const chars = [...str];
+	if (chars.length <= maxLength) return str;
+	return chars.slice(0, maxLength).join("") + "…";
+}
+
 export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"error.layout.view.unknown": ({ viewProviderName }) => ["没有此ViewProvider：", viewProviderName],
 
@@ -23,9 +29,10 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"layout.view.name.test.translate.lorem": use("generic.lorem"),
 	"layout.view.name.test.empty": "空",
 
-	"layout.view.category.name.map": "地图",
-	"layout.view.name.map.inspector": "Inspector ？",
-	"layout.view.name.map.viewport": "视口",
+	"layout.view.category.name.map": use("map"),
+	"layout.view.name.map.inspector": use("inspector"),
+	"layout.view.name.map.viewport": use("viewport"),
+	"layout.view.name.map.outline": use("outline"),
 	// #endregion
 
 	// #region Context Menu	
@@ -88,6 +95,10 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"inspector.room.background_color": "背景颜色",
 	"inspector.room.obstacle_color": "障碍颜色",
 	// #endregion
+	
+	// #region Outline
+	"outline": "大纲",
+	// #endregion
 
 	// #region Topbar
 	"topbar.app": "APP",
@@ -148,12 +159,35 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"object.name.reward": "奖励",
 	"object.name.hatReward": "帽子奖励",
 
-	"object.teleporter.name": ({ object, room }, t) => [
-		"向",
-		t(`generic.direction.${CardinalDirection[object.direction]}`, {}),
-		"，在",
-		t(`generic.vec2`, { vector: object.bounds.center() }),
+	"object.individual_name": ({ object, room, map }, t) => {
+		switch (object.type) {
+			case "text":
+				return t("object.text_name", { object, room, map });
+			case "teleporter":
+				return t("object.teleporter_name", { object, room, map });
+			default:
+				return t("object.name", { type: object.type });
+		}
+	}, 
+	"object.text_name": ({ object }, t) => [
+		t("object.name.text", {}),
+		" (",
+		makeItalic(trunc(object.text, 20)),
+		")",
 	],
+	"object.teleporter_name": ({ object, map }, t) => {
+		const { target } = object;
+		const roomName = target === null
+			? undefined
+			: target.type === "room"
+				? map.rooms.get(target.roomId)?.name
+				: map.rooms.values().find(room => room.objects.has(target.teleporterId))?.name;
+		return [
+			t("object.name.teleporter", {}),
+			" →",
+			roomName ?? makeItalic("???"),
+		];
+	},
 	// #endregion
 
 	// #region Room
