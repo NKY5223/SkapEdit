@@ -170,9 +170,8 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	}, 
 	"object.text_name": ({ object }, t) => [
 		t("object.name.text", {}),
-		" (",
+		": ",
 		makeItalic(trunc(object.text, 20)),
-		")",
 	],
 	"object.teleporter_name": ({ object, map }, t) => {
 		const { target } = object;
@@ -183,7 +182,7 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 				: map.rooms.values().find(room => room.objects.has(target.teleporterId))?.name;
 		return [
 			t("object.name.teleporter", {}),
-			" →",
+			": ",
 			roomName ?? makeItalic("???"),
 		];
 	},

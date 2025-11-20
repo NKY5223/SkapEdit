@@ -284,7 +284,7 @@ export const RealViewport: FC<RealViewportProps> = ({
 		);
 
 		const item = clickedItems[0];
-		if (e.shiftKey) {
+		if (e.ctrlKey) {
 			if (!item) return;
 			dispatchSelection({
 				type: "add_item",

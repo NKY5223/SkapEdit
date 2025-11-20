@@ -26,7 +26,6 @@
 	}
 }
 .room-summary {
-	user-select: none;
 }
 .room-objects {
 	display: grid;
@@ -61,24 +60,17 @@
 	grid-template-areas: "arrow content";
 	grid-template-columns: min-content auto;
 	padding-block: .125em;
-
-	&::before {
-		display: inline-block;
-		font-family: "Material Symbols Outlined";
-		font-size: 1.25em;
-		line-height: 1;
-		vertical-align: middle;
-		content: "arrow_right";
-	}
-	.open > &::before {
-		content: "arrow_drop_down";
-	}
+	
+	user-select: none;
+}
+.arrow:dir(rtl) {
+	scale: -1 1;
 }
 .details-content {
 	user-select: none;
 	margin-inline-start: .625em;
 	padding-inline-start: .25em;
-	padding-block-start: .25em;
+	/* padding-block-start: .25em; */
 	border-inline-start: var(--theme-border-width) solid var(--theme-bd-0);
 	margin-block-end: .25em;
 }

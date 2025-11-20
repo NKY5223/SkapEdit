@@ -3,23 +3,42 @@ import css from "./Outline.module.css";
 import { ViewToolbar } from "@components/layout/LayoutViewToolbar.tsx";
 import { useSkapMap } from "@editor/reducer.ts";
 import { Translate } from "@components/translate/Translate.tsx";
-import { useEditorSelection } from "@components/editor/selection.ts";
+import { makeObjectSelectionItem, useDispatchSelection, useEditorSelection } from "@components/editor/selection.ts";
 import { toClassName } from "@components/utils.tsx";
-import { FC, ReactNode, useState } from "react";
+import { FC, MouseEventHandler, ReactNode, useState } from "react";
+import { SkapObject } from "@editor/map.ts";
+import { Icon } from "@components/icon/Icon.tsx";
 
 const Outline: Layout.ViewComponent = ({
 	viewSwitcher,
 }) => {
 	const map = useSkapMap();
 	const selection = useEditorSelection();
+	const dispatchSelection = useDispatchSelection();
 	const lastSelection = selection.at(-1);
+	const selectObject = (obj: SkapObject) => dispatchSelection({
+		type: "set_selection",
+		selection: [makeObjectSelectionItem(obj)],
+	});
+	const addSelectObject = (obj: SkapObject) => dispatchSelection({
+		type: "add_item",
+		item: makeObjectSelectionItem(obj),
+	});
 
 	const roomComps = map.rooms.values().map(room => {
 		const { id, name, objects } = room;
 		const objectComps = objects.values().map(object => {
-			const { type, id } = object;
+			const { id } = object;
 			const selected = selection.some(s => s.type === "object" && s.id === id);
 			const last = lastSelection?.type === "object" && lastSelection.id === id;
+
+			const onClick: MouseEventHandler = e => {
+				if (e.ctrlKey) {
+					addSelectObject(object);
+					return;
+				}
+				selectObject(object);
+			}
 
 			const className = toClassName(
 				css["object"],
@@ -27,7 +46,7 @@ const Outline: Layout.ViewComponent = ({
 				last && css["last"],
 			);
 			return (
-				<div key={id} className={className} >
+				<div key={id} className={className} onClick={onClick}>
 					<Translate k="object.individual_name" {...{ object, room, map }} />
 				</div>
 			);
@@ -83,11 +102,16 @@ const Details: FC<DetailsProps> = ({
 	return (
 		<div className={className}>
 			<div className={css["summary"]} tabIndex={0}
-				onClick={toggle}
 				onKeyDown={e => {
 					if (e.code === "Space" || e.code === "Enter") toggle();
 				}}
-			>{summary}</div>
+			>
+				<div className={css["arrow"]}
+					onClick={toggle}>
+					<Icon icon={open ? "arrow_drop_down" : "arrow_right"} size={1.25} />
+				</div>
+				{summary}
+			</div>
 			{open && <div className={css["details-content"]}>{content}</div>}
 		</div>
 	);
