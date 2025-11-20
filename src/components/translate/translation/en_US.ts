@@ -1,4 +1,5 @@
-import { CardinalDirection } from "@editor/object/Base.tsx";
+import { intercalate } from "@common/array.ts";
+import { powerNames } from "@editor/object/reward.tsx";
 import { makeCode, makeItalic, makeLink } from "../richtext.ts";
 import { delegateOn, makeTranslator, Translator } from "../translate.ts";
 import { TranslationArgs } from "../translationArgs.ts";
@@ -132,6 +133,8 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	// #endregion
 
 	// #region Objects
+
+	// #region Type Names
 	"object.name": delegate("object.name", "type"),
 	"object.name.obstacle": "Obstacle",
 	"object.name.lava": "Lava",
@@ -157,6 +160,7 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"object.name.switch": "Switch",
 	"object.name.reward": "Reward",
 	"object.name.hatReward": "Hat Reward",
+	// #endregion
 
 	"object.individual_name": ({ object, room, map }, t) => {
 		switch (object.type) {
@@ -164,10 +168,14 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 				return t("object.text_name", { object, room, map });
 			case "teleporter":
 				return t("object.teleporter_name", { object, room, map });
+			case "reward":
+				return t("object.reward_name", { object, room, map });
+			case "hatReward":
+				return t("object.hatReward_name", { object, room, map });
 			default:
 				return t("object.name", { type: object.type });
 		}
-	}, 
+	},
 	"object.text_name": ({ object }, t) => [
 		t("object.name.text", {}),
 		": ",
@@ -186,6 +194,21 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 			roomName ?? makeItalic("???"),
 		];
 	},
+	"object.reward_name": ({ object }, t) => [
+		t("object.name.reward", {}),
+		": ",
+		t("generic.list_rich", {
+			list: object.reward.map(power => {
+				const name = powerNames.get(power);
+				return name ?? makeItalic(power);
+			})
+		}),
+	],
+	"object.hatReward_name": ({ object }, t) => [
+		t("object.name.hatReward", {}),
+		": ",
+		makeItalic(object.hatReward),
+	],
 	// #endregion
 
 	// #region Room
@@ -240,6 +263,7 @@ export const translator_en_US = makeTranslator<TranslationArgs>({
 	"generic.action.close": "Close",
 
 	"generic.list_string": ({ strings }) => strings.join(", "),
+	"generic.list_rich": ({ list }) => intercalate(list, ", "),
 	"generic.vec2": ({ vector: [x, y] }) => [
 		x, ", ", y,
 	],

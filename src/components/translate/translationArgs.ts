@@ -4,6 +4,15 @@ import { SkapTeleporter } from "@editor/object/teleporter.ts";
 import { SkapMap, SkapObject, SkapRoom } from "@editor/map.ts";
 import { Vec2 } from "@common/vec2.ts";
 import { SkapText } from "@editor/object/text.tsx";
+import { SkapReward } from "@editor/object/reward.tsx";
+import { SkapHatReward } from "@editor/object/hatReward.tsx";
+import { RichText } from "./richtext.ts";
+
+type NameInfo<T> = {
+	object: T;
+	room: SkapRoom;
+	map: SkapMap;
+};
 
 export type TranslationArgs = {
 	// #region Layout
@@ -124,6 +133,8 @@ export type TranslationArgs = {
 	// #endregion
 
 	// #region Objects
+
+	// #region Type Names	
 	"object.name": { type: string; };
 	"object.name.obstacle": {};
 	"object.name.lava": {};
@@ -149,10 +160,14 @@ export type TranslationArgs = {
 	"object.name.switch": {};
 	"object.name.reward": {};
 	"object.name.hatReward": {};
+	// #endregion
 
-	"object.individual_name": { object: SkapObject; room: SkapRoom; map: SkapMap; };
-	"object.text_name": { object: SkapText; room: SkapRoom; map: SkapMap; };
-	"object.teleporter_name": { object: SkapTeleporter; room: SkapRoom; map: SkapMap; };
+	"object.individual_name": NameInfo<SkapObject>;
+	"object.text_name": NameInfo<SkapText>;
+	"object.teleporter_name": NameInfo<SkapTeleporter>;
+	"object.reward_name": NameInfo<SkapReward>;
+	"object.hatReward_name": NameInfo<SkapHatReward>;
+
 	// #endregion
 
 	// #region Room
@@ -197,6 +212,7 @@ export type TranslationArgs = {
 	"generic.action.close": {};
 
 	"generic.list_string": { strings: string[]; };
+	"generic.list_rich": { list: readonly RichText[]; };
 	"generic.vec2": { vector: Vec2; };
 
 	"generic.text": {};

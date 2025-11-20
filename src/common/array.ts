@@ -7,7 +7,7 @@ export function cross<T extends unknown[], U extends unknown>(
 	return indices(arrays.map(arr => arr.length), false)
 		.map(is => f(...is.map((i, j) => arrays[j][i]) as T));
 }
-function indices(lengths:readonly  number[], startLSD: boolean = false): number[][] {
+function indices(lengths: readonly number[], startLSD: boolean = false): number[][] {
 	if (lengths.length === 1) return range(lengths[0]).map(i => [i]);
 	const rest = indices(startLSD ? lengths.slice(0, -1) : lengths.slice(1), startLSD);
 	return range(lengths[0]).flatMap(i => rest.map(arr => [i, ...arr]));
@@ -60,6 +60,9 @@ export function interleave<T>(...arrays: readonly T[][]): T[] {
 		.flat()
 		.filter((x): x is T => x !== interleaveEmpty);
 }
+export function intercalate<T>(array: readonly T[], seperator: T): T[] {
+	return array.flatMap((a, i) => i === 0 ? [a] : [seperator, a]);
+}
 
 export function cyclicalSlice<T>(array: readonly T[], start: number, length: number): T[] {
 	return range(length).map(i => array[(i + start) % array.length]);
@@ -84,7 +87,7 @@ export function tuples<T, N extends number>(array: readonly T[], length: N): Tup
 /** Sorts an array using a comparator on values derived from its values. */
 export const sortBy = <T, U>(array: readonly T[],
 	/** The values to sort by */
-	map: (value: T, index: number) => U, 
+	map: (value: T, index: number) => U,
 	/** Sorting comparator, see: {@linkcode Array.sort} */
 	sort: (a: U, b: U) => number,
 ): T[] => array
@@ -93,7 +96,7 @@ export const sortBy = <T, U>(array: readonly T[],
 	.map(([a,]) => a);
 
 export const groupEqual = <T>(
-	items: readonly T[], 
+	items: readonly T[],
 	/** 
 	 * A function that determines two items are equal.  
 	 * It should be transitive and symmetric, and optionally reflexive

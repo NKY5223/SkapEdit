@@ -1,7 +1,8 @@
-import { CardinalDirection } from "@editor/object/Base.tsx";
+import { intercalate } from "@common/array.ts";
 import { makeCode, makeItalic, makeLink } from "../richtext.ts";
 import { delegateOn, makeTranslator, Translator } from "../translate.ts";
 import { TranslationArgs } from "../translationArgs.ts";
+import { powerNames } from "@editor/object/reward.tsx";
 
 // the translations are terrible im just testing the system
 
@@ -89,13 +90,13 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"viewport.no_room_with_id": ({ id }) => ["没有ID为", makeCode(id), "的房间"],
 	"viewport.room_fallback": "？？？",
 	// #endregion
-	
+
 	// #region Inspector
 	"inspector": "Inspector",
 	"inspector.room.background_color": "背景颜色",
 	"inspector.room.obstacle_color": "障碍颜色",
 	// #endregion
-	
+
 	// #region Outline
 	"outline": "大纲",
 	// #endregion
@@ -133,6 +134,8 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	// #endregion
 
 	// #region Objects
+
+	// #region Type Names
 	"object.name": delegate("object.name", "type"),
 	"object.name.obstacle": "障碍",
 	"object.name.lava": "岩浆",
@@ -158,6 +161,7 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"object.name.switch": "开关",
 	"object.name.reward": "奖励",
 	"object.name.hatReward": "帽子奖励",
+	// #endregion
 
 	"object.individual_name": ({ object, room, map }, t) => {
 		switch (object.type) {
@@ -165,10 +169,14 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 				return t("object.text_name", { object, room, map });
 			case "teleporter":
 				return t("object.teleporter_name", { object, room, map });
+			case "reward":
+				return t("object.reward_name", { object, room, map });
+			case "hatReward":
+				return t("object.hatReward_name", { object, room, map });
 			default:
 				return t("object.name", { type: object.type });
 		}
-	}, 
+	},
 	"object.text_name": ({ object }, t) => [
 		t("object.name.text", {}),
 		"：",
@@ -187,12 +195,27 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 			roomName ?? makeItalic("???"),
 		];
 	},
+	"object.reward_name": ({ object }, t) => [
+		t("object.name.reward", {}),
+		"：",
+		t("generic.list_rich", {
+			list: object.reward.map(power => {
+				const name = powerNames.get(power);
+				return name ?? makeItalic(power);
+			})
+		}),
+	],
+	"object.hatReward_name": ({ object }, t) => [
+		t("object.name.hatReward", {}),
+		"：",
+		makeItalic(object.hatReward),
+	],
 	// #endregion
 
 	// #region Room
 	"room": "房间",
 	// #endregion
-	
+
 	// #region Map
 	"map": "地图",
 	"map.author": "创造者",
@@ -238,6 +261,7 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"generic.direction.free": "自由",
 
 	"generic.list_string": ({ strings }) => strings.join("、"),
+	"generic.list_rich": ({ list }) => intercalate(list, "、"),
 	"generic.vec2": ({ vector: [x, y] }) => [
 		x, "、", y,
 	],
