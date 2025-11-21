@@ -55,7 +55,7 @@ export const teleporterProperties = makeObjectProperties<SkapTeleporter>("telepo
 										<Translate k="object.individual_name" object={tp} room={room} map={map} />
 									)).toArray()
 							)).toArray()}
-							nowrap />
+						/>
 					);
 			return (
 				<>

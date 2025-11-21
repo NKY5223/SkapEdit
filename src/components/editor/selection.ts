@@ -40,7 +40,7 @@ export type SelectableItem = (
 export type EditorSelection =
 	| readonly SelectionItem[];
 
-type SelectionAction = (
+export type SelectionAction = (
 	| {
 		type: "set_selection";
 		selection: EditorSelection;

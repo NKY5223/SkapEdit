@@ -1,45 +1,45 @@
-import { Dispatch, FC } from "react";
-import { ViewportAction } from "./Viewport.tsx";
 import { ID } from "@common/uuid.ts";
 import { makeOption } from "@components/form/dropdown/Dropdown.ts";
 import { DropdownSelect } from "@components/form/dropdown/DropdownSelect.tsx";
-import { SkapMap } from "@editor/map.ts";
 import { Translate } from "@components/translate/Translate.tsx";
-import { useDispatchSkapMap, useSkapMap } from "@editor/reducer.ts";
-import { useDispatchSelection } from "@components/editor/selection.ts";
+import { SkapMap } from "@editor/map.ts";
+import { FC, memo, useMemo } from "react";
 
-type ViewportRoomSwitcherProps = {
-	dispatchView: Dispatch<ViewportAction>;
-	selectedRoom: ID | null;
+type RoomSelectProps = {
+	map: SkapMap;
+	value: ID | null;
+	onInput: (value: ID) => void;
 };
-export const ViewportRoomSwitcher: FC<ViewportRoomSwitcherProps> = ({
-	dispatchView,
-	selectedRoom,
+export const RoomSelect: FC<RoomSelectProps> = memo(({
+	map,
+	value,
+	onInput,
 }) => {
-	const map = useSkapMap();
-	const dispatchSelection = useDispatchSelection();
+	const options = useMemo(() =>
+		map.rooms.entries()
+			.map(([id, room]) => makeOption(
+				`option-${id}`,
+				id,
+				(room.name)
+			))
+			.toArray(),
+		[map.rooms]
+	);
 	return (
 		<DropdownSelect<ID | null>
-			options={
-				map.rooms.entries()
-					.map(([id, room]) => makeOption(
-						`option-${id}`,
-						id,
-						(room.name),
-					))
-					.toArray()
-			} value={selectedRoom}
+			value={value}
+			options={options}
 			onInput={value => {
-				dispatchView({
-					type: "set_current_room_id",
-					currentRoomId: value,
-				});
-				dispatchSelection({
-					type: "clear_selection",
-				});
+				if (value === null) return;
+				onInput(value);
 			}}
 			fallbackLabel={<Translate k="viewport.room_fallback" />}
-			nowrap
 		/>
 	);
-}
+}, (prev, next) => {
+	if (!Object.is(prev.value, next.value)) return false;
+	if (!Object.is(prev.map, next.map)) return false;
+	return true;
+});
+
+RoomSelect.displayName = "ViewportRoomSwitcher";

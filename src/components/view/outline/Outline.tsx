@@ -25,33 +25,40 @@ const Outline: Layout.ViewComponent = ({
 		item: makeObjectSelectionItem(obj),
 	});
 
-	const roomComps = map.rooms.values().map(room => {
+	const roomsComp = () => map.rooms.values().map(room => {
 		const { id, name, objects } = room;
-		const objectComps = objects.values().map(object => {
-			const { id } = object;
-			const selected = selection.some(s => s.type === "object" && s.id === id);
-			const last = lastSelection?.type === "object" && lastSelection.id === id;
+		const objectsComp = () => {
+			const objectComps = objects.values().map(object => {
+				const { id } = object;
+				const selected = selection.some(s => s.type === "object" && s.id === id);
+				const last = lastSelection?.type === "object" && lastSelection.id === id;
 
-			const onClick: MouseEventHandler = e => {
-				if (e.ctrlKey) {
-					addSelectObject(object);
-					return;
+				const onClick: MouseEventHandler = e => {
+					if (e.ctrlKey) {
+						addSelectObject(object);
+						return;
+					}
+					selectObject(object);
 				}
-				selectObject(object);
-			}
 
-			const className = toClassName(
-				css["object"],
-				selected && css["selected"],
-				last && css["last"],
-			);
+				const className = toClassName(
+					css["object"],
+					selected && css["selected"],
+					last && css["last"],
+				);
+				return (
+					<div key={id} className={className} onClick={onClick}>
+						<Translate k="object.individual_name" {...{ object, room, map }} />
+					</div>
+				);
+			}).toArray();
+
 			return (
-				<div key={id} className={className} onClick={onClick}>
-					<Translate k="object.individual_name" {...{ object, room, map }} />
+				<div className={css["room-objects"]}>
+					{objectComps}
 				</div>
 			);
-		}).toArray();
-
+		}
 		const selected = selection.some(s => s.type === "room" && s.id === id);
 		const last = lastSelection?.type === "room" && lastSelection.id === id;
 		const classList = [
@@ -64,9 +71,7 @@ const Outline: Layout.ViewComponent = ({
 				<div className={css["room-summary"]}>
 					{name} ({objects.size})
 				</div>
-				<div className={css["room-objects"]}>
-					{objectComps}
-				</div>
+				{objectsComp}
 			</Details>
 		);
 	}).toArray();
@@ -75,7 +80,7 @@ const Outline: Layout.ViewComponent = ({
 			<ViewToolbar>{viewSwitcher}</ViewToolbar>
 			<Details classList={css["rooms"]}>
 				<div>{map.name} ({map.rooms.size})</div>
-				{roomComps}
+				{roomsComp}
 			</Details>
 		</div>
 	);
@@ -83,7 +88,7 @@ const Outline: Layout.ViewComponent = ({
 
 
 type DetailsProps = {
-	children: [summary: ReactNode, content: ReactNode];
+	children: [summary: ReactNode, content: () => ReactNode];
 	classList?: false | null | undefined | string | string[];
 };
 const Details: FC<DetailsProps> = ({
@@ -112,7 +117,7 @@ const Details: FC<DetailsProps> = ({
 				</div>
 				{summary}
 			</div>
-			{open && <div className={css["details-content"]}>{content}</div>}
+			{open && <div className={css["details-content"]}>{content()}</div>}
 		</div>
 	);
 }

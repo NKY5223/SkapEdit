@@ -38,7 +38,7 @@ import { getClickbox, getSelectableBounds, getTranslate, getZIndex } from "./sel
 import css from "./Viewport.module.css";
 import { ViewportAction, ViewportInfo, ViewportState, wheelMult } from "./Viewport.tsx";
 import { ViewportCanvas } from "./ViewportCanvas.tsx";
-import { ViewportRoomSwitcher } from "./ViewportRoomSwitcher.tsx";
+import { RoomSelect } from "./ViewportRoomSwitcher.tsx";
 import { WebGLLayer } from "./webgl/WebGLLayer.tsx";
 
 /** Maximum distance for something to count as a click */
@@ -453,19 +453,35 @@ export const RealViewport: FC<RealViewportProps> = ({
 			const ids: (ID | null)[] = map.rooms.keys().toArray();
 			const index = ids.indexOf(state.currentRoomId);
 			const prevRoomId = ids.at(index - 1) ?? null;
+			const room = prevRoomId && map.rooms.get(prevRoomId);
 			dispatchView({
 				type: "set_current_room_id",
 				currentRoomId: prevRoomId,
-			})
+			});
+			if (room) dispatchView({
+				type: "set_camera_pos",
+				pos: room.bounds.center(),
+			});
+			dispatchSelection({
+				type: "clear_selection",
+			});
 		}, { preventDefault: true }],
 		[keybindStr("ctrl+ArrowRight"), () => {
 			const ids: (ID | null)[] = map.rooms.keys().toArray();
 			const index = ids.indexOf(state.currentRoomId);
 			const nextRoomId = ids.at((index + 1) % ids.length) ?? null;
+			const room = nextRoomId && map.rooms.get(nextRoomId);
 			dispatchView({
 				type: "set_current_room_id",
 				currentRoomId: nextRoomId,
-			})
+			});
+			if (room) dispatchView({
+				type: "set_camera_pos",
+				pos: room.bounds.center(),
+			});
+			dispatchSelection({
+				type: "clear_selection",
+			});
 		}, { preventDefault: true }],
 	]);
 	// #endregion
@@ -506,7 +522,24 @@ export const RealViewport: FC<RealViewportProps> = ({
 
 			<ViewToolbar ref={toolbarRef}>
 				{viewSwitcher}
-				<ViewportRoomSwitcher selectedRoom={state.currentRoomId} {...{ dispatchView }} />
+				<RoomSelect
+					value={state.currentRoomId}
+					onInput={value => {
+						const room = value && map.rooms.get(value);
+						dispatchView({
+							type: "set_current_room_id",
+							currentRoomId: value,
+						});
+						if (room) dispatchView({
+							type: "set_camera_pos",
+							pos: room.bounds.center(),
+						});
+						dispatchSelection({
+							type: "clear_selection",
+						});
+					}}
+					{...{ map }}
+				/>
 			</ViewToolbar>
 		</div>
 	);

@@ -20,6 +20,7 @@ import { DropdownSection } from "@components/form/dropdown/DropdownSection.tsx";
 import { DropdownSelect } from "@components/form/dropdown/DropdownSelect.tsx";
 import { makeOption } from "@components/form/dropdown/Dropdown.ts";
 import { Vec2Input } from "@components/form/Vec2Input.tsx";
+import { RoomSelect } from "../viewport/ViewportRoomSwitcher.tsx";
 
 const Inspector: Layout.ViewComponent = ({
 	viewSwitcher,
@@ -152,13 +153,10 @@ const MapForm: FC = () => {
 			/>
 			<Translate k="map.version" version={version} />
 			<FormTitle>Spawn</FormTitle>
-			<DropdownSelect value={spawnRoom}
-				options={rooms.values().map(room =>
-					makeOption(room.id, room.id, room.name)
-				).toArray()}
-				onInput={room => (console.log(room), update(map => ({ ...map, spawn: { ...map.spawn, room } })))}
-				fallbackLabel={<em>Invalid!</em>}
-				label={<Translate k="room" />}
+			<RoomSelect 
+				value={spawnRoom}
+				map={map}
+				onInput={room => update(map => ({ ...map, spawn: { ...map.spawn, room } }))}
 			/>
 			<Vec2Input value={spawnPosition}
 				onInput={position => update(map => ({ ...map, spawn: { ...map.spawn, position } }))}

@@ -12,8 +12,9 @@ import { ViewToolbar } from "../../layout/LayoutViewToolbar.tsx";
 import { Camera } from "./camera.ts";
 import { RealViewport } from "./RealViewport.tsx";
 import css from "./Viewport.module.css";
-import { ViewportRoomSwitcher } from "./ViewportRoomSwitcher.tsx";
+import { RoomSelect } from "./ViewportRoomSwitcher.tsx";
 import { Translate } from "@components/translate/Translate.tsx";
+import { useDispatchSelection } from "@components/editor/selection.ts";
 
 export type ViewportInfo = {
 	camera: Camera;
@@ -75,11 +76,29 @@ const Viewport: Layout.ViewComponent<ViewportState, ViewportAction> = ({
 	const elRef = useRef<HTMLDivElement>(null);
 
 	const map = useSkapMap();
+	const dispatchSelection = useDispatchSelection();
 
 	const toolbarContents = (
 		<>
 			{viewSwitcher}
-			<ViewportRoomSwitcher selectedRoom={null} {...{ dispatchView }} />
+			<RoomSelect
+				value={null}
+				{...{ map }}
+				onInput={value => {
+					const room = value && map.rooms.get(value);
+					dispatchView({
+						type: "set_current_room_id",
+						currentRoomId: value,
+					});
+					if (room) dispatchView({
+						type: "set_camera_pos",
+						pos: room.bounds.center(),
+					});
+					dispatchSelection({
+						type: "clear_selection",
+					});
+				}}
+			/>
 		</>
 	);
 

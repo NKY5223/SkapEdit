@@ -54,6 +54,7 @@ export const ViewSelector: FC<ViewSelectorProps> = ({
 						replacement: makeView(provider)
 					});
 				}}
+				wrap
 			/>
 		</div>
 	);

@@ -24,8 +24,8 @@ type DropdownSelectProps<T> = {
 	optionsClassList?: string | string[];
 	optionClassList?: string | string[];
 
-	/** Disable options wrapping to next column. Can be desirable for list-type dropdowns. */
-	nowrap?: boolean;
+	/** Enable options wrapping to next column. Can be desirable for list-type dropdowns. */
+	wrap?: boolean;
 	/** Disable the arrow on the currently-selected-chip. */
 	noarrow?: boolean;
 };
@@ -36,7 +36,7 @@ export const DropdownSelect = <T,>({
 	label,
 	classList, optionsClassList, optionClassList,
 
-	nowrap = false, noarrow = false,
+	wrap = false, noarrow = false,
 }: DropdownSelectProps<T>): ReactNode => {
 	const optionsId = `options-${useId()}`;
 
@@ -78,7 +78,7 @@ export const DropdownSelect = <T,>({
 				<menu id={optionsId} popover="auto" className={toClassName(
 					css["options"],
 					menuCss["menu"],
-					nowrap && menuCss["nowrap"],
+					!wrap && menuCss["nowrap"],
 					optionsClassList,
 				)}>
 					{optionNodes}
