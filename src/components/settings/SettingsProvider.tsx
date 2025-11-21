@@ -2,6 +2,7 @@ import { FC, PropsWithChildren, useState } from "react";
 import { defaultSettings, Settings, settingsContext, SettingsSchema } from "./settings.ts";
 import { maybeConst } from "@common/maybeConst.ts";
 import "./testing.ts";
+import { customJson } from "../../savefile/json.ts";
 
 type SettingsProviderProps = {
 	localStorageKey: string;
@@ -27,7 +28,7 @@ export const SettingsProvider: FC<PropsWithChildren<SettingsProviderProps>> = ({
 		setSettingsInternal(settings => {
 			const newSettings = maybeConst(action, settings);
 			// console.log("Update settings", newSettings);
-			localStorage.setItem(localStorageKey, JSON.stringify(newSettings));
+			localStorage.setItem(localStorageKey, customJson(newSettings));
 			return newSettings;
 		});
 	}

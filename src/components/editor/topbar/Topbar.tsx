@@ -13,6 +13,9 @@ import { Translate } from "../../translate/Translate.tsx";
 import { useDispatchSelection } from "../selection.ts";
 import css from "./Topbar.module.css";
 import { TopbarMenuItem } from "./TopbarMenuItem.tsx";
+import { dummy } from "../../../savefile/binary/index.ts";
+
+dummy;
 
 type TopbarProps = {
 	openChangelog: () => void;
