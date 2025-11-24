@@ -49,7 +49,11 @@ export const ActiveSelection: FC<ActiveSelectionProps> = ({
 			// b0 := bounds; b1 := newBounds
 			// S = b1.size / b0.size
 			// T = b1 - b0 * S
-			const scale = newBounds.size.div(bounds.size);
+			const scale0 = newBounds.size.div(bounds.size);
+			const scale = vec2(
+				isFinite(scale0[0]) ? scale0[0] : 1,
+				isFinite(scale0[1]) ? scale0[1] : 1,
+			);
 			const translate = newBounds.topLeft.sub(bounds.topLeft.mul(scale));
 			selectables.forEach(item => {
 				switch (item.type) {
