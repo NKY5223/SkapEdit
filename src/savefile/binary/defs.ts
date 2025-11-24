@@ -4,12 +4,12 @@ export interface BinaryFormat<T = unknown> {
 	/** Size of a value in bytes */
 	length(value: T): number;
 	encodeInto(value: T, dataView: DataView): void;
-	decodeFrom(dataView: DataView): {
+	decodeFrom(dataView: DataView): [
 		/** The value decoded from the binary data. */
 		value: T,
 		/** Number of bytes to advance the index by. */
 		advance: number,
-	};
+	];
 
 	encode(value: T): ArrayBuffer;
 	decode(buffer: ArrayBuffer): T;

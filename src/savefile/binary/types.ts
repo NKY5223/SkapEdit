@@ -1,14 +1,23 @@
 import { Realize } from "@common/types.ts";
 import { BinaryFormat, sliceDataView } from "./defs.ts";
 import { range } from "@common/array.ts";
-import { int32 } from "./index.ts";
+import { float64, int32, uint16 } from "./index.ts";
 
 export type Infer<T> = T extends BinaryFormat<infer U> ? U : never;
 
 export abstract class BFBase<T> implements BinaryFormat<T> {
 	abstract length(value: T): number;
 	abstract encodeInto(value: T, dataView: DataView): void;
-	abstract decodeFrom(dataView: DataView): { value: T; advance: number; };
+	abstract decodeFrom(dataView: DataView): [value: T, advance: number];
+
+	encodeIntoAndAdvance(value: T, dataView: DataView): DataView {
+		this.encodeInto(value, dataView);
+		return sliceDataView(dataView, this.length(value));
+	}
+	decodeFromAndAdvance(dataView: DataView): [value: T, dataView: DataView, advance: number] {
+		const [value, advance] = this.decodeFrom(dataView);
+		return [value, sliceDataView(dataView, advance), advance];
+	}
 
 	encode(value: T): ArrayBuffer {
 		const size = this.length(value);
@@ -19,7 +28,7 @@ export abstract class BFBase<T> implements BinaryFormat<T> {
 	}
 	decode(buffer: ArrayBuffer): T {
 		const dataView = new DataView(buffer);
-		const { value, advance } = this.decodeFrom(dataView);
+		const [value, advance] = this.decodeFrom(dataView);
 		if (advance > buffer.byteLength) {
 			console.warn(
 				"Did not consume entire buffer when decoding (%i/%i).",
@@ -28,26 +37,59 @@ export abstract class BFBase<T> implements BinaryFormat<T> {
 		}
 		return value;
 	}
+
+
+	/** Cast a format to BFBase, hiding its internal structure. */
+	opaque(): BFBase<T> {
+		return this;
+	}
+	array(lengthLittleEndian: boolean = true): BFArray<T, this> {
+		return new BFArray(this, lengthLittleEndian);
+	}
+	transform<U>(
+		encode: (value: U) => T,
+		decode: (value: T) => U,
+	): BFTransform<T, U, this> {
+		return new BFTransform(this, encode, decode);
+	}
 }
 
-export class BFTransform<T, U, B extends BinaryFormat<U>> extends BFBase<T> {
+export class BFTransform<T, U, B extends BinaryFormat<T>> extends BFBase<U> {
 	constructor(
 		readonly base: B,
-		readonly transformEncode: (value: T) => U,
-		readonly transformDecode: (value: U) => T,
+		readonly transformEncode: (value: U) => T,
+		readonly transformDecode: (value: T) => U,
 	) { super(); }
-	length(value: T): number {
+	length(value: U): number {
 		return this.base.length(this.transformEncode(value));
 	}
-	encodeInto(value: T, dataView: DataView): void {
+	encodeInto(value: U, dataView: DataView): void {
 		this.base.encodeInto(this.transformEncode(value), dataView);
 	}
-	decodeFrom(dataView: DataView): { value: T; advance: number; } {
-		const { value, advance } = this.base.decodeFrom(dataView);
-		return {
-			value: this.transformDecode(value),
+	decodeFrom(dataView: DataView): [value: U, advance: number] {
+		const [value, advance] = this.base.decodeFrom(dataView);
+		return [
+			this.transformDecode(value),
 			advance,
-		};
+		];
+	}
+}
+
+/**
+ * Format: ``
+ * 
+ * Note: This format does not take any space. It is used for constants (e.g. with BFDiscriminatedUnion.)
+ */
+export class BFConst<const T> extends BFBase<T> {
+	constructor(readonly value: T) { super(); }
+	length(value: T): number {
+		return 0;
+	}
+	encodeInto(value: T, dataView: DataView): void {
+		return;
+	}
+	decodeFrom(dataView: DataView): [value: T, advance: number] {
+		return [this.value, 0];
 	}
 }
 
@@ -71,27 +113,28 @@ export class BFTuple<F extends readonly BinaryFormat[]> extends BFBase<{ [i in k
 			format.encodeInto(value[i], offsetDataView);
 		}
 	}
-	decodeFrom(dataView: DataView): { value: { [i in keyof F]: Infer<F[i]>; }; advance: number; } {
+	decodeFrom(dataView: DataView): [value: { [i in keyof F]: Infer<F[i]>; }, advance: number] {
 		let offset = 0;
 		const result = [];
 		for (const format of this.formats) {
 			const offsetDataView = sliceDataView(dataView, offset);
-			const { value, advance } = format.decodeFrom(offsetDataView);
+			const [value, advance] = format.decodeFrom(offsetDataView);
 			offset += advance;
 			result.push(value);
 		}
-		return {
+		return [
 			// Evil cast!
-			// But result is a tuple, so that's always weird
+			// But result is a tuple, and tuples are always weird
 			// I could construct a pair BF, but that could lead to too much nesting
-			value: result as { [i in keyof F]: Infer<F[i]>; },
-			advance: offset,
-		};
+			// @ts-expect-error
+			result,
+			offset,
+		];
 	}
 }
 
 /**
- * Format: `[length: i32] [...bytes: F[length]]`
+ * Format: `[length: i32] [bytes: F[length]]`
  * 
  * Note: length refers to the number of items, not the number of bytes.  
  * e.g. an array of 4 `i32`s will have a length of 4, not 16.
@@ -119,20 +162,17 @@ export class BFArray<T, F extends BinaryFormat<T>> extends BFBase<T[]> {
 			this.format.encodeInto(v, offsetDataView);
 		}
 	}
-	decodeFrom(dataView: DataView): { value: T[]; advance: number; } {
-		const { value: length, advance } = this.lengthFormat.decodeFrom(dataView);
+	decodeFrom(dataView: DataView): [value: T[], advance: number] {
+		const [length, advance] = this.lengthFormat.decodeFrom(dataView);
 		let offset = advance;
 		const result = new Array<T>(length);
 		for (const i of range(length)) {
 			const offsetDataView = sliceDataView(dataView, offset);
-			const { value, advance } = this.format.decodeFrom(offsetDataView);
+			const [value, advance] = this.format.decodeFrom(offsetDataView);
 			result[i] = value;
 			offset += advance;
 		}
-		return {
-			value: result,
-			advance: offset,
-		};
+		return [result, offset];
 	}
 }
 
@@ -140,10 +180,10 @@ type EntriesToRecordRec<T extends [string, unknown][]> =
 	T extends [infer T0 extends [string, unknown], ...infer T_ extends [string, unknown][]]
 	? { [k in T0[0]]: T0[1] } & EntriesToRecordRec<T_>
 	: {};
-type EntriesToRecord<T extends [string, unknown][]> = Realize<EntriesToRecordRec<T>>;
+type EntriesToRecord<T extends [string, unknown][]> = EntriesToRecordRec<T>;
 type InferValues<T> = { [k in keyof T]: Infer<T[k]>; };
-type ObjectType<T extends [string, unknown][]> = InferValues<EntriesToRecord<T>>;
-export class BFObject<T extends [string, BinaryFormat][]> extends BFBase<ObjectType<T>> {
+type ObjectType<T extends [string, unknown][]> = Realize<InferValues<EntriesToRecord<T>>>;
+export class BFObject<const T extends [string, BinaryFormat][]> extends BFBase<ObjectType<T>> {
 	constructor(readonly formats: T) {
 		super();
 	}
@@ -163,20 +203,20 @@ export class BFObject<T extends [string, BinaryFormat][]> extends BFBase<ObjectT
 			format.encodeInto(v, offsetDataView);
 		}
 	}
-	decodeFrom(dataView: DataView): { value: ObjectType<T>; advance: number; } {
+	decodeFrom(dataView: DataView): [value: ObjectType<T>, advance: number] {
 		let offset = 0;
 		const result: Record<string, unknown> = {};
 		for (const [key, format] of this.formats) {
 			const offsetDataView = sliceDataView(dataView, offset);
-			const { value, advance } = format.decodeFrom(offsetDataView);
+			const [value, advance] = format.decodeFrom(offsetDataView);
 			offset += advance;
 			result[key] = value;
 		}
-		return {
-			// Uh oh! scary cast!
-			value: result as never,
-			advance: offset,
-		};
+		return [
+			// @ts-expect-error I could probably do this with some recursive stuff but whatever
+			result,
+			offset,
+		];
 	}
 }
 
@@ -193,30 +233,24 @@ export class BFBytes extends BFBase<ArrayBufferLike> {
 		const src = new Uint8Array(value);
 		dst.set(src);
 	}
-	decodeFrom(dataView: DataView): { value: ArrayBufferLike; advance: number; } {
+	decodeFrom(dataView: DataView): [value: ArrayBufferLike, advance: number] {
 		const buffer = dataView.buffer.slice(dataView.byteOffset, this.count);
-		return {
-			value: buffer,
-			advance: this.count,
-		};
+		return [buffer, this.count];
 	}
 }
 
 /**
  * Format: `[bool: byte]`
  * 
- * Booleans are encoded as 1-byte values, with `0x01` as `true` and `0x00` as `false`
+ * Note: Booleans are encoded as 1-byte values, with `0x01` as `true` and `0x00` as `false`
  */
 export class BFBoolean extends BFBase<boolean> {
 	length(value?: boolean): number { return 1; }
 	encodeInto(value: boolean, dataView: DataView): void {
 		dataView.setUint8(0, +value);
 	}
-	decodeFrom(dataView: DataView): { value: boolean; advance: number; } {
-		return {
-			value: dataView.getUint8(0) !== 0,
-			advance: 1,
-		};
+	decodeFrom(dataView: DataView): [value: boolean, advance: number] {
+		return [dataView.getUint8(0) !== 0, 1];
 	}
 }
 
@@ -238,15 +272,15 @@ export class BFNumber extends BFBase<number> {
 		readonly littleEndian: boolean,
 	) { super(); }
 
-	length(value?: number): number {
+	length(value: number): number {
 		return this.bytes;
 	}
 	encodeInto(value: number, dataView: DataView): void {
 		dataView[this.setter](0, value, this.littleEndian);
 	}
-	decodeFrom(dataView: DataView): { value: number; advance: number; } {
+	decodeFrom(dataView: DataView): [value: number, advance: number] {
 		const value = dataView[this.getter](0, this.littleEndian);
-		return { value, advance: this.bytes };
+		return [value, this.bytes];
 	}
 }
 
@@ -264,15 +298,15 @@ export class BFBigInt extends BFBase<bigint> {
 		readonly littleEndian: boolean,
 	) { super(); }
 
-	length(value?: bigint): number {
+	length(value: bigint): number {
 		return this.bytes;
 	}
 	encodeInto(value: bigint, dataView: DataView): void {
 		dataView[this.setter](0, value, this.littleEndian);
 	}
-	decodeFrom(dataView: DataView): { value: bigint; advance: number; } {
+	decodeFrom(dataView: DataView): [value: bigint, advance: number] {
 		const value = dataView[this.getter](0, this.littleEndian);
-		return { value, advance: this.bytes };
+		return [value, this.bytes];
 	}
 }
 
@@ -301,13 +335,64 @@ export class BFString extends BFBase<string> {
 		const array = new Uint8Array(dataView.buffer, dataView.byteOffset + offset, bytes);
 		encoder.encodeInto(value, array);
 	}
-	decodeFrom(dataView: DataView): { value: string; advance: number; } {
-		const { value: length, advance: offset } = this.lengthFormat.decodeFrom(dataView);
+	decodeFrom(dataView: DataView): [value: string, advance: number] {
+		const [length, offset] = this.lengthFormat.decodeFrom(dataView);
 		const offsetDataView = sliceDataView(dataView, offset, length);
 		const str = decoder.decode(offsetDataView);
-		return {
-			value: str,
-			advance: offset + length,
-		};
+		return [str, offset + length];
+	}
+}
+
+
+/**
+ * Format: `[discriminator: u16] [bytes]`
+ * 
+ * Note: There is a maximum of 65536 members in the union.
+ */
+export class BFDiscriminatedUnion<
+	/** Discriminator key */
+	K extends PropertyKey,
+	/** Formats */
+	const F extends [unknown, BinaryFormat<{ [k in K]: unknown }>][],
+> extends BFBase<Infer<F[number][1]>> {
+	readonly discriminatorFormat: BFNumber;
+	constructor(
+		readonly key: K,
+		readonly formats: F,
+		discriminatorLittleEndian: boolean,
+	) {
+		if (formats.length > 0x10000) {
+			throw new Error("BFDiscriminatedUnion can have a maximum of 65536 members.");
+		}
+		super();
+		this.discriminatorFormat = uint16(discriminatorLittleEndian);
+	}
+	protected findEntry(value: F[number][0]) {
+		return this.formats.entries().find(([, [val,]]) => val === value);
+	}
+	protected findEntryOrThrow(value: F[number][0]) {
+		const entry = this.findEntry(value);
+		if (!entry) {
+			throw new TypeError(`No matching format in discriminated union. Key: ${String(this.key)}, Value: ${value}`);
+		}
+		return entry;
+	}
+	length(value: Infer<F[number][1]>): number {
+		const [i, [, format]] = this.findEntryOrThrow(value[this.key]);
+		return this.discriminatorFormat.length(i) + format.length(value);
+	}
+	encodeInto(value: Infer<F[number][1]>, dataView: DataView): void {
+		const [i, [, format]] = this.findEntryOrThrow(value[this.key]);
+		const offsetDataView = this.discriminatorFormat.encodeIntoAndAdvance(i, dataView);
+		format.encodeInto(value, offsetDataView);
+	}
+	decodeFrom(dataView: DataView): [value: Infer<F[number][1]>, advance: number] {
+		const [i, offsetDataView, iOffset] = this.discriminatorFormat.decodeFromAndAdvance(dataView);
+		const entry = this.formats[i];
+		if (!entry) throw new Error(`No format at index ${i}.`);
+		const [v, format] = entry;
+		const [value, advance] = format.decodeFrom(offsetDataView);
+		// @ts-expect-error weird
+		return [value, advance + iOffset];
 	}
 }
