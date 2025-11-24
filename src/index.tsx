@@ -1,15 +1,16 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Editor } from "@components/editor/Editor.tsx";
+import { Providers } from "@components/editor/Providers.tsx";
 
 console.warn(
-	"%cWARNING:%c\n\tYou should not, %cUNDER ANY CIRCUMSTANCES%c, paste %cany%c code you do not understand into this console.", 
-	"font-size: 2.5em;", 
-	"font-size: 1.5em;", 
+	"%cWARNING:%c\n\tYou should not, %cUNDER ANY CIRCUMSTANCES%c, paste %cany%c code you do not understand into this console.",
+	"font-size: 2.5em;",
+	"font-size: 1.5em;",
 	"font-size: 1.5em; font-weight: bold;",
-	"font-size: 1.5em;", 
-	"font-size: 1.5em; font-style: italic;", 
-	"font-size: 1.5em;", 
+	"font-size: 1.5em;",
+	"font-size: 1.5em; font-style: italic;",
+	"font-size: 1.5em;",
 );
 
 const root = document.getElementById("app_root");
@@ -18,7 +19,9 @@ if (!root) {
 }
 createRoot(root).render((
 	<StrictMode>
-		<Editor />
+		<Providers>
+			<Editor />
+		</Providers>
 	</StrictMode>
 ));
 
