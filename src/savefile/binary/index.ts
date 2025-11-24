@@ -1,5 +1,5 @@
 import { BinaryFormat, dataViewStr } from "./defs.ts";
-import { BFArray, BFBigInt, BFBoolean, BFConst, BFDiscriminatedUnion, BFNumber, BFObject, BFString, BFTransform, BFTuple } from "./types.ts";
+import { BFArray, BFBigInt, BFBoolean, BFConst, BFDiscriminatedUnion, BFLiteral, BFNumber, BFObject, BFString, BFTransform, BFTuple } from "./types.ts";
 
 export type {
 	Infer as infer,
@@ -10,6 +10,7 @@ export type {
 
 const _const = <const T>(value: T) => new BFConst(value);
 export { _const as const };
+export const literal = (bytes: ArrayLike<number>) => new BFLiteral(new Uint8Array(bytes));
 export const transform = <T, U, B extends BinaryFormat<U>>(base: B, encode: (value: T) => U, decode: (value: U) => T) =>
 	new BFTransform(base, encode, decode);
 export const array = <T, F extends BinaryFormat<T>>(format: F, lengthLittleEndian: boolean = true) =>

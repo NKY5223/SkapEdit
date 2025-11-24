@@ -1,5 +1,5 @@
 import { Realize } from "@common/types.ts";
-import { BinaryFormat, sliceDataView } from "./defs.ts";
+import { BinaryFormat, bytesStr, sliceDataView } from "./defs.ts";
 import { range } from "@common/array.ts";
 import { float64, int32, uint16 } from "./index.ts";
 
@@ -40,7 +40,7 @@ export abstract class BFBase<T> implements BinaryFormat<T> {
 
 
 	/** Cast a format to BFBase, hiding its internal structure. */
-	opaque(): BFBase<T> {
+	opaque<T>(this: BFBase<T>): BFBase<T> {
 		return this;
 	}
 	array(lengthLittleEndian: boolean = true): BFArray<T, this> {
@@ -90,6 +90,86 @@ export class BFConst<const T> extends BFBase<T> {
 	}
 	decodeFrom(dataView: DataView): [value: T, advance: number] {
 		return [this.value, 0];
+	}
+}
+
+/**
+ * Format: `[bytes]`
+ * 
+ * Note: Will throw an error if received data does not match expected format.
+ */
+export class BFLiteral extends BFBase<void> {
+	constructor(readonly bytes: Uint8Array) { 
+		super(); 
+	}
+	length(value: void): number {
+		return this.bytes.byteLength;
+	}
+	encodeInto(value: void, dataView: DataView): void {
+		const dst = new Uint8Array(dataView.buffer, dataView.byteOffset, this.bytes.byteLength);
+		dst.set(this.bytes);
+	}
+	decodeFrom(dataView: DataView): [value: void, advance: number] {
+		const data = new Uint8Array(dataView.buffer, dataView.byteOffset, this.bytes.byteLength);
+		for (const [i, byte] of this.bytes.entries()) {
+			if (data[i] !== byte) {
+				throw new Error(`Expected literal bytes ${bytesStr(this.bytes)} but received ${bytesStr(data)}, which differs at index ${i}.`);
+			}
+		}
+		return [void 0, this.bytes.byteLength];
+	}
+}
+
+/**
+ * Format: `[discriminator: u16] [bytes]`
+ * 
+ * Note: There is a maximum of 65536 members in the union.
+ */
+export class BFDiscriminatedUnion<
+	/** Discriminator key */
+	K extends PropertyKey,
+	/** Formats */
+	const F extends [unknown, BinaryFormat<{ [k in K]: unknown }>][],
+> extends BFBase<Infer<F[number][1]>> {
+	readonly discriminatorFormat: BFNumber;
+	constructor(
+		readonly key: K,
+		readonly formats: F,
+		discriminatorLittleEndian: boolean,
+	) {
+		if (formats.length > 0x10000) {
+			throw new Error("BFDiscriminatedUnion can have a maximum of 65536 members.");
+		}
+		super();
+		this.discriminatorFormat = uint16(discriminatorLittleEndian);
+	}
+	protected findEntry(value: F[number][0]) {
+		return this.formats.entries().find(([, [val,]]) => val === value);
+	}
+	protected findEntryOrThrow(value: F[number][0]) {
+		const entry = this.findEntry(value);
+		if (!entry) {
+			throw new TypeError(`No matching format in discriminated union. Key: ${String(this.key)}, Value: ${value}`);
+		}
+		return entry;
+	}
+	length(value: Infer<F[number][1]>): number {
+		const [i, [, format]] = this.findEntryOrThrow(value[this.key]);
+		return this.discriminatorFormat.length(i) + format.length(value);
+	}
+	encodeInto(value: Infer<F[number][1]>, dataView: DataView): void {
+		const [i, [, format]] = this.findEntryOrThrow(value[this.key]);
+		const offsetDataView = this.discriminatorFormat.encodeIntoAndAdvance(i, dataView);
+		format.encodeInto(value, offsetDataView);
+	}
+	decodeFrom(dataView: DataView): [value: Infer<F[number][1]>, advance: number] {
+		const [i, offsetDataView, iOffset] = this.discriminatorFormat.decodeFromAndAdvance(dataView);
+		const entry = this.formats[i];
+		if (!entry) throw new Error(`No format at index ${i}.`);
+		const [v, format] = entry;
+		const [value, advance] = format.decodeFrom(offsetDataView);
+		// @ts-expect-error weird
+		return [value, advance + iOffset];
 	}
 }
 
@@ -218,11 +298,18 @@ export class BFObject<const T extends [string, BinaryFormat][]> extends BFBase<O
 			offset,
 		];
 	}
+
+	extend<const F extends [string, BinaryFormat][]>(extraFormats: F): BFObject<[...T, ...F]> {
+		return new BFObject([...this.formats, ...extraFormats]);
+	}
 }
 
+/**
+ * Format: `[bytes]`
+ */
 export class BFBytes extends BFBase<ArrayBufferLike> {
 	constructor(readonly count: number) { super(); }
-	length(value?: ArrayBufferLike): number {
+	length(value: ArrayBufferLike): number {
 		return this.count;
 	}
 	encodeInto(value: ArrayBufferLike, dataView: DataView): void {
@@ -245,7 +332,7 @@ export class BFBytes extends BFBase<ArrayBufferLike> {
  * Note: Booleans are encoded as 1-byte values, with `0x01` as `true` and `0x00` as `false`
  */
 export class BFBoolean extends BFBase<boolean> {
-	length(value?: boolean): number { return 1; }
+	length(value: boolean): number { return 1; }
 	encodeInto(value: boolean, dataView: DataView): void {
 		dataView.setUint8(0, +value);
 	}
@@ -343,56 +430,3 @@ export class BFString extends BFBase<string> {
 	}
 }
 
-
-/**
- * Format: `[discriminator: u16] [bytes]`
- * 
- * Note: There is a maximum of 65536 members in the union.
- */
-export class BFDiscriminatedUnion<
-	/** Discriminator key */
-	K extends PropertyKey,
-	/** Formats */
-	const F extends [unknown, BinaryFormat<{ [k in K]: unknown }>][],
-> extends BFBase<Infer<F[number][1]>> {
-	readonly discriminatorFormat: BFNumber;
-	constructor(
-		readonly key: K,
-		readonly formats: F,
-		discriminatorLittleEndian: boolean,
-	) {
-		if (formats.length > 0x10000) {
-			throw new Error("BFDiscriminatedUnion can have a maximum of 65536 members.");
-		}
-		super();
-		this.discriminatorFormat = uint16(discriminatorLittleEndian);
-	}
-	protected findEntry(value: F[number][0]) {
-		return this.formats.entries().find(([, [val,]]) => val === value);
-	}
-	protected findEntryOrThrow(value: F[number][0]) {
-		const entry = this.findEntry(value);
-		if (!entry) {
-			throw new TypeError(`No matching format in discriminated union. Key: ${String(this.key)}, Value: ${value}`);
-		}
-		return entry;
-	}
-	length(value: Infer<F[number][1]>): number {
-		const [i, [, format]] = this.findEntryOrThrow(value[this.key]);
-		return this.discriminatorFormat.length(i) + format.length(value);
-	}
-	encodeInto(value: Infer<F[number][1]>, dataView: DataView): void {
-		const [i, [, format]] = this.findEntryOrThrow(value[this.key]);
-		const offsetDataView = this.discriminatorFormat.encodeIntoAndAdvance(i, dataView);
-		format.encodeInto(value, offsetDataView);
-	}
-	decodeFrom(dataView: DataView): [value: Infer<F[number][1]>, advance: number] {
-		const [i, offsetDataView, iOffset] = this.discriminatorFormat.decodeFromAndAdvance(dataView);
-		const entry = this.formats[i];
-		if (!entry) throw new Error(`No format at index ${i}.`);
-		const [v, format] = entry;
-		const [value, advance] = format.decodeFrom(offsetDataView);
-		// @ts-expect-error weird
-		return [value, advance + iOffset];
-	}
-}

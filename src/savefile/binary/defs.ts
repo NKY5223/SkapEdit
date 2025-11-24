@@ -56,3 +56,6 @@ export const dataViewStr = (dataView: DataView, options?: DataViewStrOptions): s
 	return `${left}${bytes}${right}`;
 }
 
+export const bytesStr = (bytes: Uint8Array): string => {
+	return `⟨${bytes.values().map(byte => byte.toString(16).padStart(2, "0")).toArray().join(" ")}⟩`;
+}

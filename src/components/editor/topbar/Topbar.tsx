@@ -14,6 +14,7 @@ import { useDispatchSelection } from "../selection.ts";
 import css from "./Topbar.module.css";
 import { TopbarMenuItem } from "./TopbarMenuItem.tsx";
 import { dummy } from "../../../savefile/binary/index.ts";
+import { } from "../../../savefile/binary.ts";
 
 dummy;
 
