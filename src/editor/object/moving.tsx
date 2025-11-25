@@ -18,7 +18,7 @@ export type MovingPoint = {
 type Moving<T extends string> = BaseObject<T, {
 	size: Vec2;
 	period: number;
-	points: readonly MovingPoint[];
+	points: MovingPoint[];
 }>;
 
 export const centeredBounds = (center: Vec2, size: Vec2): Bounds => new Bounds({

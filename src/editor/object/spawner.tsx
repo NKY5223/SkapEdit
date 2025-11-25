@@ -1,19 +1,16 @@
 import { BoundsInput } from "@components/form/BoundsInput.tsx";
 import { FormSection } from "@components/form/FormSection.tsx";
 import { FormTitle } from "@components/form/FormTitle.tsx";
+import { NumberInput } from "@components/form/NumberInput.tsx";
+import { TableInput } from "@components/form/TableInput.tsx";
+import { TextInput } from "@components/form/TextInput.tsx";
+import { Icon } from "@components/icon/Icon.tsx";
 import { Translate } from "@components/translate/Translate.tsx";
+import { entityToTextureName, isKnownEntityType } from "@components/view/viewport/renderer/spawner.ts";
 import { Bounds } from "@editor/bounds.ts";
+import { makeSpawnerEntity } from "@editor/map.ts";
 import { useDispatchSkapMap } from "@editor/reducer.ts";
 import { BaseObject, makeObjectProperties } from "./Base.tsx";
-import { Fragment } from "react/jsx-runtime";
-import { TextInput } from "@components/form/TextInput.tsx";
-import { NumberInput } from "@components/form/NumberInput.tsx";
-import { Icon } from "@components/icon/Icon.tsx";
-import { Button } from "@components/form/Button.tsx";
-import { TableInput } from "@components/form/TableInput.tsx";
-import { makeSpawnerEntity } from "@editor/map.ts";
-import { entityToTextureName, isKnownEntityType } from "@components/view/viewport/renderer/spawner.ts";
-import { entityTextures } from "@common/entityTextures.ts";
 
 export type SkapSpawner = BaseObject<"spawner", {
 	bounds: Bounds;

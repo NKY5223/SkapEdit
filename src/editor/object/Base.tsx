@@ -101,3 +101,10 @@ export const CardinalDirection: {
 	2: `up`,
 	3: `right`,
 };
+export const isCardinalDirection = (dir: number): dir is CardinalDirection => {
+	if (dir === CardinalDirection.Down) return true;
+	if (dir === CardinalDirection.Left) return true;
+	if (dir === CardinalDirection.Up) return true;
+	if (dir === CardinalDirection.Right) return true;
+	return false;
+}

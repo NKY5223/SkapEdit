@@ -1,15 +1,9 @@
-import { Color } from "@common/color.ts";
 import { Vec2 } from "@common/vec2.ts";
 import { BoundsInput } from "@components/form/BoundsInput.tsx";
-import { CheckboxInput } from "@components/form/CheckboxInput.tsx";
-import { ColorInput } from "@components/form/ColorInput.tsx";
-import { makeOption } from "@components/form/dropdown/Dropdown.ts";
-import { DropdownSelect } from "@components/form/dropdown/DropdownSelect.tsx";
 import { FormSection } from "@components/form/FormSection.tsx";
 import { FormTitle } from "@components/form/FormTitle.tsx";
 import { NumberInput } from "@components/form/NumberInput.tsx";
 import { Vec2Input } from "@components/form/Vec2Input.tsx";
-import { Icon } from "@components/icon/Icon.tsx";
 import { Translate } from "@components/translate/Translate.tsx";
 import { Bounds } from "@editor/bounds.ts";
 import { SkapObject } from "@editor/map.ts";

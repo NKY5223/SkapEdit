@@ -1,5 +1,5 @@
 import { BinaryFormat, dataViewStr } from "./defs.ts";
-import { BFArray, BFBigInt, BFBoolean, BFConst, BFDiscriminatedUnion, BFLiteral, BFNumber, BFObject, BFString, BFTransform, BFTuple } from "./types.ts";
+import { BFArray, BFBigInt, BFBoolean, BFConst, BFDiscriminatedUnion, BFLiteral, BFNumber, BFObject, BFString, BFTransform, BFTuple, Infer } from "./types.ts";
 
 export type {
 	Infer as infer,
@@ -15,8 +15,8 @@ export const transform = <T, U, B extends BinaryFormat<U>>(base: B, encode: (val
 	new BFTransform(base, encode, decode);
 export const array = <T, F extends BinaryFormat<T>>(format: F, lengthLittleEndian: boolean = true) =>
 	new BFArray(format, lengthLittleEndian);
-export const tuple = <const T extends readonly BinaryFormat[]>(formats: T) => new BFTuple(formats);
-export const object = <const T extends [string, BinaryFormat][]>(formats: T) => new BFObject(formats);
+export const tuple = <const F extends BinaryFormat[]>(formats: F) => new BFTuple(formats);
+export const object = <const F extends [string, BinaryFormat][]>(formats: F) => new BFObject(formats);
 export const discriminatedUnion = <
 	const K extends PropertyKey,
 	const F extends [unknown, BinaryFormat<{ [k in K]: unknown }>][]
@@ -95,5 +95,8 @@ export const bigUint64 = (littleEndian: boolean = true) => new BFBigInt(
 );
 // #endregion
 
-
-export const dummy = float64();
+export const readonlyMap = <KF extends BinaryFormat, VF extends BinaryFormat>(key: KF, value: VF) => 
+	tuple([key, value]).array().transform<ReadonlyMap<Infer<KF>, Infer<VF>>>(
+		map => map.entries().toArray(),
+		entries => new Map(entries),
+	);

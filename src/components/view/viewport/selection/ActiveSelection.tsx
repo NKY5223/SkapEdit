@@ -41,7 +41,6 @@ export const ActiveSelection: FC<ActiveSelectionProps> = ({
 	));
 	if (multi) {
 		const bounds = Bounds.merge(selectables.map(getSelectableBounds));
-		// TODO: CAN CAUSE NANS AND INFINITIES
 		const setBounds: Dispatch<SetStateAction<Bounds>> = (update) => {
 			const newBounds = maybeConst(update, bounds);
 			// Find S and T such that bounds.affine(S, T) = newBounds,
@@ -50,6 +49,7 @@ export const ActiveSelection: FC<ActiveSelectionProps> = ({
 			// S = b1.size / b0.size
 			// T = b1 - b0 * S
 			const scale0 = newBounds.size.div(bounds.size);
+			// Fix nonfinites
 			const scale = vec2(
 				isFinite(scale0[0]) ? scale0[0] : 1,
 				isFinite(scale0[1]) ? scale0[1] : 1,

@@ -5,7 +5,7 @@ import { blockProperties } from "./block.tsx";
 import { circularIceProperties, circularLavaProperties, circularObstacleProperties, circularSlimeProperties } from "./circular.tsx";
 import { gravityZoneProperties } from "./gravityZone.tsx";
 import { movingObstacleProperties, movingLavaProperties, movingSlimeProperties, movingIceProperties } from "./moving.tsx";
-import { rotatingLavaProperties } from "./rotating.tsx";
+import { rotatingIceProperties, rotatingLavaProperties, rotatingObstacleProperties, rotatingSlimeProperties } from "./rotating.tsx";
 import { spawnerProperties } from "./spawner.tsx";
 import { teleporterProperties } from "./teleporter.tsx";
 import { textProperties } from "./text.tsx";
@@ -28,7 +28,10 @@ const properties = [
 	teleporterProperties,
 	spawnerProperties,
 
+	rotatingObstacleProperties,
 	rotatingLavaProperties,
+	rotatingSlimeProperties,
+	rotatingIceProperties,
 
 	circularObstacleProperties,
 	circularLavaProperties,

@@ -235,7 +235,10 @@ const objectToSkap = (object: SkapObject, room: SkapRoom, map: SkapMap): SkapFil
 				reward: hatReward,
 			}];
 		}
-		// default: return [];
+		default: {
+			console.warn("Cannot export object type", object.type, "to skap. ", object);
+			return [];
+		}
 	}
 }
 

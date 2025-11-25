@@ -13,10 +13,7 @@ import { Translate } from "../../translate/Translate.tsx";
 import { useDispatchSelection } from "../selection.ts";
 import css from "./Topbar.module.css";
 import { TopbarMenuItem } from "./TopbarMenuItem.tsx";
-import { dummy } from "../../../savefile/binary/index.ts";
-import { } from "../../../savefile/binary.ts";
-
-dummy;
+import { MapFileFormat } from "../../../savefile/binary.ts";
 
 type TopbarProps = {
 	openChangelog: () => void;
@@ -57,13 +54,68 @@ export const Topbar: FC<TopbarProps> = ({
 				}),
 			]}><Translate k="topbar.app" /></TopbarMenuItem>
 			<TopbarMenuItem items={[
-				makeSingle("topbar.file.save", "file_save", () => {
-					alert("Not implemented yet");
-					console.log("Save map", map);
+				makeSingle("topbar.file.save", "file_save", async () => {
+					try {
+						const fileName = `${map.name}.bin`;
+						await saveFile(fileName,
+							() => new Blob([MapFileFormat.encode(
+								[void 0, map,]
+							)]),
+							{
+								id: "skapedit-save",
+								types: [
+									{ accept: { "application/octet-stream": [".bin"] } }
+								],
+								suggestedName: fileName,
+							}
+						);
+						toast.success(<>
+							Saved map!
+						</>, 10);
+					} catch (err) {
+						toast.error(<>
+							Failed to save map
+						</>);
+						console.error("Failed to save map:\n----------", err);
+					}
+				}),
+				makeSingle("topbar.file.open", "file_open", async () => {
+					try {
+						const [method, file] = await openFile(
+							async () => confirm("Are you sure? This will overwrite any unsaved progress."),
+							{
+								id: "skapedit-open",
+								types: [
+									{ accept: { "application/octet-stream": [".bin"] } }
+								],
+							}
+						);
+
+						const buffer = await file.arrayBuffer();
+						const [, map] = MapFileFormat.decode(buffer);
+
+						toast.success(<>
+							Successfully opened map: {map.name} by {map.author}, version {map.version}.
+						</>, 10);
+
+						console.log("Opened map", method, map);
+
+						dispatchMap({
+							type: "replace_map",
+							replacement: map,
+						});
+						dispatchSelection({ type: "clear_selection" });
+					} catch (err) {
+						toast.error(<>
+							Failed to open map.
+						</>);
+						console.error("Failed to open map:\n----------", err);
+					}
 				}),
 				makeSingle("topbar.file.export_skap", "file_export", async () => {
 					try {
-						await saveFile("map.skap.json",
+						const fileName = `${map.name}.skap.json`;
+						await saveFile(fileName,
 							() => {
 								const json = mapToSkapJson(map);
 								return new Blob([json], { type: "application/json" });
@@ -72,7 +124,8 @@ export const Topbar: FC<TopbarProps> = ({
 								id: "skapedit-export",
 								types: [
 									{ accept: { "application/json": [".json"] } }
-								]
+								],
+								suggestedName: fileName
 							}
 						);
 						toast.success(<>
@@ -82,7 +135,7 @@ export const Topbar: FC<TopbarProps> = ({
 						toast.error(<>
 							Failed to export map.
 						</>);
-						console.log("Failed to export map:", err);
+						console.error("Failed to export map:", err);
 					}
 				}),
 				makeSingle("topbar.file.import_skap", "file_open", async () => {
@@ -134,7 +187,7 @@ export const Topbar: FC<TopbarProps> = ({
 						toast.error(<>
 							Failed to import map.
 						</>);
-						console.log("Failed to import map:", err);
+						console.error("Failed to import map:", err);
 					}
 				}),
 			]}><Translate k="topbar.file" /></TopbarMenuItem>

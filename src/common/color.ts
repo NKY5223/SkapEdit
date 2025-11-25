@@ -28,8 +28,8 @@ export type ColorData = (
 
 const clampUnit = clamp(0, 1);
 export class Color {
-	protected constructor(protected readonly data: ColorData) {
-	}
+	/** You should use a factory, not the constructor. */
+	constructor(readonly data: ColorData) { }
 
 	// #region Constructors
 	/**

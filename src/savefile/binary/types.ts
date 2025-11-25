@@ -4,6 +4,18 @@ import { range } from "@common/array.ts";
 import { float64, int32, uint16 } from "./index.ts";
 
 export type Infer<T> = T extends BinaryFormat<infer U> ? U : never;
+const log = false;
+
+export class BFError extends Error {
+	constructor(
+		message: string,
+		readonly position: number,
+		options?: ErrorOptions,
+	) {
+		super(`@0x${position.toString(16)}: ${message}`, options);
+		this.name = "BFError";
+	}
+}
 
 export abstract class BFBase<T> implements BinaryFormat<T> {
 	abstract length(value: T): number;
@@ -21,6 +33,7 @@ export abstract class BFBase<T> implements BinaryFormat<T> {
 
 	encode(value: T): ArrayBuffer {
 		const size = this.length(value);
+		if (log) console.log("encoding with length 0x%s", size.toString(16));
 		const buffer = new ArrayBuffer(size);
 		const dataView = new DataView(buffer);
 		this.encodeInto(value, dataView);
@@ -39,6 +52,10 @@ export abstract class BFBase<T> implements BinaryFormat<T> {
 	}
 
 
+	/** Assert that a format decodes to a certain type. */
+	assert<T>(this: this & BFBase<T>): this {
+		return this;
+	}
 	/** Cast a format to BFBase, hiding its internal structure. */
 	opaque<T>(this: BFBase<T>): BFBase<T> {
 		return this;
@@ -99,8 +116,8 @@ export class BFConst<const T> extends BFBase<T> {
  * Note: Will throw an error if received data does not match expected format.
  */
 export class BFLiteral extends BFBase<void> {
-	constructor(readonly bytes: Uint8Array) { 
-		super(); 
+	constructor(readonly bytes: Uint8Array) {
+		super();
 	}
 	length(value: void): number {
 		return this.bytes.byteLength;
@@ -196,11 +213,13 @@ export class BFTuple<F extends readonly BinaryFormat[]> extends BFBase<{ [i in k
 	decodeFrom(dataView: DataView): [value: { [i in keyof F]: Infer<F[i]>; }, advance: number] {
 		let offset = 0;
 		const result = [];
-		for (const format of this.formats) {
+		for (const [i, format] of this.formats.entries()) {
 			const offsetDataView = sliceDataView(dataView, offset);
 			const [value, advance] = format.decodeFrom(offsetDataView);
 			offset += advance;
 			result.push(value);
+
+			if (log) console.log("@%s | %f: %o", offsetDataView.byteOffset.toString(16).padStart(4, "0"), i, value);
 		}
 		return [
 			// Evil cast!
@@ -223,23 +242,18 @@ export class BFArray<T, F extends BinaryFormat<T>> extends BFBase<T[]> {
 	readonly lengthFormat: BFNumber;
 	constructor(readonly format: F, lengthLittleEndian: boolean) {
 		super();
-		this.lengthFormat = new BFNumber(
-			4,
-			"getInt32",
-			"setInt32",
-			lengthLittleEndian,
-		);
+		this.lengthFormat = int32(lengthLittleEndian);
 	}
 	length(value: Infer<F>[]): number {
 		return this.lengthFormat.length(value.length) + value.reduce((l, v) => l + this.format.length(v), 0);
 	}
 	encodeInto(value: Infer<F>[], dataView: DataView): void {
 		this.lengthFormat.encodeInto(value.length, dataView);
-		let offset = 1;
+		let offset = this.lengthFormat.length(value.length);
 		for (const v of value) {
 			const offsetDataView = sliceDataView(dataView, offset);
-			offset += this.format.length(v);
 			this.format.encodeInto(v, offsetDataView);
+			offset += this.format.length(v);
 		}
 	}
 	decodeFrom(dataView: DataView): [value: T[], advance: number] {
@@ -270,27 +284,47 @@ export class BFObject<const T extends [string, BinaryFormat][]> extends BFBase<O
 	length(value: ObjectType<T>): number {
 		let length = 0;
 		for (const [key, format] of this.formats) {
-			length += format.length(value[key as keyof typeof value]);
+			const len = format.length(value[key as keyof typeof value]);
+			length += len;
 		}
 		return length;
 	}
 	encodeInto(value: ObjectType<T>, dataView: DataView): void {
 		let offset = 0;
 		for (const [key, format] of this.formats) {
-			const v = value[key as keyof typeof value];
-			const offsetDataView = sliceDataView(dataView, offset);
-			offset += format.length(v);
-			format.encodeInto(v, offsetDataView);
+			try {
+				const v = value[key as keyof typeof value];
+				const offsetDataView = sliceDataView(dataView, offset);
+				const length = format.length(v);
+				offset += length;
+				format.encodeInto(v, offsetDataView);
+			} catch (err) {
+				throw new BFError(
+					`Error while encoding object key "${key}":`,
+					dataView.byteOffset + offset,
+					{ cause: err }
+				);
+			}
 		}
 	}
 	decodeFrom(dataView: DataView): [value: ObjectType<T>, advance: number] {
 		let offset = 0;
 		const result: Record<string, unknown> = {};
 		for (const [key, format] of this.formats) {
-			const offsetDataView = sliceDataView(dataView, offset);
-			const [value, advance] = format.decodeFrom(offsetDataView);
-			offset += advance;
-			result[key] = value;
+			try {
+				const offsetDataView = sliceDataView(dataView, offset);
+				const [value, advance] = format.decodeFrom(offsetDataView);
+				offset += advance;
+				result[key] = value;
+
+				if (log) console.log("@%s | %s: %o", offsetDataView.byteOffset.toString(16).padStart(4, "0"), key, value);
+			} catch (err) {
+				throw new BFError(
+					`Error while decoding object key "${key}":`,
+					dataView.byteOffset + offset,
+					{ cause: err }
+				);
+			}
 		}
 		return [
 			// @ts-expect-error I could probably do this with some recursive stuff but whatever
@@ -299,6 +333,7 @@ export class BFObject<const T extends [string, BinaryFormat][]> extends BFBase<O
 		];
 	}
 
+	/** Add additional properties to a `BFObject`. */
 	extend<const F extends [string, BinaryFormat][]>(extraFormats: F): BFObject<[...T, ...F]> {
 		return new BFObject([...this.formats, ...extraFormats]);
 	}
@@ -412,21 +447,39 @@ export class BFString extends BFBase<string> {
 	}
 
 	length(value: string): number {
-		const bytes = encoder.encode(value).length;
-		return this.lengthFormat.length(bytes) + bytes;
+		const strBytes = encoder.encode(value).length;
+		const length = this.lengthFormat.length(strBytes) + strBytes;
+		return length;
 	}
 	encodeInto(value: string, dataView: DataView): void {
 		const bytes = encoder.encode(value).length;
 		const offset = this.lengthFormat.length(bytes);
-		this.lengthFormat.encodeInto(bytes, dataView);
-		const array = new Uint8Array(dataView.buffer, dataView.byteOffset + offset, bytes);
-		encoder.encodeInto(value, array);
+		try {
+			const length = this.length(value);
+			this.lengthFormat.encodeInto(bytes, dataView);
+			const array = new Uint8Array(dataView.buffer, dataView.byteOffset + offset, bytes);
+			encoder.encodeInto(value, array);
+		} catch (err) {
+			throw new BFError(
+				`Error encoding string with length ${bytes}`,
+				dataView.byteOffset,
+				{ cause: err }
+			);
+		}
 	}
 	decodeFrom(dataView: DataView): [value: string, advance: number] {
 		const [length, offset] = this.lengthFormat.decodeFrom(dataView);
-		const offsetDataView = sliceDataView(dataView, offset, length);
-		const str = decoder.decode(offsetDataView);
-		return [str, offset + length];
+		try {
+			const offsetDataView = sliceDataView(dataView, offset, length);
+			const str = decoder.decode(offsetDataView);
+			return [str, offset + length];
+		} catch (err) {
+			throw new BFError(
+				`Error decoding string with length ${length}`,
+				dataView.byteOffset,
+				{ cause: err }
+			);
+		}
 	}
 }
 

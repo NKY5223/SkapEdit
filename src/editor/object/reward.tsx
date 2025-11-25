@@ -12,7 +12,7 @@ import { Icon } from "@components/icon/Icon.tsx";
 
 export type SkapReward = BaseObject<"reward", {
 	pos: Vec2;
-	reward: readonly number[];
+	reward: number[];
 }>;
 export const powerNamesArray = [
 	[0, "shrinker"],

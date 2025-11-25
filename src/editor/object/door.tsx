@@ -19,7 +19,7 @@ type Connection = {
 
 export type SkapDoor = BaseObject<"door", {
 	bounds: Bounds;
-	connections: readonly Connection[];
+	connections: Connection[];
 }>;
 
 export const doorProperties = makeObjectProperties<SkapDoor>("door", {
