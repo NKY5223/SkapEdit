@@ -107,6 +107,7 @@ export type TranslationArgs = {
 	"contextmenu.item.name.topbar.app.test_toast": {};
 	"topbar.file": {};
 	"contextmenu.item.name.topbar.file.save": {};
+	"contextmenu.item.name.topbar.file.open": {};
 	"contextmenu.item.name.topbar.file.export_skap": {};
 	"contextmenu.item.name.topbar.file.import_skap": {};
 	// #endregion

@@ -108,6 +108,7 @@ export const translator_zh_Hans = makeTranslator<TranslationArgs>({
 	"contextmenu.item.name.topbar.app.test_toast": "测试弹出式通知",
 	"topbar.file": "文件",
 	"contextmenu.item.name.topbar.file.save": "保存",
+	"contextmenu.item.name.topbar.file.open": "打开",
 	"contextmenu.item.name.topbar.file.export_skap": "输出至skap .json 格式",
 	"contextmenu.item.name.topbar.file.import_skap": "输入从skap .json 格式",
 	// #endregion
