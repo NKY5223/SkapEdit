@@ -1,14 +1,14 @@
 import { sortBy } from "@common/array.ts";
 import { Color } from "@common/color.ts";
 import { hotkeysHandler, keybindStr } from "@common/keybind.ts";
-import { ID } from "@common/uuid.ts";
+import { createId, createIdFromPrefix, ID } from "@common/uuid.ts";
 import { Vec2, vec2 } from "@common/vec2.ts";
 import { Sections, makeSection, makeSingle, makeSubmenu, useContextMenu } from "@components/contextmenu/ContextMenu.ts";
 import { makeNodeSelectableItem, makeObjectSelectableItem, makeObjectSelectionItem, makeRoomSelectableItem, makeRoomSelectionItem, selectableToSelection, selectionInRoom, selectionToSelectable, useDispatchSelection, useEditorSelection } from "@components/editor/selection.ts";
 import { ViewToolbar } from "@components/layout/LayoutViewToolbar.tsx";
 import { mergeListeners, toClassName } from "@components/utils.tsx";
 import { Bounds } from "@editor/bounds.ts";
-import { MapFragment, SkapObject, SkapRoom, makeBlock, makeCardinalGravityZone, makeCircularIce, makeCircularLava, makeCircularObstacle, makeCircularSlime, makeHatReward, makeIce, makeLava, makeMovePoint, makeMovingIce, makeMovingLava, makeMovingObstacle, makeMovingSlime, makeObstacle, makeReward, makeRoom, makeRotatingLava, makeSlime, makeSpawner, makeText } from "@editor/map.ts";
+import { MapFragment, SkapObject, SkapRoom, importObjectFromFragment, makeBlock, makeCardinalGravityZone, makeCircularIce, makeCircularLava, makeCircularObstacle, makeCircularSlime, makeHatReward, makeIce, makeLava, makeMovePoint, makeMovingIce, makeMovingLava, makeMovingObstacle, makeMovingSlime, makeObstacle, makeReward, makeRoom, makeRotatingLava, makeSlime, makeSpawner, makeText } from "@editor/map.ts";
 import { CardinalDirection } from "@editor/object/Base.tsx";
 import { useDispatchSkapMap, useSkapMap } from "@editor/reducer.ts";
 import { MouseButtons, useDrag } from "@hooks/useDrag.ts";
@@ -40,6 +40,7 @@ import { ViewportAction, ViewportInfo, ViewportState, wheelMult } from "./Viewpo
 import { ViewportCanvas } from "./ViewportCanvas.tsx";
 import { RoomSelect } from "./ViewportRoomSwitcher.tsx";
 import { WebGLLayer } from "./webgl/WebGLLayer.tsx";
+import { MapFragmentFormat } from "../../../savefile/binary.ts";
 
 /** Maximum distance for something to count as a click */
 const clickMaxDistance = 5;
@@ -503,8 +504,32 @@ export const RealViewport: FC<RealViewportProps> = ({
 			objects,
 			rooms: [],
 		}
-		// const data = e.clipboardData;
-		// data.setData("text/plain", );
+		const base64 = MapFragmentFormat.encodeBase64(fragment);
+		const str = `SkapEdit;${base64}`;
+		// console.log("Copying string:", str);
+		e.clipboardData.setData("text/plain", str);
+		e.preventDefault();
+	};
+	const onPaste: ClipboardEventHandler = e => {
+		const str = e.clipboardData.getData("text/plain");
+		if (!str.startsWith(`SkapEdit;`)) return;
+		const base64 = str.slice(`SkapEdit;`.length);
+		const fragment = MapFragmentFormat.decodeBase64(base64);
+		// console.log("Pasted fragment", fragment);
+		const { objects } = fragment;
+		const idMap = new Map(objects.map(obj => [obj.id, createIdFromPrefix(obj.id)] as const));
+		const importedObjects = objects.map(obj => importObjectFromFragment(obj, idMap));
+		// console.log("imported: ", importedObjects);
+
+		importedObjects.forEach(object => dispatchMap({
+			type: "add_object",
+			roomId: room.id,
+			object,
+		}));
+		dispatchSelection({
+			type: "set_selection",
+			selection: importedObjects.map(makeObjectSelectionItem)
+		});
 	};
 	const listeners = mergeListeners(
 		contextMenu,
@@ -512,7 +537,7 @@ export const RealViewport: FC<RealViewportProps> = ({
 		selectDragListeners,
 		{
 			onWheel, onClick, onKeyDown,
-			onCopy,
+			onCopy, onPaste,
 		}
 	);
 

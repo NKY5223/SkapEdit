@@ -12,4 +12,4 @@ export const createId = (prefix = ""): ID => {
 	const hex = Math.trunc(Math.random() * 2 ** 32).toString(16).padStart(8, "0");
 	return `nocrypto_${p}${hex}` as ID;
 }
-
+export const createIdFromPrefix = (id: ID): ID => createId(id.split("_")[0]);

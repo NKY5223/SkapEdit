@@ -83,10 +83,10 @@ export const base64ToBuffer = (str: string): ArrayBuffer => {
 	return new Uint8Array(bytes).buffer;
 }
 
-const buffer = new TextEncoder().encode("Testung910h1jdn nzxc.").buffer;
-const b64 = bufferToBase64(buffer);
-const decoded = base64ToBuffer(b64);
+// const buffer = new TextEncoder().encode("Testung910h1jdn nzxc.").buffer;
+// const b64 = bufferToBase64(buffer);
+// const decoded = base64ToBuffer(b64);
 
-console.log("buffer", bufferStr(buffer));
-console.log("b64", b64);
-console.log("decoded", bufferStr(decoded));
+// console.log("buffer", bufferStr(buffer));
+// console.log("b64", b64);
+// console.log("decoded", bufferStr(decoded));

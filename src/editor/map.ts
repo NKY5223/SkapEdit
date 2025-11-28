@@ -321,3 +321,34 @@ export const makeRoom = (
 });
 
 // #endregion
+
+export const importObjectFromFragment = (obj: SkapObject, idMap: ReadonlyMap<ID, ID>): SkapObject => {
+	const newId = (id: ID) => idMap.get(id) ?? id;
+	const id = newId(obj.id);
+	switch (obj.type) {
+		case "teleporter": {
+			if (obj.target === null) return { ...obj, id };
+			if (obj.target.type === "room") return { ...obj, id };
+			const teleporterId = obj.target.teleporterId;
+			return {
+				...obj,
+				id,
+				target: {
+					type: "teleporter",
+					teleporterId: newId(teleporterId),
+				},
+			};
+		}
+		case "door": {
+			return {
+				...obj,
+				id,
+				connections: obj.connections.map(conn => ({
+					...conn,
+					objectId: newId(conn.objectId),
+				}))
+			}
+		}
+		default: return { ...obj, id };
+	}
+}
