@@ -1,7 +1,23 @@
-import { Realize } from "@common/types.ts";
-import { BinaryFormat, bytesStr, sliceDataView } from "./defs.ts";
 import { range } from "@common/array.ts";
-import { float64, int32, uint16 } from "./index.ts";
+import { Realize } from "@common/types.ts";
+import { int32, uint16 } from "./index.ts";
+import { bytesStr, sliceDataView } from "./utils.ts";
+import { base64ToBuffer, bufferToBase64 } from "./base64.ts";
+
+export interface BinaryFormat<T = unknown> {
+	/** Size of a value in bytes */
+	length(value: T): number;
+	encodeInto(value: T, dataView: DataView): void;
+	decodeFrom(dataView: DataView): [
+		/** The value decoded from the binary data. */
+		value: T,
+		/** Number of bytes to advance the index by. */
+		advance: number
+	];
+
+	encode(value: T): ArrayBuffer;
+	decode(buffer: ArrayBuffer): T;
+}
 
 export type Infer<T> = T extends BinaryFormat<infer U> ? U : never;
 const log = false;
@@ -50,7 +66,12 @@ export abstract class BFBase<T> implements BinaryFormat<T> {
 		}
 		return value;
 	}
-
+	encodeBase64(value: T): string {
+		return bufferToBase64(this.encode(value));
+	}
+	decodeBase64(str: string): T {
+		return this.decode(base64ToBuffer(str));
+	}
 
 	/** Assert that a format decodes to a certain type. */
 	assert<T>(this: this & BFBase<T>): this {
@@ -482,4 +503,3 @@ export class BFString extends BFBase<string> {
 		}
 	}
 }
-

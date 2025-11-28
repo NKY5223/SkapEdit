@@ -71,6 +71,19 @@ export type SkapMap = {
 	 */
 	edited: boolean;
 };
+export type MapFragment = {
+	/** 
+	 * A list of "loose" objects in the fragment. 
+	 * When pasted, will be pasted in whatever room is suitable
+	 * (active room in viewport).
+	 */
+	objects: SkapObject[];
+	/** 
+	 * A list of rooms in the fragment.
+	 * When pasted, will be inserted into the map at the end.
+	 */
+	rooms: SkapRoom[];
+}
 // #endregion
 
 // #region constructors

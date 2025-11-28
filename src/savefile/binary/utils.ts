@@ -1,24 +1,12 @@
 import { range } from "@common/array.ts";
 
-export interface BinaryFormat<T = unknown> {
-	/** Size of a value in bytes */
-	length(value: T): number;
-	encodeInto(value: T, dataView: DataView): void;
-	decodeFrom(dataView: DataView): [
-		/** The value decoded from the binary data. */
-		value: T,
-		/** Number of bytes to advance the index by. */
-		advance: number,
-	];
-
-	encode(value: T): ArrayBuffer;
-	decode(buffer: ArrayBuffer): T;
-};
 export const sliceDataView = <T extends ArrayBufferLike>(dataView: DataView<T>, offset: number, length?: number): DataView<T> => {
 	return new DataView(dataView.buffer, offset + dataView.byteOffset, length);
 }
 
+export const bitsStr = (byte: number) => byte.toString(2).padStart(8, "0");
 export const byteStr = (byte: number) => byte.toString(16).padStart(2, "0");
+
 type DataViewStrOptions = {
 	maxLength?: number;
 };
@@ -59,3 +47,4 @@ export const dataViewStr = (dataView: DataView, options?: DataViewStrOptions): s
 export const bytesStr = (bytes: Uint8Array): string => {
 	return `⟨${bytes.values().map(byte => byte.toString(16).padStart(2, "0")).toArray().join(" ")}⟩`;
 }
+export const bufferStr = (buffer: ArrayBuffer) => bytesStr(new Uint8Array(buffer));

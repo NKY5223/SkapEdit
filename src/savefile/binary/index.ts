@@ -1,4 +1,5 @@
-import { BinaryFormat, dataViewStr } from "./defs.ts";
+import { dataViewStr } from "./utils.ts";
+import { BinaryFormat } from "./types.ts";
 import { BFArray, BFBigInt, BFBoolean, BFConst, BFDiscriminatedUnion, BFLiteral, BFNumber, BFObject, BFString, BFTransform, BFTuple, Infer } from "./types.ts";
 
 export type {

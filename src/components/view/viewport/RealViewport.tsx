@@ -8,12 +8,12 @@ import { makeNodeSelectableItem, makeObjectSelectableItem, makeObjectSelectionIt
 import { ViewToolbar } from "@components/layout/LayoutViewToolbar.tsx";
 import { mergeListeners, toClassName } from "@components/utils.tsx";
 import { Bounds } from "@editor/bounds.ts";
-import { SkapObject, SkapRoom, makeBlock, makeCardinalGravityZone, makeCircularIce, makeCircularLava, makeCircularObstacle, makeCircularSlime, makeHatReward, makeIce, makeLava, makeMovePoint, makeMovingIce, makeMovingLava, makeMovingObstacle, makeMovingSlime, makeObstacle, makeReward, makeRoom, makeRotatingLava, makeSlime, makeSpawner, makeText } from "@editor/map.ts";
+import { MapFragment, SkapObject, SkapRoom, makeBlock, makeCardinalGravityZone, makeCircularIce, makeCircularLava, makeCircularObstacle, makeCircularSlime, makeHatReward, makeIce, makeLava, makeMovePoint, makeMovingIce, makeMovingLava, makeMovingObstacle, makeMovingSlime, makeObstacle, makeReward, makeRoom, makeRotatingLava, makeSlime, makeSpawner, makeText } from "@editor/map.ts";
 import { CardinalDirection } from "@editor/object/Base.tsx";
 import { useDispatchSkapMap, useSkapMap } from "@editor/reducer.ts";
 import { MouseButtons, useDrag } from "@hooks/useDrag.ts";
 import { useElementSize } from "@hooks/useElementSize.ts";
-import { Dispatch, FC, ReactNode, useMemo, useRef } from "react";
+import { ClipboardEventHandler, Dispatch, FC, ReactNode, useMemo, useRef } from "react";
 import { viewportToMap } from "./mapping.ts";
 import { BackgroundObstacleWebGLRenderer, BackgroundWebGLRenderer } from "./renderer/background.ts";
 import { BlockWebGLRenderer } from "./renderer/block.ts";
@@ -131,7 +131,6 @@ export const RealViewport: FC<RealViewportProps> = ({
 		if (!toolbar) return;
 		return toolbar.contains(el);
 	}
-
 
 	const objectSelectables = room.objects.values().toArray().map(makeObjectSelectableItem);
 	const roomSelectableItem = makeRoomSelectableItem(room);
@@ -490,12 +489,30 @@ export const RealViewport: FC<RealViewportProps> = ({
 		css["viewport"],
 		dragging && css["dragging"]
 	);
+	const onCopy: ClipboardEventHandler = e => {
+		const objects = roomSelection.map(sel => {
+			const item = selectionToSelectable(sel, map);
+			switch (item.type) {
+				case "object":
+					return item.object;
+				default:
+					return null;
+			}
+		}).filter(s => s !== null);
+		const fragment: MapFragment = {
+			objects,
+			rooms: [],
+		}
+		// const data = e.clipboardData;
+		// data.setData("text/plain", );
+	};
 	const listeners = mergeListeners(
 		contextMenu,
 		moveDragListeners,
 		selectDragListeners,
 		{
 			onWheel, onClick, onKeyDown,
+			onCopy,
 		}
 	);
 

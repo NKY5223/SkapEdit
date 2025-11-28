@@ -1,8 +1,8 @@
 import { ID } from "@common/uuid.ts";
 import { Bounds } from "@editor/bounds.ts";
 import * as b from "./binary/index.ts";
-import { SkapMap, SkapObject, SkapRoom } from "@editor/map.ts";
-import { bytesStr } from "./binary/defs.ts";
+import { MapFragment, SkapMap, SkapObject, SkapRoom } from "@editor/map.ts";
+import { bytesStr } from "./binary/utils.ts";
 import { vec2, Vec2 } from "@common/vec2.ts";
 import { SkapText } from "@editor/object/text.tsx";
 import { SkapIce, SkapLava, SkapObstacle, SkapSlime } from "@editor/object/basic.ts";
@@ -192,7 +192,7 @@ const HatRewardFormat = BaseObject("hatReward").extend([
 // #endregion
 
 // DANGER: Changing the order of formats breaks things! 
-const SkapObjectFormat = b.discriminatedUnion("type", [
+export const SkapObjectFormat = b.discriminatedUnion("type", [
 	["obstacle", ObstacleFormat],
 	["lava", LavaFormat],
 	["slime", SlimeFormat],
@@ -222,16 +222,16 @@ const SkapObjectFormat = b.discriminatedUnion("type", [
 	["hatReward", HatRewardFormat],
 ]).opaque<SkapObject>();
 
-const SkapRoomFormat = b.object([
+export const SkapRoomFormat = b.object([
 	["id", IdFormat],
 	["name", b.string()],
 	["bounds", BoundsFormat],
 	["obstacleColor", ColorFormat],
 	["backgroundColor", ColorFormat],
 	["objects", b.readonlyMap(IdFormat, SkapObjectFormat)],
-]).assert<SkapRoom>();
+]).opaque<SkapRoom>();
 
-const SkapMapFormat = b.object([
+export const SkapMapFormat = b.object([
 	["author", b.string()],
 	["name", b.string()],
 	["version", b.float64()],
@@ -248,3 +248,8 @@ export const MapFileFormat = b.tuple([
 	b.literal(BytesSkapEdit),
 	SkapMapFormat,
 ]);
+
+export const MapFragmentFormat = b.object([
+	["objects", SkapObjectFormat.array()],
+	["rooms", SkapRoomFormat.array()],
+]).opaque<MapFragment>();
